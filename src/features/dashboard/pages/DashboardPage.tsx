@@ -1,22 +1,13 @@
 import { useAuth } from "../../auth";
 
 export function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <main>
+    <section>
       <h1>داشبورد</h1>
 
       <p>خوش آمدید {user?.employee.full_name}</p>
-
-      <button
-        type="button"
-        onClick={() => {
-          void logout();
-        }}
-      >
-        خروج
-      </button>
-    </main>
+    </section>
   );
 }

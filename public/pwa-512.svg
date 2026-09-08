@@ -1,0 +1,32 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 512 512"
+>
+  <rect
+    width="512"
+    height="512"
+    rx="108"
+    fill="#ffffff"
+  />
+
+  <rect
+    x="86"
+    y="86"
+    width="340"
+    height="340"
+    rx="74"
+    fill="#111827"
+  />
+
+  <text
+    x="256"
+    y="310"
+    text-anchor="middle"
+    font-family="Arial, sans-serif"
+    font-size="150"
+    font-weight="700"
+    fill="#ffffff"
+  >
+    E
+  </text>
+</svg>

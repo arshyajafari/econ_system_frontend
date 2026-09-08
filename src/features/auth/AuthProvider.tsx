@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 import {
@@ -16,31 +10,15 @@ import {
   login as loginRequest,
   logout as logoutRequest,
 } from "./services/authApi";
-import type { AuthSession, AuthUser, LoginRequest } from "./types/auth";
-
-type AuthContextValue = {
-  user: AuthUser | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (payload: LoginRequest) => Promise<void>;
-  logout: () => Promise<void>;
-};
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext } from "./AuthContext";
+import type { AuthSession, LoginRequest } from "./types/auth";
 
 type AuthProviderProps = {
   children: ReactNode;
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setSession(getAuthSession());
-    setIsLoading(false);
-  }, []);
+  const [session, setSession] = useState<AuthSession | null>(getAuthSession);
 
   useEffect(() => {
     function handleAuthChanged() {
@@ -75,16 +53,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const value = useMemo<AuthContextValue>(
+  const value = useMemo(
     () => ({
       user: session?.user ?? null,
       token: session?.token ?? null,
       isAuthenticated: session !== null,
-      isLoading,
+      isLoading: false,
       login,
       logout,
     }),
-    [session, isLoading, login, logout],
+    [session, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
