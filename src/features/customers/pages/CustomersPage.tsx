@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { ApiError } from "../../../api/client";
 import { CustomerFilters } from "../components/CustomerFilters";
@@ -37,67 +37,59 @@ export function CustomersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
+  const requestIdRef = useRef(0);
+
   const loadCustomers = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
+
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await getCustomers({
-        search: search || undefined,
+        search: search.trim() || undefined,
         status: status || undefined,
         type: type || undefined,
         page,
         per_page: 20,
       });
 
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
       setCustomers(response.data);
       setLastPage(response.meta.last_page);
       setTotal(response.meta.total);
     } catch (error: unknown) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
       setError(
-        error instanceof ApiError ? error.message : "خطا در دریافت مشتریان.",
+        error instanceof ApiError && error.message
+          ? error.message
+          : "خطا در دریافت مشتریان.",
       );
     } finally {
-      setIsLoading(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [page, search, status, type]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    getCustomers({
-      search: search || undefined,
-      status: status || undefined,
-      type: type || undefined,
-      page,
-      per_page: 20,
-    })
-      .then((response) => {
-        if (cancelled) return;
-
-        setCustomers(response.data);
-        setLastPage(response.meta.last_page);
-        setTotal(response.meta.total);
-        setError(null);
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return;
-
-        if (error instanceof ApiError) {
-          setError(error.message || "خطا در دریافت مشتریان.");
-        } else {
-          setError("خطا در دریافت مشتریان.");
-        }
-      })
-      .finally(() => {
-        if (cancelled) return;
-        setIsLoading(false);
-      });
+    const timeoutId = window.setTimeout(
+      () => {
+        void loadCustomers();
+      },
+      search.trim() ? 300 : 0,
+    );
 
     return () => {
-      cancelled = true;
+      window.clearTimeout(timeoutId);
     };
-  }, [page, search, status, type]);
+  }, [loadCustomers, search]);
 
   function resetFilters() {
     setSearch("");
@@ -141,11 +133,17 @@ export function CustomersPage() {
         );
       } else {
         await createCustomer(data);
-        setPage(1);
-        await loadCustomers();
+
+        if (page !== 1) {
+          setPage(1);
+        } else {
+          await loadCustomers();
+        }
       }
 
-      closeForm();
+      setIsFormOpen(false);
+      setEditingCustomer(null);
+      setFormError(null);
     } catch (error: unknown) {
       setFormError(
         error instanceof ApiError ? error.message : "خطا در ذخیره مشتری.",

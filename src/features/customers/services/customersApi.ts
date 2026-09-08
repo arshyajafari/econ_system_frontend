@@ -8,6 +8,10 @@ import type {
   CustomerStatus,
 } from "../types/customer";
 
+type CustomerApiPayload = Omit<CustomerFormData, "address"> & {
+  address?: CustomerFormData["address"];
+};
+
 export async function getCustomers(
   params: CustomerListParams = {},
 ): Promise<CustomerListResponse> {
@@ -68,38 +72,39 @@ export async function restoreCustomer(id: string): Promise<Customer> {
   return response.data;
 }
 
-function normalizeCustomerPayload(payload: CustomerFormData): CustomerFormData {
+function normalizeCustomerPayload(
+  payload: CustomerFormData,
+): CustomerApiPayload {
+  const province = payload.address.province.trim();
+  const city = payload.address.city.trim();
+  const address = payload.address.address.trim();
+
+  const hasAddress = Boolean(province || city || address);
+
   return {
-    ...payload,
     customer_name: payload.customer_name.trim(),
+    type: payload.type,
     owner_name: payload.owner_name.trim(),
     manager_name: payload.manager_name.trim(),
     economic_code: payload.economic_code.trim(),
     national_code: payload.national_code.trim(),
     phone_number: payload.phone_number.trim(),
     telephone_number: payload.telephone_number.trim(),
-    social_address: payload.social_address.trim(),
+    social_link: payload.social_link.trim(),
+    status: payload.status,
     description: payload.description.trim(),
-    address:
-      payload.address.province.trim() ||
-      payload.address.city.trim() ||
-      payload.address.address.trim()
-        ? {
-            ...payload.address,
-            province: payload.address.province.trim(),
-            city: payload.address.city.trim(),
-            address: payload.address.address.trim(),
+
+    ...(hasAddress
+      ? {
+          address: {
+            province,
+            city,
+            address,
             postal_code: payload.address.postal_code.trim(),
             latitude: payload.address.latitude.trim(),
             longitude: payload.address.longitude.trim(),
-          }
-        : {
-            province: "",
-            city: "",
-            address: "",
-            postal_code: "",
-            latitude: "",
-            longitude: "",
           },
+        }
+      : {}),
   };
 }

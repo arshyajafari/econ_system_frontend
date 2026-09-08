@@ -28,7 +28,7 @@ export type Customer = {
   national_code: string | null;
   phone_number: string;
   telephone_number: string | null;
-  social_address: string | null;
+  social_link: string | null;
   birth_date: string | null;
   status: CustomerStatus;
   description: string | null;
@@ -79,7 +79,7 @@ export type CustomerFormData = {
   national_code: string;
   phone_number: string;
   telephone_number: string;
-  social_address: string;
+  social_link: string;
   status: CustomerStatus;
   address: {
     province: string;

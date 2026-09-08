@@ -19,7 +19,7 @@ const emptyForm: CustomerFormData = {
   national_code: "",
   phone_number: "",
   telephone_number: "",
-  social_address: "",
+  social_link: "",
   status: "active",
   address: {
     province: "",
@@ -42,7 +42,7 @@ function customerToForm(customer: Customer): CustomerFormData {
     national_code: customer.national_code ?? "",
     phone_number: customer.phone_number,
     telephone_number: customer.telephone_number ?? "",
-    social_address: customer.social_address ?? "",
+    social_link: customer.social_link ?? "",
     status: customer.status,
     address: {
       province: customer.address?.province ?? "",
@@ -214,14 +214,41 @@ export function CustomerForm({
             />
           </Field>
 
-          <Field label="آدرس شبکه اجتماعی / ایمیل">
+          <Field label="لینک شبکه اجتماعی">
             <input
               dir="ltr"
-              type="email"
-              value={form.social_address}
-              onChange={(event) => update("social_address", event.target.value)}
+              type="url"
+              placeholder="https://..."
+              value={form.social_link}
+              onChange={(event) => update("social_link", event.target.value)}
               disabled={isSubmitting}
-              className={`${inputClass} text-right`}
+              className={`${inputClass} text-left`}
+            />
+          </Field>
+
+          <Field label="عرض جغرافیایی">
+            <input
+              dir="ltr"
+              inputMode="decimal"
+              value={form.address.latitude}
+              onChange={(event) =>
+                updateAddress("latitude", event.target.value)
+              }
+              disabled={isSubmitting}
+              className={`${inputClass} text-left`}
+            />
+          </Field>
+
+          <Field label="طول جغرافیایی">
+            <input
+              dir="ltr"
+              inputMode="decimal"
+              value={form.address.longitude}
+              onChange={(event) =>
+                updateAddress("longitude", event.target.value)
+              }
+              disabled={isSubmitting}
+              className={`${inputClass} text-left`}
             />
           </Field>
 
