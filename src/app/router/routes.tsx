@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { LoginPage } from "../../features/auth";
+import { CustomersPage } from "../../features/customers";
 import { DashboardPage } from "../../features/dashboard";
 import { DashboardLayout } from "../../layouts/DashboardLayout";
 
@@ -17,6 +18,8 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+
+          <Route path="/customers" element={<CustomersPage />} />
         </Route>
       </Route>
 

@@ -1,0 +1,105 @@
+import { apiClient } from "../../../api/client";
+
+import type {
+  Customer,
+  CustomerFormData,
+  CustomerListParams,
+  CustomerListResponse,
+  CustomerStatus,
+} from "../types/customer";
+
+export async function getCustomers(
+  params: CustomerListParams = {},
+): Promise<CustomerListResponse> {
+  const response = await apiClient.get<CustomerListResponse>("/customers", {
+    params,
+  });
+
+  return response.data;
+}
+
+export async function getCustomer(id: string): Promise<Customer> {
+  const response = await apiClient.get<Customer>(`/customers/${id}`);
+
+  return response.data;
+}
+
+export async function createCustomer(
+  payload: CustomerFormData,
+): Promise<Customer> {
+  const response = await apiClient.post<Customer>(
+    "/customers",
+    normalizeCustomerPayload(payload),
+  );
+
+  return response.data;
+}
+
+export async function updateCustomer(
+  id: string,
+  payload: CustomerFormData,
+): Promise<Customer> {
+  const response = await apiClient.put<Customer>(
+    `/customers/${id}`,
+    normalizeCustomerPayload(payload),
+  );
+
+  return response.data;
+}
+
+export async function deleteCustomer(id: string): Promise<void> {
+  await apiClient.delete(`/customers/${id}`);
+}
+
+export async function changeCustomerStatus(
+  id: string,
+  status: CustomerStatus,
+): Promise<Customer> {
+  const response = await apiClient.patch<Customer>(`/customers/${id}/status`, {
+    status,
+  });
+
+  return response.data;
+}
+
+export async function restoreCustomer(id: string): Promise<Customer> {
+  const response = await apiClient.patch<Customer>(`/customers/${id}/restore`);
+
+  return response.data;
+}
+
+function normalizeCustomerPayload(payload: CustomerFormData): CustomerFormData {
+  return {
+    ...payload,
+    customer_name: payload.customer_name.trim(),
+    owner_name: payload.owner_name.trim(),
+    manager_name: payload.manager_name.trim(),
+    economic_code: payload.economic_code.trim(),
+    national_code: payload.national_code.trim(),
+    phone_number: payload.phone_number.trim(),
+    telephone_number: payload.telephone_number.trim(),
+    social_address: payload.social_address.trim(),
+    description: payload.description.trim(),
+    address:
+      payload.address.province.trim() ||
+      payload.address.city.trim() ||
+      payload.address.address.trim()
+        ? {
+            ...payload.address,
+            province: payload.address.province.trim(),
+            city: payload.address.city.trim(),
+            address: payload.address.address.trim(),
+            postal_code: payload.address.postal_code.trim(),
+            latitude: payload.address.latitude.trim(),
+            longitude: payload.address.longitude.trim(),
+          }
+        : {
+            province: "",
+            city: "",
+            address: "",
+            postal_code: "",
+            latitude: "",
+            longitude: "",
+          },
+  };
+}
