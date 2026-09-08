@@ -1,8 +1,81 @@
-import type { DashboardRecent } from "../types/dashboard";
+import type { ReactNode } from "react";
+
+import type {
+  DashboardRecent,
+  DashboardRecentOrder,
+  DashboardRecentPayment,
+  DashboardRecentReturn,
+  DashboardRecentVisit,
+} from "../types/dashboard";
 
 type DashboardRecentSectionProps = {
   recent: DashboardRecent;
 };
+
+type RecentPanelProps = {
+  title: string;
+  children: ReactNode;
+};
+
+function RecentPanel({ title, children }: RecentPanelProps) {
+  return (
+    <section className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="border-b border-gray-200 px-5 py-4">
+        <h2 className="m-0 text-lg font-semibold text-gray-900">{title}</h2>
+      </div>
+
+      {children}
+    </section>
+  );
+}
+
+function RecentEmpty({ children }: { children: ReactNode }) {
+  return (
+    <p className="m-0 px-5 py-6 text-center text-sm text-gray-500">
+      {children}
+    </p>
+  );
+}
+
+function RecentList({ children }: { children: ReactNode }) {
+  return <div className="flex flex-col">{children}</div>;
+}
+
+function RecentListItem({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-gray-100 px-5 py-4 last:border-b-0">
+      {children}
+    </div>
+  );
+}
+
+function RecentItemContent({
+  title,
+  subtitle,
+}: {
+  title: ReactNode;
+  subtitle: ReactNode;
+}) {
+  return (
+    <div className="min-w-0">
+      <strong className="block truncate text-sm font-medium text-gray-900">
+        {title}
+      </strong>
+
+      <span className="mt-1 block truncate text-xs text-gray-500">
+        {subtitle}
+      </span>
+    </div>
+  );
+}
+
+function RecentStatus({ children }: { children: ReactNode }) {
+  return (
+    <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+      {children}
+    </span>
+  );
+}
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -27,108 +100,118 @@ function formatAmount(value: number): string {
   }).format(value);
 }
 
+function OrderItem({ order }: { order: DashboardRecentOrder }) {
+  return (
+    <RecentListItem>
+      <RecentItemContent
+        title={order.code}
+        subtitle={formatDate(order.created_at)}
+      />
+
+      <RecentStatus>{order.status ?? "—"}</RecentStatus>
+    </RecentListItem>
+  );
+}
+
+function PaymentItem({ payment }: { payment: DashboardRecentPayment }) {
+  return (
+    <RecentListItem>
+      <RecentItemContent
+        title={payment.customer?.name ?? "مشتری نامشخص"}
+        subtitle={payment.reference_number ?? "بدون شماره مرجع"}
+      />
+
+      <div className="shrink-0 text-left">
+        <strong className="block text-sm font-semibold text-gray-900">
+          {formatAmount(payment.amount)}
+        </strong>
+
+        <span className="mt-1 block text-xs text-gray-500">
+          {payment.status ?? "—"}
+        </span>
+      </div>
+    </RecentListItem>
+  );
+}
+
+function ReturnItem({ item }: { item: DashboardRecentReturn }) {
+  return (
+    <RecentListItem>
+      <RecentItemContent
+        title={item.code}
+        subtitle={formatDate(item.created_at)}
+      />
+
+      <RecentStatus>{item.status ?? "—"}</RecentStatus>
+    </RecentListItem>
+  );
+}
+
+function VisitItem({ visit }: { visit: DashboardRecentVisit }) {
+  return (
+    <RecentListItem>
+      <RecentItemContent
+        title={visit.doctor?.name ?? "پزشک نامشخص"}
+        subtitle={formatDate(visit.visit_date)}
+      />
+
+      <RecentStatus>{visit.status ?? "—"}</RecentStatus>
+    </RecentListItem>
+  );
+}
+
 export function DashboardRecentSection({
   recent,
 }: DashboardRecentSectionProps) {
   return (
-    <div className="dashboard-recent-grid">
-      <section className="dashboard-panel">
-        <div className="dashboard-panel__header">
-          <h2>آخرین سفارش‌ها</h2>
-        </div>
-
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <RecentPanel title="آخرین سفارش‌ها">
         {recent.orders.length === 0 ? (
-          <p className="dashboard-empty">سفارشی ثبت نشده است.</p>
+          <RecentEmpty>سفارشی ثبت نشده است.</RecentEmpty>
         ) : (
-          <div className="dashboard-list">
+          <RecentList>
             {recent.orders.map((order) => (
-              <div className="dashboard-list__item" key={order.id}>
-                <div>
-                  <strong>{order.code}</strong>
-                  <span>{formatDate(order.created_at)}</span>
-                </div>
-
-                <span className="dashboard-badge">{order.status ?? "—"}</span>
-              </div>
+              <OrderItem key={order.id} order={order} />
             ))}
-          </div>
+          </RecentList>
         )}
-      </section>
+      </RecentPanel>
 
-      <section className="dashboard-panel">
-        <div className="dashboard-panel__header">
-          <h2>آخرین پرداخت‌ها</h2>
-        </div>
-
+      <RecentPanel title="آخرین پرداخت‌ها">
         {recent.payments.length === 0 ? (
-          <p className="dashboard-empty">پرداختی ثبت نشده است.</p>
+          <RecentEmpty>پرداختی ثبت نشده است.</RecentEmpty>
         ) : (
-          <div className="dashboard-list">
+          <RecentList>
             {recent.payments.map((payment) => (
-              <div className="dashboard-list__item" key={payment.id}>
-                <div>
-                  <strong>{payment.customer?.name ?? "مشتری نامشخص"}</strong>
-
-                  <span>{payment.reference_number ?? "بدون شماره مرجع"}</span>
-                </div>
-
-                <div className="dashboard-list__meta">
-                  <strong>{formatAmount(payment.amount)}</strong>
-
-                  <span>{payment.status ?? "—"}</span>
-                </div>
-              </div>
+              <PaymentItem key={payment.id} payment={payment} />
             ))}
-          </div>
+          </RecentList>
         )}
-      </section>
+      </RecentPanel>
 
-      <section className="dashboard-panel">
-        <div className="dashboard-panel__header">
-          <h2>آخرین مرجوعی‌ها</h2>
-        </div>
-
+      <RecentPanel title="آخرین مرجوعی‌ها">
         {recent.returns.length === 0 ? (
-          <p className="dashboard-empty">مرجوعی ثبت نشده است.</p>
+          <RecentEmpty>مرجوعی ثبت نشده است.</RecentEmpty>
         ) : (
-          <div className="dashboard-list">
+          <RecentList>
             {recent.returns.map((item) => (
-              <div className="dashboard-list__item" key={item.id}>
-                <div>
-                  <strong>{item.code}</strong>
-                  <span>{formatDate(item.created_at)}</span>
-                </div>
-
-                <span className="dashboard-badge">{item.status ?? "—"}</span>
-              </div>
+              <ReturnItem key={item.id} item={item} />
             ))}
-          </div>
+          </RecentList>
         )}
-      </section>
+      </RecentPanel>
 
-      <section className="dashboard-panel">
-        <div className="dashboard-panel__header">
-          <h2>آخرین ویزیت‌ها</h2>
-        </div>
-
+      <RecentPanel title="آخرین ویزیت‌ها">
         {recent.visits.length === 0 ? (
-          <p className="dashboard-empty">ویزیتی ثبت نشده است.</p>
+          <RecentEmpty>ویزیتی ثبت نشده است.</RecentEmpty>
         ) : (
-          <div className="dashboard-list">
+          <RecentList>
             {recent.visits.map((visit) => (
-              <div className="dashboard-list__item" key={visit.id}>
-                <div>
-                  <strong>{visit.doctor?.name ?? "پزشک نامشخص"}</strong>
-
-                  <span>{formatDate(visit.visit_date)}</span>
-                </div>
-
-                <span className="dashboard-badge">{visit.status ?? "—"}</span>
-              </div>
+              <VisitItem key={visit.id} visit={visit} />
             ))}
-          </div>
+          </RecentList>
         )}
-      </section>
+      </RecentPanel>
     </div>
   );
 }

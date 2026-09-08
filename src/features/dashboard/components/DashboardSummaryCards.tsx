@@ -14,82 +14,72 @@ function formatAmount(value: number): string {
   }).format(value);
 }
 
+type SummaryCardProps = {
+  label: string;
+  value: string;
+};
+
+function SummaryCard({ label, value }: SummaryCardProps) {
+  return (
+    <article className="rounded-xl border border-gray-200 bg-white p-5">
+      <span className="block text-sm text-gray-500">{label}</span>
+
+      <strong className="mt-2 block text-2xl font-bold text-gray-900">
+        {value}
+      </strong>
+    </article>
+  );
+}
+
 export function DashboardSummaryCards({
   dashboard,
 }: DashboardSummaryCardsProps) {
   return (
-    <div className="dashboard-summary-grid">
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">فروش امروز</span>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <SummaryCard
+        label="فروش امروز"
+        value={formatAmount(dashboard.sales.today)}
+      />
 
-        <strong className="dashboard-card__value">
-          {formatAmount(dashboard.sales.today)}
-        </strong>
-      </article>
+      <SummaryCard
+        label="فروش ماه"
+        value={formatAmount(dashboard.sales.month)}
+      />
 
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">فروش ماه</span>
+      <SummaryCard
+        label="سفارش امروز"
+        value={formatNumber(dashboard.orders.today)}
+      />
 
-        <strong className="dashboard-card__value">
-          {formatAmount(dashboard.sales.month)}
-        </strong>
-      </article>
+      <SummaryCard
+        label="پرداخت امروز"
+        value={formatAmount(dashboard.payments.today)}
+      />
 
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">سفارش امروز</span>
+      <SummaryCard
+        label="مطالبات"
+        value={formatAmount(dashboard.receivables.total)}
+      />
 
-        <strong className="dashboard-card__value">
-          {formatNumber(dashboard.orders.today)}
-        </strong>
-      </article>
+      <SummaryCard
+        label="مرجوعی در انتظار"
+        value={formatNumber(dashboard.returns.pending)}
+      />
 
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">پرداخت امروز</span>
+      <SummaryCard
+        label="ارسال در انتظار"
+        value={formatNumber(dashboard.deliveries.pending)}
+      />
 
-        <strong className="dashboard-card__value">
-          {formatAmount(dashboard.payments.today)}
-        </strong>
-      </article>
+      <SummaryCard
+        label="ویزیت امروز"
+        value={formatNumber(dashboard.visits.today)}
+      />
 
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">مطالبات</span>
-
-        <strong className="dashboard-card__value">
-          {formatAmount(dashboard.receivables.total)}
-        </strong>
-      </article>
-
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">مرجوعی در انتظار</span>
-
-        <strong className="dashboard-card__value">
-          {formatNumber(dashboard.returns.pending)}
-        </strong>
-      </article>
-
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">ارسال در انتظار</span>
-
-        <strong className="dashboard-card__value">
-          {formatNumber(dashboard.deliveries.pending)}
-        </strong>
-      </article>
-
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">ویزیت امروز</span>
-
-        <strong className="dashboard-card__value">
-          {formatNumber(dashboard.visits.today)}
-        </strong>
-      </article>
-
-      <article className="dashboard-card">
-        <span className="dashboard-card__label">نمونه امروز</span>
-
-        <strong className="dashboard-card__value">
-          {formatNumber(dashboard.samples.today)}
-        </strong>
-      </article>
+      <SummaryCard
+        label="نمونه امروز"
+        value={formatNumber(dashboard.samples.today)}
+      />
     </div>
   );
 }

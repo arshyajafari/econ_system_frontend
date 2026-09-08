@@ -7,8 +7,6 @@ import { DashboardSummaryCards } from "../components/DashboardSummaryCards";
 import { getDashboard } from "../services/dashboardApi";
 import type { DashboardData } from "../types/dashboard";
 
-import "../dashboard.css";
-
 export function DashboardPage() {
   const { user } = useAuth();
 
@@ -73,12 +71,14 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <section className="dashboard-page">
-      <div className="dashboard-page__header">
+    <section className="space-y-6 p-4 md:p-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1>داشبورد</h1>
+          <h1 className="text-2xl font-bold text-gray-900">داشبورد</h1>
 
-          <p>خوش آمدید {user?.employee.full_name}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            خوش آمدید {user?.employee.full_name}
+          </p>
         </div>
 
         <button
@@ -87,24 +87,28 @@ export function DashboardPage() {
             void loadDashboard();
           }}
           disabled={isLoading}
+          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? "در حال بروزرسانی..." : "بروزرسانی"}
         </button>
       </div>
 
       {isLoading && !dashboard ? (
-        <div className="dashboard-state">
-          <p>در حال دریافت اطلاعات داشبورد...</p>
+        <div className="flex min-h-60 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center">
+          <p className="text-sm text-gray-500">
+            در حال دریافت اطلاعات داشبورد...
+          </p>
         </div>
       ) : error && !dashboard ? (
-        <div className="dashboard-state dashboard-state--error">
-          <p>{error}</p>
+        <div className="flex min-h-60 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center">
+          <p className="text-sm text-red-600">{error}</p>
 
           <button
             type="button"
             onClick={() => {
               void loadDashboard();
             }}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white"
           >
             تلاش مجدد
           </button>
@@ -112,8 +116,8 @@ export function DashboardPage() {
       ) : dashboard ? (
         <>
           {error ? (
-            <div className="dashboard-inline-error">
-              <span>{error}</span>
+            <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
             </div>
           ) : null}
 
@@ -122,8 +126,10 @@ export function DashboardPage() {
           <DashboardRecentSection recent={dashboard.recent} />
         </>
       ) : (
-        <div className="dashboard-state">
-          <p>اطلاعاتی برای نمایش وجود ندارد.</p>
+        <div className="flex min-h-60 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center">
+          <p className="text-sm text-gray-500">
+            اطلاعاتی برای نمایش وجود ندارد.
+          </p>
         </div>
       )}
     </section>
