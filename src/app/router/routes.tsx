@@ -1,21 +1,25 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-function HomePage() {
-  return <div>Econ System</div>;
-}
+import { LoginPage } from "../../features/auth";
+import { DashboardPage } from "../../features/dashboard";
 
-function LoginPage() {
-  return <div>Login</div>;
-}
+import { ProtectedRoute } from "./ProtectedRoute";
+import { PublicRoute } from "./PublicRoute";
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<LoginPage />} />
+      </Route>
 
-      <Route path="/" element={<HomePage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
