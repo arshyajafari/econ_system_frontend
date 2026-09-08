@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useAuth } from "../hooks/useAuth";
 import { getDeviceId } from "../../../utils/device";
+import { useAuth } from "../hooks/useAuth";
 
 type LoginLocationState = {
   from?: {
@@ -14,7 +14,6 @@ type LoginLocationState = {
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { login, isLoading } = useAuth();
 
   const [loginValue, setLoginValue] = useState("");
@@ -22,10 +21,14 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const isBusy = isSubmitting || isLoading;
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!loginValue.trim()) {
+    const normalizedLogin = loginValue.trim();
+
+    if (!normalizedLogin) {
       setError("نام کاربری را وارد کنید.");
       return;
     }
@@ -40,7 +43,7 @@ export function LoginPage() {
 
     try {
       await login({
-        login: loginValue.trim(),
+        login: normalizedLogin,
         password,
         device_id: getDeviceId(),
         platform: "web",
@@ -55,49 +58,89 @@ export function LoginPage() {
           : "/dashboard";
 
       navigate(redirectPath, { replace: true });
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "خطا در ورود به سیستم");
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error ? error.message : "خطا در ورود به سیستم.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main>
-      <h1>ورود به سیستم</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-8">
+      <section className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900">ورود به سیستم</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="login">نام کاربری</label>
-
-          <input
-            id="login"
-            value={loginValue}
-            onChange={(event) => setLoginValue(event.target.value)}
-            autoComplete="username"
-            disabled={isSubmitting || isLoading}
-          />
+          <p className="mt-2 text-sm text-gray-500">
+            برای ادامه وارد حساب کاربری خود شوید.
+          </p>
         </div>
 
-        <div>
-          <label htmlFor="password">رمز عبور</label>
+        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+          <div>
+            <label
+              htmlFor="login"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              نام کاربری
+            </label>
 
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-            disabled={isSubmitting || isLoading}
-          />
-        </div>
+            <input
+              id="login"
+              name="login"
+              type="text"
+              value={loginValue}
+              onChange={(event) => setLoginValue(event.target.value)}
+              autoComplete="username"
+              autoFocus
+              disabled={isBusy}
+              placeholder="نام کاربری"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+          </div>
 
-        {error && <p role="alert">{error}</p>}
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              رمز عبور
+            </label>
 
-        <button type="submit" disabled={isSubmitting || isLoading}>
-          {isSubmitting ? "در حال ورود..." : "ورود"}
-        </button>
-      </form>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              disabled={isBusy}
+              placeholder="رمز عبور"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+          </div>
+
+          {error ? (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700"
+            >
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isBusy}
+            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "در حال ورود..." : "ورود"}
+          </button>
+        </form>
+      </section>
     </main>
   );
 }
