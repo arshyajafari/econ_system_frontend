@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "../../features/auth";
 import { CustomersPage } from "../../features/customers";
 import { DashboardPage } from "../../features/dashboard";
+import { ProductsPage } from "../../features/products";
+
 import { DashboardLayout } from "../../layouts/DashboardLayout";
 
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -20,6 +22,8 @@ export function AppRoutes() {
           <Route path="/dashboard" element={<DashboardPage />} />
 
           <Route path="/customers" element={<CustomersPage />} />
+
+          <Route path="/products" element={<ProductsPage />} />
         </Route>
       </Route>
 

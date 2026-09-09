@@ -1,4 +1,4 @@
-export type ProductStatus = "active" | "inactive" | "discontinued" | "pending";
+export type ProductStatus = "active" | "inactive" | "pending" | "discontinued";
 
 export type ProductBrand = {
   id: string;
@@ -33,17 +33,6 @@ export type Product = {
   updated_at: string | null;
 };
 
-export type ProductFormData = {
-  brand_id: string;
-  product_category_id: string;
-  title: string;
-  barcode: string;
-  sort_order: number;
-  status: ProductStatus;
-  image: string;
-  description: string;
-};
-
 export type ProductListParams = {
   search?: string;
   brand_id?: string;
@@ -76,12 +65,23 @@ export type ProductListResponse = {
   meta: ProductPaginationMeta;
 };
 
+export type ProductFormData = {
+  brand_id: string;
+  product_category_id: string;
+  title: string;
+  barcode: string;
+  sort_order: number;
+  status: ProductStatus;
+  image: string;
+  description: string;
+};
+
 export type ProductStatusOption = {
   value: ProductStatus;
   label: string;
 };
 
-export const PRODUCT_STATUSES: ProductStatusOption[] = [
+export const PRODUCT_STATUS_OPTIONS: ProductStatusOption[] = [
   {
     value: "active",
     label: "فعال",

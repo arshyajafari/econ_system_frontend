@@ -21,6 +21,34 @@ type ProductApiPayload = {
   description?: string;
 };
 
+type ProductBrandListResponse = {
+  data: ProductBrand[];
+  links: ProductPaginationLinks;
+  meta: ProductPaginationMeta;
+};
+
+type ProductCategoryListResponse = {
+  data: ProductCategory[];
+  links: ProductPaginationLinks;
+  meta: ProductPaginationMeta;
+};
+
+type ProductPaginationMeta = {
+  current_page: number;
+  from: number | null;
+  last_page: number;
+  per_page: number;
+  to: number | null;
+  total: number;
+};
+
+type ProductPaginationLinks = {
+  first: string | null;
+  last: string | null;
+  prev: string | null;
+  next: string | null;
+};
+
 export async function getProducts(
   params: ProductListParams = {},
 ): Promise<ProductListResponse> {
@@ -75,18 +103,18 @@ export async function changeProductStatus(
   return response.data;
 }
 
-export async function getBrands(): Promise<ProductBrand[]> {
-  const response = await apiClient.get<ProductBrand[]>("/brands", {
+export async function getProductBrands(): Promise<ProductBrand[]> {
+  const response = await apiClient.get<ProductBrandListResponse>("/brands", {
     params: {
       per_page: 500,
     },
   });
 
-  return response.data;
+  return response.data.data;
 }
 
 export async function getProductCategories(): Promise<ProductCategory[]> {
-  const response = await apiClient.get<ProductCategory[]>(
+  const response = await apiClient.get<ProductCategoryListResponse>(
     "/product-categories",
     {
       params: {
@@ -95,7 +123,7 @@ export async function getProductCategories(): Promise<ProductCategory[]> {
     },
   );
 
-  return response.data;
+  return response.data.data;
 }
 
 function normalizeProductPayload(payload: ProductFormData): ProductApiPayload {
@@ -104,7 +132,7 @@ function normalizeProductPayload(payload: ProductFormData): ProductApiPayload {
     product_category_id: payload.product_category_id,
     title: payload.title.trim(),
     barcode: payload.barcode.trim() || undefined,
-    sort_order: payload.sort_order,
+    sort_order: Math.max(0, payload.sort_order),
     status: payload.status,
     image: payload.image.trim() || undefined,
     description: payload.description.trim() || undefined,
