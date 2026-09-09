@@ -37,6 +37,10 @@ export function CustomersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
+  const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
+
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
   const requestIdRef = useRef(0);
 
   const loadCustomers = useCallback(async () => {
@@ -158,7 +162,14 @@ export function CustomersPage() {
       `آیا از حذف «${customer.customer_name}» مطمئن هستید؟`,
     );
 
-    if (!confirmed) return;
+    if (!confirmed || pendingDeleteId) {
+      return;
+    }
+
+    const isLastItemOnPage = customers.length === 1;
+
+    setPendingDeleteId(customer.id);
+    setError(null);
 
     try {
       await deleteCustomer(customer.id);
@@ -168,8 +179,14 @@ export function CustomersPage() {
       );
 
       setTotal((current) => Math.max(0, current - 1));
+
+      if (isLastItemOnPage && page > 1) {
+        setPage((current) => Math.max(1, current - 1));
+      }
     } catch (error: unknown) {
       setError(error instanceof ApiError ? error.message : "خطا در حذف مشتری.");
+    } finally {
+      setPendingDeleteId(null);
     }
   }
 
@@ -177,18 +194,37 @@ export function CustomersPage() {
     customer: Customer,
     nextStatus: CustomerStatus,
   ) {
-    if (customer.status === nextStatus) return;
+    if (
+      customer.status === nextStatus ||
+      pendingStatusId ||
+      pendingDeleteId === customer.id
+    ) {
+      return;
+    }
+
+    setPendingStatusId(customer.id);
+    setError(null);
 
     try {
       const updated = await changeCustomerStatus(customer.id, nextStatus);
 
-      setCustomers((current) =>
-        current.map((item) => (item.id === updated.id ? updated : item)),
-      );
+      if (status && updated.status !== status) {
+        setCustomers((current) =>
+          current.filter((item) => item.id !== updated.id),
+        );
+
+        setTotal((current) => Math.max(0, current - 1));
+      } else {
+        setCustomers((current) =>
+          current.map((item) => (item.id === updated.id ? updated : item)),
+        );
+      }
     } catch (error: unknown) {
       setError(
         error instanceof ApiError ? error.message : "خطا در تغییر وضعیت مشتری.",
       );
+    } finally {
+      setPendingStatusId(null);
     }
   }
 
@@ -288,6 +324,8 @@ export function CustomersPage() {
       <CustomerTable
         customers={customers}
         isLoading={isLoading}
+        pendingStatusId={pendingStatusId}
+        pendingDeleteId={pendingDeleteId}
         onEdit={openEditForm}
         onDelete={(customer) => {
           void handleDelete(customer);

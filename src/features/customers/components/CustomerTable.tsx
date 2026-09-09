@@ -3,6 +3,8 @@ import type { Customer, CustomerStatus } from "../types/customer";
 type CustomerTableProps = {
   customers: Customer[];
   isLoading: boolean;
+  pendingStatusId: string | null;
+  pendingDeleteId: string | null;
   onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
@@ -26,6 +28,8 @@ const typeLabels: Record<Customer["type"], string> = {
 export function CustomerTable({
   customers,
   isLoading,
+  pendingStatusId,
+  pendingDeleteId,
   onEdit,
   onDelete,
   onStatusChange,
@@ -79,68 +83,83 @@ export function CustomerTable({
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {customers.map((customer) => (
-              <tr key={customer.id} className="hover:bg-gray-50">
-                <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
-                  {customer.code}
-                </td>
+            {customers.map((customer) => {
+              const isStatusPending = pendingStatusId === customer.id;
 
-                <td className="min-w-52 px-4 py-3 text-gray-900">
-                  {customer.customer_name}
-                </td>
+              const isDeletePending = pendingDeleteId === customer.id;
 
-                <td className="whitespace-nowrap px-4 py-3 text-gray-600">
-                  {typeLabels[customer.type]}
-                </td>
+              return (
+                <tr key={customer.id} className="hover:bg-gray-50">
+                  <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
+                    {customer.code}
+                  </td>
 
-                <td
-                  dir="ltr"
-                  className="whitespace-nowrap px-4 py-3 text-right text-gray-600"
-                >
-                  {customer.phone_number}
-                </td>
+                  <td className="min-w-52 px-4 py-3 text-gray-900">
+                    {customer.customer_name}
+                  </td>
 
-                <td className="whitespace-nowrap px-4 py-3">
-                  <select
-                    aria-label={`تغییر وضعیت ${customer.customer_name}`}
-                    value={customer.status}
-                    onChange={(event) =>
-                      onStatusChange(
-                        customer,
-                        event.target.value as CustomerStatus,
-                      )
-                    }
-                    className="rounded-full border-0 bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 outline-none"
+                  <td className="whitespace-nowrap px-4 py-3 text-gray-600">
+                    {typeLabels[customer.type]}
+                  </td>
+
+                  <td
+                    dir="ltr"
+                    className="whitespace-nowrap px-4 py-3 text-right text-gray-600"
                   >
-                    {Object.entries(statusLabels).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
+                    {customer.phone_number}
+                  </td>
 
-                <td className="whitespace-nowrap px-4 py-3">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onEdit(customer)}
-                      className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  <td className="whitespace-nowrap px-4 py-3">
+                    <select
+                      aria-label={`تغییر وضعیت ${customer.customer_name}`}
+                      value={customer.status}
+                      disabled={isStatusPending || isDeletePending}
+                      onChange={(event) =>
+                        onStatusChange(
+                          customer,
+                          event.target.value as CustomerStatus,
+                        )
+                      }
+                      className="rounded-full border-0 bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      ویرایش
-                    </button>
+                      {Object.entries(statusLabels).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
 
-                    <button
-                      type="button"
-                      onClick={() => onDelete(customer)}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50"
-                    >
-                      حذف
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    {isStatusPending ? (
+                      <span className="mr-2 text-xs text-gray-400">
+                        در حال ذخیره...
+                      </span>
+                    ) : null}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(customer)}
+                        disabled={isDeletePending || isStatusPending}
+                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        ویرایش
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onDelete(customer)}
+                        disabled={isDeletePending || isStatusPending}
+                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {isDeletePending ? "در حال حذف..." : "حذف"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
