@@ -4,6 +4,7 @@ import { LoginPage } from "../../features/auth";
 import { CustomersPage } from "../../features/customers";
 import { DashboardPage } from "../../features/dashboard";
 import { ProductsPage } from "../../features/products";
+import { OrdersPage } from "../../features/orders";
 
 import { DashboardLayout } from "../../layouts/DashboardLayout";
 
@@ -24,6 +25,8 @@ export function AppRoutes() {
           <Route path="/customers" element={<CustomersPage />} />
 
           <Route path="/products" element={<ProductsPage />} />
+
+          <Route path="/orders" element={<OrdersPage />} />
         </Route>
       </Route>
 

@@ -2,9 +2,12 @@ import { apiClient } from "../../../api/client";
 
 import type {
   Order,
+  OrderCustomerOption,
+  OrderEmployeeOption,
   OrderFormData,
   OrderListParams,
   OrderListResponse,
+  OrderProductOption,
 } from "../types/order";
 
 type OrderApiItem = {
@@ -17,9 +20,20 @@ type OrderApiItem = {
 type OrderApiPayload = {
   customer_id: string;
   sales_employee_id: string;
-  ordered_at?: string;
   description?: string;
   items: OrderApiItem[];
+};
+
+type CustomerListResponse = {
+  data: OrderCustomerOption[];
+};
+
+type EmployeeListResponse = {
+  data: OrderEmployeeOption[];
+};
+
+type ProductListResponse = {
+  data: OrderProductOption[];
 };
 
 export async function getOrders(
@@ -83,24 +97,57 @@ export async function cancelOrder(id: string): Promise<Order> {
   return response.data;
 }
 
+export async function getOrderCustomers(): Promise<OrderCustomerOption[]> {
+  const response = await apiClient.get<CustomerListResponse>("/customers", {
+    params: {
+      per_page: 500,
+    },
+  });
+
+  return response.data.data;
+}
+
+export async function getOrderEmployees(): Promise<OrderEmployeeOption[]> {
+  const response = await apiClient.get<EmployeeListResponse>("/employees", {
+    params: {
+      per_page: 500,
+    },
+  });
+
+  return response.data.data;
+}
+
+export async function getOrderProducts(): Promise<OrderProductOption[]> {
+  const response = await apiClient.get<ProductListResponse>("/products", {
+    params: {
+      status: "active",
+      per_page: 500,
+    },
+  });
+
+  return response.data.data;
+}
+
 function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload {
   return {
     customer_id: payload.customer_id,
     sales_employee_id: payload.sales_employee_id,
 
-    ...(payload.ordered_at
+    ...(payload.description.trim()
       ? {
-          ordered_at: payload.ordered_at,
+          description: payload.description.trim(),
         }
       : {}),
 
-    description: payload.description.trim() || undefined,
-
     items: payload.items.map((item) => ({
       product_id: item.product_id,
-      quantity: item.quantity,
+      quantity: Math.max(1, Math.trunc(item.quantity)),
       unit_price: Number(item.unit_price),
-      description: item.description.trim() || undefined,
+      ...(item.description.trim()
+        ? {
+            description: item.description.trim(),
+          }
+        : {}),
     })),
   };
 }

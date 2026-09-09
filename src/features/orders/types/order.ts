@@ -32,6 +32,13 @@ export type OrderItem = {
   description: string | null;
   created_at: string | null;
   updated_at: string | null;
+  allocations?: OrderItemAllocation[];
+};
+
+export type OrderItemAllocation = {
+  id: string;
+  quantity: number;
+  inventory_batch_id?: string;
 };
 
 export type Order = {
@@ -49,11 +56,33 @@ export type Order = {
   deleted_at: string | null;
 };
 
+export type OrderCustomerOption = {
+  id: string;
+  code: string;
+  customer_name: string;
+};
+
+export type OrderEmployeeOption = {
+  id: string;
+  code: string;
+  first_name: string;
+  last_name: string;
+  status: string;
+};
+
+export type OrderProductOption = {
+  id: string;
+  code: string;
+  title: string;
+};
+
 export type OrderListParams = {
   search?: string;
   status?: OrderStatus;
   customer_id?: string;
   sales_employee_id?: string;
+  ordered_from?: string;
+  ordered_to?: string;
   sort?: string;
   page?: number;
   per_page?: number;
@@ -91,7 +120,6 @@ export type OrderItemFormData = {
 export type OrderFormData = {
   customer_id: string;
   sales_employee_id: string;
-  ordered_at: string;
   description: string;
   items: OrderItemFormData[];
 };
@@ -108,7 +136,7 @@ export const ORDER_STATUS_OPTIONS: OrderStatusOption[] = [
   },
   {
     value: "pending",
-    label: "در انتظار",
+    label: "در انتظار تأیید",
   },
   {
     value: "confirmed",
@@ -123,3 +151,10 @@ export const ORDER_STATUS_OPTIONS: OrderStatusOption[] = [
     label: "تکمیل شده",
   },
 ];
+
+export function getOrderStatusLabel(status: OrderStatus): string {
+  return (
+    ORDER_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
+    status
+  );
+}

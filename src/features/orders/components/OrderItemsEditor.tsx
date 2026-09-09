@@ -1,22 +1,21 @@
-import type { OrderItemFormData } from "../types/order";
-
-type ProductOption = {
-  id: string;
-  code: string;
-  title: string;
-};
+import type { OrderItemFormData, OrderProductOption } from "../types/order";
 
 type OrderItemsEditorProps = {
   items: OrderItemFormData[];
-  products: ProductOption[];
-  disabled: boolean;
+  products: OrderProductOption[];
+  disabled?: boolean;
   onChange: (items: OrderItemFormData[]) => void;
 };
+
+const inputClass =
+  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:bg-gray-100";
+
+const numberFormatter = new Intl.NumberFormat("fa-IR");
 
 export function OrderItemsEditor({
   items,
   products,
-  disabled,
+  disabled = false,
   onChange,
 }: OrderItemsEditorProps) {
   function addItem() {
@@ -45,7 +44,7 @@ export function OrderItemsEditor({
   }
 
   function removeItem(index: number) {
-    if (items.length <= 1) {
+    if (items.length === 1) {
       return;
     }
 
@@ -59,152 +58,176 @@ export function OrderItemsEditor({
     return quantity * unitPrice;
   }
 
-  const total = items.reduce((sum, item) => sum + getItemTotal(item), 0);
-
-  const selectedProductIds = new Set(
-    items.map((item) => item.product_id).filter(Boolean),
-  );
+  const orderTotal = items.reduce((sum, item) => sum + getItemTotal(item), 0);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-900">اقلام سفارش</h3>
+    <section className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="font-semibold text-gray-900">اقلام سفارش</h3>
+
+          <p className="mt-1 text-xs text-gray-500">
+            حداقل یک محصول باید در سفارش وجود داشته باشد.
+          </p>
+        </div>
 
         <button
           type="button"
           onClick={addItem}
           disabled={disabled}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           افزودن محصول
         </button>
       </div>
 
-      <div className="space-y-3">
-        {items.map((item, index) => (
-          <div
-            key={`${index}-${item.product_id}`}
-            className="rounded-xl border border-gray-200 p-4"
-          >
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  محصول
-                </label>
+      <div className="space-y-4">
+        {items.map((item, index) => {
+          const usedProductIds = items
+            .filter((_, itemIndex) => itemIndex !== index)
+            .map((current) => current.product_id)
+            .filter(Boolean);
 
-                <select
-                  value={item.product_id}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateItem(index, {
-                      product_id: event.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900"
+          const itemTotal = getItemTotal(item);
+
+          return (
+            <div
+              key={index}
+              className="rounded-xl border border-gray-200 bg-white p-4"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-700">
+                  آیتم {numberFormatter.format(index + 1)}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => removeItem(index)}
+                  disabled={disabled || items.length === 1}
+                  className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <option value="">انتخاب محصول</option>
+                  حذف
+                </button>
+              </div>
 
-                  {products.map((product) => {
-                    const usedByAnotherItem =
-                      selectedProductIds.has(product.id) &&
-                      product.id !== item.product_id;
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Field label="محصول" required>
+                  <select
+                    value={item.product_id}
+                    onChange={(event) =>
+                      updateItem(index, {
+                        product_id: event.target.value,
+                      })
+                    }
+                    disabled={disabled}
+                    className={inputClass}
+                  >
+                    <option value="">انتخاب محصول</option>
 
-                    return (
+                    {products.map((product) => (
                       <option
                         key={product.id}
                         value={product.id}
-                        disabled={usedByAnotherItem}
+                        disabled={usedProductIds.includes(product.id)}
                       >
                         {product.title} — {product.code}
                       </option>
-                    );
-                  })}
-                </select>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field label="تعداد" required>
+                  <input
+                    dir="ltr"
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={item.quantity}
+                    onChange={(event) =>
+                      updateItem(index, {
+                        quantity: Math.max(1, Number(event.target.value) || 1),
+                      })
+                    }
+                    disabled={disabled}
+                    className={`${inputClass} text-right`}
+                  />
+                </Field>
+
+                <Field label="قیمت واحد" required>
+                  <input
+                    dir="ltr"
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={item.unit_price}
+                    onChange={(event) =>
+                      updateItem(index, {
+                        unit_price: event.target.value,
+                      })
+                    }
+                    disabled={disabled}
+                    className={`${inputClass} text-right`}
+                  />
+                </Field>
+
+                <Field label="مبلغ کل">
+                  <div
+                    dir="ltr"
+                    className="flex min-h-[42px] items-center rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm font-medium text-gray-700"
+                  >
+                    {numberFormatter.format(itemTotal)}
+                  </div>
+                </Field>
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  تعداد
-                </label>
-
-                <input
-                  type="number"
-                  min={1}
-                  value={item.quantity}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateItem(index, {
-                      quantity: Math.max(1, Number(event.target.value) || 1),
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-900"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  قیمت واحد
-                </label>
-
-                <input
-                  dir="ltr"
-                  inputMode="decimal"
-                  value={item.unit_price}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateItem(index, {
-                      unit_price: event.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-right outline-none focus:border-gray-900"
-                />
+              <div className="mt-4">
+                <Field label="توضیحات آیتم">
+                  <input
+                    value={item.description}
+                    onChange={(event) =>
+                      updateItem(index, {
+                        description: event.target.value,
+                      })
+                    }
+                    disabled={disabled}
+                    className={inputClass}
+                  />
+                </Field>
               </div>
             </div>
-
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div className="flex-1">
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  توضیحات
-                </label>
-
-                <input
-                  value={item.description}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    updateItem(index, {
-                      description: event.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-gray-900"
-                />
-              </div>
-
-              <div className="rounded-lg bg-gray-50 px-4 py-2.5 text-sm">
-                <span className="text-gray-500">مبلغ:</span>{" "}
-                <strong>{getItemTotal(item).toLocaleString("fa-IR")}</strong>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => removeItem(index)}
-                disabled={disabled || items.length <= 1}
-                className="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                حذف
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="flex justify-end rounded-xl bg-gray-50 px-5 py-4">
-        <div className="text-base">
-          <span className="text-gray-500">مبلغ کل سفارش:</span>{" "}
-          <strong className="mr-2 text-lg text-gray-900">
-            {total.toLocaleString("fa-IR")}
-          </strong>
-        </div>
+      <div className="mt-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
+        <span className="text-sm font-medium text-gray-600">مبلغ کل سفارش</span>
+
+        <strong dir="ltr" className="text-lg font-bold text-gray-900">
+          {numberFormatter.format(orderTotal)}
+        </strong>
       </div>
+    </section>
+  );
+}
+
+function Field({
+  label,
+  required = false,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+        {label}
+
+        {required ? <span className="mr-1 text-red-600">*</span> : null}
+      </label>
+
+      {children}
     </div>
   );
 }
