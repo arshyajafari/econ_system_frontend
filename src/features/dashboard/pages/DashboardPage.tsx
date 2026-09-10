@@ -11,7 +11,6 @@ export function DashboardPage() {
   const { user } = useAuth();
 
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +20,6 @@ export function DashboardPage() {
 
     try {
       const response = await getDashboard();
-
       setDashboard(response.data);
     } catch (error: unknown) {
       if (error instanceof ApiError) {
@@ -35,40 +33,8 @@ export function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    getDashboard()
-      .then((response) => {
-        if (cancelled) {
-          return;
-        }
-
-        setDashboard(response.data);
-        setError(null);
-      })
-      .catch((error: unknown) => {
-        if (cancelled) {
-          return;
-        }
-
-        if (error instanceof ApiError) {
-          setError(error.message || "خطا در دریافت اطلاعات داشبورد.");
-        } else {
-          setError("خطا در دریافت اطلاعات داشبورد.");
-        }
-      })
-      .finally(() => {
-        if (cancelled) {
-          return;
-        }
-
-        setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    void loadDashboard();
+  }, [loadDashboard]);
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -122,7 +88,6 @@ export function DashboardPage() {
           ) : null}
 
           <DashboardSummaryCards dashboard={dashboard} />
-
           <DashboardRecentSection recent={dashboard.recent} />
         </>
       ) : (
