@@ -1,12 +1,10 @@
-import type { Order, OrderStatus } from "../types/order";
+import type { Order, OrderStatusAction } from "../types/order";
 
 type OrderStatusActionsProps = {
   order: Order;
   disabled?: boolean;
   onAction: (action: OrderStatusAction) => void;
 };
-
-export type OrderStatusAction = "submit" | "confirm" | "complete" | "cancel";
 
 export function OrderStatusActions({
   order,
@@ -70,8 +68,4 @@ export function OrderStatusActions({
       ))}
     </div>
   );
-}
-
-export function canEditOrder(status: OrderStatus): boolean {
-  return status === "draft";
 }

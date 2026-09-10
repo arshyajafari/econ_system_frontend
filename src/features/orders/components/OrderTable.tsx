@@ -1,13 +1,14 @@
-import { canEditOrder, OrderStatusActions } from "./OrderStatusActions";
+import { OrderStatusActions } from "./OrderStatusActions";
 
-import type { Order } from "../types/order";
-import type { OrderStatusAction } from "./OrderStatusActions";
-import { getOrderStatusLabel } from "../types/order";
+import { canEditOrder, getOrderStatusLabel } from "../types/order";
+
+import type { Order, OrderStatusAction } from "../types/order";
 
 type OrderTableProps = {
   orders: Order[];
   isLoading: boolean;
   pendingOrderId: string | null;
+  onView: (order: Order) => void;
   onEdit: (order: Order) => void;
   onAction: (order: Order, action: OrderStatusAction) => void;
 };
@@ -65,6 +66,7 @@ export function OrderTable({
   orders,
   isLoading,
   pendingOrderId,
+  onView,
   onEdit,
   onAction,
 }: OrderTableProps) {
@@ -87,16 +89,23 @@ export function OrderTable({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="overflow-x-auto">
-        <table className="min-w-[1100px] w-full text-sm">
+        <table className="min-w-[1200px] w-full text-sm">
           <thead className="bg-gray-50 text-right text-gray-600">
             <tr>
               <th className="px-4 py-3 font-medium">سفارش</th>
+
               <th className="px-4 py-3 font-medium">مشتری</th>
+
               <th className="px-4 py-3 font-medium">کارشناس فروش</th>
+
               <th className="px-4 py-3 font-medium">وضعیت</th>
+
               <th className="px-4 py-3 font-medium">اقلام</th>
+
               <th className="px-4 py-3 font-medium">مبلغ</th>
+
               <th className="px-4 py-3 font-medium">تاریخ</th>
+
               <th className="px-4 py-3 font-medium">عملیات</th>
             </tr>
           </thead>
@@ -158,12 +167,21 @@ export function OrderTable({
 
                   <td className="px-4 py-4 align-top">
                     <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => onView(order)}
+                        disabled={isPending}
+                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        مشاهده
+                      </button>
+
                       {canEditOrder(order.status) ? (
                         <button
                           type="button"
                           onClick={() => onEdit(order)}
                           disabled={isPending}
-                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           ویرایش
                         </button>

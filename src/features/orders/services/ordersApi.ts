@@ -8,6 +8,7 @@ import type {
   OrderListParams,
   OrderListResponse,
   OrderProductOption,
+  OrderStatusAction,
 } from "../types/order";
 
 type OrderApiItem = {
@@ -97,6 +98,25 @@ export async function cancelOrder(id: string): Promise<Order> {
   return response.data;
 }
 
+export async function performOrderStatusAction(
+  id: string,
+  action: OrderStatusAction,
+): Promise<Order> {
+  switch (action) {
+    case "submit":
+      return submitOrder(id);
+
+    case "confirm":
+      return confirmOrder(id);
+
+    case "complete":
+      return completeOrder(id);
+
+    case "cancel":
+      return cancelOrder(id);
+  }
+}
+
 export async function getOrderCustomers(): Promise<OrderCustomerOption[]> {
   const response = await apiClient.get<CustomerListResponse>("/customers", {
     params: {
@@ -143,6 +163,7 @@ function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload {
       product_id: item.product_id,
       quantity: Math.max(1, Math.trunc(item.quantity)),
       unit_price: Number(item.unit_price),
+
       ...(item.description.trim()
         ? {
             description: item.description.trim(),

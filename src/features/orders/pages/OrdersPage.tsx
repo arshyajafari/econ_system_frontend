@@ -1,22 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import { ApiError } from "../../../api/client";
 
 import { OrderFilters } from "../components/OrderFilters";
 import { OrderForm } from "../components/OrderForm";
 import { OrderTable } from "../components/OrderTable";
-import type { OrderStatusAction } from "../components/OrderStatusActions";
 
 import {
-  cancelOrder,
-  completeOrder,
-  confirmOrder,
   createOrder,
   getOrderCustomers,
   getOrderEmployees,
   getOrderProducts,
   getOrders,
-  submitOrder,
+  performOrderStatusAction,
   updateOrder,
 } from "../services/ordersApi";
 
@@ -27,9 +25,12 @@ import type {
   OrderFormData,
   OrderProductOption,
   OrderStatus,
+  OrderStatusAction,
 } from "../types/order";
 
 export function OrdersPage() {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState<Order[]>([]);
 
   const [customers, setCustomers] = useState<OrderCustomerOption[]>([]);
@@ -39,15 +40,21 @@ export function OrdersPage() {
   const [products, setProducts] = useState<OrderProductOption[]>([]);
 
   const [search, setSearch] = useState("");
+
   const [status, setStatus] = useState<OrderStatus | "">("");
+
   const [customerId, setCustomerId] = useState("");
+
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
   const [page, setPage] = useState(1);
+
   const [lastPage, setLastPage] = useState(1);
+
   const [total, setTotal] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
+
   const [isLoadingLookups, setIsLoadingLookups] = useState(true);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,9 +62,11 @@ export function OrdersPage() {
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+
   const [formError, setFormError] = useState<string | null>(null);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
 
   const requestIdRef = useRef(0);
@@ -74,7 +83,9 @@ export function OrdersPage() {
         ]);
 
       setCustomers(customersResponse);
+
       setEmployees(employeesResponse);
+
       setProducts(productsResponse);
     } catch (error: unknown) {
       setError(
@@ -96,9 +107,13 @@ export function OrdersPage() {
     try {
       const response = await getOrders({
         search: search.trim() || undefined,
+
         status: status || undefined,
+
         customer_id: customerId || undefined,
+
         sales_employee_id: salesEmployeeId || undefined,
+
         page,
         per_page: 20,
       });
@@ -108,7 +123,9 @@ export function OrdersPage() {
       }
 
       setOrders(response.data);
+
       setLastPage(response.meta.last_page);
+
       setTotal(response.meta.total);
     } catch (error: unknown) {
       if (requestId !== requestIdRef.current) {
@@ -128,8 +145,49 @@ export function OrdersPage() {
   }, [customerId, page, salesEmployeeId, search, status]);
 
   useEffect(() => {
-    void loadLookups();
-  }, [loadLookups]);
+    let cancelled = false;
+
+    async function fetchLookups() {
+      try {
+        setIsLoadingLookups(true);
+
+        const [customersResponse, employeesResponse, productsResponse] =
+          await Promise.all([
+            getOrderCustomers(),
+            getOrderEmployees(),
+            getOrderProducts(),
+          ]);
+
+        if (cancelled) {
+          return;
+        }
+
+        setCustomers(customersResponse);
+        setEmployees(employeesResponse);
+        setProducts(productsResponse);
+      } catch (error: unknown) {
+        if (cancelled) {
+          return;
+        }
+
+        setError(
+          error instanceof ApiError && error.message
+            ? error.message
+            : "خطا در دریافت اطلاعات مورد نیاز سفارش.",
+        );
+      } finally {
+        if (!cancelled) {
+          setIsLoadingLookups(false);
+        }
+      }
+    }
+
+    void fetchLookups();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -231,28 +289,11 @@ export function OrdersPage() {
     }
 
     setPendingOrderId(order.id);
+
     setError(null);
 
     try {
-      let updated: Order;
-
-      switch (action) {
-        case "submit":
-          updated = await submitOrder(order.id);
-          break;
-
-        case "confirm":
-          updated = await confirmOrder(order.id);
-          break;
-
-        case "complete":
-          updated = await completeOrder(order.id);
-          break;
-
-        case "cancel":
-          updated = await cancelOrder(order.id);
-          break;
-      }
+      const updated = await performOrderStatusAction(order.id, action);
 
       if (status && updated.status !== status) {
         setOrders((current) =>
@@ -392,6 +433,9 @@ export function OrdersPage() {
         orders={orders}
         isLoading={isLoading}
         pendingOrderId={pendingOrderId}
+        onView={(order) => {
+          navigate(`/orders/${order.id}`);
+        }}
         onEdit={openEditForm}
         onAction={(order, action) => {
           void handleAction(order, action);

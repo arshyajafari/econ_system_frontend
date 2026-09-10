@@ -5,6 +5,8 @@ export type OrderStatus =
   | "cancelled"
   | "completed";
 
+export type OrderStatusAction = "submit" | "confirm" | "complete" | "cancel";
+
 export type OrderCustomer = {
   id: string;
   code: string;
@@ -23,6 +25,12 @@ export type OrderProduct = {
   title: string;
 };
 
+export type OrderItemAllocation = {
+  id: string;
+  quantity: number;
+  inventory_batch_id?: string;
+};
+
 export type OrderItem = {
   id: string;
   product: OrderProduct | null;
@@ -33,12 +41,6 @@ export type OrderItem = {
   created_at: string | null;
   updated_at: string | null;
   allocations?: OrderItemAllocation[];
-};
-
-export type OrderItemAllocation = {
-  id: string;
-  quantity: number;
-  inventory_batch_id?: string;
 };
 
 export type Order = {
@@ -157,4 +159,8 @@ export function getOrderStatusLabel(status: OrderStatus): string {
     ORDER_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
     status
   );
+}
+
+export function canEditOrder(status: OrderStatus): boolean {
+  return status === "draft";
 }
