@@ -80,6 +80,36 @@ export function DashboardSummaryCards({
         label="نمونه امروز"
         value={formatNumber(dashboard.samples.today)}
       />
+
+      <SummaryCard
+        label="موجودی کل"
+        value={formatNumber(dashboard.inventory.quantity)}
+      />
+
+      <SummaryCard
+        label="موجودی قابل فروش"
+        value={formatNumber(dashboard.inventory.available_quantity)}
+      />
+
+      <SummaryCard
+        label="موجودی رزرو شده"
+        value={formatNumber(dashboard.inventory.reserved_quantity)}
+      />
+
+      <SummaryCard
+        label="بچ‌های منقضی"
+        value={formatNumber(dashboard.inventory.expired_batches)}
+      />
+
+      <SummaryCard
+        label="بچ‌های نزدیک انقضا"
+        value={formatNumber(dashboard.inventory.near_expire_batches)}
+      />
+
+      <SummaryCard
+        label="تعداد بچ‌ها"
+        value={formatNumber(dashboard.inventory.batches)}
+      />
     </div>
   );
 }
