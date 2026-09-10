@@ -5,6 +5,11 @@ import { useAuth } from "../features/auth";
 export function DashboardLayout() {
   const { user, logout } = useAuth();
 
+  const navClass = ({ isActive }: { isActive: boolean }) =>
+    `rounded-lg px-3 py-2 text-sm font-medium ${
+      isActive ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-100"
+    }`;
+
   return (
     <div>
       <header>
@@ -30,31 +35,25 @@ export function DashboardLayout() {
         aria-label="ناوبری اصلی"
         className="border-b border-gray-200 bg-white"
       >
-        <div className="flex gap-2 px-4 py-2">
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              `rounded-lg px-3 py-2 text-sm font-medium ${
-                isActive
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`
-            }
-          >
+        <div className="flex flex-wrap gap-2 px-4 py-2">
+          <NavLink to="/dashboard" className={navClass}>
             داشبورد
           </NavLink>
 
-          <NavLink
-            to="/customers"
-            className={({ isActive }) =>
-              `rounded-lg px-3 py-2 text-sm font-medium ${
-                isActive
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`
-            }
-          >
+          <NavLink to="/customers" className={navClass}>
             مشتریان
+          </NavLink>
+
+          <NavLink to="/products" className={navClass}>
+            محصولات
+          </NavLink>
+
+          <NavLink to="/orders" className={navClass}>
+            سفارش‌ها
+          </NavLink>
+
+          <NavLink to="/payments" className={navClass}>
+            پرداخت‌ها
           </NavLink>
         </div>
       </nav>

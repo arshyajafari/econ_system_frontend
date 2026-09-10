@@ -3,8 +3,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "../../features/auth";
 import { CustomersPage } from "../../features/customers";
 import { DashboardPage } from "../../features/dashboard";
+import { OrdersPage, OrderDetailsPage } from "../../features/orders";
+import { PaymentsPage, PaymentDetailsPage } from "../../features/payments";
 import { ProductsPage } from "../../features/products";
-import { OrderDetailsPage, OrdersPage } from "../../features/orders";
 
 import { DashboardLayout } from "../../layouts/DashboardLayout";
 
@@ -29,6 +30,10 @@ export function AppRoutes() {
           <Route path="/orders" element={<OrdersPage />} />
 
           <Route path="/orders/:id" element={<OrderDetailsPage />} />
+
+          <Route path="/payments" element={<PaymentsPage />} />
+
+          <Route path="/payments/:id" element={<PaymentDetailsPage />} />
         </Route>
       </Route>
 
