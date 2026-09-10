@@ -38,6 +38,15 @@ export type DashboardSamples = {
   month: number;
 };
 
+export type DashboardInventory = {
+  batches: number;
+  quantity: number;
+  reserved_quantity: number;
+  available_quantity: number;
+  expired_batches: number;
+  near_expire_batches: number;
+};
+
 export type DashboardRecentOrder = {
   id: string;
   code: string;
@@ -90,6 +99,7 @@ export type DashboardData = {
   deliveries: DashboardDeliveries;
   visits: DashboardVisits;
   samples: DashboardSamples;
+  inventory: DashboardInventory;
   recent: DashboardRecent;
 };
 
