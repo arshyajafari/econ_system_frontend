@@ -52,6 +52,10 @@ export function DashboardLayout() {
             سفارش‌ها
           </NavLink>
 
+          <NavLink to="/order-returns" className={navClass}>
+            مرجوعی‌ها
+          </NavLink>
+
           <NavLink to="/payments" className={navClass}>
             پرداخت‌ها
           </NavLink>
