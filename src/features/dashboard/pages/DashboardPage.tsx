@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "../../../api/client";
 import { useAuth } from "../../auth";
@@ -14,7 +14,7 @@ export function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadDashboard = useCallback(async () => {
+  const loadDashboard = async () => {
     setIsLoading(true);
     setError(null);
 
@@ -30,11 +30,42 @@ export function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    void loadDashboard();
-  }, [loadDashboard]);
+    let cancelled = false;
+
+    const loadInitialDashboard = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await getDashboard();
+
+        if (!cancelled) {
+          setDashboard(response.data);
+        }
+      } catch (error: unknown) {
+        if (!cancelled) {
+          if (error instanceof ApiError) {
+            setError(error.message || "خطا در دریافت اطلاعات داشبورد.");
+          } else {
+            setError("خطا در دریافت اطلاعات داشبورد.");
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadInitialDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="space-y-6 p-4 md:p-6">
