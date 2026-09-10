@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import { ApiError } from "../../../api/client";
 import { CustomerFilters } from "../components/CustomerFilters";
 import { CustomerForm } from "../components/CustomerForm";
@@ -19,6 +21,8 @@ import type {
 } from "../types/customer";
 
 export function CustomersPage() {
+  const navigate = useNavigate();
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CustomerStatus | "">("");
@@ -332,6 +336,9 @@ export function CustomersPage() {
         }}
         onStatusChange={(customer, nextStatus) => {
           void handleStatusChange(customer, nextStatus);
+        }}
+        onViewLedger={(customer) => {
+          navigate(`/customers/${customer.id}/ledger`);
         }}
       />
 

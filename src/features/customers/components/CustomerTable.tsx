@@ -8,6 +8,7 @@ type CustomerTableProps = {
   onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
+  onViewLedger: (customer: Customer) => void;
 };
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -33,6 +34,7 @@ export function CustomerTable({
   onEdit,
   onDelete,
   onStatusChange,
+  onViewLedger,
 }: CustomerTableProps) {
   if (isLoading && customers.length === 0) {
     return (
@@ -88,6 +90,8 @@ export function CustomerTable({
 
               const isDeletePending = pendingDeleteId === customer.id;
 
+              const isPending = isStatusPending || isDeletePending;
+
               return (
                 <tr key={customer.id} className="hover:bg-gray-50">
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
@@ -113,7 +117,7 @@ export function CustomerTable({
                     <select
                       aria-label={`تغییر وضعیت ${customer.customer_name}`}
                       value={customer.status}
-                      disabled={isStatusPending || isDeletePending}
+                      disabled={isPending}
                       onChange={(event) =>
                         onStatusChange(
                           customer,
@@ -137,11 +141,20 @@ export function CustomerTable({
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-3">
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onViewLedger(customer)}
+                        disabled={isPending}
+                        className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        حساب
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => onEdit(customer)}
-                        disabled={isDeletePending || isStatusPending}
+                        disabled={isPending}
                         className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         ویرایش
@@ -150,7 +163,7 @@ export function CustomerTable({
                       <button
                         type="button"
                         onClick={() => onDelete(customer)}
-                        disabled={isDeletePending || isStatusPending}
+                        disabled={isPending}
                         className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {isDeletePending ? "در حال حذف..." : "حذف"}

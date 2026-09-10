@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { LoginPage } from "../../features/auth";
 import { CustomersPage } from "../../features/customers";
+import { CustomerLedgerPage } from "../../features/customer_ledger";
 import { DashboardPage } from "../../features/dashboard";
 import { OrdersPage, OrderDetailsPage } from "../../features/orders";
 import { PaymentsPage, PaymentDetailsPage } from "../../features/payments";
@@ -24,6 +25,11 @@ export function AppRoutes() {
           <Route path="/dashboard" element={<DashboardPage />} />
 
           <Route path="/customers" element={<CustomersPage />} />
+
+          <Route
+            path="/customers/:id/ledger"
+            element={<CustomerLedgerPage />}
+          />
 
           <Route path="/products" element={<ProductsPage />} />
 
