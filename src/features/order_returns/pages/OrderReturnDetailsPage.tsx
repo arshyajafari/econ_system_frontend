@@ -364,10 +364,11 @@ export function OrderReturnDetailsPage() {
         ? orderReturn.items.map((item) => (
             <OrderReturnAllocationForm
               key={item.id}
-              orderReturn={orderReturn}
               item={item}
               disabled={pendingAction !== null}
-              onUpdated={setOrderReturn}
+              onSaved={() => {
+                void loadOrderReturn();
+              }}
             />
           ))
         : null}
