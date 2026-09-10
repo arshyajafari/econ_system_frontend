@@ -130,6 +130,7 @@ export async function getOrderCustomers(): Promise<OrderCustomerOption[]> {
 export async function getOrderEmployees(): Promise<OrderEmployeeOption[]> {
   const response = await apiClient.get<EmployeeListResponse>("/employees", {
     params: {
+      status: "active",
       per_page: 500,
     },
   });
