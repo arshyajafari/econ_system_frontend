@@ -1,18 +1,43 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { getReport } from "../services/reportApi";
 import type { ReportData } from "../types/report";
 
 const money = (value: number) => new Intl.NumberFormat("fa-IR").format(value);
-const today = new Date().toISOString().slice(0, 10);
-const monthStart = `${today.slice(0, 8)}01`;
+
+function getLocalDateString(date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export function ReportsPage() {
-  const [from, setFrom] = useState(monthStart); const [to, setTo] = useState(today);
-  const [report, setReport] = useState<ReportData | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
+  const today = getLocalDateString();
+  const monthStart = `${today.slice(0, 8)}01`;
+  const [from, setFrom] = useState(monthStart);
+  const [to, setTo] = useState(today);
+  const [report, setReport] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  async function loadReport(start: string, end: string) { setLoading(true); setError(null); try { const response = await getReport(start, end); setReport(response.data); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در دریافت گزارش."); } finally { setLoading(false); } }
-  useEffect(() => { void loadReport(monthStart, today); }, []);
+  const loadReport = useCallback(async (start: string, end: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await getReport(start, end);
+      setReport(response);
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در دریافت گزارش.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadReport(monthStart, today);
+  }, [loadReport, monthStart, today]);
 
   return <section className="space-y-6 p-4 md:p-6">
     <header><h1 className="text-2xl font-bold">گزارش‌ها</h1><p className="text-sm text-gray-500">گزارش فروش، پرداخت، سفارش و مرجوعی در بازه انتخابی</p></header>
