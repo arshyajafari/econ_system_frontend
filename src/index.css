@@ -1,45 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Arial, Tahoma, sans-serif;
-
+  font-family: Tahoma, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color: #111827;
-  background: #ffffff;
-
+  color: #0f172a;
+  background: #f6f8fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --page-bg: #f6f8fb;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --muted: #64748b;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body,
-#root {
+html, body, #root {
   min-height: 100%;
   margin: 0;
 }
 
+html { background: var(--page-bg); }
+
 body {
   min-width: 320px;
   min-height: 100vh;
+  background: var(--page-bg);
+  color: #0f172a;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+::selection {
+  background: #dbeafe;
+  color: #1e3a8a;
 }
 
-button {
-  cursor: pointer;
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Keep the existing feature pages visually consistent while they migrate to the shared design tokens. */
+.bg-gray-900 { background-color: var(--primary) !important; }
+.hover\\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
+.focus\\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
+
+input, textarea, select {
+  border-radius: 0.75rem;
 }
 
-button:disabled {
-  cursor: not-allowed;
+@media (max-width: 639px) {
+  body { overflow-x: hidden; }
 }
