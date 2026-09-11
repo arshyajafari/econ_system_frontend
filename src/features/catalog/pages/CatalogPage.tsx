@@ -13,7 +13,7 @@ export function CatalogPage() {
   const [editingBrand, setEditingBrand] = useState<string | null>(null); const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => { setLoading(true); setError(null); try { const [b, c] = await Promise.all([getBrands({ per_page: 500 }), getCategories({ per_page: 500 })]); setBrands(b.data); setCategories(c.data); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در دریافت برندها و دسته‌بندی‌ها."); } finally { setLoading(false); } }, []);
+  const load = useCallback(async () => { setLoading(true); setError(null); try { const [b, c] = await Promise.all([getBrands({ per_page: 100 }), getCategories({ per_page: 100 })]); setBrands(b.data); setCategories(c.data); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در دریافت برندها و دسته‌بندی‌ها."); } finally { setLoading(false); } }, []);
   useEffect(() => { const t = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(t); }, [load]);
 
   const filteredBrands = brands.filter((b) => `${b.title} ${b.code}`.toLocaleLowerCase().includes(brandSearch.trim().toLocaleLowerCase()));
