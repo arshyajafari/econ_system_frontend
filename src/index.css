@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Tahoma, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: Vazirmatn, "Segoe UI", Tahoma, Arial, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
   color: #0f172a;
   background: #f6f8fb;
@@ -10,10 +10,16 @@
   text-rendering: optimizeLegibility;
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
+  --primary-soft: #eff6ff;
   --page-bg: #f6f8fb;
   --surface: #ffffff;
   --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --muted: #64748b;
+  --text: #0f172a;
+  --text-soft: #475569;
+  --radius: 0.75rem;
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 14px rgb(15 23 42 / 0.03);
 }
 
 * { box-sizing: border-box; }
@@ -29,7 +35,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: var(--page-bg);
-  color: #0f172a;
+  color: var(--text);
 }
 
 button, input, textarea, select { font: inherit; }
@@ -46,15 +52,170 @@ button:disabled { cursor: not-allowed; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* Keep the existing feature pages visually consistent while they migrate to the shared design tokens. */
-.bg-gray-900 { background-color: var(--primary) !important; }
-.hover\\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
-.focus\\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
+/* Shared business-system visual language. Feature pages keep their logic and inherit these presentation rules. */
+main section.space-y-6 {
+  max-width: 1600px;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1rem, 2vw, 2rem) 2rem;
+}
 
-input, textarea, select {
-  border-radius: 0.75rem;
+main section.space-y-6 > div:first-child h1 {
+  letter-spacing: -0.025em;
+}
+
+main section.space-y-6 > div:first-child p {
+  color: var(--muted) !important;
+}
+
+/* Primary and secondary actions */
+main section button.rounded-lg {
+  border-radius: var(--radius) !important;
+  min-height: 42px;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+main section button.bg-gray-900 {
+  background: var(--primary) !important;
+  box-shadow: 0 6px 16px rgb(37 99 235 / 0.14);
+}
+
+main section button.bg-gray-900:hover {
+  background: var(--primary-dark) !important;
+  box-shadow: 0 8px 20px rgb(37 99 235 / 0.18);
+}
+
+main section button.border-gray-300 {
+  border-color: var(--border-strong) !important;
+  background: var(--surface);
+}
+
+main section button.border-gray-300:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Forms and filters */
+main section input,
+main section textarea,
+main section select {
+  border-radius: var(--radius) !important;
+  border-color: var(--border) !important;
+  background: #fff !important;
+  color: var(--text);
+  min-height: 42px;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+main section input:focus,
+main section textarea:focus,
+main section select:focus {
+  border-color: #93c5fd !important;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08) !important;
+  outline: none;
+}
+
+main section label {
+  color: var(--text-soft);
+}
+
+/* Reusable surface/card treatment used throughout list and form pages. */
+main section .rounded-lg.border.border-gray-200.bg-white,
+main section .rounded-xl.border.border-gray-200.bg-white,
+main section .rounded-lg.border.border-gray-300.bg-white,
+main section .rounded-xl.border.border-gray-300.bg-white {
+  border-color: var(--border) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-sm);
+}
+
+main section .bg-gray-50 {
+  background: #f8fafc !important;
+}
+
+/* Tables: dense enough for business work, spacious enough to scan. */
+main section .overflow-x-auto {
+  border-radius: 14px;
+  scrollbar-width: thin;
+}
+
+main section table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 720px;
+}
+
+main section table thead {
+  background: #f8fafc;
+}
+
+main section table th {
+  color: #64748b !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+main section table th,
+main section table td {
+  border-color: #eef2f7 !important;
+}
+
+main section table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+main section table tbody tr:hover {
+  background: #f8fafc !important;
+}
+
+/* Status badges remain compact and calm. */
+main section span.rounded-full {
+  white-space: nowrap;
+}
+
+/* Error surfaces */
+main section [role="alert"] {
+  border: 1px solid #fecaca;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+/* Pagination */
+main section > div:last-child button.border-gray-300 {
+  min-width: 82px;
 }
 
 @media (max-width: 639px) {
   body { overflow-x: hidden; }
+
+  main section.space-y-6 {
+    padding: 1rem 0.875rem 1.5rem;
+  }
+
+  main section.space-y-6 > div:first-child {
+    gap: 0.75rem;
+  }
+
+  main section.space-y-6 > div:first-child h1 {
+    font-size: 1.375rem;
+  }
+
+  main section.space-y-6 > div:first-child > div:last-child {
+    width: 100%;
+  }
+
+  main section.space-y-6 > div:first-child > div:last-child > button {
+    flex: 1;
+  }
+
+  main section table {
+    min-width: 680px;
+  }
 }
+
+/* Keep the dashboard-specific primary tokens available to its existing components. */
+.bg-gray-900 { background-color: var(--primary) !important; }
+.hover\\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
+.focus\\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
