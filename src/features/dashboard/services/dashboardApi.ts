@@ -1,8 +1,8 @@
 import { apiClient } from "../../../api/client";
-import type { DashboardResponse } from "../types/dashboard";
+import type { DashboardData } from "../types/dashboard";
 
-export async function getDashboard(): Promise<DashboardResponse> {
-  const response = await apiClient.get<DashboardResponse>("/dashboard");
+export async function getDashboard(): Promise<DashboardData> {
+  const response = await apiClient.get<{ data: DashboardData }>("/dashboard");
 
-  return response.data;
+  return response.data.data;
 }
