@@ -1,3 +1,17 @@
-import { NavLink,Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../features/auth";
-export function DashboardLayout(){const{user,logout}=useAuth();const navClass=({isActive}:{isActive:boolean})=>`rounded-lg px-3 py-2 text-sm font-medium ${isActive?"bg-gray-900 text-white":"text-gray-600 hover:bg-gray-100"}`;return <div><header className="flex items-center justify-between px-4 py-3"><strong>Econ System</strong><div className="flex items-center gap-3"><span>{user?.employee.full_name}</span><button type="button" onClick={()=>void logout()}>خروج</button></div></header><nav aria-label="ناوبری اصلی" className="border-b bg-white"><div className="flex flex-wrap gap-2 px-4 py-2"><NavLink to="/dashboard" className={navClass}>داشبورد</NavLink><NavLink to="/customers" className={navClass}>مشتریان</NavLink><NavLink to="/doctors" className={navClass}>پزشکان</NavLink><NavLink to="/products" className={navClass}>محصولات</NavLink><NavLink to="/orders" className={navClass}>سفارش‌ها</NavLink><NavLink to="/visits" className={navClass}>بازدیدها</NavLink><NavLink to="/deliveries" className={navClass}>ارسال‌ها</NavLink><NavLink to="/inventory" className={navClass}>موجودی</NavLink><NavLink to="/order-returns" className={navClass}>مرجوعی‌ها</NavLink><NavLink to="/payments" className={navClass}>پرداخت‌ها</NavLink></div></nav><main><Outlet/></main></div>}
+
+export function DashboardLayout() {
+  const { user, logout } = useAuth();
+  const navClass = ({ isActive }: { isActive: boolean }) => `rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-100"}`;
+
+  return (
+    <div>
+      <header className="flex items-center justify-between px-4 py-3"><strong>Econ System</strong><div className="flex items-center gap-3"><span>{user?.employee.full_name}</span><button type="button" onClick={() => void logout()}>خروج</button></div></header>
+      <nav aria-label="ناوبری اصلی" className="border-b bg-white"><div className="flex flex-wrap gap-2 px-4 py-2">
+        <NavLink to="/dashboard" className={navClass}>داشبورد</NavLink><NavLink to="/customers" className={navClass}>مشتریان</NavLink><NavLink to="/doctors" className={navClass}>پزشکان</NavLink><NavLink to="/products" className={navClass}>محصولات</NavLink><NavLink to="/orders" className={navClass}>سفارش‌ها</NavLink><NavLink to="/visits" className={navClass}>بازدیدها</NavLink><NavLink to="/samples" className={navClass}>نمونه‌ها</NavLink><NavLink to="/deliveries" className={navClass}>ارسال‌ها</NavLink><NavLink to="/inventory" className={navClass}>موجودی</NavLink><NavLink to="/order-returns" className={navClass}>مرجوعی‌ها</NavLink><NavLink to="/payments" className={navClass}>پرداخت‌ها</NavLink>
+      </div></nav>
+      <main><Outlet /></main>
+    </div>
+  );
+}
