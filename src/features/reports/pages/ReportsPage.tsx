@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { getReport } from "../services/reportApi";
 import type { ReportData } from "../types/report";
@@ -18,10 +18,10 @@ export function ReportsPage() {
   const [from, setFrom] = useState(monthStart);
   const [to, setTo] = useState(today);
   const [report, setReport] = useState<ReportData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadReport = useCallback(async (start: string, end: string) => {
+  async function loadReport(start: string, end: string) {
     setLoading(true);
     setError(null);
 
@@ -33,11 +33,15 @@ export function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }
 
   useEffect(() => {
-    void loadReport(monthStart, today);
-  }, [loadReport, monthStart, today]);
+    const timer = window.setTimeout(() => {
+      void loadReport(monthStart, today);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [monthStart, today]);
 
   return <section className="space-y-6 p-4 md:p-6">
     <header><h1 className="text-2xl font-bold">گزارش‌ها</h1><p className="text-sm text-gray-500">گزارش فروش، پرداخت، سفارش و مرجوعی در بازه انتخابی</p></header>
