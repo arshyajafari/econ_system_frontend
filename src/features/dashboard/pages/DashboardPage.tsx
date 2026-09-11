@@ -20,7 +20,7 @@ export function DashboardPage() {
 
     try {
       const response = await getDashboard();
-      setDashboard(response.data);
+      setDashboard(response);
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setError(error.message || "خطا در دریافت اطلاعات داشبورد.");
@@ -43,7 +43,7 @@ export function DashboardPage() {
         const response = await getDashboard();
 
         if (!cancelled) {
-          setDashboard(response.data);
+          setDashboard(response);
         }
       } catch (error: unknown) {
         if (!cancelled) {
