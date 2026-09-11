@@ -47,7 +47,6 @@ export function LoginPage() {
         password,
         device_id: getDeviceId(),
         platform: "web",
-        platform_version: navigator.userAgent,
       });
 
       const state = location.state as LoginLocationState | null;
