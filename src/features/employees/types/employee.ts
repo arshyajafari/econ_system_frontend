@@ -1,0 +1,11 @@
+export type EmployeeStatus = "active" | "inactive" | "terminated" | "retired";
+export type EmploymentType = "full_time" | "part_time" | "contract" | "temporary";
+export type Gender = "male" | "female";
+export type EmployeeAddress = { province: string; city: string; address: string; postal_code: string | null; latitude: number | null; longitude: number | null };
+export type EmployeeUser = { id: string; name?: string | null; email?: string | null };
+export type Employee = { id: string; code: string; first_name: string; last_name: string; national_code: string; phone_number: string; social_link: string | null; email: string | null; gender: Gender; birth_date: string | null; employment_type: EmploymentType; hire_date: string | null; termination_date: string | null; status: EmployeeStatus; description: string | null; address: EmployeeAddress | null; user: EmployeeUser | null; created_at: string | null; updated_at: string | null; deleted_at: string | null };
+export type EmployeeListParams = { search?: string; status?: EmployeeStatus; gender?: Gender; employment_type?: EmploymentType; sort?: string; page?: number; per_page?: number };
+export type EmployeeListResponse = { data: Employee[]; links: { first: string | null; last: string | null; prev: string | null; next: string | null }; meta: { current_page: number; last_page: number; total: number; per_page: number } };
+export type EmployeeFormData = { first_name: string; last_name: string; national_code: string; phone_number: string; social_link: string; email: string; gender: Gender; birth_date: string; employment_type: EmploymentType; hire_date: string; termination_date: string; status: EmployeeStatus; address: { province: string; city: string; address: string; postal_code: string; latitude: string; longitude: string }; description: string };
+export const EMPLOYEE_STATUS_OPTIONS: Array<{ value: EmployeeStatus; label: string }> = [{ value: "active", label: "فعال" }, { value: "inactive", label: "غیرفعال" }, { value: "terminated", label: "فسخ شده" }, { value: "retired", label: "بازنشسته" }];
+export const EMPLOYMENT_TYPE_OPTIONS: Array<{ value: EmploymentType; label: string }> = [{ value: "full_time", label: "تمام وقت" }, { value: "part_time", label: "نیم وقت" }, { value: "contract", label: "قراردادی" }, { value: "temporary", label: "موقت" }];
