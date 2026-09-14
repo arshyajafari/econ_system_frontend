@@ -3,9 +3,9 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getUnreadNotificationCount } from "../features/notifications/api/notifications";
 import { useAuth } from "../features/auth";
 
-type IconName = "dashboard" | "reports" | "customers" | "doctors" | "employees" | "catalog" | "products" | "orders" | "invoices" | "plus" | "visits" | "samples" | "deliveries" | "inventory" | "returns" | "payments";
+type IconName = "dashboard" | "reports" | "customers" | "doctors" | "employees" | "catalog" | "products" | "orders" | "invoices" | "visits" | "samples" | "deliveries" | "inventory" | "returns" | "payments";
 const navigation: Array<{ label: string; to: string; icon: IconName }> = [
-  { label: "داشبورد", to: "/dashboard", icon: "dashboard" }, { label: "گزارش‌ها", to: "/reports", icon: "reports" }, { label: "مشتریان", to: "/customers", icon: "customers" }, { label: "پزشکان", to: "/doctors", icon: "doctors" }, { label: "کارکنان", to: "/employees", icon: "employees" }, { label: "برندها و دسته‌بندی‌ها", to: "/catalog", icon: "catalog" }, { label: "محصولات", to: "/products", icon: "products" }, { label: "سفارش‌ها", to: "/orders", icon: "orders" }, { label: "فاکتورها", to: "/invoices", icon: "invoices" }, { label: "ثبت فاکتور", to: "/invoices/new", icon: "plus" }, { label: "ویزیت‌ها", to: "/visits", icon: "visits" }, { label: "نمونه‌ها", to: "/samples", icon: "samples" }, { label: "ارسال‌ها", to: "/deliveries", icon: "deliveries" }, { label: "موجودی", to: "/inventory", icon: "inventory" }, { label: "مرجوعی‌ها", to: "/order-returns", icon: "returns" }, { label: "پرداخت‌ها", to: "/payments", icon: "payments" },
+  { label: "داشبورد", to: "/dashboard", icon: "dashboard" }, { label: "گزارش‌ها", to: "/reports", icon: "reports" }, { label: "مشتریان", to: "/customers", icon: "customers" }, { label: "پزشکان", to: "/doctors", icon: "doctors" }, { label: "کارکنان", to: "/employees", icon: "employees" }, { label: "برندها و دسته‌بندی‌ها", to: "/catalog", icon: "catalog" }, { label: "محصولات", to: "/products", icon: "products" }, { label: "سفارش‌ها", to: "/orders", icon: "orders" }, { label: "فاکتورها", to: "/invoices", icon: "invoices" }, { label: "ویزیت‌ها", to: "/visits", icon: "visits" }, { label: "نمونه‌ها", to: "/samples", icon: "samples" }, { label: "ارسال‌ها", to: "/deliveries", icon: "deliveries" }, { label: "موجودی", to: "/inventory", icon: "inventory" }, { label: "مرجوعی‌ها", to: "/order-returns", icon: "returns" }, { label: "پرداخت‌ها", to: "/payments", icon: "payments" },
 ];
 
 function Icon({ name, size = 20 }: { name: IconName | "bell" | "search" | "menu" | "chevron-left" | "chevron-right"; size?: number }) {
@@ -20,7 +20,6 @@ function Icon({ name, size = 20 }: { name: IconName | "bell" | "search" | "menu"
     products: <><path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="M4 7v10l8 4 8-4V7" /><path d="M12 11v10" /></>,
     orders: <><circle cx="9" cy="19" r="1.5" /><circle cx="18" cy="19" r="1.5" /><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.5L21 8H6" /></>,
     invoices: <><path d="M6 3h9l3 3v15H6z" /><path d="M15 3v4h4M9 12h6M9 16h6M9 8h2" /></>,
-    plus: <><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></>,
     visits: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
     samples: <><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 17l-5-9V3" /><path d="M8 15h8" /></>,
     deliveries: <><path d="M3 6h11v11H3z" /><path d="M14 10h4l3 3v4h-7z" /><circle cx="7" cy="19" r="2" /><circle cx="18" cy="19" r="2" /></>,
