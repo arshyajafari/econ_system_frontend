@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
+import { formatJalaliDate } from "../../../utils/date";
 import { getReport } from "../services/reportApi";
 import type { ReportData } from "../types/report";
 
@@ -19,7 +20,7 @@ export function ReportsPage() {
     {loading && !report ? <div className="rounded-xl border border-dashed p-10 text-center text-sm text-gray-500">در حال دریافت گزارش...</div> : report ? <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">{[["فروش نهایی", money(report.sales.total), true],["تعداد فاکتور", money(report.sales.invoice_count), false],["دریافت تأییدشده", money(report.payments.total), true],["سفارش‌ها", money(report.orders.total), false],["مبلغ مرجوعی", money(report.returns.amount), true]].map(([label, value, unit]) => <div key={label as string} className="rounded-xl border bg-white p-4"><div className="text-xs text-gray-500">{label}</div><div className="mt-2 text-xl font-bold">{value}</div>{unit ? <div className="mt-1 text-xs text-gray-400">تومان</div> : null}</div>)}</div>
       <div className="grid gap-6 xl:grid-cols-2"><div className="rounded-xl border bg-white p-4"><h2 className="mb-4 font-semibold">خلاصه مالی</h2><dl className="space-y-3 text-sm">{[["جمع قبل از تخفیف", report.sales.subtotal],["تخفیف", report.sales.discount],["مالیات", report.sales.tax],["فروش نهایی", report.sales.total],["کل مطالبات", report.receivables.total]].map(([label, value]) => <div key={label as string} className="flex justify-between border-b pb-2"><dt>{label}</dt><dd className="font-medium">{money(value as number)} تومان</dd></div>)}</dl></div><div className="rounded-xl border bg-white p-4"><h2 className="mb-4 font-semibold">پرفروش‌ترین محصولات</h2>{report.top_products.length === 0 ? <p className="text-sm text-gray-500">داده‌ای وجود ندارد.</p> : <div className="divide-y">{report.top_products.map((product, index) => <div key={product.id} className="flex items-center justify-between gap-3 py-3 text-sm"><div><span className="ml-2 text-gray-400">{index + 1}</span><span className="font-medium">{product.title}</span><span className="mr-2 text-xs text-gray-400">{product.code}</span></div><div className="text-left"><div>{money(product.total_amount)} تومان</div><div className="text-xs text-gray-400">{money(product.quantity)} عدد</div></div></div>)}</div>}</div></div>
-      <div className="rounded-xl border bg-white p-4 text-sm text-gray-600">بازه گزارش: <strong>{report.period.from}</strong> تا <strong>{report.period.to}</strong> · {money(report.orders.completed)} سفارش تکمیل‌شده · {money(report.returns.count)} مرجوعی تأییدشده · {money(report.payments.count)} پرداخت تأییدشده</div>
+      <div className="rounded-xl border bg-white p-4 text-sm text-gray-600">بازه گزارش: <strong>{formatJalaliDate(report.period.from)}</strong> تا <strong>{formatJalaliDate(report.period.to)}</strong> · {money(report.orders.completed)} سفارش تکمیل‌شده · {money(report.returns.count)} مرجوعی تأییدشده · {money(report.payments.count)} پرداخت تأییدشده</div>
     </> : null}
   </section>;
 }
