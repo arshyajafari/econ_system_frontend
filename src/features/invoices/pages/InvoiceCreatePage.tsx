@@ -16,7 +16,7 @@ export function InvoiceCreatePage() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const response = await getOrders({ status: "completed", per_page: 500, page: 1 });
+      const response = await getOrders({ status: "completed", per_page: 100, page: 1 });
       setOrders(response.data);
     } catch (e: unknown) {
       setError(e instanceof ApiError && e.message ? e.message : "خطا در دریافت سفارش‌های تکمیل‌شده.");
