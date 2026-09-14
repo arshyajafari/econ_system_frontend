@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../../api/client";
+import { formatJalaliDate } from "../../../utils/date";
 import { getInvoices } from "../services/invoicesApi";
 import type { Invoice, InvoiceListParams, InvoiceStatus } from "../types/invoice";
 import { invoiceStatusLabel } from "../types/invoice";
@@ -50,7 +51,10 @@ export function InvoicesPage() {
     <section className="space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div><h1 className="text-2xl font-bold text-gray-900">فاکتورها</h1><p className="mt-1 text-sm text-gray-500">مدیریت فاکتورهای صادرشده از سفارش‌ها</p></div>
-        <button type="button" onClick={() => void load()} disabled={loading} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بروزرسانی</button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => navigate("/invoices/new")} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700">ثبت فاکتور</button>
+          <button type="button" onClick={() => void load()} disabled={loading} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بروزرسانی</button>
+        </div>
       </div>
 
       {error ? <div role="alert" className="flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"><span>{error}</span><button type="button" onClick={() => void load()} className="rounded border border-red-200 px-3 py-1.5">تلاش مجدد</button></div> : null}
@@ -70,7 +74,7 @@ export function InvoicesPage() {
           <tbody className="divide-y divide-gray-100">
             {loading ? <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">در حال دریافت فاکتورها...</td></tr> : null}
             {!loading && invoices.length === 0 ? <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">فاکتوری پیدا نشد.</td></tr> : null}
-            {!loading ? invoices.map((invoice) => <tr key={invoice.id} className="hover:bg-gray-50"><td className="px-5 py-4 font-medium text-gray-900">{invoice.code}</td><td className="px-5 py-4">{invoice.customer?.name ?? "—"}</td><td className="px-5 py-4">{invoice.order?.code ?? "—"}</td><td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(invoice.status)}`}>{invoiceStatusLabel(invoice.status)}</span></td><td dir="ltr" className="px-5 py-4 font-medium">{money(invoice.total_amount)}</td><td className="px-5 py-4">{invoice.due_date ?? "—"}</td><td className="px-5 py-4 text-left"><button type="button" onClick={() => navigate(`/invoices/${invoice.id}`)} className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50">مشاهده</button></td></tr>) : null}
+            {!loading ? invoices.map((invoice) => <tr key={invoice.id} className="hover:bg-gray-50"><td className="px-5 py-4 font-medium text-gray-900">{invoice.code}</td><td className="px-5 py-4">{invoice.customer?.name ?? "—"}</td><td className="px-5 py-4">{invoice.order?.code ?? "—"}</td><td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(invoice.status)}`}>{invoiceStatusLabel(invoice.status)}</span></td><td dir="ltr" className="px-5 py-4 font-medium">{money(invoice.total_amount)}</td><td className="px-5 py-4">{formatJalaliDate(invoice.due_date)}</td><td className="px-5 py-4 text-left"><button type="button" onClick={() => navigate(`/invoices/${invoice.id}`)} className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50">مشاهده</button></td></tr>) : null}
           </tbody>
         </table>
       </div>
