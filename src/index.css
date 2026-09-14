@@ -86,5 +86,5 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .bg-gray-900 { background-color: var(--primary) !important; }
-.hover\\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
-.focus\\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
+.hover\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
+.focus\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
