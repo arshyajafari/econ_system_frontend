@@ -14,7 +14,7 @@ export function CatalogPage() {
   const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => { setLoading(true); setError(null); try { const [b, c] = await Promise.all([getBrands({ per_page: 100 }), getCategories({ per_page: 100 })]); setBrands(b.data); setCategories(c.data); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در دریافت برندها و دسته‌بندی‌ها."); } finally { setLoading(false); } }, []);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
   const filteredBrands = brands.filter((b) => `${b.title} ${b.code}`.toLocaleLowerCase().includes(brandSearch.trim().toLocaleLowerCase()));
   const filteredCategories = categories.filter((c) => `${c.title} ${c.code}`.toLocaleLowerCase().includes(categorySearch.trim().toLocaleLowerCase()));
   const parentOptions = categories.filter((c) => c.id !== editingCategory);
