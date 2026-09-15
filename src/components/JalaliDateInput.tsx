@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   gregorianStringToJalali,
   gregorianToJalali,
@@ -82,6 +82,7 @@ export function JalaliDateInput({
   placeholder = "۱۴۰۵/۰۶/۲۳",
 }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const calendarId = useId();
   const [draft, setDraft] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const today = getTodayJalali();
@@ -163,9 +164,8 @@ export function JalaliDateInput({
     setCalendarMonth(nextMonth);
   }
 
-  function goToToday() {
-    setCalendarYear(today[0]);
-    setCalendarMonth(today[1]);
+  function selectToday() {
+    selectDate(today[0], today[1], today[2]);
   }
 
   const monthDays = getMonthDays(calendarYear, calendarMonth);
@@ -193,15 +193,17 @@ export function JalaliDateInput({
           className={`w-full pl-11 ${className}`}
           aria-label="تاریخ جلالی"
           aria-haspopup="dialog"
+          aria-controls={calendarId}
           aria-expanded={isOpen}
         />
         <button
           type="button"
-          tabIndex={-1}
           onClick={openCalendar}
           disabled={disabled}
           aria-label="باز کردن تقویم جلالی"
-          className="absolute left-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-controls={calendarId}
+          aria-expanded={isOpen}
+          className="absolute left-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -213,6 +215,7 @@ export function JalaliDateInput({
 
       {isOpen && (
         <div
+          id={calendarId}
           role="dialog"
           aria-label="تقویم جلالی"
           className="absolute left-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
@@ -220,50 +223,54 @@ export function JalaliDateInput({
           <div className="mb-3 flex items-center justify-between gap-2">
             <button
               type="button"
-              onClick={() => changeMonth(1)}
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-              aria-label="ماه بعد"
-            >
-              <span aria-hidden="true">›</span>
-            </button>
-            <button
-              type="button"
-              onClick={goToToday}
-              className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-            >
-              {monthNames[calendarMonth - 1]} {toPersianDigits(calendarYear)}
-            </button>
-            <button
-              type="button"
               onClick={() => changeMonth(-1)}
-              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
               aria-label="ماه قبل"
             >
               <span aria-hidden="true">‹</span>
+            </button>
+            <div
+              className="min-w-0 px-2 text-center text-sm font-semibold text-slate-800"
+              aria-live="polite"
+            >
+              {monthNames[calendarMonth - 1]} {toPersianDigits(calendarYear)}
+            </div>
+            <button
+              type="button"
+              onClick={() => changeMonth(1)}
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              aria-label="ماه بعد"
+            >
+              <span aria-hidden="true">›</span>
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400">
             {weekDays.map((day) => (
-              <div key={day} className="py-1.5">
+              <div key={day} className="py-1.5" aria-hidden="true">
                 {day}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-1" role="grid" aria-label="روزهای ماه">
             {cells.map((day, index) => {
-              if (day === null) return <div key={`empty-${index}`} className="h-9" />;
+              if (day === null) return <div key={`empty-${index}`} className="h-9" aria-hidden="true" />;
 
               const isSelected = selected?.[0] === calendarYear && selected?.[1] === calendarMonth && selected?.[2] === day;
               const isToday = today[0] === calendarYear && today[1] === calendarMonth && today[2] === day;
+              const label = `${toPersianDigits(calendarYear)}/${toPersianDigits(String(calendarMonth).padStart(2, "0"))}/${toPersianDigits(String(day).padStart(2, "0"))}`;
 
               return (
                 <button
                   key={`${calendarYear}-${calendarMonth}-${day}`}
                   type="button"
+                  role="gridcell"
                   onClick={() => selectDate(calendarYear, calendarMonth, day)}
-                  className={`h-9 rounded-lg text-sm transition ${
+                  aria-label={label}
+                  aria-current={isToday ? "date" : undefined}
+                  aria-selected={isSelected}
+                  className={`h-9 rounded-lg text-sm transition focus:outline-none focus:ring-2 focus:ring-slate-300 ${
                     isSelected
                       ? "bg-slate-900 text-white"
                       : isToday
@@ -280,8 +287,8 @@ export function JalaliDateInput({
           <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={goToToday}
-              className="text-xs font-medium text-slate-600 hover:text-slate-900"
+              onClick={selectToday}
+              className="text-xs font-medium text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2"
             >
               امروز
             </button>
@@ -292,7 +299,7 @@ export function JalaliDateInput({
                 onChange("");
                 setIsOpen(false);
               }}
-              className="text-xs font-medium text-slate-500 hover:text-slate-800"
+              className="text-xs font-medium text-slate-500 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2"
             >
               پاک کردن
             </button>
