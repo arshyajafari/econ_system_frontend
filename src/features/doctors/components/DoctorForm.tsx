@@ -151,7 +151,7 @@ export function DoctorForm({
             <Field label="استان"><input value={form.address.province} onChange={(e) => updateAddress("province", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
             <Field label="شهر"><input value={form.address.city} onChange={(e) => updateAddress("city", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
             <Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(e) => updateAddress("postal_code", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field>
-            <Field label="آدرس"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={3} className={inputClass} /></Field>
+            <Field label="آدرس"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
             <Field label="عرض جغرافیایی"><input dir="ltr" inputMode="decimal" value={form.address.latitude} onChange={(e) => updateAddress("latitude", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-left`} /></Field>
             <Field label="طول جغرافیایی"><input dir="ltr" inputMode="decimal" value={form.address.longitude} onChange={(e) => updateAddress("longitude", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-left`} /></Field>
           </div>

@@ -218,7 +218,6 @@ export function CustomerForm({
             <input
               dir="ltr"
               type="url"
-              placeholder="https://..."
               value={form.social_link}
               onChange={(event) => update("social_link", event.target.value)}
               disabled={isSubmitting}
@@ -314,7 +313,7 @@ export function CustomerForm({
                   updateAddress("address", event.target.value)
                 }
                 disabled={isSubmitting}
-                rows={3}
+                rows={1}
                 className={inputClass}
               />
             </Field>
