@@ -9,8 +9,8 @@ type ProductPaginationLinks = { first: string | null; last: string | null; prev:
 
 export async function getProducts(params: ProductListParams = {}): Promise<ProductListResponse> { const response = await apiClient.get<ProductListResponse>("/products", { params }); return response.data; }
 export async function getProduct(id: string): Promise<Product> { const response = await apiClient.get<Product>(`/products/${id}`); return response.data; }
-export async function createProduct(payload: ProductFormData): Promise<Product> { const response = await apiClient.post<Product>("/products", normalizeProductPayload(payload)); return response.data; }
-export async function updateProduct(id: string, payload: ProductFormData): Promise<Product> { const response = await apiClient.put<Product>(`/products/${id}`, normalizeProductPayload(payload)); return response.data; }
+export async function createProduct(payload: ProductFormData): Promise<Product> { const response = await apiClient.post<Product>("/products", normalizeProductPayload(payload)); return payload.image_file ? uploadProductImage(response.data.id, payload.image_file) : response.data; }
+export async function updateProduct(id: string, payload: ProductFormData): Promise<Product> { const response = await apiClient.put<Product>(`/products/${id}`, normalizeProductPayload(payload)); return payload.image_file ? uploadProductImage(id, payload.image_file) : response.data; }
 export async function uploadProductImage(id: string, file: File): Promise<Product> { const form = new FormData(); form.append("image", file); const response = await apiClient.post<Product>(`/products/${id}/image`, form, { headers: { "Content-Type": "multipart/form-data" } }); return response.data; }
 export async function deleteProduct(id: string): Promise<void> { await apiClient.delete(`/products/${id}`); }
 export async function changeProductStatus(id: string, status: ProductStatus): Promise<Product> { const response = await apiClient.patch<Product>(`/products/${id}/status`, { status }); return response.data; }
