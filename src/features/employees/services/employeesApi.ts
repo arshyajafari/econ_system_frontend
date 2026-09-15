@@ -32,7 +32,7 @@ function normalizePayload(data: EmployeeFormData) {
   return {
     first_name: data.first_name.trim(), last_name: data.last_name.trim(), national_code: data.national_code.trim(), phone_number: data.phone_number.trim(),
     social_link: data.social_link.trim() || undefined, email: data.email.trim() || undefined, gender: data.gender, birth_date: data.birth_date || undefined,
-    employment_type: data.employment_type, hire_date: data.hire_date, termination_date: data.termination_date || undefined, status: data.status,
+    employment_type: data.employment_type, activity_type: data.activity_type, hire_date: data.hire_date, termination_date: data.termination_date || undefined, status: data.status,
     ...(hasAddress ? { address: { province: address.province.trim(), city: address.city.trim(), address: address.address.trim(), postal_code: address.postal_code.trim(), latitude: address.latitude.trim(), longitude: address.longitude.trim() } } : {}),
     description: data.description.trim() || undefined,
   };
