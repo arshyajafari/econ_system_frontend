@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getUnreadNotificationCount } from "../features/notifications/api/notifications";
 import { useAuth } from "../features/auth";
-import econ_system from "../../public/logo.png";
 
 type IconName =
   | "dashboard"
@@ -259,7 +258,7 @@ export function DashboardLayout() {
         <div className="flex h-20 items-center gap-3 border-b border-slate-100 px-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white-600 text-lg font-bold text-white shadow-lg shadow-blue-600/20">
             <img
-              src={econ_system}
+              src="../../public/logo.png"
               alt="econ_system"
               className="h-auto w-auto rounded-2xl object-contain"
             />
