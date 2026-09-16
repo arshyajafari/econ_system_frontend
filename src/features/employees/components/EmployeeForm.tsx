@@ -281,6 +281,7 @@ export function EmployeeForm({
 
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-4 text-sm font-semibold">آدرس</h3>
+          <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field label="استان">
               <input

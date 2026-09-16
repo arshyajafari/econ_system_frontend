@@ -99,7 +99,7 @@ export function CustomerForm({ customer, isSubmitting, error, onSubmit, onCancel
 
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-4 text-sm font-semibold text-gray-900">آدرس</h3>
-          <p className="mb-4 text-xs text-gray-500">مختصات جغرافیایی برای کاربر عادی قابل ویرایش نیست و در صورت وجود، در اطلاعات قبلی حفظ می‌شود.</p>
+          <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field label="استان"><input value={form.address.province} onChange={(event) => updateAddress("province", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
             <Field label="شهر"><input value={form.address.city} onChange={(event) => updateAddress("city", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>

@@ -57,7 +57,7 @@ export function DoctorForm({ doctor, isSubmitting, error, onSubmit, onCancel }: 
         </div>
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3>
-          <p className="mb-4 text-xs text-gray-500">مختصات جغرافیایی از فرم دستی حذف شده‌اند؛ مختصات قبلی در ویرایش حفظ می‌شوند.</p>
+          <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field label="استان"><input value={form.address.province} onChange={(e) => updateAddress("province", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
             <Field label="شهر"><input value={form.address.city} onChange={(e) => updateAddress("city", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
