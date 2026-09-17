@@ -26,6 +26,8 @@ export type Invoice = {
   customer: { id: string; code: string; name: string } | null;
   employee: { id: string; name: string } | null;
   status: InvoiceStatus;
+  is_settled: boolean | null;
+  paid_amount: number | string | null;
   issued_at: string | null;
   due_date: string | null;
   subtotal: number | string;
@@ -42,6 +44,7 @@ export type Invoice = {
 export type InvoiceListParams = {
   search?: string;
   status?: InvoiceStatus;
+  settled?: boolean;
   customer_id?: string;
   employee_id?: string;
   issued_from?: string;
