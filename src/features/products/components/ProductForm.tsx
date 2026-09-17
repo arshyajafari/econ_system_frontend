@@ -4,7 +4,7 @@ import { PRODUCT_STATUS_OPTIONS } from "../types/product";
 
 type ProductFormProps = { product?: Product | null; brands: ProductBrand[]; categories: ProductCategory[]; isSubmitting: boolean; error: string | null; onSubmit: (data: ProductFormData) => void; onCancel: () => void };
 const emptyForm: ProductFormData = { brand_id: "", product_category_id: "", title: "", sale_price: "", barcode: "", sort_order: 0, status: "active", image: "", description: "" };
-function productToForm(product: Product): ProductFormData { return { brand_id: product.brand?.id ?? "", product_category_id: product.category?.id ?? "", title: product.title, sale_price: product.sale_price ?? "", barcode: product.barcode ?? "", sort_order: product.sort_order, status: product.status, image: product.image ?? "", description: product.description ?? "" }; }
+function productToForm(product: Product): ProductFormData { return { brand_id: product.brand?.id ?? "", product_category_id: product.category?.id ?? "", title: product.title, sale_price: product.current_price?.sale_price ?? "", barcode: product.barcode ?? "", sort_order: product.sort_order, status: product.status, image: product.image ?? "", description: product.description ?? "" }; }
 
 export function ProductForm({ product, brands, categories, isSubmitting, error, onSubmit, onCancel }: ProductFormProps) {
   const [form, setForm] = useState<ProductFormData>(() => product ? productToForm(product) : emptyForm);
