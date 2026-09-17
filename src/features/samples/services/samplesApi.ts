@@ -37,14 +37,14 @@ export async function deleteSample(id: string): Promise<void> {
 
 export async function getSampleVisits(): Promise<Visit[]> {
   const response = await apiClient.get<VisitListResponse>("/visits", {
-    params: { status: "completed", sort: "-visit_date", per_page: 500 },
+    params: { status: "completed", sort: "-visit_date", per_page: 100 },
   });
   return response.data.data;
 }
 
 export async function getSampleProducts(): Promise<Product[]> {
   const response = await apiClient.get<ProductListResponse>("/products", {
-    params: { status: "active", per_page: 500 },
+    params: { status: "active", per_page: 100 },
   });
   return response.data.data;
 }
