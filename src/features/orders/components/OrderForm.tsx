@@ -7,6 +7,7 @@ import { OrderItemsEditor } from "./OrderItemsEditor";
 import type {
   Order,
   OrderCustomerOption,
+  OrderEmployeeOption,
   OrderFormData,
   OrderProductOption,
 } from "../types/order";
@@ -14,6 +15,7 @@ import type {
 type OrderFormProps = {
   order?: Order | null;
   customers: OrderCustomerOption[];
+  employees?: OrderEmployeeOption[];
   products: OrderProductOption[];
   isSubmitting: boolean;
   error: string | null;
