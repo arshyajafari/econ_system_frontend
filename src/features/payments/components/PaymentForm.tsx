@@ -20,6 +20,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
   const [referenceNumber, setReferenceNumber] = useState(payment?.reference_number ?? "");
   const [paymentDate, setPaymentDate] = useState(payment?.payment_date ?? new Date().toISOString().slice(0, 10));
   const [description, setDescription] = useState(payment?.description ?? "");
+  const [receiptImage, setReceiptImage] = useState<File | null>(null);
   const [invoicePayments, setInvoicePayments] = useState<Payment[]>([]);
   const [availableInvoices, setAvailableInvoices] = useState<PaymentInvoiceOption[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -66,7 +67,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
     }
     void loadInvoices();
     return () => { cancelled = true; };
-  }, [customerId, invoiceId, payment]);
+  }, [customerId, payment]);
 
   useEffect(() => {
     let cancelled = false;
@@ -101,19 +102,27 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
     setInvoicePayments([]);
     setBalanceError(null);
   }
-
   function handleInvoiceChange(nextInvoiceId: string) {
     setInvoiceId(nextInvoiceId);
     setInvoicePayments([]);
     setBalanceError(null);
   }
-
+  function handleReceiptChange(file: File | null) {
+    if (!file) { setReceiptImage(null); return; }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 3 * 1024 * 1024) {
+      setInvoiceError("فایل رسید باید JPG، PNG یا WEBP و حداکثر ۳ مگابایت باشد.");
+      setReceiptImage(null);
+      return;
+    }
+    setInvoiceError(null);
+    setReceiptImage(file);
+  }
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!invoiceId) return;
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) return;
-    onSubmit({ invoice_id: invoiceId, method, amount: amount.trim(), reference_number: referenceNumber, payment_date: paymentDate, description });
+    onSubmit({ invoice_id: invoiceId, method, amount: amount.trim(), reference_number: referenceNumber, payment_date: paymentDate, description, receipt_image: receiptImage });
   }
 
   return <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-white p-5">
@@ -122,26 +131,14 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
     {invoiceError ? <div role="alert" className="mb-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-700">{invoiceError}</div> : null}
     {balanceError ? <div role="alert" className="mb-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-700">{balanceError}</div> : null}
     <div className="grid gap-4 md:grid-cols-2">
-      <div>
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">مشتری</label>
-        <select disabled={isSubmitting || Boolean(payment) || isLoadingCustomers} value={customerId} onChange={(event) => handleCustomerChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100">
-          <option value="">همه مشتریان</option>
-          {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.customer_name}{customer.code ? ` — ${customer.code}` : ""}</option>)}
-        </select>
-      </div>
-      <div>
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">فاکتور</label>
-        <select required disabled={isSubmitting || Boolean(payment) || isLoadingInvoices} value={invoiceId} onChange={(event) => handleInvoiceChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100">
-          <option value="">{isLoadingInvoices ? "در حال دریافت فاکتورها..." : "انتخاب فاکتور"}</option>
-          {availableInvoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.code} — {invoice.customer?.name ?? "بدون مشتری"} — {numberFormatter.format(Number(invoice.total_amount || 0))}</option>)}
-        </select>
-        <p className="mt-1.5 text-xs text-gray-500">فاکتورهای تسویه‌شده به‌صورت خودکار از این فهرست حذف شده‌اند.</p>
-      </div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مشتری</label><select disabled={isSubmitting || Boolean(payment) || isLoadingCustomers} value={customerId} onChange={(event) => handleCustomerChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"><option value="">همه مشتریان</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.customer_name}{customer.code ? ` — ${customer.code}` : ""}</option>)}</select></div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">فاکتور</label><select required disabled={isSubmitting || Boolean(payment) || isLoadingInvoices} value={invoiceId} onChange={(event) => handleInvoiceChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"><option value="">{isLoadingInvoices ? "در حال دریافت فاکتورها..." : availableInvoices.length === 0 && customerId ? "فاکتور تسویه‌نشده‌ای وجود ندارد" : "انتخاب فاکتور"}</option>{availableInvoices.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.code} — {invoice.customer?.name ?? "بدون مشتری"} — {numberFormatter.format(Number(invoice.total_amount || 0))}</option>)}</select><p className="mt-1.5 text-xs text-gray-500">فاکتورهای تسویه‌شده به‌صورت خودکار از این فهرست حذف شده‌اند.</p></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">روش پرداخت</label><select required disabled={isSubmitting} value={method} onChange={(event) => setMethod(event.target.value as PaymentMethod)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">{PAYMENT_METHOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label><FormattedNumberInput required min="0.01" step="0.01" dir="ltr" disabled={isSubmitting} value={amount} onValueChange={setAmount} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right" placeholder="مثلاً 1,500,000" />{selectedInvoice ? <div className="mt-2 text-xs text-gray-500">{isLoadingBalance ? "در حال محاسبه مانده..." : `مانده قابل پرداخت: ${numberFormatter.format(remainingAmount)}`}</div> : null}</div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label><JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">شماره مرجع</label><input type="text" maxLength={100} disabled={isSubmitting} value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="شماره پیگیری، چک و..." /></div>
-      <div className="md:col-span-2"><label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label><input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تصویر رسید پرداخت</label><input type="file" accept="image/jpeg,image/png,image/webp" disabled={isSubmitting} onChange={(event) => handleReceiptChange(event.target.files?.[0] ?? null)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /><p className="mt-1 text-xs text-gray-500">JPG، PNG یا WEBP — حداکثر ۳ مگابایت</p>{receiptImage ? <p className="mt-1 text-xs text-gray-600">{receiptImage.name}</p> : null}{payment?.receipt_image_url && !receiptImage ? <a href={payment.receipt_image_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline">مشاهده رسید فعلی</a> : null}</div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label><input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
     </div>
     <div className="mt-5 flex gap-2"><button type="submit" disabled={isSubmitting || !invoiceId} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "در حال ذخیره..." : "ذخیره پرداخت"}</button><button type="button" disabled={isSubmitting} onClick={onCancel} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">انصراف</button></div>
   </form>;
