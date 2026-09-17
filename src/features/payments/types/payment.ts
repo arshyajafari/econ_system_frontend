@@ -9,6 +9,8 @@ export type PaymentInvoice = {
   code: string;
   status: string;
   total_amount: number;
+  is_settled?: boolean | null;
+  paid_amount?: number | string | null;
 };
 
 export type PaymentCustomer = {
@@ -37,11 +39,8 @@ export type Payment = {
   updated_at: string | null;
 };
 
-export type PaymentInvoiceOption = {
-  id: string;
-  code: string;
-  status: string;
-  total_amount: number;
+export type PaymentInvoiceOption = PaymentInvoice & {
+  customer: PaymentCustomer | null;
 };
 
 export type PaymentListParams = {
@@ -89,51 +88,24 @@ export type PaymentFormData = {
 };
 
 export const PAYMENT_STATUS_OPTIONS = [
-  {
-    value: "pending",
-    label: "در انتظار تأیید",
-  },
-  {
-    value: "confirmed",
-    label: "تأیید شده",
-  },
-  {
-    value: "cancelled",
-    label: "لغو شده",
-  },
+  { value: "pending", label: "در انتظار تأیید" },
+  { value: "confirmed", label: "تأیید شده" },
+  { value: "cancelled", label: "لغو شده" },
 ] as const;
 
 export const PAYMENT_METHOD_OPTIONS = [
-  {
-    value: "cash",
-    label: "نقدی",
-  },
-  {
-    value: "card",
-    label: "کارت",
-  },
-  {
-    value: "transfer",
-    label: "انتقال بانکی",
-  },
-  {
-    value: "cheque",
-    label: "چک",
-  },
+  { value: "cash", label: "نقدی" },
+  { value: "card", label: "کارت" },
+  { value: "transfer", label: "انتقال بانکی" },
+  { value: "cheque", label: "چک" },
 ] as const;
 
 export function getPaymentStatusLabel(status: PaymentStatus): string {
-  return (
-    PAYMENT_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
-    status
-  );
+  return PAYMENT_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
 }
 
 export function getPaymentMethodLabel(method: PaymentMethod): string {
-  return (
-    PAYMENT_METHOD_OPTIONS.find((option) => option.value === method)?.label ??
-    method
-  );
+  return PAYMENT_METHOD_OPTIONS.find((option) => option.value === method)?.label ?? method;
 }
 
 export function canEditPayment(status: PaymentStatus): boolean {
