@@ -113,7 +113,7 @@ export async function getInventoryBatches(
     {
       params: {
         product_id: productId,
-        expired: false,
+        expired: 0,
         per_page: 100,
         sort: "expire_date",
       },
