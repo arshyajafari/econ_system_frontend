@@ -37,7 +37,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     async function loadCustomers() {
       setIsLoadingCustomers(true);
       try {
-        const response = await getCustomers({ status: "active", per_page: 100 });
+        const response = await getCustomers({ per_page: 100 });
         if (!cancelled) {
           const currentCustomer = payment?.customer;
           const current = currentCustomer && !response.data.some((item) => item.id === currentCustomer.id)
