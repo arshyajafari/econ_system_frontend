@@ -1,11 +1,12 @@
 import { useState } from "react";
 
+import { useAuth } from "../../auth";
+
 import { OrderItemsEditor } from "./OrderItemsEditor";
 
 import type {
   Order,
   OrderCustomerOption,
-  OrderEmployeeOption,
   OrderFormData,
   OrderProductOption,
 } from "../types/order";
@@ -13,7 +14,6 @@ import type {
 type OrderFormProps = {
   order?: Order | null;
   customers: OrderCustomerOption[];
-  employees: OrderEmployeeOption[];
   products: OrderProductOption[];
   isSubmitting: boolean;
   error: string | null;
@@ -38,32 +38,34 @@ function orderToForm(order: Order): OrderFormData {
   };
 }
 
-const emptyForm: OrderFormData = {
-  customer_id: "",
-  sales_employee_id: "",
-  description: "",
-  items: [
-    {
-      product_id: "",
-      quantity: 1,
-      unit_price: "",
-      description: "",
-    },
-  ],
-};
-
 export function OrderForm({
   order,
   customers,
-  employees,
   products,
   isSubmitting,
   error,
   onSubmit,
   onCancel,
 }: OrderFormProps) {
+  const { user } = useAuth();
+  const currentEmployee = user?.employee ?? null;
+
   const [form, setForm] = useState<OrderFormData>(() =>
-    order ? orderToForm(order) : emptyForm,
+    order
+      ? orderToForm(order)
+      : {
+          customer_id: "",
+          sales_employee_id: currentEmployee?.id ?? "",
+          description: "",
+          items: [
+            {
+              product_id: "",
+              quantity: 1,
+              unit_price: "",
+              description: "",
+            },
+          ],
+        },
   );
 
   function update<K extends keyof OrderFormData>(
@@ -79,11 +81,7 @@ export function OrderForm({
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!form.customer_id) {
-      return;
-    }
-
-    if (!form.sales_employee_id) {
+    if (!form.customer_id || !form.sales_employee_id) {
       return;
     }
 
@@ -157,22 +155,12 @@ export function OrderForm({
           </Field>
 
           <Field label="کارشناس فروش" required>
-            <select
-              value={form.sales_employee_id}
-              onChange={(event) =>
-                update("sales_employee_id", event.target.value)
-              }
-              disabled={isSubmitting}
-              className={inputClass}
-            >
-              <option value="">انتخاب کارشناس فروش</option>
-
-              {employees.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.first_name} {employee.last_name} — {employee.code}
-                </option>
-              ))}
-            </select>
+            <div className={`${inputClass} flex items-center justify-between`}>
+              <span>
+                {currentEmployee?.full_name || "کارشناس فروش مشخص نشده است"}
+              </span>
+              <span className="text-xs text-gray-500">از حساب کاربری</span>
+            </div>
           </Field>
         </div>
 
