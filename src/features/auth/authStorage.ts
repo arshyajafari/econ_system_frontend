@@ -27,13 +27,20 @@ function normalizeUser(value: unknown): AuthUser | null {
     return null;
   }
 
+  if (!Array.isArray(user.roles) || !Array.isArray(user.permissions)) {
+    return null;
+  }
+
+  const roles = user.roles.filter((role): role is string => typeof role === "string");
+  const permissions = user.permissions.filter(
+    (permission): permission is string => typeof permission === "string",
+  );
+
   return {
     id: user.id,
     login: user.login,
-    roles: Array.isArray(user.roles) ? user.roles.filter((role): role is string => typeof role === "string") : [],
-    permissions: Array.isArray(user.permissions)
-      ? user.permissions.filter((permission): permission is string => typeof permission === "string")
-      : [],
+    roles,
+    permissions,
     employee: {
       id: employee.id,
       full_name: employee.full_name,
