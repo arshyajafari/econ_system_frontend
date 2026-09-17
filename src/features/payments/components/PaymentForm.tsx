@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { ImageUploadField } from "../../../components/ImageUploadField";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { getCustomers } from "../../customers/services/customersApi";
 import type { Customer } from "../../customers/types/customer";
@@ -116,14 +117,6 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     setBalanceError(null);
   }
 
-  function handleReceiptChange(file: File | null) {
-    setReceiptError(null);
-    if (!file) { setReceiptImage(null); return; }
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { setReceiptImage(null); setReceiptError("فرمت تصویر باید JPG، PNG یا WEBP باشد."); return; }
-    if (file.size > 3 * 1024 * 1024) { setReceiptImage(null); setReceiptError("حجم تصویر نباید بیشتر از ۳ مگابایت باشد."); return; }
-    setReceiptImage(file);
-  }
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!invoiceId) return;
@@ -144,7 +137,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label><JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">شماره مرجع</label><input type="text" maxLength={100} disabled={isSubmitting} value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="شماره پیگیری، چک و..." /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label><input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
-      <div className="md:col-span-2"><label className="mb-1.5 block text-sm font-medium text-gray-700">تصویر رسید پرداخت <span className="font-normal text-gray-400">(اختیاری)</span></label><input type="file" accept="image/jpeg,image/png,image/webp" disabled={isSubmitting} onChange={(event) => handleReceiptChange(event.target.files?.[0] ?? null)} className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-1.5 file:text-sm file:font-medium" />{receiptError ? <p className="mt-1.5 text-xs text-red-600">{receiptError}</p> : <p className="mt-1.5 text-xs text-gray-500">JPG، PNG یا WEBP — حداکثر ۳ مگابایت</p>}{payment?.receipt_image_url ? <a href={payment.receipt_image_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline">مشاهده رسید فعلی</a> : null}</div>
+      <div className="md:col-span-2"><ImageUploadField label="" file={receiptImage} value={payment?.receipt_image_url} disabled={isSubmitting} maxSizeMB={3} hint="JPG، PNG یا WEBP · حداکثر ۳ مگابایت" onFileChange={setReceiptImage} onError={setReceiptError} /></div>
     </div>
     <div className="mt-5 flex gap-2"><button type="submit" disabled={isSubmitting || !invoiceId || Boolean(receiptError)} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "در حال ذخیره..." : "ذخیره پرداخت"}</button><button type="button" disabled={isSubmitting} onClick={onCancel} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">انصراف</button></div>
   </form>;
