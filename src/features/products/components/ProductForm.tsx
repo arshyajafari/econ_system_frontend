@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { ImageUploadField } from "../../../components/ImageUploadField";
-import type { Product, ProductBrand, ProductCategory, ProductFormData } from "../types/product";
+import type {
+  Product,
+  ProductBrand,
+  ProductCategory,
+  ProductFormData,
+} from "../types/product";
 import { PRODUCT_STATUS_OPTIONS } from "../types/product";
 
 type ProductFormProps = {
@@ -55,7 +60,10 @@ export function ProductForm({
     product ? productToForm(product) : emptyForm,
   );
 
-  function update<K extends keyof ProductFormData>(key: K, value: ProductFormData[K]) {
+  function update<K extends keyof ProductFormData>(
+    key: K,
+    value: ProductFormData[K],
+  ) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -85,7 +93,11 @@ export function ProductForm({
       </div>
 
       {error ? (
-        <p role="alert" aria-live="polite" className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p
+          role="alert"
+          aria-live="polite"
+          className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
           {error}
         </p>
       ) : null}
@@ -93,58 +105,155 @@ export function ProductForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="نام محصول" required>
-            <input value={form.title} onChange={(event) => update("title", event.target.value)} disabled={isSubmitting} className={inputClass} />
+            <input
+              value={form.title}
+              onChange={(event) => update("title", event.target.value)}
+              disabled={isSubmitting}
+              className={inputClass}
+            />
           </Field>
 
           <Field label="برند" required>
-            <select value={form.brand_id} onChange={(event) => update("brand_id", event.target.value)} disabled={isSubmitting} className={inputClass}>
+            <select
+              value={form.brand_id}
+              onChange={(event) => update("brand_id", event.target.value)}
+              disabled={isSubmitting}
+              className={inputClass}
+            >
               <option value="">انتخاب برند</option>
-              {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.title}</option>)}
+              {brands.map((brand) => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.title}
+                </option>
+              ))}
             </select>
           </Field>
 
           <Field label="دسته‌بندی" required>
-            <select value={form.product_category_id} onChange={(event) => update("product_category_id", event.target.value)} disabled={isSubmitting} className={inputClass}>
+            <select
+              value={form.product_category_id}
+              onChange={(event) =>
+                update("product_category_id", event.target.value)
+              }
+              disabled={isSubmitting}
+              className={inputClass}
+            >
               <option value="">انتخاب دسته‌بندی</option>
-              {categories.map((category) => <option key={category.id} value={category.id}>{category.title}</option>)}
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.title}
+                </option>
+              ))}
             </select>
           </Field>
 
           <Field label="قیمت فروش" required>
-            <FormattedNumberInput dir="ltr" min={0} step="0.01" value={form.sale_price} onValueChange={(value) => update("sale_price", value)} disabled={isSubmitting} className={`${inputClass} text-right`} placeholder="قیمت به ریال" />
+            <FormattedNumberInput
+              dir="ltr"
+              min={0}
+              step="0.01"
+              value={form.sale_price}
+              onValueChange={(value) => update("sale_price", value)}
+              disabled={isSubmitting}
+              className={`${inputClass} text-right`}
+              placeholder="قیمت به ریال"
+            />
           </Field>
 
           <Field label="بارکد">
-            <input dir="ltr" value={form.barcode} onChange={(event) => update("barcode", event.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} />
+            <input
+              dir="ltr"
+              value={form.barcode}
+              onChange={(event) => update("barcode", event.target.value)}
+              disabled={isSubmitting}
+              className={`${inputClass} text-right`}
+            />
           </Field>
 
           <Field label="ترتیب نمایش">
-            <input dir="ltr" type="number" min={0} value={form.sort_order} onChange={(event) => update("sort_order", Math.max(0, Number(event.target.value) || 0))} disabled={isSubmitting} className={`${inputClass} text-right`} />
+            <input
+              dir="ltr"
+              type="number"
+              min={0}
+              value={form.sort_order}
+              onChange={(event) =>
+                update(
+                  "sort_order",
+                  Math.max(0, Number(event.target.value) || 0),
+                )
+              }
+              disabled={isSubmitting}
+              className={`${inputClass} text-right`}
+            />
           </Field>
 
           <Field label="وضعیت">
-            <select value={form.status} onChange={(event) => update("status", event.target.value as ProductFormData["status"])} disabled={isSubmitting} className={inputClass}>
-              {PRODUCT_STATUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            <select
+              value={form.status}
+              onChange={(event) =>
+                update(
+                  "status",
+                  event.target.value as ProductFormData["status"],
+                )
+              }
+              disabled={isSubmitting}
+              className={inputClass}
+            >
+              {PRODUCT_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </Field>
+        </div>
 
+        <Field label="تصویر محصول">
           <ImageUploadField
-            label="تصویر محصول"
+            label=""
             value={form.image}
             file={form.image_file}
             disabled={isSubmitting}
             onFileChange={(file) => update("image_file", file)}
           />
-        </div>
+        </Field>
 
         <Field label="توضیحات">
-          <textarea value={form.description} onChange={(event) => update("description", event.target.value)} disabled={isSubmitting} rows={4} className={inputClass} />
+          <textarea
+            value={form.description}
+            onChange={(event) => update("description", event.target.value)}
+            disabled={isSubmitting}
+            rows={4}
+            className={inputClass}
+          />
         </Field>
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button type="button" onClick={onCancel} disabled={isSubmitting} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بازگشت به محصولات</button>
-          <button type="submit" disabled={isSubmitting || !form.title.trim() || !form.brand_id || !form.product_category_id || form.sale_price === "" || Number(form.sale_price) < 0} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">
-            {isSubmitting ? "در حال ذخیره..." : product ? "ذخیره تغییرات" : "ثبت محصول"}
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+          >
+            بازگشت به محصولات
+          </button>
+          <button
+            type="submit"
+            disabled={
+              isSubmitting ||
+              !form.title.trim() ||
+              !form.brand_id ||
+              !form.product_category_id ||
+              form.sale_price === "" ||
+              Number(form.sale_price) < 0
+            }
+            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting
+              ? "در حال ذخیره..."
+              : product
+                ? "ذخیره تغییرات"
+                : "ثبت محصول"}
           </button>
         </div>
       </form>
@@ -152,11 +261,20 @@ export function ProductForm({
   );
 }
 
-function Field({ label, required = false, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+function Field({
+  label,
+  required = false,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <label className="mb-2 block text-sm font-medium text-gray-700">
-        {label}{required ? <span className="mr-1 text-red-600">*</span> : null}
+        {label}
+        {required ? <span className="mr-1 text-red-600">*</span> : null}
       </label>
       {children}
     </div>
