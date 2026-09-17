@@ -13,16 +13,8 @@ export type PaymentInvoice = {
   paid_amount?: number | string | null;
 };
 
-export type PaymentCustomer = {
-  id: string;
-  code: string;
-  name: string;
-};
-
-export type PaymentEmployee = {
-  id: string;
-  name: string;
-};
+export type PaymentCustomer = { id: string; code: string; name: string };
+export type PaymentEmployee = { id: string; name: string };
 
 export type Payment = {
   id: string;
@@ -35,13 +27,12 @@ export type Payment = {
   reference_number: string | null;
   payment_date: string | null;
   description: string | null;
+  receipt_image_url: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
 
-export type PaymentInvoiceOption = PaymentInvoice & {
-  customer: PaymentCustomer | null;
-};
+export type PaymentInvoiceOption = PaymentInvoice & { customer: PaymentCustomer | null };
 
 export type PaymentListParams = {
   invoice_id?: string;
@@ -56,27 +47,9 @@ export type PaymentListParams = {
   per_page?: number;
 };
 
-export type PaymentPaginationMeta = {
-  current_page: number;
-  from: number | null;
-  last_page: number;
-  per_page: number;
-  to: number | null;
-  total: number;
-};
-
-export type PaymentPaginationLinks = {
-  first: string | null;
-  last: string | null;
-  prev: string | null;
-  next: string | null;
-};
-
-export type PaymentListResponse = {
-  data: Payment[];
-  links: PaymentPaginationLinks;
-  meta: PaymentPaginationMeta;
-};
+export type PaymentPaginationMeta = { current_page: number; from: number | null; last_page: number; per_page: number; to: number | null; total: number };
+export type PaymentPaginationLinks = { first: string | null; last: string | null; prev: string | null; next: string | null };
+export type PaymentListResponse = { data: Payment[]; links: PaymentPaginationLinks; meta: PaymentPaginationMeta };
 
 export type PaymentFormData = {
   invoice_id: string;
@@ -85,6 +58,7 @@ export type PaymentFormData = {
   reference_number: string;
   payment_date: string;
   description: string;
+  receipt_image: File | null;
 };
 
 export const PAYMENT_STATUS_OPTIONS = [
@@ -103,11 +77,7 @@ export const PAYMENT_METHOD_OPTIONS = [
 export function getPaymentStatusLabel(status: PaymentStatus): string {
   return PAYMENT_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
 }
-
 export function getPaymentMethodLabel(method: PaymentMethod): string {
   return PAYMENT_METHOD_OPTIONS.find((option) => option.value === method)?.label ?? method;
 }
-
-export function canEditPayment(status: PaymentStatus): boolean {
-  return status === "pending";
-}
+export function canEditPayment(status: PaymentStatus): boolean { return status === "pending"; }
