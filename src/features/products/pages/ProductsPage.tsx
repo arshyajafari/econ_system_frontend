@@ -307,16 +307,20 @@ export function ProductsPage() {\n  const { user } = useAuth();\n  const isAdmin
             بروزرسانی
           </button>
 
-          <button
-            type="button"
-            onClick={openCreateForm}
+          {isAdmin ? (
+            <button
+              type="button"
+              onClick={openCreateForm}
             disabled={
               isLoadingLookups || brands.length === 0 || categories.length === 0
             }
             className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             محصول جدید
-          </button>
+            >
+              محصول جدید
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -394,6 +398,7 @@ export function ProductsPage() {\n  const { user } = useAuth();\n  const isAdmin
         isLoading={isLoading}
         pendingStatusId={pendingStatusId}
         pendingDeleteId={pendingDeleteId}
+        isAdmin={isAdmin}
         onEdit={openEditForm}
         onDelete={(product) => {
           void handleDelete(product);
