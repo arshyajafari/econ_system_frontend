@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 import { ProductFilters } from "../components/ProductFilters";
 import { ProductForm } from "../components/ProductForm";
 import { ProductTable } from "../components/ProductTable";
@@ -54,6 +55,7 @@ export function ProductsPage() {
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
   const requestIdRef = useRef(0);
 
@@ -211,20 +213,18 @@ export function ProductsPage() {
     }
   }
 
-  async function handleDelete(product: Product) {
+  function requestDelete(product: Product) {
     if (pendingDeleteId || pendingStatusId) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `آیا از حذف «${product.title}» مطمئن هستید؟`,
-    );
+    setDeleteTarget(product);
+  }
 
-    if (!confirmed) {
+  async function handleDelete(product: Product) {
+    if (pendingDeleteId || pendingStatusId) {
       return;
     }
-
-    const isLastItemOnPage = products.length === 1;
 
     setPendingDeleteId(product.id);
     setError(null);
@@ -405,6 +405,22 @@ export function ProductsPage() {
         }}
         onStatusChange={(product, nextStatus) => {
           void handleStatusChange(product, nextStatus);
+        }}
+      />
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="حذف محصول"
+        description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""}
+        confirmLabel="حذف محصول"
+        cancelLabel="انصراف"
+        variant="danger"
+        isLoading={pendingDeleteId !== null}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            void handleDelete(deleteTarget).finally(() => setDeleteTarget(null));
+          }
         }}
       />
 
