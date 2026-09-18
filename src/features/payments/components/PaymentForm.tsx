@@ -29,6 +29,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
   const [invoiceId, setInvoiceId] = useState(payment?.invoice?.id ?? "");
   const [method, setMethod] = useState<PaymentMethod>(payment?.method ?? "cash");
   const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
+  const [settlementDiscountAmount, setSettlementDiscountAmount] = useState(payment ? String(payment.settlement_discount_amount ?? 0) : "0");
   const [referenceNumber, setReferenceNumber] = useState(payment?.reference_number ?? "");
   const [paymentDate, setPaymentDate] = useState(payment?.payment_date ?? new Date().toISOString().slice(0, 10));
   const [description, setDescription] = useState(payment?.description ?? "");
@@ -172,8 +173,25 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     event.preventDefault();
     if (!invoiceId) return;
     const numericAmount = Number(amount);
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0 || receiptError) return;
-    onSubmit({ invoice_id: invoiceId, method, amount: amount.trim(), reference_number: referenceNumber, payment_date: paymentDate, description, receipt_image: receiptImage });
+    const numericDiscount = Number(settlementDiscountAmount || 0);
+    if (
+      !Number.isFinite(numericAmount) ||
+      numericAmount <= 0 ||
+      !Number.isFinite(numericDiscount) ||
+      numericDiscount < 0 ||
+      numericDiscount > remainingAmount ||
+      receiptError
+    ) return;
+    onSubmit({
+      invoice_id: invoiceId,
+      method,
+      amount: amount.trim(),
+      settlement_discount_amount: settlementDiscountAmount.trim() || "0",
+      reference_number: referenceNumber,
+      payment_date: paymentDate,
+      description,
+      receipt_image: receiptImage,
+    });
   }
 
   return <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-white p-5">
@@ -185,7 +203,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">فاکتور</label><select required disabled={isSubmitting || Boolean(payment) || !customerId || isLoadingInvoices} value={invoiceId} onChange={(event) => handleInvoiceChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"><option value="">{isLoadingInvoices ? "در حال دریافت فاکتورها..." : customerId ? "انتخاب فاکتور" : "ابتدا مشتری را انتخاب کنید"}</option>{invoiceOptions.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.code} — مبلغ: {numberFormatter.format(Number(invoice.total_amount || 0))}</option>)}</select>{!payment && customerId ? <p className="mt-1.5 text-xs text-gray-500">فقط فاکتورهای صادرشده و تسویه‌نشده این مشتری نمایش داده می‌شوند.</p> : null}</div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">روش پرداخت</label><select required disabled={isSubmitting} value={method} onChange={(event) => setMethod(event.target.value as PaymentMethod)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">{PAYMENT_METHOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label><FormattedNumberInput required min="0.01" step="0.01" dir="ltr" disabled={isSubmitting} value={amount} onValueChange={setAmount} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right" placeholder="مثلاً 1,500,000" />{customerId ? <div className="mt-2 text-xs text-gray-500">{isLoadingCustomerBalance ? "در حال دریافت مانده حساب مشتری..." : customerBalance === null ? "مانده حساب مشتری: —" : `مانده حساب مشتری: ${numberFormatter.format(customerBalance)}`}</div> : null}{selectedInvoice ? <div className="mt-1 text-xs text-gray-500">{isLoadingBalance ? "در حال محاسبه مانده فاکتور..." : `مانده قابل پرداخت فاکتور: ${numberFormatter.format(remainingAmount)}`}</div> : null}</div>
-      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label><JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تخفیف تسویه</label><FormattedNumberInput min="0" step="0.01" dir="ltr" disabled={isSubmitting} value={settlementDiscountAmount} onValueChange={setSettlementDiscountAmount} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right" placeholder="مثلاً 100,000" />{selectedInvoice ? <div className="mt-2 text-xs text-gray-500">تخفیف فقط تا سقف مانده فاکتور قابل ثبت است.</div> : null}</div><div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label><JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">شماره مرجع</label><input type="text" maxLength={100} disabled={isSubmitting} value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="شماره پیگیری، چک و..." /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label><input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
       <div className="md:col-span-2"><ImageUploadField label="" file={receiptImage} value={payment?.receipt_image_url} disabled={isSubmitting} maxSizeMB={3} hint="JPG، PNG یا WEBP · حداکثر ۳ مگابایت" onFileChange={setReceiptImage} onError={setReceiptError} /></div>
