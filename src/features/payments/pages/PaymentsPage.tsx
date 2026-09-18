@@ -70,7 +70,7 @@ export function PaymentsPage() {
     setIsLoadingInvoices(true);
 
     try {
-      const response = await getPaymentInvoices({ payable: true });
+      const response = await getPaymentInvoices({ settled: false, payable: true });
 
       setInvoices(
         response.filter(
