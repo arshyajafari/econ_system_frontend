@@ -87,7 +87,7 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
       <SummaryCard
         label="موجودی قابل فروش"
         value={formatNumber(dashboard.inventory.available_quantity)}
-        hint={`${formatNumber(dashboard.inventory.batches)} بچ موجود`}
+        hint={`${formatNumber(dashboard.inventory.batches)} بچ قابل فروش · پس از کسر رزرو و انقضا`}
         tone="green"
       />
 
