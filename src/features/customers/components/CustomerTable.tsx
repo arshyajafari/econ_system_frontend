@@ -32,6 +32,7 @@ export function CustomerTable({
   isLoading,
   pendingStatusId,
   pendingDeleteId,
+  isAdmin,
   onEdit,
   onDelete,
   onStatusChange,
