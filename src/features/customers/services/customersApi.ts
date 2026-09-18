@@ -108,3 +108,21 @@ function normalizeCustomerPayload(
       : {}),
   };
 }
+
+
+export type CustomerLedgerResponse = {
+  closing_balance: number;
+};
+
+export async function getCustomerBalance(id: string): Promise<number> {
+  const response = await apiClient.get<CustomerLedgerResponse | { data: CustomerLedgerResponse }>(
+    `/customers/${id}/ledger`,
+  );
+
+  const payload = response.data;
+  return Number(
+    "data" in payload && payload.data
+      ? payload.data.closing_balance
+      : payload.closing_balance,
+  );
+}
