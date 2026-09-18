@@ -200,7 +200,7 @@ export function PaymentsPage() {
       setEditingPayment(null);
       setFormError(null);
 
-      await loadPayments();
+      await Promise.all([loadPayments(), loadInvoices()]);
     } catch (error: unknown) {
       setFormError(
         error instanceof ApiError && error.message
@@ -233,7 +233,7 @@ export function PaymentsPage() {
         await cancelPayment(payment.id);
       }
 
-      await loadPayments();
+      await Promise.all([loadPayments(), loadInvoices()]);
     } catch (error: unknown) {
       setError(
         error instanceof ApiError && error.message
