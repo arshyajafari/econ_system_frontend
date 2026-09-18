@@ -5,7 +5,7 @@ import { formatJalaliDate } from "../../../utils/date";
 import { getReport } from "../services/reportApi";
 import type { ReportData } from "../types/report";
 
-const money = (value: number) => new Intl.NumberFormat("fa-IR").format(value);
+const money = (value: number) => new Intl.NumberFormat("fa-IR").format(Number.isFinite(value) ? value : 0);
 
 function getLocalDateString(date = new Date()): string {
   const year = date.getFullYear();
@@ -88,6 +88,7 @@ export function ReportsPage() {
                   ["تخفیف", report.sales.discount],
                   ["مالیات", report.sales.tax],
                   ["فروش نهایی", report.sales.total],
+                  ["مبلغ واریزی مشتریان", report.payments.recorded_total],
                   ["پرداختی تأییدشده", report.payments.total],
                   ["پرداخت‌های در انتظار تأیید", report.payments.pending_total],
                   ["بدهکار مشتریان", report.receivables.debit],
@@ -120,6 +121,7 @@ export function ReportsPage() {
             بازه گزارش: <strong>{formatJalaliDate(report.period.from)}</strong> تا <strong>{formatJalaliDate(report.period.to)}</strong>
             {" · "}{money(report.orders.completed)} سفارش تکمیل‌شده
             {" · "}{money(report.returns.count)} مرجوعی
+            {" · "}{money(report.payments.recorded_count)} پرداخت ثبت‌شده
             {" · "}{money(report.payments.count)} پرداخت تأییدشده
             {" · "}{money(report.payments.pending_count)} در انتظار تأیید
           </div>
