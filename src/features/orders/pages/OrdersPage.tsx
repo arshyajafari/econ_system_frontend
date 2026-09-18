@@ -145,7 +145,13 @@ export function OrdersPage() {
   }, [customerId, page, salesEmployeeId, search, status]);
 
   useEffect(() => {
-    void loadLookups();
+    const timeoutId = window.setTimeout(() => {
+      void loadLookups();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [loadLookups]);
 
   useEffect(() => {
