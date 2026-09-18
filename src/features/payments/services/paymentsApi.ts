@@ -2,7 +2,7 @@ import { apiClient } from "../../../api/client";
 import type { Payment, PaymentFormData, PaymentInvoiceOption, PaymentListParams, PaymentListResponse, PaymentStatusAction } from "../types/payment";
 
 type InvoiceListResponse = { data: PaymentInvoiceOption[] };
-type PaymentInvoiceFilters = { customer_id?: string; settled?: boolean };
+type PaymentInvoiceFilters = { customer_id?: string; settled?: boolean; payable?: boolean };
 type PaymentApiPayload = { invoice_id: string; method: string; amount: number; reference_number?: string; payment_date: string; description?: string };
 
 export async function getPayments(params: PaymentListParams = {}): Promise<PaymentListResponse> {
@@ -30,7 +30,7 @@ export async function performPaymentStatusAction(id: string, action: PaymentStat
   switch (action) { case "confirm": return confirmPayment(id); case "cancel": return cancelPayment(id); }
 }
 export async function getPaymentInvoices(filters: PaymentInvoiceFilters = {}): Promise<PaymentInvoiceOption[]> {
-  const response = await apiClient.get<InvoiceListResponse>("/invoices", { params: { status: "issued", customer_id: filters.customer_id || undefined, settled: filters.settled ?? false, per_page: 100 } });
+  const response = await apiClient.get<InvoiceListResponse>("/invoices", { params: { status: "issued", customer_id: filters.customer_id || undefined, settled: filters.settled, payable: filters.payable, per_page: 100 } });
   return response.data.data;
 }
 function normalizePaymentPayload(payload: PaymentFormData, isUpdate = false): PaymentApiPayload {
