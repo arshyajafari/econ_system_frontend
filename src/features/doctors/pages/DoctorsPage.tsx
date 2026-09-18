@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "../../../api/client";
+import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { DoctorForm } from "../components/DoctorForm";
 import {
@@ -38,6 +39,8 @@ const statusLabels: Record<DoctorStatus, string> = {
 };
 
 export function DoctorsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles.includes("admin") ?? false;
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<DoctorStatus | "">("");
@@ -248,7 +251,7 @@ export function DoctorsPage() {
                 <td className="whitespace-nowrap px-4 py-3">
                   <div className="flex gap-2">
                     <button type="button" onClick={() => openEditForm(doctor)} disabled={Boolean(pendingDeleteId)} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">ویرایش</button>
-                    <button type="button" onClick={() => setDeleteTarget(doctor)} disabled={pendingDeleteId === doctor.id || pendingStatusId === doctor.id} className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50">{pendingDeleteId === doctor.id ? "در حال حذف..." : "حذف"}</button>
+                    {isAdmin && <button type="button" onClick={() => setDeleteTarget(doctor)} disabled={pendingDeleteId === doctor.id || pendingStatusId === doctor.id} className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50">{pendingDeleteId === doctor.id ? "در حال حذف..." : "حذف"}</button>}
                   </div>
                 </td>
               </tr>
@@ -257,7 +260,9 @@ export function DoctorsPage() {
         </table>
       </div>
 
-      <ConfirmModal open={deleteTarget !== null} title="حذف پزشک" description={deleteTarget ? `آیا از حذف «${deleteTarget.first_name} ${deleteTarget.last_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""} confirmLabel="حذف پزشک" variant="danger" isLoading={pendingDeleteId !== null} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (deleteTarget) void handleDelete(deleteTarget).finally(() => setDeleteTarget(null)); }} />\n\n      {lastPage > 1 ? (
+      <ConfirmModal open={deleteTarget !== null} title="حذف پزشک" description={deleteTarget ? `آیا از حذف «${deleteTarget.first_name} ${deleteTarget.last_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""} confirmLabel="حذف پزشک" variant="danger" isLoading={pendingDeleteId !== null} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (deleteTarget) void handleDelete(deleteTarget).finally(() => setDeleteTarget(null)); }} />
+
+      {lastPage > 1 ? (
         <div className="flex items-center justify-center gap-3">
           <button type="button" disabled={page <= 1 || isLoading} onClick={() => setPage((current) => Math.max(1, current - 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">قبلی</button>
           <span className="text-sm text-gray-600">صفحه {new Intl.NumberFormat("fa-IR").format(page)} از {new Intl.NumberFormat("fa-IR").format(lastPage)}</span>
