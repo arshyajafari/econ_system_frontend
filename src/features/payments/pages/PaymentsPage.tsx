@@ -214,7 +214,10 @@ export function PaymentsPage() {
       return;
     }
 
-    if (action === "cancel") {\n      setCancelTarget(payment);\n      return;\n    }
+    if (action === "cancel") {
+      setCancelTarget(payment);
+      return;
+    }
 
     setPendingPaymentId(payment.id);
 
@@ -331,7 +334,18 @@ export function PaymentsPage() {
         <span>{new Intl.NumberFormat("fa-IR").format(total)} پرداخت</span>
       </div>
 
-      <ConfirmModal\n        open={cancelTarget !== null}\n        title="لغو پرداخت"\n        description={cancelTarget ? `آیا از لغو پرداخت «${cancelTarget.reference_number || cancelTarget.id}» مطمئن هستید؟` : ""}\n        confirmLabel="لغو پرداخت"\n        variant="danger"\n        isLoading={pendingPaymentId !== null}\n        onCancel={() => setCancelTarget(null)}\n        onConfirm={() => { if (cancelTarget) { void handleAction(cancelTarget, "cancel"); setCancelTarget(null); } }}\n      />\n\n      <PaymentTable
+      <ConfirmModal
+        open={cancelTarget !== null}
+        title="لغو پرداخت"
+        description={cancelTarget ? `آیا از لغو پرداخت «${cancelTarget.reference_number || cancelTarget.id}» مطمئن هستید؟` : ""}
+        confirmLabel="لغو پرداخت"
+        variant="danger"
+        isLoading={pendingPaymentId !== null}
+        onCancel={() => setCancelTarget(null)}
+        onConfirm={() => { if (cancelTarget) { void handleAction(cancelTarget, "cancel"); setCancelTarget(null); } }}
+      />
+
+      <PaymentTable
         payments={payments}
         isLoading={isLoading}
         pendingPaymentId={pendingPaymentId}
