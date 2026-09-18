@@ -134,7 +134,12 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
 
   const confirmedAmount = invoicePayments.filter((item) => item.status === "confirmed").reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const pendingAmount = invoicePayments.filter((item) => item.status === "pending" && item.id !== payment?.id).reduce((sum, item) => sum + Number(item.amount || 0), 0);
-  const invoiceRemainingBeforePending = selectedInvoice?.remaining_amount != null\n    ? Number(selectedInvoice.remaining_amount)\n    : selectedInvoice\n      ? Math.max(0, Number(selectedInvoice.total_amount || 0) - confirmedAmount - Number(selectedInvoice.return_credit_amount || 0))\n      : 0;\n  const remainingAmount = Math.max(0, invoiceRemainingBeforePending - pendingAmount);
+  const invoiceRemainingBeforePending = selectedInvoice?.remaining_amount != null
+    ? Number(selectedInvoice.remaining_amount)
+    : selectedInvoice
+      ? Math.max(0, Number(selectedInvoice.total_amount || 0) - confirmedAmount - Number(selectedInvoice.return_credit_amount || 0))
+      : 0;
+  const remainingAmount = Math.max(0, invoiceRemainingBeforePending - pendingAmount);
 
   function handleCustomerChange(nextCustomerId: string) {
     if (payment) return;
