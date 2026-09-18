@@ -243,7 +243,10 @@ export function OrdersPage() {
       return;
     }
 
-    if (action === "cancel") {\n      setActionTarget({ order, action });\n      return;\n    }
+    if (action === "cancel") {
+      setActionTarget({ order, action });
+      return;
+    }
 
     setPendingOrderId(order.id);
 
@@ -385,7 +388,18 @@ export function OrdersPage() {
         ) : null}
       </div>
 
-      <ConfirmModal\n        open={actionTarget !== null}\n        title="لغو سفارش"\n        description={actionTarget ? `آیا از لغو سفارش «${actionTarget.order.code}» مطمئن هستید؟` : ""}\n        confirmLabel="لغو سفارش"\n        variant="danger"\n        isLoading={pendingOrderId !== null}\n        onCancel={() => setActionTarget(null)}\n        onConfirm={() => { if (actionTarget) { void handleAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}\n      />\n\n      <OrderTable
+      <ConfirmModal
+        open={actionTarget !== null}
+        title="لغو سفارش"
+        description={actionTarget ? `آیا از لغو سفارش «${actionTarget.order.code}» مطمئن هستید؟` : ""}
+        confirmLabel="لغو سفارش"
+        variant="danger"
+        isLoading={pendingOrderId !== null}
+        onCancel={() => setActionTarget(null)}
+        onConfirm={() => { if (actionTarget) { void handleAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}
+      />
+
+      <OrderTable
         orders={orders}
         isAdmin={isAdmin}
         isLoading={isLoading}
