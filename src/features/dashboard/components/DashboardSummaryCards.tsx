@@ -98,7 +98,18 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
           <div className="h-px flex-1 bg-slate-200" />
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-5">
-          <SummaryCard label="پرداخت امروز" value={formatAmount(dashboard.payments.today)} hint="تومان" tone="green" />
+          <SummaryCard
+            label="پرداخت تأییدشده امروز"
+            value={formatAmount(dashboard.payments.today)}
+            hint="تومان"
+            tone="green"
+          />
+          <SummaryCard
+            label="در انتظار تأیید"
+            value={formatAmount(dashboard.payments.pending_today)}
+            hint={`${formatNumber(dashboard.payments.pending_count)} پرداخت ثبت‌شده`}
+            tone="orange"
+          />
           <SummaryCard label="مرجوعی در انتظار" value={formatNumber(dashboard.returns.pending)} tone="orange" />
           <SummaryCard label="ارسال در انتظار" value={formatNumber(dashboard.deliveries.pending)} tone="orange" />
           <SummaryCard label="ویزیت امروز" value={formatNumber(dashboard.visits.today)} tone="blue" />
