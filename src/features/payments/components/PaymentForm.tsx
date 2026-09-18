@@ -78,7 +78,11 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
             : [];
           setInvoiceOptions([
             ...currentOption,
-            ...response.filter((invoice) => Number(invoice.remaining_amount ?? invoice.total_amount ?? 0) > 0),
+            ...response.filter(
+              (invoice) =>
+                invoice.is_settled !== true &&
+                Number(invoice.remaining_amount ?? 0) > 0,
+            ),
           ]);
         }
       } catch (requestError: unknown) {
