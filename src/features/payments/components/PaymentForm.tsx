@@ -16,7 +16,7 @@ const numberFormatter = new Intl.NumberFormat("fa-IR");
 export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, onCancel }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [invoiceOptions, setInvoiceOptions] = useState<PaymentInvoiceOption[]>(invoices);
+  const [invoiceOptions, setInvoiceOptions] = useState<PaymentInvoiceOption[]>(() => invoices.filter((invoice) => Number(invoice.remaining_amount ?? invoice.total_amount ?? 0) > 0 || invoice.id === payment?.invoice?.id));
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
   const [invoiceId, setInvoiceId] = useState(payment?.invoice?.id ?? "");
@@ -69,7 +69,10 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
           const currentOption = currentInvoice && !response.some((invoice) => invoice.id === currentInvoice.id)
             ? [{ ...currentInvoice, customer: payment.customer }]
             : [];
-          setInvoiceOptions([...currentOption, ...response]);
+          setInvoiceOptions([
+            ...currentOption,
+            ...response.filter((invoice) => Number(invoice.remaining_amount ?? invoice.total_amount ?? 0) > 0),
+          ]);
         }
       } catch (requestError: unknown) {
         if (!cancelled) setBalanceError(requestError instanceof ApiError && requestError.message ? requestError.message : "خطا در دریافت فاکتورها.");
