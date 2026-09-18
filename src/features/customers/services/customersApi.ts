@@ -121,8 +121,8 @@ export async function getCustomerBalance(id: string): Promise<number> {
 
   const payload = response.data;
   return Number(
-    "data" in payload && payload.data
-      ? payload.data.closing_balance
-      : payload.closing_balance,
+    "closing_balance" in payload
+      ? payload.closing_balance
+      : payload.data.closing_balance,
   );
 }
