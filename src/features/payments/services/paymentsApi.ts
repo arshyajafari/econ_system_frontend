@@ -3,7 +3,7 @@ import type { Payment, PaymentFormData, PaymentInvoiceOption, PaymentListParams,
 
 type InvoiceListResponse = { data: PaymentInvoiceOption[] };
 type PaymentInvoiceFilters = { customer_id?: string; settled?: boolean; payable?: boolean };
-type PaymentApiPayload = { invoice_id: string; method: string; amount: number; reference_number?: string; payment_date: string; description?: string };
+type PaymentApiPayload = { invoice_id: string; method: string; amount: number; settlement_discount_amount: number; reference_number?: string; payment_date: string; description?: string };
 
 export async function getPayments(params: PaymentListParams = {}): Promise<PaymentListResponse> {
   const response = await apiClient.get<PaymentListResponse>("/payments", { params }); return response.data;
@@ -34,7 +34,7 @@ export async function getPaymentInvoices(filters: PaymentInvoiceFilters = {}): P
   return response.data.data;
 }
 function normalizePaymentPayload(payload: PaymentFormData, isUpdate = false): PaymentApiPayload {
-  const normalized: PaymentApiPayload = { invoice_id: payload.invoice_id, method: payload.method, amount: Number(payload.amount), payment_date: payload.payment_date };
+  const normalized: PaymentApiPayload = { invoice_id: payload.invoice_id, method: payload.method, amount: Number(payload.amount), settlement_discount_amount: Number(payload.settlement_discount_amount || 0), payment_date: payload.payment_date };
   if (!isUpdate || payload.reference_number.trim()) normalized.reference_number = payload.reference_number.trim();
   if (!isUpdate || payload.description.trim()) normalized.description = payload.description.trim();
   return normalized;
@@ -44,6 +44,7 @@ function toMultipart(payload: PaymentFormData, isUpdate = false): FormData {
   if (!isUpdate) form.append("invoice_id", payload.invoice_id);
   form.append("method", payload.method);
   form.append("amount", String(Number(payload.amount)));
+  form.append("settlement_discount_amount", String(Number(payload.settlement_discount_amount || 0)));
   form.append("reference_number", payload.reference_number.trim());
   form.append("payment_date", payload.payment_date);
   form.append("description", payload.description.trim());
