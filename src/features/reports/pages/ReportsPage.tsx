@@ -72,7 +72,7 @@ export function ReportsPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
             <ReportCard label="فروش نهایی" value={money(report.sales.total)} unit="تومان" />
             <ReportCard label="تعداد فاکتور" value={money(report.sales.invoice_count)} unit="فاکتور" />
-            <ReportCard label="پرداختی تأییدشده" value={money(report.payments.total)} unit={money(report.payments.count) + " پرداخت"} />
+            <ReportCard label="پرداختی تأییدشده" value={money(report.payments.total)} unit={money(report.payments.count) + " پرداخت تأییدشده"} />
             <ReportCard label="سفارش‌ها" value={money(report.orders.total)} unit="سفارش" />
             <ReportCard label="مرجوعی تأییدشده / تکمیل‌شده" value={money(report.returns.amount)} unit={money(report.returns.count) + " مرجوعی"} />
             <ReportCard label="مطالبات" value={money(report.receivables.total)} unit="تومان" />
@@ -81,12 +81,16 @@ export function ReportsPage() {
           <div className="grid gap-6 xl:grid-cols-2">
             <div className="rounded-xl border bg-white p-4">
               <h2 className="mb-4 font-semibold">خلاصه مالی</h2>
+              <div className="mb-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
+                {money(report.payments.count)} پرداخت تأییدشده به مبلغ {money(report.payments.total)} تومان
+              </div>
               <dl className="space-y-3 text-sm">
                 {[
                   ["جمع قبل از تخفیف", report.sales.subtotal],
                   ["تخفیف", report.sales.discount],
                   ["مالیات", report.sales.tax],
                   ["فروش نهایی", report.sales.total],
+                  ["پرداختی تأییدشده", report.payments.total],
                   ["کل مطالبات", report.receivables.total],
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between border-b pb-2">
