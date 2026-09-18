@@ -135,8 +135,6 @@ export function DoctorsPage() {
 
   async function handleDelete(doctor: Doctor) {
     if (pendingDeleteId) return;
-    setDeleteTarget(doctor);\n    return;
-    if (!confirmed) return;
     const isLastItemOnPage = doctors.length === 1;
     setPendingDeleteId(doctor.id);
     setError(null);
