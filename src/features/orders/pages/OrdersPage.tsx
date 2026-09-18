@@ -145,49 +145,8 @@ export function OrdersPage() {
   }, [customerId, page, salesEmployeeId, search, status]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function fetchLookups() {
-      try {
-        setIsLoadingLookups(true);
-
-        const [customersResponse, employeesResponse, productsResponse] =
-          await Promise.all([
-            getOrderCustomers(),
-            getOrderEmployees(),
-            getOrderProducts(),
-          ]);
-
-        if (cancelled) {
-          return;
-        }
-
-        setCustomers(customersResponse);
-        setEmployees(employeesResponse);
-        setProducts(productsResponse);
-      } catch (error: unknown) {
-        if (cancelled) {
-          return;
-        }
-
-        setError(
-          error instanceof ApiError && error.message
-            ? error.message
-            : "خطا در دریافت اطلاعات مورد نیاز سفارش.",
-        );
-      } finally {
-        if (!cancelled) {
-          setIsLoadingLookups(false);
-        }
-      }
-    }
-
-    void fetchLookups();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isAdmin]);
+    void loadLookups();
+  }, [loadLookups]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
