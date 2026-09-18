@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState, useRef } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import { useAuth } from "../../auth";
+
 import { ApiError } from "../../../api/client";
 import { CustomerFilters } from "../components/CustomerFilters";
 import { CustomerForm } from "../components/CustomerForm";
