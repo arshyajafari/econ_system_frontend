@@ -22,7 +22,7 @@ import type {
   ProductStatus,
 } from "../types/product";
 
-export function ProductsPage() {
+export function ProductsPage() {\n  const { user } = useAuth();\n  const isAdmin = user?.roles.includes("admin") ?? false;
   const [products, setProducts] = useState<Product[]>([]);
 
   const [brands, setBrands] = useState<ProductBrand[]>([]);
