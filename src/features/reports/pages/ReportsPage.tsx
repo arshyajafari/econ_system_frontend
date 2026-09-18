@@ -26,7 +26,7 @@ function ReportCard({ label, value, unit }: { label: string; value: string; unit
 
 export function ReportsPage() {
   const today = getLocalDateString();
-  const monthStart = `${today.slice(0, 4)}-01-01`;
+  const monthStart = `${today.slice(0, 7)}-01`;
   const [from, setFrom] = useState(monthStart);
   const [to, setTo] = useState(today);
   const [report, setReport] = useState<ReportData | null>(null);
