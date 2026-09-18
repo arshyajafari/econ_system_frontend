@@ -96,7 +96,7 @@ export function OrdersPage() {
     } finally {
       setIsLoadingLookups(false);
     }
-  }, []);
+  }, [isAdmin]);
 
   const loadOrders = useCallback(async () => {
     const requestId = ++requestIdRef.current;
