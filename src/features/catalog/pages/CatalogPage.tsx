@@ -150,6 +150,18 @@ export function CatalogPage() {
     setCategoryForm(emptyCategory);
   };
 
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    try {
+      if (deleteTarget.type === "brand") await deleteBrand(deleteTarget.id);
+      else await deleteCategory(deleteTarget.id);
+      setDeleteTarget(null);
+      await load();
+    } catch (x: unknown) {
+      setError(x instanceof ApiError ? x.message : "خطا در حذف مورد.");
+    }
+  }
+
   return (
     <><ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} /><section className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -527,19 +539,7 @@ export function CatalogPage() {
             ) : (
               filteredCategories.map((c) => {
                 const parent = categories.find((p) => p.id === c.parent_id);
-                async function confirmDelete() {
-    if (!deleteTarget) return;
-    try {
-      if (deleteTarget.type === "brand") await deleteBrand(deleteTarget.id);
-      else await deleteCategory(deleteTarget.id);
-      setDeleteTarget(null);
-      await load();
-    } catch (x: unknown) {
-      setError(x instanceof ApiError ? x.message : "خطا در حذف مورد.");
-    }
-  }
-
-  return (
+                return (
                   <div
                     key={c.id}
                     className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
