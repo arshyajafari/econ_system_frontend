@@ -282,7 +282,20 @@ export function OrdersPage() {
     }
   }
 
-  function handleAction(order: Order, action: OrderStatusAction) {\n    if (pendingOrderId) {\n      return;\n    }\n\n    if (action === "cancel") {\n      setActionTarget({ order, action });\n      return;\n    }\n\n    void executeAction(order, action);\n  }\n\n  const canCreate =
+  function handleAction(order: Order, action: OrderStatusAction) {
+    if (pendingOrderId) {
+      return;
+    }
+
+    if (action === "cancel") {
+      setActionTarget({ order, action });
+      return;
+    }
+
+    void executeAction(order, action);
+  }
+
+  const canCreate =
     !isLoadingLookups &&
     customers.length > 0 &&
     products.length > 0;
