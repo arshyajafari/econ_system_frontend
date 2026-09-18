@@ -5,6 +5,7 @@ type CustomerTableProps = {
   isLoading: boolean;
   pendingStatusId: string | null;
   pendingDeleteId: string | null;
+  isAdmin: boolean;
   onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
