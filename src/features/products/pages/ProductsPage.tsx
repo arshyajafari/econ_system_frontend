@@ -238,7 +238,7 @@ export function ProductsPage() {
 
       setTotal((current) => Math.max(0, current - 1));
 
-      if (isLastItemOnPage && page > 1) {
+      if (products.length === 1 && page > 1) {
         setPage((current) => Math.max(1, current - 1));
       }
     } catch (error: unknown) {
