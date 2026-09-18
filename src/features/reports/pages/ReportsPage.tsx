@@ -72,7 +72,7 @@ export function ReportsPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <ReportCard label="فروش نهایی" value={money(report.sales.total)} unit="تومان · فاکتورهای صادرشده" />
             <ReportCard label="تعداد فاکتور" value={money(report.sales.invoice_count)} unit="فاکتور صادرشده" />
-            <ReportCard label="مبلغ وصول‌شده" value={money(report.payments.total)} unit={money(report.payments.count) + " پرداخت تأییدشده"} />
+            <ReportCard label="مبلغ واریزی مشتریان" value={money(report.payments.recorded_total)} unit={money(report.payments.recorded_count) + " پرداخت ثبت‌شده"} />
             <ReportCard label="در انتظار تأیید" value={money(report.payments.pending_total)} unit={money(report.payments.pending_count) + " پرداخت در انتظار تأیید"} />
             <ReportCard label="سفارش‌ها" value={money(report.orders.total)} unit={money(report.orders.completed) + " تکمیل‌شده"} />
             <ReportCard label="مرجوعی تکمیل‌شده" value={money(report.returns.amount)} unit={money(report.returns.count) + " مرجوعی · اعتبار ثبت‌شده"} />
