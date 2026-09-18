@@ -19,7 +19,8 @@ export function OrderDetailsPage() {
   const { id } = useParams<{ id: string }>(); const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
-  const [order, setOrder] = useState<Order | null>(null); const [isLoading, setIsLoading] = useState(true); const [pendingAction, setPendingAction] = useState<OrderStatusAction | null>(null); const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<Order | null>(null); const [isLoading, setIsLoading] = useState(true); const [pendingAction, setPendingAction] = useState<OrderStatusAction | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false); const [error, setError] = useState<string | null>(null);
   const loadOrder = useCallback(async () => { if (!id) { setError("شناسه سفارش نامعتبر است."); setIsLoading(false); return; } setIsLoading(true); setError(null); try { setOrder(await getOrder(id)); } catch (error: unknown) { setError(error instanceof ApiError && error.message ? error.message : "خطا در دریافت اطلاعات سفارش."); } finally { setIsLoading(false); } }, [id]);
   useEffect(() => { const timeoutId = window.setTimeout(() => { void loadOrder(); }, 0); return () => window.clearTimeout(timeoutId); }, [loadOrder]);
   async function handleAction(action: OrderStatusAction) { if (!order || pendingAction) return; if (action === "cancel") { setCancelOpen(true); return; } setPendingAction(action); setError(null); try { setOrder(await performOrderStatusAction(order.id, action)); } catch (error: unknown) { setError(error instanceof ApiError && error.message ? error.message : "عملیات سفارش انجام نشد."); } finally { setPendingAction(null); } }
