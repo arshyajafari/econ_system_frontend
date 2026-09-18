@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { ImageUploadField } from "../../../components/ImageUploadField";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 import {
   changeBrandActivity,
   changeCategoryActivity,
@@ -52,6 +53,7 @@ export function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: "brand" | "category"; id: string; title: string } | null>(null);
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -74,7 +76,9 @@ export function CatalogPage() {
   }, []);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
-    return () => window.clearTimeout(timer);
+    async function confirmDelete() { if (!deleteTarget) return; try { if (deleteTarget.type === "brand") await deleteBrand(deleteTarget.id); else await deleteCategory(deleteTarget.id); setDeleteTarget(null); await load(); } catch (x: unknown) { setError(x instanceof ApiError ? x.message : "خطا در حذف مورد."); } }
+
+  return () => window.clearTimeout(timer);
   }, [load]);
   const filteredBrands = brands.filter((b) =>
     `${b.title} ${b.code}`
@@ -122,7 +126,7 @@ export function CatalogPage() {
     }
   }
   async function removeBrand(b: Brand) {
-    if (!window.confirm(`آیا از حذف «${b.title}» مطمئن هستید؟`)) return;
+    setDeleteTarget({ type: "brand", id: b.id, title: b.title });
     try {
       await deleteBrand(b.id);
       await load();
@@ -131,7 +135,7 @@ export function CatalogPage() {
     }
   }
   async function removeCategory(c: ProductCategory) {
-    if (!window.confirm(`آیا از حذف «${c.title}» مطمئن هستید؟`)) return;
+    setDeleteTarget({ type: "category", id: c.id, title: c.title });
     try {
       await deleteCategory(c.id);
       await load();
@@ -149,7 +153,7 @@ export function CatalogPage() {
   };
 
   return (
-    <section className="space-y-6 p-4 md:p-6">
+    <><ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} /><section className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
