@@ -67,6 +67,12 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
         tone="green"
       />
       <SummaryCard
+        label="فروش سال"
+        value={formatAmount(dashboard.sales.year)}
+        hint="تومان"
+        tone="blue"
+      />
+      <SummaryCard
         label="سفارش امروز"
         value={formatNumber(dashboard.orders.today)}
         hint="سفارش"
