@@ -529,7 +529,9 @@ export function CatalogPage() {
               filteredCategories.map((c) => {
                 const parent = categories.find((p) => p.id === c.parent_id);
                 return (
-                  <div
+    <>
+      <ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} />
+      <div
                     key={c.id}
                     className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
                   >
@@ -593,6 +595,7 @@ export function CatalogPage() {
         </div>
       </div>
     </section>
+    </div>
     </>
   );
 }
