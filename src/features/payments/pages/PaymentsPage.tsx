@@ -70,7 +70,7 @@ export function PaymentsPage() {
     setIsLoadingInvoices(true);
 
     try {
-      const response = await getPaymentInvoices();
+      const response = await getPaymentInvoices({ payable: true });
 
       setInvoices(response);
     } catch (error: unknown) {
