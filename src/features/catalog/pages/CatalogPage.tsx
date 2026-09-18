@@ -152,7 +152,15 @@ export function CatalogPage() {
 
   return (
     <>
-      <ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} />
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"}
+        description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""}
+        confirmLabel="حذف"
+        variant="danger"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => void confirmDelete()}
+      />
       <section className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
