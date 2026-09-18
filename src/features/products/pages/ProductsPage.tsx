@@ -400,9 +400,7 @@ export function ProductsPage() {
         pendingDeleteId={pendingDeleteId}
         isAdmin={isAdmin}
         onEdit={openEditForm}
-        onDelete={(product) => {
-          void handleDelete(product);
-        }}
+        onDelete={requestDelete}
         onStatusChange={(product, nextStatus) => {
           void handleStatusChange(product, nextStatus);
         }}
