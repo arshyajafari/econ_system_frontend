@@ -76,9 +76,7 @@ export function CatalogPage() {
   }, []);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
-    async function confirmDelete() { if (!deleteTarget) return; try { if (deleteTarget.type === "brand") await deleteBrand(deleteTarget.id); else await deleteCategory(deleteTarget.id); setDeleteTarget(null); await load(); } catch (x: unknown) { setError(x instanceof ApiError ? x.message : "خطا در حذف مورد."); } }
-
-  return () => window.clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [load]);
   const filteredBrands = brands.filter((b) =>
     `${b.title} ${b.code}`
@@ -529,7 +527,19 @@ export function CatalogPage() {
             ) : (
               filteredCategories.map((c) => {
                 const parent = categories.find((p) => p.id === c.parent_id);
-                return (
+                async function confirmDelete() {
+    if (!deleteTarget) return;
+    try {
+      if (deleteTarget.type === "brand") await deleteBrand(deleteTarget.id);
+      else await deleteCategory(deleteTarget.id);
+      setDeleteTarget(null);
+      await load();
+    } catch (x: unknown) {
+      setError(x instanceof ApiError ? x.message : "خطا در حذف مورد.");
+    }
+  }
+
+  return (
                   <div
                     key={c.id}
                     className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
