@@ -125,21 +125,9 @@ export function CatalogPage() {
   }
   async function removeBrand(b: Brand) {
     setDeleteTarget({ type: "brand", id: b.id, title: b.title });
-    try {
-      await deleteBrand(b.id);
-      await load();
-    } catch (x: unknown) {
-      setError(x instanceof ApiError ? x.message : "خطا در حذف برند.");
-    }
   }
   async function removeCategory(c: ProductCategory) {
     setDeleteTarget({ type: "category", id: c.id, title: c.title });
-    try {
-      await deleteCategory(c.id);
-      await load();
-    } catch (x: unknown) {
-      setError(x instanceof ApiError ? x.message : "خطا در حذف دسته‌بندی.");
-    }
   }
   const cancelBrandEdit = () => {
     setEditingBrand(null);
@@ -163,7 +151,8 @@ export function CatalogPage() {
   }
 
   return (
-    <><ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} /><section className="space-y-6 p-4 md:p-6">
+    <>
+      <ConfirmModal className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -604,5 +593,6 @@ export function CatalogPage() {
         </div>
       </div>
     </section>
+    </>
   );
 }
