@@ -33,10 +33,10 @@ export function OrderStatusActions({
     });
   }
 
-  if (order.status === "confirmed") {
+  if (order.status === "confirmed" && isAdmin) {
     actions.push({
       action: "complete",
-      label: "تکمیل سفارش",
+      label: "تأیید نهایی و تکمیل",
       className: "border-purple-200 text-purple-700 hover:bg-purple-50",
     });
   }
@@ -47,6 +47,14 @@ export function OrderStatusActions({
       label: "لغو",
       className: "border-red-200 text-red-700 hover:bg-red-50",
     });
+  }
+
+  if (actions.length === 0 && order.status === "confirmed" && !isAdmin) {
+    return (
+      <div className="rounded-lg bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700">
+        در انتظار تأیید نهایی مدیر
+      </div>
+    );
   }
 
   if (actions.length === 0) {
