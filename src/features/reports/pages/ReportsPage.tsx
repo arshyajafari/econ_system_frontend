@@ -82,9 +82,6 @@ export function ReportsPage() {
           <div className="grid gap-6 xl:grid-cols-2">
             <div className="rounded-xl border bg-white p-4">
               <h2 className="mb-4 font-semibold">خلاصه مالی</h2>
-              <div className="mb-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
-                {money(report.payments.recorded_count)} پرداخت به مبلغ {money(report.payments.recorded_total)} تومان از مشتریان ثبت شده است؛ {money(report.payments.count)} پرداخت به مبلغ {money(report.payments.total)} تومان تأیید شده و {money(report.payments.pending_count)} پرداخت به مبلغ {money(report.payments.pending_total)} تومان در انتظار تأیید است. پرداخت‌های لغوشده در این گزارش محاسبه نمی‌شوند.
-              </div>
               <dl className="space-y-3 text-sm">
                 {[
                   ["جمع قبل از تخفیف", report.sales.subtotal],
