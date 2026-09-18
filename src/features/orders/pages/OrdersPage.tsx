@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useAuth } from "../../auth";
 
 import { OrderFilters } from "../components/OrderFilters";
@@ -63,6 +64,8 @@ export function OrdersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+
+  const [actionTarget, setActionTarget] = useState<{ order: Order; action: OrderStatusAction } | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -238,7 +241,7 @@ export function OrdersPage() {
     }
   }
 
-  async function handleAction(order: Order, action: OrderStatusAction) {
+  async function executeAction(order: Order, action: OrderStatusAction) {
     if (pendingOrderId) {
       return;
     }
@@ -279,7 +282,7 @@ export function OrdersPage() {
     }
   }
 
-  const canCreate =
+  function handleAction(order: Order, action: OrderStatusAction) {\n    if (pendingOrderId) {\n      return;\n    }\n\n    if (action === "cancel") {\n      setActionTarget({ order, action });\n      return;\n    }\n\n    void executeAction(order, action);\n  }\n\n  const canCreate =
     !isLoadingLookups &&
     customers.length > 0 &&
     products.length > 0;
@@ -396,7 +399,7 @@ export function OrdersPage() {
         variant="danger"
         isLoading={pendingOrderId !== null}
         onCancel={() => setActionTarget(null)}
-        onConfirm={() => { if (actionTarget) { void handleAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}
+        onConfirm={() => { if (actionTarget) { void executeAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}
       />
 
       <OrderTable
