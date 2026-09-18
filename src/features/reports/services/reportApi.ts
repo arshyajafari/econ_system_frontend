@@ -6,5 +6,5 @@ export async function getReport(from: string, to: string): Promise<ReportData> {
     params: { from, to },
   });
 
-  return response.data;
+  return response.data.data;
 }
