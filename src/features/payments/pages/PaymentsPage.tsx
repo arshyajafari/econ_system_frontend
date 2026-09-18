@@ -337,7 +337,7 @@ export function PaymentsPage() {
         <span>{new Intl.NumberFormat("fa-IR").format(total)} پرداخت</span>
       </div>
 
-      <PaymentTable
+      <ConfirmModal\n        open={cancelTarget !== null}\n        title="لغو پرداخت"\n        description={cancelTarget ? `آیا از لغو پرداخت «${cancelTarget.reference_number || cancelTarget.id}» مطمئن هستید؟` : ""}\n        confirmLabel="لغو پرداخت"\n        variant="danger"\n        isLoading={pendingPaymentId !== null}\n        onCancel={() => setCancelTarget(null)}\n        onConfirm={() => { if (cancelTarget) { void handleAction(cancelTarget, "cancel"); setCancelTarget(null); } }}\n      />\n\n      <PaymentTable
         payments={payments}
         isLoading={isLoading}
         pendingPaymentId={pendingPaymentId}
