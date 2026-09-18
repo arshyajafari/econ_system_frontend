@@ -245,7 +245,20 @@ export function PaymentsPage() {
     }
   }
 
-  function handleAction(payment: Payment, action: PaymentStatusAction) {\n    if (pendingPaymentId) {\n      return;\n    }\n\n    if (action === "cancel") {\n      setCancelTarget(payment);\n      return;\n    }\n\n    void executeAction(payment, action);\n  }\n\n  const canCreate = !isLoadingInvoices && invoices.length > 0;
+  function handleAction(payment: Payment, action: PaymentStatusAction) {
+    if (pendingPaymentId) {
+      return;
+    }
+
+    if (action === "cancel") {
+      setCancelTarget(payment);
+      return;
+    }
+
+    void executeAction(payment, action);
+  }
+
+  const canCreate = !isLoadingInvoices && invoices.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
