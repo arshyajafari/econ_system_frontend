@@ -11,6 +11,8 @@ export type PaymentInvoice = {
   total_amount: number;
   is_settled?: boolean | null;
   paid_amount?: number | string | null;
+  return_credit_amount?: number | string | null;
+  remaining_amount?: number | string | null;
 };
 
 export type PaymentCustomer = { id: string; code: string; name: string };
