@@ -389,6 +389,7 @@ export function OrdersPage() {
 
       <OrderTable
         orders={orders}
+        isAdmin={isAdmin}
         isLoading={isLoading}
         pendingOrderId={pendingOrderId}
         onView={(order) => {
