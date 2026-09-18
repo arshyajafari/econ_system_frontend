@@ -26,7 +26,7 @@ function ReportCard({ label, value, unit }: { label: string; value: string; unit
 
 export function ReportsPage() {
   const today = getLocalDateString();
-  const monthStart = `${today.slice(0, 8)}01`;
+  const monthStart = `${today.slice(0, 4)}-01-01`;
   const [from, setFrom] = useState(monthStart);
   const [to, setTo] = useState(today);
   const [report, setReport] = useState<ReportData | null>(null);
@@ -54,7 +54,7 @@ export function ReportsPage() {
     <section className="space-y-6 p-4 md:p-6">
       <header>
         <h1 className="text-2xl font-bold text-gray-900">گزارش‌ها</h1>
-        <p className="text-sm text-gray-500">گزارش فروش، پرداخت، سفارش و مرجوعی در بازه انتخابی</p>
+        <p className="text-sm text-gray-500">گزارش فروش، پرداخت، سفارش و مرجوعی در بازه انتخابی؛ پیش‌فرض از ابتدای سال</p>
       </header>
 
       <form onSubmit={(e) => { e.preventDefault(); if (from <= to) void loadReport(from, to); else setError("تاریخ شروع باید قبل از تاریخ پایان باشد."); }} className="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3">
