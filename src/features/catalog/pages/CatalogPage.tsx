@@ -152,7 +152,8 @@ export function CatalogPage() {
 
   return (
     <>
-      <ConfirmModal className="space-y-6 p-4 md:p-6">
+      <ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} />
+      <section className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -529,9 +530,7 @@ export function CatalogPage() {
               filteredCategories.map((c) => {
                 const parent = categories.find((p) => p.id === c.parent_id);
                 return (
-    <>
-      <ConfirmModal open={deleteTarget !== null} title={deleteTarget?.type === "brand" ? "حذف برند" : "حذف دسته‌بندی"} description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟` : ""} confirmLabel="حذف" variant="danger" onCancel={() => setDeleteTarget(null)} onConfirm={() => void confirmDelete()} />
-      <div
+                  <div
                     key={c.id}
                     className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
                   >
@@ -594,8 +593,7 @@ export function CatalogPage() {
           </div>
         </div>
       </div>
-    </section>
-    </div>
+      </section>
     </>
   );
 }
