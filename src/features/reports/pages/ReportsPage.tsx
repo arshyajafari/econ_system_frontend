@@ -70,21 +70,20 @@ export function ReportsPage() {
       ) : report ? (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <ReportCard label="فروش نهایی" value={money(report.sales.total)} unit="تومان" />
-            <ReportCard label="تعداد فاکتور" value={money(report.sales.invoice_count)} unit="فاکتور" />
-            <ReportCard label="پرداختی تأییدشده" value={money(report.payments.total)} unit={money(report.payments.count) + " پرداخت تأییدشده · فقط تأییدشده"} />
-            <ReportCard label="پرداخت‌های ثبت‌شده" value={money(report.payments.recorded_total)} unit={money(report.payments.recorded_count) + " پرداخت · تأییدشده + در انتظار"} />
-            <ReportCard label="در انتظار تأیید" value={money(report.payments.pending_total)} unit={money(report.payments.pending_count) + " پرداخت · بخشی از ثبت‌شده‌ها"} />
-            <ReportCard label="سفارش‌ها" value={money(report.orders.total)} unit="سفارش" />
+            <ReportCard label="فروش نهایی" value={money(report.sales.total)} unit="تومان · فاکتورهای صادرشده" />
+            <ReportCard label="تعداد فاکتور" value={money(report.sales.invoice_count)} unit="فاکتور صادرشده" />
+            <ReportCard label="مبلغ وصول‌شده" value={money(report.payments.total)} unit={money(report.payments.count) + " پرداخت تأییدشده"} />
+            <ReportCard label="در انتظار تأیید" value={money(report.payments.pending_total)} unit={money(report.payments.pending_count) + " پرداخت در انتظار تأیید"} />
+            <ReportCard label="سفارش‌ها" value={money(report.orders.total)} unit={money(report.orders.completed) + " تکمیل‌شده"} />
             <ReportCard label="مرجوعی تکمیل‌شده" value={money(report.returns.amount)} unit={money(report.returns.count) + " مرجوعی · اعتبار ثبت‌شده"} />
-            <ReportCard label="مانده حساب مشتریان" value={money(report.receivables.total)} unit="تومان" />
+            <ReportCard label="مانده حساب مشتریان" value={money(report.receivables.total)} unit="تومان · مانده جاری" />
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
             <div className="rounded-xl border bg-white p-4">
               <h2 className="mb-4 font-semibold">خلاصه مالی</h2>
               <div className="mb-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
-                {money(report.payments.recorded_count)} پرداخت معتبر ثبت‌شده به مبلغ {money(report.payments.recorded_total)} تومان؛ شامل {money(report.payments.count)} پرداخت تأییدشده و {money(report.payments.pending_count)} مورد در انتظار تأیید. پرداخت‌های لغوشده محاسبه نمی‌شوند.
+                {money(report.payments.count)} پرداخت به مبلغ {money(report.payments.total)} تومان وصول و تأیید شده است؛ {money(report.payments.pending_count)} پرداخت به مبلغ {money(report.payments.pending_total)} تومان هنوز در انتظار تأیید است. پرداخت‌های لغوشده در این گزارش محاسبه نمی‌شوند.
               </div>
               <dl className="space-y-3 text-sm">
                 {[
@@ -94,7 +93,6 @@ export function ReportsPage() {
                   ["فروش نهایی", report.sales.total],
                   ["پرداختی تأییدشده", report.payments.total],
                   ["پرداخت‌های در انتظار تأیید", report.payments.pending_total],
-                  ["کل پرداخت‌های ثبت‌شده معتبر", report.payments.recorded_total],
                   ["بدهکار مشتریان", report.receivables.debit],
                   ["بستانکار / اعتبار مشتریان", report.receivables.credit],
                   ["مانده حساب مشتریان", report.receivables.total],
@@ -125,7 +123,7 @@ export function ReportsPage() {
             بازه گزارش: <strong>{formatJalaliDate(report.period.from)}</strong> تا <strong>{formatJalaliDate(report.period.to)}</strong>
             {" · "}{money(report.orders.completed)} سفارش تکمیل‌شده
             {" · "}{money(report.returns.count)} مرجوعی
-            {" · "}{money(report.payments.recorded_count)} پرداخت ثبت‌شده
+            {" · "}{money(report.payments.count)} پرداخت تأییدشده
             {" · "}{money(report.payments.pending_count)} در انتظار تأیید
           </div>
         </>
