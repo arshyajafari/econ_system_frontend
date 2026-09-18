@@ -24,6 +24,8 @@ import type {
 
 export function CustomersPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.roles.includes("admin") ?? false;
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
