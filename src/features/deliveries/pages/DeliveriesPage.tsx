@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { formatJalaliDateTime } from "../../../utils/date";
-import { cancelDelivery, completeDelivery, createDelivery, getCompletedOrders, getDeliveries, prepareDelivery, shipDelivery, updateDelivery } from "../services/deliveriesApi";
+import { cancelDelivery, completeDelivery, createDelivery, getDeliveries, getPendingOrders, prepareDelivery, shipDelivery, updateDelivery } from "../services/deliveriesApi";
 import { DELIVERY_STATUS_OPTIONS, getDeliveryStatusLabel } from "../types/delivery";
 import type { Delivery, DeliveryFormData, DeliveryStatus } from "../types/delivery";
 import type { Order } from "../../orders/types/order";
