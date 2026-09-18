@@ -160,14 +160,14 @@ export function CustomerTable({
                         ویرایش
                       </button>
 
-                      <button
+                      {isAdmin ? (<button
                         type="button"
                         onClick={() => onDelete(customer)}
                         disabled={isPending}
                         className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {isDeletePending ? "در حال حذف..." : "حذف"}
-                      </button>
+                      </button>) : null}
                     </div>
                   </td>
                 </tr>
