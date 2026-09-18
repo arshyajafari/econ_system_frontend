@@ -243,15 +243,7 @@ export function OrdersPage() {
       return;
     }
 
-    if (action === "cancel") {
-      const confirmed = window.confirm(
-        `آیا از لغو سفارش «${order.code}» مطمئن هستید؟`,
-      );
-
-      if (!confirmed) {
-        return;
-      }
-    }
+    if (action === "cancel") {\n      setActionTarget({ order, action });\n      return;\n    }
 
     setPendingOrderId(order.id);
 
