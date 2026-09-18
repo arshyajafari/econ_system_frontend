@@ -4,7 +4,7 @@ import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { getCustomers } from "../../customers/services/customersApi";
+import { getCustomerBalance, getCustomers } from "../../customers/services/customersApi";
 import type { Customer } from "../../customers/types/customer";
 import { getPayments, getPaymentInvoices } from "../services/paymentsApi";
 import { PAYMENT_METHOD_OPTIONS } from "../types/payment";
@@ -30,6 +30,8 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
   const [invoicePayments, setInvoicePayments] = useState<Payment[]>([]);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [customerBalance, setCustomerBalance] = useState<number | null>(null);
+  const [isLoadingCustomerBalance, setIsLoadingCustomerBalance] = useState(false);
 
   const selectedInvoice = useMemo(() => invoiceOptions.find((invoice) => invoice.id === invoiceId) ?? null, [invoiceId, invoiceOptions]);
 
@@ -78,6 +80,38 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     const timeoutId = window.setTimeout(() => void loadInvoices(), 0);
     return () => { cancelled = true; window.clearTimeout(timeoutId); };
   }, [customerId, payment]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!customerId) {
+      setCustomerBalance(null);
+      setIsLoadingCustomerBalance(false);
+      return () => { cancelled = true; };
+    }
+
+    async function loadCustomerBalance() {
+      setIsLoadingCustomerBalance(true);
+      try {
+        const balance = await getCustomerBalance(customerId);
+        if (!cancelled) setCustomerBalance(balance);
+      } catch (requestError: unknown) {
+        if (!cancelled) {
+          setCustomerBalance(null);
+          setBalanceError(
+            requestError instanceof ApiError && requestError.message
+              ? requestError.message
+              : "خطا در دریافت مانده حساب مشتری.",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsLoadingCustomerBalance(false);
+      }
+    }
+
+    const timeoutId = window.setTimeout(() => void loadCustomerBalance(), 0);
+    return () => { cancelled = true; window.clearTimeout(timeoutId); };
+  }, [customerId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,7 +167,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مشتری</label><select required disabled={isSubmitting || Boolean(payment) || isLoadingCustomers} value={customerId} onChange={(event) => handleCustomerChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"><option value="">{isLoadingCustomers ? "در حال دریافت مشتریان..." : "انتخاب مشتری"}</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.code} — {customer.customer_name}</option>)}</select></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">فاکتور</label><select required disabled={isSubmitting || Boolean(payment) || !customerId || isLoadingInvoices} value={invoiceId} onChange={(event) => handleInvoiceChange(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"><option value="">{isLoadingInvoices ? "در حال دریافت فاکتورها..." : customerId ? "انتخاب فاکتور" : "ابتدا مشتری را انتخاب کنید"}</option>{invoiceOptions.map((invoice) => <option key={invoice.id} value={invoice.id}>{invoice.code} — {numberFormatter.format(Number(invoice.total_amount || 0))}</option>)}</select>{!payment && customerId ? <p className="mt-1.5 text-xs text-gray-500">فقط فاکتورهای صادرشده و تسویه‌نشده این مشتری نمایش داده می‌شوند.</p> : null}</div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">روش پرداخت</label><select required disabled={isSubmitting} value={method} onChange={(event) => setMethod(event.target.value as PaymentMethod)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">{PAYMENT_METHOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></div>
-      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label><FormattedNumberInput required min="0.01" step="0.01" dir="ltr" disabled={isSubmitting} value={amount} onValueChange={setAmount} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right" placeholder="مثلاً 1,500,000" />{selectedInvoice ? <div className="mt-2 text-xs text-gray-500">{isLoadingBalance ? "در حال محاسبه مانده..." : `مانده قابل پرداخت: ${numberFormatter.format(remainingAmount)}`}</div> : null}</div>
+      <div><label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label><FormattedNumberInput required min="0.01" step="0.01" dir="ltr" disabled={isSubmitting} value={amount} onValueChange={setAmount} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right" placeholder="مثلاً 1,500,000" />{customerId ? <div className="mt-2 text-xs text-gray-500">{isLoadingCustomerBalance ? "در حال دریافت مانده حساب مشتری..." : customerBalance === null ? "مانده حساب مشتری: —" : `مانده حساب مشتری: ${numberFormatter.format(customerBalance)}`}</div> : null}{selectedInvoice ? <div className="mt-1 text-xs text-gray-500">{isLoadingBalance ? "در حال محاسبه مانده فاکتور..." : `مانده قابل پرداخت فاکتور: ${numberFormatter.format(remainingAmount)}`}</div> : null}</div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label><JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">شماره مرجع</label><input type="text" maxLength={100} disabled={isSubmitting} value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="شماره پیگیری، چک و..." /></div>
       <div><label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label><input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
