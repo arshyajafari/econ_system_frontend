@@ -340,9 +340,7 @@ export function CustomersPage() {
         pendingDeleteId={pendingDeleteId}
         isAdmin={isAdmin}
         onEdit={openEditForm}
-        onDelete={(customer) => {
-          void handleDelete(customer);
-        }}
+        onDelete={requestDelete}
         onStatusChange={(customer, nextStatus) => {
           void handleStatusChange(customer, nextStatus);
         }}
