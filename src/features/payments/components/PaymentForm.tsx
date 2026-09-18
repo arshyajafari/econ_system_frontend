@@ -71,7 +71,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     async function loadInvoices() {
       setIsLoadingInvoices(true);
       try {
-        const response = await getPaymentInvoices({ customer_id: customerId || undefined, payable: true });
+        const response = await getPaymentInvoices({ customer_id: customerId || undefined, settled: false, payable: true });
         if (!cancelled) {
           const currentInvoice = payment?.invoice;
           const currentOption = currentInvoice && !response.some((invoice) => invoice.id === currentInvoice.id)
