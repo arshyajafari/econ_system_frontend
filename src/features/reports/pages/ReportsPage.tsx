@@ -76,8 +76,8 @@ export function ReportsPage() {
             <ReportCard label="پرداخت‌های ثبت‌شده" value={money(report.payments.recorded_total)} unit={money(report.payments.recorded_count) + " پرداخت ثبت‌شده"} />
             <ReportCard label="در انتظار تأیید" value={money(report.payments.pending_total)} unit={money(report.payments.pending_count) + " پرداخت در انتظار تأیید"} />
             <ReportCard label="سفارش‌ها" value={money(report.orders.total)} unit="سفارش" />
-            <ReportCard label="مرجوعی تأییدشده / تکمیل‌شده" value={money(report.returns.amount)} unit={money(report.returns.count) + " مرجوعی"} />
-            <ReportCard label="مطالبات" value={money(report.receivables.total)} unit="تومان" />
+            <ReportCard label="مرجوعی تکمیل‌شده" value={money(report.returns.amount)} unit={money(report.returns.count) + " مرجوعی · اعتبار ثبت‌شده"} />
+            <ReportCard label="مانده حساب مشتریان" value={money(report.receivables.total)} unit="تومان" />
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
@@ -95,7 +95,9 @@ export function ReportsPage() {
                   ["پرداختی تأییدشده", report.payments.total],
                   ["پرداخت‌های در انتظار تأیید", report.payments.pending_total],
                   ["کل پرداخت‌های ثبت‌شده", report.payments.recorded_total],
-                  ["کل مطالبات", report.receivables.total],
+                  ["بدهکار مشتریان", report.receivables.debit],
+                  ["بستانکار / اعتبار مشتریان", report.receivables.credit],
+                  ["مانده حساب مشتریان", report.receivables.total],
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between border-b pb-2">
                     <dt>{label}</dt><dd className="font-medium">{money(value as number)} تومان</dd>
