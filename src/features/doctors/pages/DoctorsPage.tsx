@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ApiError } from "../../../api/client";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 import { DoctorForm } from "../components/DoctorForm";
 import {
   changeDoctorStatus,
@@ -52,6 +53,7 @@ export function DoctorsPage() {
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Doctor | null>(null);
   const requestIdRef = useRef(0);
 
   const loadDoctors = useCallback(async () => {
@@ -133,7 +135,7 @@ export function DoctorsPage() {
 
   async function handleDelete(doctor: Doctor) {
     if (pendingDeleteId) return;
-    const confirmed = window.confirm(`آیا از حذف «${doctor.first_name} ${doctor.last_name}» مطمئن هستید؟`);
+    setDeleteTarget(doctor);\n    return;
     if (!confirmed) return;
     const isLastItemOnPage = doctors.length === 1;
     setPendingDeleteId(doctor.id);
@@ -248,7 +250,7 @@ export function DoctorsPage() {
                 <td className="whitespace-nowrap px-4 py-3">
                   <div className="flex gap-2">
                     <button type="button" onClick={() => openEditForm(doctor)} disabled={Boolean(pendingDeleteId)} className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">ویرایش</button>
-                    <button type="button" onClick={() => { void handleDelete(doctor); }} disabled={pendingDeleteId === doctor.id || pendingStatusId === doctor.id} className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50">{pendingDeleteId === doctor.id ? "در حال حذف..." : "حذف"}</button>
+                    <button type="button" onClick={() => setDeleteTarget(doctor)} disabled={pendingDeleteId === doctor.id || pendingStatusId === doctor.id} className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50">{pendingDeleteId === doctor.id ? "در حال حذف..." : "حذف"}</button>
                   </div>
                 </td>
               </tr>
@@ -257,7 +259,7 @@ export function DoctorsPage() {
         </table>
       </div>
 
-      {lastPage > 1 ? (
+      <ConfirmModal open={deleteTarget !== null} title="حذف پزشک" description={deleteTarget ? `آیا از حذف «${deleteTarget.first_name} ${deleteTarget.last_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""} confirmLabel="حذف پزشک" variant="danger" isLoading={pendingDeleteId !== null} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (deleteTarget) void handleDelete(deleteTarget).finally(() => setDeleteTarget(null)); }} />\n\n      {lastPage > 1 ? (
         <div className="flex items-center justify-center gap-3">
           <button type="button" disabled={page <= 1 || isLoading} onClick={() => setPage((current) => Math.max(1, current - 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50">قبلی</button>
           <span className="text-sm text-gray-600">صفحه {new Intl.NumberFormat("fa-IR").format(page)} از {new Intl.NumberFormat("fa-IR").format(lastPage)}</span>
