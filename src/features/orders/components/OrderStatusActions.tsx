@@ -2,12 +2,14 @@ import type { Order, OrderStatusAction } from "../types/order";
 
 type OrderStatusActionsProps = {
   order: Order;
+  isAdmin: boolean;
   disabled?: boolean;
   onAction: (action: OrderStatusAction) => void;
 };
 
 export function OrderStatusActions({
   order,
+  isAdmin,
   disabled = false,
   onAction,
 }: OrderStatusActionsProps) {
