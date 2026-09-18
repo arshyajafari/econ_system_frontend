@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 
 import { PaymentFilters } from "../components/PaymentFilters";
 import { PaymentForm } from "../components/PaymentForm";
@@ -52,6 +53,8 @@ export function PaymentsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [pendingPaymentId, setPendingPaymentId] = useState<string | null>(null);
+
+  const [cancelTarget, setCancelTarget] = useState<Payment | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -209,7 +212,7 @@ export function PaymentsPage() {
     }
   }
 
-  async function handleAction(payment: Payment, action: PaymentStatusAction) {
+  async function executeAction(payment: Payment, action: PaymentStatusAction) {
     if (pendingPaymentId) {
       return;
     }
@@ -242,7 +245,7 @@ export function PaymentsPage() {
     }
   }
 
-  const canCreate = !isLoadingInvoices && invoices.length > 0;
+  function handleAction(payment: Payment, action: PaymentStatusAction) {\n    if (pendingPaymentId) {\n      return;\n    }\n\n    if (action === "cancel") {\n      setCancelTarget(payment);\n      return;\n    }\n\n    void executeAction(payment, action);\n  }\n\n  const canCreate = !isLoadingInvoices && invoices.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -342,7 +345,7 @@ export function PaymentsPage() {
         variant="danger"
         isLoading={pendingPaymentId !== null}
         onCancel={() => setCancelTarget(null)}
-        onConfirm={() => { if (cancelTarget) { void handleAction(cancelTarget, "cancel"); setCancelTarget(null); } }}
+        onConfirm={() => { if (cancelTarget) { void executeAction(cancelTarget, "cancel"); setCancelTarget(null); } }}
       />
 
       <PaymentTable
