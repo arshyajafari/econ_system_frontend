@@ -3,7 +3,16 @@ import { apiClient } from "../../../api/client";
 import type { Order, OrderCustomerOption, OrderEmployeeOption, OrderFormData, OrderListParams, OrderListResponse, OrderProductOption, OrderStatusAction } from "../types/order";
 
 type OrderApiItem = { product_id: string; quantity: number; unit_price: number; description?: string };
-type OrderApiPayload = { customer_id: string; sales_employee_id: string; description?: string; items: OrderApiItem[] };
+type OrderApiPayload = {
+  customer_id: string;
+  sales_employee_id: string;
+  description?: string;
+  discount_type: OrderFormData["discount_type"];
+  discount_value: number;
+  offer_title?: string;
+  offer_description?: string;
+  items: OrderApiItem[];
+};
 type CustomerListResponse = { data: OrderCustomerOption[] };
 type EmployeeListResponse = { data: OrderEmployeeOption[] };
 type ProductListResponse = { data: OrderProductOption[] };
@@ -20,4 +29,22 @@ export async function performOrderStatusAction(id: string, action: OrderStatusAc
 export async function getOrderCustomers(): Promise<OrderCustomerOption[]> { const response = await apiClient.get<CustomerListResponse>("/customers", { params: { per_page: 100 } }); return response.data.data; }
 export async function getOrderEmployees(): Promise<OrderEmployeeOption[]> { const response = await apiClient.get<EmployeeListResponse>("/employees", { params: { status: "active", per_page: 100 } }); return response.data.data; }
 export async function getOrderProducts(): Promise<OrderProductOption[]> { const response = await apiClient.get<ProductListResponse>("/products", { params: { status: "active", per_page: 100 } }); return response.data.data; }
-function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload { return { customer_id: payload.customer_id, sales_employee_id: payload.sales_employee_id, ...(payload.description.trim() ? { description: payload.description.trim() } : {}), items: payload.items.map((item) => ({ product_id: item.product_id, quantity: Math.max(1, Math.trunc(item.quantity)), unit_price: Number(item.unit_price), ...(item.description.trim() ? { description: item.description.trim() } : {}) })) }; }
+function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload {
+  const discountType = payload.discount_type ?? "none";
+  const discountValue = discountType === "none" ? 0 : Number(payload.discount_value) || 0;
+  return {
+    customer_id: payload.customer_id,
+    sales_employee_id: payload.sales_employee_id,
+    ...(payload.description.trim() ? { description: payload.description.trim() } : {}),
+    discount_type: discountType,
+    discount_value: discountValue,
+    ...(payload.offer_title.trim() ? { offer_title: payload.offer_title.trim() } : {}),
+    ...(payload.offer_description.trim() ? { offer_description: payload.offer_description.trim() } : {}),
+    items: payload.items.map((item) => ({
+      product_id: item.product_id,
+      quantity: Math.max(1, Math.trunc(item.quantity)),
+      unit_price: Number(item.unit_price),
+      ...(item.description.trim() ? { description: item.description.trim() } : {}),
+    })),
+  };
+}
