@@ -85,10 +85,34 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
         tone="orange"
       />
       <SummaryCard
-        label="موجودی قابل فروش"
-        value={formatNumber(dashboard.inventory.available_quantity)}
-        hint={`${formatNumber(dashboard.inventory.batches)} بچ قابل فروش · پس از کسر رزرو و انقضا`}
-        tone="green"
+        label="سفارش‌های در انتظار تأیید"
+        value={formatNumber(dashboard.orders.pending)}
+        hint="نیازمند بررسی"
+        tone="orange"
+      />
+      <SummaryCard
+        label="آماده ارسال"
+        value={formatNumber(dashboard.deliveries.ready_to_ship)}
+        hint="در صف ارسال"
+        tone="blue"
+      />
+      <SummaryCard
+        label="مشتریان بدهکار"
+        value={formatNumber(dashboard.receivables.debtors_count)}
+        hint="دارای مانده بدهکار"
+        tone="orange"
+      />
+      <SummaryCard
+        label="مرجوعی در انتظار بررسی"
+        value={formatNumber(dashboard.returns.pending)}
+        hint="نیازمند بررسی"
+        tone="red"
+      />
+      <SummaryCard
+        label="نزدیک به انقضا"
+        value={formatNumber(dashboard.inventory.near_expire_batches)}
+        hint="بچ‌های تا ۹۰ روز آینده"
+        tone="orange"
       />
 
       <div className="sm:col-span-2 xl:col-span-5">
@@ -110,7 +134,6 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
             hint={`${formatNumber(dashboard.payments.pending_count)} مورد`}
             tone="orange"
           />
-          <SummaryCard label="مرجوعی در انتظار" value={formatNumber(dashboard.returns.pending)} tone="orange" />
           <SummaryCard label="ارسال در انتظار" value={formatNumber(dashboard.deliveries.pending)} tone="orange" />
           <SummaryCard label="ویزیت امروز" value={formatNumber(dashboard.visits.today)} tone="blue" />
           <SummaryCard label="نمونه امروز" value={formatNumber(dashboard.samples.today)} tone="blue" />
