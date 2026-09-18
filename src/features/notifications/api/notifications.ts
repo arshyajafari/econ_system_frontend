@@ -8,6 +8,8 @@ export type SystemNotification = {
   is_read: boolean;
   created_at: string | null;
   read_at: string | null;
+  message_id: string | null;
+  can_manage: boolean;
 };
 
 export type NotificationPage = {
@@ -64,3 +66,6 @@ export async function sendSystemMessage(payload: SendSystemMessagePayload): Prom
   const response = await apiClient.post<{ recipients_count: number }>("/notifications/send", payload);
   return response.data;
 }
+
+export async function updateSystemMessage(id: string, payload: Pick<SendSystemMessagePayload, "title" | "body" | "priority">): Promise<void> { await apiClient.put(`/notifications/${id}`, payload); }
+export async function deleteSystemMessage(id: string): Promise<void> { await apiClient.delete(`/notifications/${id}`); }
