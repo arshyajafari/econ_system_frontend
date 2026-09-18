@@ -311,12 +311,10 @@ export function ProductsPage() {\n  const { user } = useAuth();\n  const isAdmin
             <button
               type="button"
               onClick={openCreateForm}
-            disabled={
-              isLoadingLookups || brands.length === 0 || categories.length === 0
-            }
-            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            محصول جدید
+              disabled={
+                isLoadingLookups || brands.length === 0 || categories.length === 0
+              }
+              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               محصول جدید
             </button>
