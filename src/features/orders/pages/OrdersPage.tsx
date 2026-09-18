@@ -393,7 +393,7 @@ export function OrdersPage() {
         ) : null}
       </div>
 
-      <OrderTable
+      <ConfirmModal\n        open={actionTarget !== null}\n        title="لغو سفارش"\n        description={actionTarget ? `آیا از لغو سفارش «${actionTarget.order.code}» مطمئن هستید؟` : ""}\n        confirmLabel="لغو سفارش"\n        variant="danger"\n        isLoading={pendingOrderId !== null}\n        onCancel={() => setActionTarget(null)}\n        onConfirm={() => { if (actionTarget) { void handleAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}\n      />\n\n      <OrderTable
         orders={orders}
         isAdmin={isAdmin}
         isLoading={isLoading}
