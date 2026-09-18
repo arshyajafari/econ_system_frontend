@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
 import { ProductFilters } from "../components/ProductFilters";
