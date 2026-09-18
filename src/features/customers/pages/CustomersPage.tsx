@@ -334,6 +334,7 @@ export function CustomersPage() {
         isLoading={isLoading}
         pendingStatusId={pendingStatusId}
         pendingDeleteId={pendingDeleteId}
+        isAdmin={isAdmin}
         onEdit={openEditForm}
         onDelete={(customer) => {
           void handleDelete(customer);
