@@ -16,7 +16,14 @@ const numberFormatter = new Intl.NumberFormat("fa-IR");
 export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, onCancel }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const isPayableInvoice = (invoice: PaymentInvoiceOption) =>\n    invoice.is_settled !== true && Number(invoice.remaining_amount ?? 0) > 0;\n\n  const [invoiceOptions, setInvoiceOptions] = useState<PaymentInvoiceOption[]>(() =>\n    payment\n      ? invoices.filter((invoice) => isPayableInvoice(invoice) || invoice.id === payment.invoice?.id)\n      : [],\n  );
+  const isPayableInvoice = (invoice: PaymentInvoiceOption) =>
+    invoice.is_settled !== true && Number(invoice.remaining_amount ?? 0) > 0;
+
+  const [invoiceOptions, setInvoiceOptions] = useState<PaymentInvoiceOption[]>(() =>
+    payment
+      ? invoices.filter((invoice) => isPayableInvoice(invoice) || invoice.id === payment.invoice?.id)
+      : [],
+  );
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
   const [invoiceId, setInvoiceId] = useState(payment?.invoice?.id ?? "");
