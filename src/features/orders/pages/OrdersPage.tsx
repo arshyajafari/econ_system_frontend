@@ -30,6 +30,8 @@ import type {
 } from "../types/order";
 
 export function OrdersPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles.includes("admin") ?? false;
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -76,18 +78,15 @@ export function OrdersPage() {
     setIsLoadingLookups(true);
 
     try {
-      const [customersResponse, employeesResponse, productsResponse] =
-        await Promise.all([
+      const [customersResponse, productsResponse] = await Promise.all([
           getOrderCustomers(),
-          getOrderEmployees(),
           getOrderProducts(),
         ]);
 
       setCustomers(customersResponse);
-
-      setEmployees(employeesResponse);
-
-      setProducts(productsResponse);
+        setProducts(productsResponse);
+        if (isAdmin) setEmployees(await getOrderEmployees());
+        else setEmployees([]);
     } catch (error: unknown) {
       setError(
         error instanceof ApiError && error.message
@@ -188,7 +187,7 @@ export function OrdersPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -323,7 +322,6 @@ export function OrdersPage() {
   const canCreate =
     !isLoadingLookups &&
     customers.length > 0 &&
-    employees.length > 0 &&
     products.length > 0;
 
   return (
