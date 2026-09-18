@@ -7,13 +7,13 @@ export type DashboardSales = {
 export type DashboardOrders = {
   today: number;
   month: number;
-  pending_today: number;
-  pending_count: number;
 };
 
 export type DashboardPayments = {
   today: number;
   month: number;
+  pending_today: number;
+  pending_count: number;
 };
 
 export type DashboardReceivables = {
