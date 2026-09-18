@@ -105,9 +105,9 @@ export function DashboardSummaryCards({ dashboard }: DashboardSummaryCardsProps)
             tone="green"
           />
           <SummaryCard
-            label="در انتظار تأیید"
+            label="پرداخت‌های در انتظار تأیید"
             value={formatAmount(dashboard.payments.pending_today)}
-            hint={`${formatNumber(dashboard.payments.pending_count)} پرداخت ثبت‌شده`}
+            hint={`${formatNumber(dashboard.payments.pending_count)} مورد`}
             tone="orange"
           />
           <SummaryCard label="مرجوعی در انتظار" value={formatNumber(dashboard.returns.pending)} tone="orange" />
