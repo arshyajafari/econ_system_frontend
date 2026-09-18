@@ -26,6 +26,7 @@ export type Payment = {
   status: PaymentStatus;
   method: PaymentMethod;
   amount: number;
+  settlement_discount_amount: number;
   reference_number: string | null;
   payment_date: string | null;
   description: string | null;
@@ -57,6 +58,7 @@ export type PaymentFormData = {
   invoice_id: string;
   method: PaymentMethod;
   amount: string;
+  settlement_discount_amount: string;
   reference_number: string;
   payment_date: string;
   description: string;
