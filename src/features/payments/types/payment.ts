@@ -12,6 +12,7 @@ export type PaymentInvoice = {
   is_settled?: boolean | null;
   paid_amount?: number | string | null;
   return_credit_amount?: number | string | null;
+  settlement_discount_amount?: number | string | null;
   remaining_amount?: number | string | null;
 };
 
