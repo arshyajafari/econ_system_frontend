@@ -12,7 +12,7 @@ export type ReportData = {
   payments: { total: number; count: number; pending_total: number; pending_count: number; recorded_total: number; recorded_count: number };
   orders: { total: number; completed: number };
   returns: { count: number; amount: number };
-  receivables: { total: number };
+  receivables: { total: number; debit: number; credit: number };
   top_products: ReportProduct[];
 };
 
