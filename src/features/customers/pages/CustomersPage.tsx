@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
+import { ConfirmModal } from "../../../components/ConfirmModal";
 import { CustomerFilters } from "../components/CustomerFilters";
 import { CustomerForm } from "../components/CustomerForm";
 import { CustomerTable } from "../components/CustomerTable";
@@ -48,6 +49,7 @@ export function CustomersPage() {
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null);
 
   const requestIdRef = useRef(0);
 
@@ -165,16 +167,18 @@ export function CustomersPage() {
     }
   }
 
-  async function handleDelete(customer: Customer) {
-    const confirmed = window.confirm(
-      `آیا از حذف «${customer.customer_name}» مطمئن هستید؟`,
-    );
-
-    if (!confirmed || pendingDeleteId) {
+  function requestDelete(customer: Customer) {
+    if (pendingDeleteId || pendingStatusId) {
       return;
     }
 
-    const isLastItemOnPage = customers.length === 1;
+    setDeleteTarget(customer);
+  }
+
+  async function handleDelete(customer: Customer) {
+    if (pendingDeleteId || pendingStatusId) {
+      return;
+    }
 
     setPendingDeleteId(customer.id);
     setError(null);
@@ -344,6 +348,22 @@ export function CustomersPage() {
         }}
         onViewLedger={(customer) => {
           navigate(`/customers/${customer.id}/ledger`);
+        }}
+      />
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="حذف مشتری"
+        description={deleteTarget ? `آیا از حذف «${deleteTarget.customer_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""}
+        confirmLabel="حذف مشتری"
+        cancelLabel="انصراف"
+        variant="danger"
+        isLoading={pendingDeleteId !== null}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            void handleDelete(deleteTarget).finally(() => setDeleteTarget(null));
+          }
         }}
       />
 
