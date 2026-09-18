@@ -214,13 +214,7 @@ export function PaymentsPage() {
       return;
     }
 
-    if (action === "cancel") {
-      const confirmed = window.confirm("آیا از لغو این پرداخت مطمئن هستید؟");
-
-      if (!confirmed) {
-        return;
-      }
-    }
+    if (action === "cancel") {\n      setCancelTarget(payment);\n      return;\n    }
 
     setPendingPaymentId(payment.id);
 
