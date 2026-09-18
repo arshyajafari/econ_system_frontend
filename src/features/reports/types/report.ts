@@ -9,7 +9,7 @@ export type ReportProduct = {
 export type ReportData = {
   period: { from: string; to: string };
   sales: { subtotal: number; discount: number; tax: number; total: number; invoice_count: number };
-  payments: { total: number; count: number };
+  payments: { total: number; count: number; pending_total: number; pending_count: number; recorded_total: number; recorded_count: number };
   orders: { total: number; completed: number };
   returns: { count: number; amount: number };
   receivables: { total: number };
