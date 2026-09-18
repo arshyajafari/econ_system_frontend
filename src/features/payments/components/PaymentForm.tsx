@@ -95,8 +95,6 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     let cancelled = false;
 
     if (!customerId) {
-      setCustomerBalance(null);
-      setIsLoadingCustomerBalance(false);
       return () => { cancelled = true; };
     }
 
