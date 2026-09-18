@@ -72,7 +72,13 @@ export function PaymentsPage() {
     try {
       const response = await getPaymentInvoices({ payable: true });
 
-      setInvoices(\n        response.filter(\n          (invoice) =>\n            invoice.is_settled !== true &&\n            Number(invoice.remaining_amount ?? 0) > 0,\n        ),\n      );
+      setInvoices(
+        response.filter(
+          (invoice) =>
+            invoice.is_settled !== true &&
+            Number(invoice.remaining_amount ?? 0) > 0,
+        ),
+      );
     } catch (error: unknown) {
       setError(
         error instanceof ApiError && error.message
