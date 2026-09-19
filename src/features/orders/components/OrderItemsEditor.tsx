@@ -1,5 +1,5 @@
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
-import type { OrderItemFormData, OrderItemDiscountType, OrderItemOfferType, OrderProductOption } from "../types/order";
+import type { OrderItemFormData, OrderItemOfferType, OrderProductOption } from "../types/order";
 
 type Props = { items: OrderItemFormData[]; products: OrderProductOption[]; disabled?: boolean; onChange: (items: OrderItemFormData[]) => void };
 const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 disabled:bg-gray-50";
@@ -8,16 +8,15 @@ const numberFormatter = new Intl.NumberFormat("fa-IR");
 
 const emptyItem = (): OrderItemFormData => ({
   product_id:"", quantity:1, unit_price:"", description:"",
-  discount_type:"none", discount_value:"0",
+  discount_type:"percentage", discount_value:"",
   offer_type:"none", offer_buy_quantity:"6", offer_free_quantity:"1", offer_title:"",
 });
 
 function getGross(item: OrderItemFormData) { return (Number(item.quantity)||0)*(Number(item.unit_price)||0); }
 function getDiscount(item: OrderItemFormData) {
   const gross=getGross(item); const value=Number(item.discount_value)||0;
-  if(item.discount_type==="percentage") return Math.min(gross,Math.round(gross*value/100*100)/100);
-  if(item.discount_type==="fixed") return Math.min(gross,Math.max(0,value));
-  return 0;
+  if(!value) return 0;
+  return Math.min(gross,Math.round(gross*value/100*100)/100);
 }
 function getFree(item: OrderItemFormData) {
   if(item.offer_type!=="buy_x_get_y") return 0;
@@ -38,7 +37,7 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
   return <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
     <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-5 py-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div><div className="flex items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-bold text-white">01</span><div><h3 className="font-bold text-gray-900">اقلام سفارش</h3><p className="mt-0.5 text-xs text-gray-500">محصول، تعداد، قیمت و در صورت نیاز آفر را سریع ثبت کنید.</p></div></div></div>
+        <div><div className="flex items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-bold text-white">01</span><div><h3 className="font-bold text-gray-900">اقلام سفارش</h3><p className="mt-0.5 text-xs text-gray-500">محصول، تعداد، قیمت و در صورت نیاز تخفیف یا آفر را ثبت کنید.</p></div></div></div>
         <button type="button" onClick={addItem} disabled={disabled} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50">+ افزودن محصول</button>
       </div>
     </div>
@@ -64,32 +63,21 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
             <div className="lg:col-span-2"><Field label="محصول" required><select value={item.product_id} onChange={e=>selectProduct(index,e.target.value)} disabled={disabled} className={inputClass}><option value="">انتخاب محصول</option>{products.map(p=><option key={p.id} value={p.id} disabled={used.includes(p.id)}>{p.title} — {p.code}</option>)}</select></Field></div>
             <Field label="تعداد خرید" required><input dir="ltr" type="number" min={1} step={1} value={item.quantity} onChange={e=>updateItem(index,{quantity:Math.max(1,Math.trunc(Number(e.target.value)||1))})} disabled={disabled} className={inputClass}/></Field>
             <Field label="قیمت واحد" required><FormattedNumberInput dir="ltr" min={0} step="0.01" value={item.unit_price} onValueChange={value=>updateItem(index,{unit_price:value})} disabled={disabled} className={inputClass}/></Field>
-            <Field label="نوع تخفیف"><select value={item.discount_type} onChange={e=>updateItem(index,{discount_type:e.target.value as OrderItemDiscountType})} disabled={disabled} className={inputClass}><option value="none">بدون تخفیف</option><option value="percentage">درصدی</option><option value="fixed">مبلغ ثابت</option></select></Field>
-            <Field label={item.discount_type==="percentage"?"درصد تخفیف":"مبلغ تخفیف"}><FormattedNumberInput dir="ltr" min={0} max={item.discount_type==="percentage"?100:undefined} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_value:value})} disabled={disabled||item.discount_type==="none"} className={inputClass}/></Field>
-            <div className="rounded-xl border border-gray-200 bg-white p-3"><div className="text-[11px] font-medium text-gray-500">مبلغ نهایی</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{numberFormatter.format(final)}</div>{discount>0?<div className="mt-1 text-[11px] text-amber-700">کسر: {numberFormatter.format(discount)}</div>:null}</div>
+            <Field label="درصد تخفیف"><FormattedNumberInput dir="ltr" min={0} max={100} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_type:"percentage",discount_value:value})} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
+            <Field label="آفر"><select aria-label="آفر محصول" value={item.offer_type} onChange={e=>updateItem(index,{offer_type:e.target.value as OrderItemOfferType})} disabled={disabled} className={inputClass}><option value="none">بدون آفر</option><option value="buy_x_get_y">خرید X + هدیه Y</option></select></Field>
+            <div className="rounded-xl border border-gray-200 bg-white p-3"><div className="text-[11px] font-medium text-gray-500">مبلغ نهایی</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{numberFormatter.format(final)}</div>{discount>0?<div className="mt-1 text-[11px] text-amber-700">تخفیف: {numberFormatter.format(discount)}</div>:null}</div>
           </div>
 
-          <div className="border-t border-gray-100 bg-white px-4 py-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-600">آفر محصول</span>
-                {offerEnabled && free>0 ? <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">+{numberFormatter.format(free)} رایگان</span> : null}
-              </div>
-              <div className="flex items-center gap-2">
-                <select aria-label="آفر محصول" value={item.offer_type} onChange={e=>updateItem(index,{offer_type:e.target.value as OrderItemOfferType})} disabled={disabled} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 outline-none focus:border-gray-900">
-                  <option value="none">بدون آفر</option>
-                  <option value="buy_x_get_y">خرید X + هدیه Y</option>
-                </select>
-                {offerEnabled ? <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                  <input aria-label="تعداد خرید برای آفر" dir="ltr" type="number" min={1} step={1} value={item.offer_buy_quantity} onChange={e=>updateItem(index,{offer_buy_quantity:e.target.value})} disabled={disabled} className={compactInputClass+" w-16 text-center"}/>
-                  <span>+</span>
-                  <input aria-label="تعداد هدیه برای آفر" dir="ltr" type="number" min={1} step={1} value={item.offer_free_quantity} onChange={e=>updateItem(index,{offer_free_quantity:e.target.value})} disabled={disabled} className={compactInputClass+" w-16 text-center"}/>
-                  <span>رایگان</span>
-                </div> : null}
-              </div>
+          {offerEnabled ? <div className="mx-4 mb-4 rounded-xl border border-emerald-100 bg-emerald-50/40 px-3 py-2.5">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="font-semibold text-gray-600">آفر:</span>
+              <input aria-label="تعداد خرید برای آفر" dir="ltr" type="number" min={1} step={1} value={item.offer_buy_quantity} onChange={e=>updateItem(index,{offer_buy_quantity:e.target.value})} disabled={disabled} className={compactInputClass+" w-16 text-center"}/>
+              <span className="text-gray-500">+</span>
+              <input aria-label="تعداد هدیه برای آفر" dir="ltr" type="number" min={1} step={1} value={item.offer_free_quantity} onChange={e=>updateItem(index,{offer_free_quantity:e.target.value})} disabled={disabled} className={compactInputClass+" w-16 text-center"}/>
+              <span className="text-gray-500">رایگان</span>
+              <span className="mr-1 text-emerald-700">برای {numberFormatter.format(item.quantity)} خرید → {numberFormatter.format(free)} رایگان • تحویل {numberFormatter.format(deliveryQuantity)}</span>
             </div>
-            {offerEnabled ? <div className="mt-2 text-[11px] text-emerald-700">برای {numberFormatter.format(item.quantity)} عدد خرید → {numberFormatter.format(free)} عدد رایگان • مجموع تحویل: {numberFormatter.format(deliveryQuantity)} عدد</div> : null}
-          </div>
+          </div> : null}
 
           <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
             <Field label="توضیحات آیتم"><input value={item.description} onChange={e=>updateItem(index,{description:e.target.value})} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
