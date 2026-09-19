@@ -2,7 +2,15 @@ import { apiClient } from "../../../api/client";
 
 import type { Order, OrderCustomerOption, OrderEmployeeOption, OrderFormData, OrderListParams, OrderListResponse, OrderProductOption, OrderStatusAction } from "../types/order";
 
-type OrderApiItem = { product_id: string; quantity: number; unit_price: number; description?: string };
+type OrderApiItem = {
+  product_id: string; quantity: number; unit_price: number; description?: string;
+  discount_type: OrderFormData["items"][number]["discount_type"];
+  discount_value: number;
+  offer_type: OrderFormData["items"][number]["offer_type"];
+  offer_buy_quantity: number;
+  offer_free_quantity: number;
+  offer_title?: string;
+};
 type OrderApiPayload = {
   customer_id: string;
   sales_employee_id: string;
@@ -45,6 +53,12 @@ function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload {
       quantity: Math.max(1, Math.trunc(item.quantity)),
       unit_price: Number(item.unit_price),
       ...(item.description.trim() ? { description: item.description.trim() } : {}),
+      discount_type: item.discount_type ?? "none",
+      discount_value: item.discount_type === "none" ? 0 : Number(item.discount_value) || 0,
+      offer_type: item.offer_type ?? "none",
+      offer_buy_quantity: item.offer_type === "buy_x_get_y" ? Math.max(0, Math.trunc(Number(item.offer_buy_quantity) || 0)) : 0,
+      offer_free_quantity: item.offer_type === "buy_x_get_y" ? Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)) : 0,
+      ...(item.offer_title.trim() ? { offer_title: item.offer_title.trim() } : {}),
     })),
   };
 }
