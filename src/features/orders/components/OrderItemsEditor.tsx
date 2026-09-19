@@ -51,20 +51,13 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
             <div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-700">{numberFormatter.format(index+1)}</span><span className="text-sm font-bold text-gray-800">{item.product_id ? products.find(p=>p.id===item.product_id)?.title ?? "محصول" : "محصول جدید"}</span>{free>0?<span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">+ {numberFormatter.format(free)} رایگان</span>:null}</div>
             <button type="button" onClick={()=>removeItem(index)} disabled={disabled||items.length===1} className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-30">حذف</button>
           </div>
-          <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
-            <Field label="محصول" required><select value={item.product_id} onChange={e=>selectProduct(index,e.target.value)} disabled={disabled} className={inputClass}><option value="">انتخاب محصول</option>{products.map(p=><option key={p.id} value={p.id} disabled={used.includes(p.id)}>{p.title} — {p.code}</option>)}</select></Field>
+          <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-6">
+            <div className="lg:col-span-2"><Field label="محصول" required><select value={item.product_id} onChange={e=>selectProduct(index,e.target.value)} disabled={disabled} className={inputClass}><option value="">انتخاب محصول</option>{products.map(p=><option key={p.id} value={p.id} disabled={used.includes(p.id)}>{p.title} — {p.code}</option>)}</select></Field></div>
             <Field label="تعداد خرید" required><input dir="ltr" type="number" min={1} step={1} value={item.quantity} onChange={e=>updateItem(index,{quantity:Math.max(1,Math.trunc(Number(e.target.value)||1))})} disabled={disabled} className={inputClass}/></Field>
             <Field label="قیمت واحد" required><FormattedNumberInput dir="ltr" min={0} step="0.01" value={item.unit_price} onValueChange={value=>updateItem(index,{unit_price:value})} disabled={disabled} className={inputClass}/></Field>
-            <div className="rounded-xl border border-gray-200 bg-white p-3"><div className="text-[11px] font-medium text-gray-500">جمع ناخالص</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{numberFormatter.format(gross)}</div></div>
-          </div>
-
-          <div className="mx-4 mb-4 rounded-2xl border border-gray-200 bg-white p-4">
-            <div className="mb-3 flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-gray-900"/><h4 className="text-sm font-bold text-gray-900">تخفیف اختصاصی این محصول</h4></div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <Field label="نوع تخفیف"><select value={item.discount_type} onChange={e=>updateItem(index,{discount_type:e.target.value as OrderItemDiscountType})} disabled={disabled} className={inputClass}><option value="none">بدون تخفیف</option><option value="percentage">درصدی</option><option value="fixed">مبلغ ثابت</option></select></Field>
-              <Field label={item.discount_type==="percentage"?"درصد تخفیف":"مبلغ تخفیف"}><FormattedNumberInput dir="ltr" min={0} max={item.discount_type==="percentage"?100:undefined} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_value:value})} disabled={disabled||item.discount_type==="none"} className={inputClass}/></Field>
-              <div className="rounded-xl bg-gray-50 px-4 py-3"><div className="text-[11px] text-gray-500">تخفیف محاسبه‌شده</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{numberFormatter.format(discount)}</div></div>
-            </div>
+            <Field label="نوع تخفیف"><select value={item.discount_type} onChange={e=>updateItem(index,{discount_type:e.target.value as OrderItemDiscountType})} disabled={disabled} className={inputClass}><option value="none">بدون تخفیف</option><option value="percentage">درصدی</option><option value="fixed">مبلغ ثابت</option></select></Field>
+            <Field label={item.discount_type==="percentage"?"درصد تخفیف":"مبلغ تخفیف"}><FormattedNumberInput dir="ltr" min={0} max={item.discount_type==="percentage"?100:undefined} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_value:value})} disabled={disabled||item.discount_type==="none"} className={inputClass}/></Field>
+            <div className="rounded-xl border border-gray-200 bg-white p-3"><div className="text-[11px] font-medium text-gray-500">کل بعد از تخفیف</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{numberFormatter.format(final)}</div>{discount>0?<div className="mt-1 text-[11px] text-amber-700">کسر: {numberFormatter.format(discount)}</div>:null}</div>
           </div>
 
           <div className="mx-4 mb-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-white p-4">
