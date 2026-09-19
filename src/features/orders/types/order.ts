@@ -35,7 +35,20 @@ export type OrderListParams = { search?: string; status?: OrderStatus; returnabl
 export type OrderPaginationMeta = { current_page: number; from: number | null; last_page: number; per_page: number; to: number | null; total: number };
 export type OrderPaginationLinks = { first: string | null; last: string | null; prev: string | null; next: string | null };
 export type OrderListResponse = { data: Order[]; links: OrderPaginationLinks; meta: OrderPaginationMeta };
-export type OrderItemFormData = { product_id: string; quantity: number; unit_price: string; description: string };
+export type OrderItemDiscountType = "none" | "percentage" | "fixed";
+export type OrderItemOfferType = "none" | "buy_x_get_y";
+export type OrderItemFormData = {
+  product_id: string;
+  quantity: number;
+  unit_price: string;
+  description: string;
+  discount_type: OrderItemDiscountType;
+  discount_value: string;
+  offer_type: OrderItemOfferType;
+  offer_buy_quantity: string;
+  offer_free_quantity: string;
+  offer_title: string;
+};
 export type OrderFormData = {
   customer_id: string;
   sales_employee_id: string;
