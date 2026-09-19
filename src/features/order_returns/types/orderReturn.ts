@@ -227,5 +227,5 @@ export function getReturnableQuantity(
     return sum + Number(returnItem?.quantity ?? 0);
   }, 0);
 
-  return Math.max(0, Number(orderItem.quantity) - returnedQuantity);
+  return Math.max(0, Number(orderItem.fulfillment_quantity ?? (Number(orderItem.quantity) + Number(orderItem.free_quantity ?? 0))) - returnedQuantity);
 }
