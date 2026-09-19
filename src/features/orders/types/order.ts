@@ -4,7 +4,7 @@ export type OrderDiscountType = "none" | "percentage" | "fixed";
 export type OrderCustomer = { id: string; code: string; customer_name: string };
 export type OrderSalesEmployee = { id: string; code: string; name: string };
 export type OrderProductPrice = { id: string; sale_price: string; effective_from: string | null };
-export type OrderProduct = { id: string; code: string; title: string; current_price: OrderProductPrice | null; sale_price?: string | null };
+export type OrderProduct = { id: string; code: string; title: string; current_price: OrderProductPrice | null; sale_price?: string | null; available_quantity?: number | null };
 export type OrderItemAllocation = { id: string; quantity: number; inventory_batch_id?: string };
 export type OrderItem = {
   id: string;
@@ -50,7 +50,7 @@ export type Order = {
 };
 export type OrderCustomerOption = { id: string; code: string; customer_name: string };
 export type OrderEmployeeOption = { id: string; code: string; first_name: string; last_name: string; status: string };
-export type OrderProductOption = { id: string; code: string; title: string; current_price: OrderProductPrice | null; sale_price?: string | null };
+export type OrderProductOption = { id: string; code: string; title: string; current_price: OrderProductPrice | null; sale_price?: string | null; available_quantity?: number | null };
 export type OrderListParams = { search?: string; status?: OrderStatus; returnable?: boolean; invoiceable?: boolean; deliverable?: boolean; customer_id?: string; sales_employee_id?: string; ordered_from?: string; ordered_to?: string; sort?: string; page?: number; per_page?: number };
 export type OrderPaginationMeta = { current_page: number; from: number | null; last_page: number; per_page: number; to: number | null; total: number };
 export type OrderPaginationLinks = { first: string | null; last: string | null; prev: string | null; next: string | null };
