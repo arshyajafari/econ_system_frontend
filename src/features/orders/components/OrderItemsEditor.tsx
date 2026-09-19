@@ -51,14 +51,16 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
     <div className="space-y-3 p-4 md:p-5">
       {items.map((item,index)=>{
         const used=items.filter((_,i)=>i!==index).map(x=>x.product_id).filter(Boolean);
+        const product=item.product_id ? products.find(p=>p.id===item.product_id) : undefined;
         const gross=getGross(item), discount=getDiscount(item), free=getFree(item), final=Math.max(0,gross-discount);
         const deliveryQuantity=Number(item.quantity)+free;
+        const availableQuantity=product?.available_quantity ?? null;
 
         return <article key={index} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50/60">
           <div className="flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3">
             <div className="flex min-w-0 items-center gap-2">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-700">{numberFormatter.format(index+1)}</span>
-              <span className="truncate text-sm font-bold text-gray-800">{item.product_id ? products.find(p=>p.id===item.product_id)?.title ?? "محصول" : "محصول جدید"}</span>
+              <span className="truncate text-sm font-bold text-gray-800">{item.product_id ? product?.title ?? "محصول" : "محصول جدید"}</span>
               {free>0?<span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">+ {numberFormatter.format(free)} رایگان</span>:null}
             </div>
             <button type="button" onClick={()=>removeItem(index)} disabled={disabled||items.length===1} className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-30">حذف</button>
@@ -66,7 +68,7 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
 
           <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-6">
             <div className="lg:col-span-2"><Field label="محصول" required><select value={item.product_id} onChange={e=>selectProduct(index,e.target.value)} disabled={disabled} className={inputClass}><option value="">انتخاب محصول</option>{products.map(p=><option key={p.id} value={p.id} disabled={used.includes(p.id)}>{p.title} — {p.code}</option>)}</select></Field></div>
-            <Field label="تعداد خرید" required><input dir="rtl" type="number" min={1} step={1} value={item.quantity} onChange={e=>{const quantity=Math.max(1,Math.trunc(Number(e.target.value)||1));updateItem(index,{quantity,offer_buy_quantity:getFree(item)>0?String(quantity):"0"})}} disabled={disabled} className={inputClass}/></Field>
+            <Field label="تعداد خرید" required><input dir="rtl" type="number" min={1} step={1} value={item.quantity} onChange={e=>{const quantity=Math.max(1,Math.trunc(Number(e.target.value)||1));updateItem(index,{quantity,offer_buy_quantity:getFree(item)>0?String(quantity):"0"})}} disabled={disabled} className={inputClass} placeholder={availableQuantity !== null ? "موجودی: " + numberFormatter.format(availableQuantity) + " عدد" : "موجودی نامشخص"}/></Field>
             <Field label="قیمت واحد" required><FormattedNumberInput dir="rtl" min={0} step="0.01" value={item.unit_price} onValueChange={value=>updateItem(index,{unit_price:value})} disabled={disabled} className={inputClass}/></Field>
             <Field label="درصد تخفیف"><FormattedNumberInput dir="rtl" min={0} max={100} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_type:"percentage",discount_value:value})} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
             <Field label="تعداد هدیه"><input aria-label="تعداد هدیه" dir="rtl" type="number" min={0} step={1} value={getFree(item) || ""} onChange={e=>updateGift(index,e.target.value)} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
@@ -89,5 +91,5 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
     </div>
   </section>;
 }
-function Metric({label,value,emphasized=false}:{label:string;value:number;emphasized?:boolean}){return <div className={`rounded-2xl border border-gray-200 bg-white px-4 py-3 ${emphasized?"ring-1 ring-gray-300":""}`}><div className="text-[11px] text-gray-500">{label}</div><div dir="ltr" className="mt-1 text-sm font-bold text-gray-900">{numberFormatter.format(value)}</div></div>}
+function Metric({label,value,emphasized=false}:{label:string;value:number;emphasized?:boolean}){return <div className={"rounded-2xl border border-gray-200 bg-white px-4 py-3 "+(emphasized?"ring-1 ring-gray-300":"")}><div className="text-[11px] text-gray-500">{label}</div><div dir="ltr" className="mt-1 text-sm font-bold text-gray-900">{numberFormatter.format(value)}</div></div>}
 function Field({label,required=false,children}:{label:string;required?:boolean;children:React.ReactNode}){return <div><label className="mb-2 block text-xs font-semibold text-gray-600">{label}{required?<span className="mr-1 text-red-600">*</span>:null}</label>{children}</div>}
