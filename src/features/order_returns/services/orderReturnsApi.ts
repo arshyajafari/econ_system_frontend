@@ -133,7 +133,7 @@ function normalizePayload(payload: OrderReturnFormData): OrderReturnFormData {
       order_item_id: item.order_item_id,
 
       quantity: Math.max(1, Math.trunc(Number(item.quantity))),
-
+      free_quantity: Math.max(0, Math.min(Math.trunc(Number(item.free_quantity) || 0), Math.trunc(Number(item.quantity) || 0))),
       description: item.description.trim(),
     })),
   };
