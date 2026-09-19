@@ -162,6 +162,8 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     setInvoiceId("");
     setInvoiceOptions([]);
     setInvoicePayments([]);
+    setCustomerBalance(null);
+    setAmount("");
     setBalanceError(null);
   }
 
