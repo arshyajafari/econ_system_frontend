@@ -41,23 +41,14 @@ export type OrderReturn = {
 
 export type OrderReturnItem = {
   id: string;
-
   order_item_id?: string;
-
-  product: {
-    id: string;
-    title: string;
-    code: string;
-  } | null;
-
+  product: { id: string; title: string; code: string } | null;
   quantity: number;
-
+  free_quantity: number;
+  paid_quantity?: number;
   unit_price: number;
-
   total_price: number;
-
   description: string | null;
-
   allocations?: OrderReturnAllocation[];
 };
 
@@ -147,9 +138,8 @@ export type OrderReturnListResponse = {
 
 export type OrderReturnItemFormData = {
   order_item_id: string;
-
   quantity: number;
-
+  free_quantity: number;
   description: string;
 };
 
