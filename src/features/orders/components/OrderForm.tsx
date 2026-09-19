@@ -116,10 +116,10 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
       const discountValid = item.discount_type === "none" || (Number.isFinite(itemValue) && itemValue >= 0 && (item.discount_type !== "percentage" || itemValue <= 100) && (item.discount_type !== "fixed" || itemValue <= Number(item.quantity) * Number(item.unit_price)));
       return Boolean(item.product_id) && item.quantity >= 1 && item.unit_price !== "" && Number(item.unit_price) >= 0 && offerValid && discountValid;
     }) &&
-    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= (subtotal - itemDiscountAmount));
+    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= subtotal);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <section className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2>
         <p className="mt-1 text-sm text-gray-500">سفارش ابتدا به صورت پیش‌نویس ثبت می‌شود.</p>
