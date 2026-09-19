@@ -20,8 +20,8 @@ function getDiscount(item: OrderItemFormData) {
 }
 function getFree(item: OrderItemFormData) {
   if(item.offer_type!=="buy_x_get_y") return 0;
-  const buy=Math.trunc(Number(item.offer_buy_quantity)||0), free=Math.trunc(Number(item.offer_free_quantity)||0);
-  return buy>0 && free>0 ? Math.floor((Number(item.quantity)||0)/buy)*free : 0;
+  const buy=Math.trunc(Number(item.offer_buy_quantity)||0), freePerCycle=Math.trunc(Number(item.offer_free_quantity)||0);
+  return buy>0 && freePerCycle>0 ? Math.floor((Number(item.quantity)||0)/buy)*freePerCycle : 0;
 }
 
 export function OrderItemsEditor({items,products,disabled=false,onChange}:Props) {
@@ -37,7 +37,7 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
   return <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
     <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-5 py-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div><div className="flex items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-bold text-white">01</span><div><h3 className="font-bold text-gray-900">اقلام سفارش</h3><p className="mt-0.5 text-xs text-gray-500">تخفیف و آفر هر محصول را جداگانه کنترل کنید.</p></div></div></div>
+        <div><div className="flex items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-bold text-white">01</span><div><h3 className="font-bold text-gray-900">اقلام سفارش</h3><p className="mt-0.5 text-xs text-gray-500">برای هر محصول، تخفیف و آفر را مستقل ثبت کنید.</p></div></div></div>
         <button type="button" onClick={addItem} disabled={disabled} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50">+ افزودن محصول</button>
       </div>
     </div>
@@ -45,6 +45,7 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
       {items.map((item,index)=>{
         const used=items.filter((_,i)=>i!==index).map(x=>x.product_id).filter(Boolean);
         const gross=getGross(item), discount=getDiscount(item), free=getFree(item), final=Math.max(0,gross-discount);
+        const offerEnabled=item.offer_type==="buy_x_get_y";
         return <article key={index} className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50/60">
           <div className="flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3">
             <div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-700">{numberFormatter.format(index+1)}</span><span className="text-sm font-bold text-gray-800">{item.product_id ? products.find(p=>p.id===item.product_id)?.title ?? "محصول" : "محصول جدید"}</span>{free>0?<span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">+ {numberFormatter.format(free)} رایگان</span>:null}</div>
@@ -66,17 +67,36 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
             </div>
           </div>
 
-          <div className="mx-4 mb-4 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
-            <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><div><div className="flex items-center gap-2"><span className="rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">OFFER</span><h4 className="text-sm font-bold text-gray-900">آفر این محصول</h4></div><p className="mt-1 text-xs text-gray-500">مثال: ۶ عدد بخر، ۱ عدد رایگان بگیر</p></div>{free>0?<div className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm">قابل تحویل: {numberFormatter.format(Number(item.quantity)+free)} عدد</div>:null}</div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <Field label="نوع آفر"><select value={item.offer_type} onChange={e=>updateItem(index,{offer_type:e.target.value as OrderItemOfferType})} disabled={disabled} className={inputClass}><option value="none">بدون آفر</option><option value="buy_x_get_y">خرید X، هدیه Y</option></select></Field>
-              {item.offer_type==="buy_x_get_y"?<>
-                <Field label="هر چند خرید؟"><input dir="ltr" type="number" min={1} step={1} value={item.offer_buy_quantity} onChange={e=>updateItem(index,{offer_buy_quantity:e.target.value})} disabled={disabled} className={inputClass}/></Field>
-                <Field label="چند عدد رایگان؟"><input dir="ltr" type="number" min={1} step={1} value={item.offer_free_quantity} onChange={e=>updateItem(index,{offer_free_quantity:e.target.value})} disabled={disabled} className={inputClass}/></Field>
-                <Field label="عنوان آفر"><input value={item.offer_title} onChange={e=>updateItem(index,{offer_title:e.target.value})} disabled={disabled} className={inputClass} placeholder="مثلاً آفر ۶+۱"/></Field>
-              </>:null}
+          <div className="mx-4 mb-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-white p-4">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2"><span className="rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">آفر محصول</span><h4 className="text-sm font-bold text-gray-900">آفر این آیتم</h4></div>
+                <p className="mt-1 text-xs leading-5 text-gray-500">قانون آفر را وارد کنید؛ سیستم تعداد رایگان را برای کل تعداد خرید خودکار محاسبه می‌کند.</p>
+              </div>
+              {offerEnabled && free>0 ? <div className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm">قابل تحویل: {numberFormatter.format(Number(item.quantity)+free)} عدد</div> : null}
             </div>
-            {item.offer_type==="buy_x_get_y"?<div className="mt-3 rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm"><strong className="text-emerald-700">{numberFormatter.format(item.quantity)} عدد خرید</strong><span className="mx-2 text-gray-400">→</span><strong className="text-emerald-700">{numberFormatter.format(free)} عدد رایگان</strong><span className="mx-2 text-gray-300">•</span><span className="text-gray-600">جمع تحویلی: {numberFormatter.format(Number(item.quantity)+free)} عدد</span></div>:null}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+              <Field label="نوع آفر">
+                <select value={item.offer_type} onChange={e=>updateItem(index,{offer_type:e.target.value as OrderItemOfferType})} disabled={disabled} className={inputClass}>
+                  <option value="none">بدون آفر</option>
+                  <option value="buy_x_get_y">خرید X، هدیه Y</option>
+                </select>
+              </Field>
+              <Field label="خرید X عدد">
+                <input dir="ltr" type="number" min={1} step={1} value={item.offer_buy_quantity} onChange={e=>updateItem(index,{offer_buy_quantity:e.target.value})} disabled={disabled||!offerEnabled} className={inputClass}/>
+              </Field>
+              <Field label="هدیه Y عدد">
+                <input dir="ltr" type="number" min={1} step={1} value={item.offer_free_quantity} onChange={e=>updateItem(index,{offer_free_quantity:e.target.value})} disabled={disabled||!offerEnabled} className={inputClass}/>
+              </Field>
+              <Field label="عنوان آفر">
+                <input value={item.offer_title} onChange={e=>updateItem(index,{offer_title:e.target.value})} disabled={disabled||!offerEnabled} className={inputClass} placeholder="مثلاً ۶+۱"/>
+              </Field>
+            </div>
+            {offerEnabled ? <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              <div className="rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm"><span className="text-gray-500">قانون:</span> <strong className="text-emerald-700">{numberFormatter.format(Number(item.offer_buy_quantity)||0)} + {numberFormatter.format(Number(item.offer_free_quantity)||0)}</strong></div>
+              <div className="rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm"><span className="text-gray-500">برای {numberFormatter.format(item.quantity)} خرید:</span> <strong className="text-emerald-700">{numberFormatter.format(free)} رایگان</strong></div>
+              <div className="rounded-xl border border-emerald-100 bg-white px-4 py-3 text-sm"><span className="text-gray-500">تحویل:</span> <strong className="text-emerald-700">{numberFormatter.format(Number(item.quantity)+free)} عدد</strong></div>
+            </div> : <div className="mt-3 rounded-xl border border-dashed border-gray-200 bg-white px-4 py-3 text-xs text-gray-500">برای فعال‌کردن آفر، «خرید X، هدیه Y» را انتخاب کنید.</div>}
           </div>
 
           <div className="grid grid-cols-1 gap-3 border-t border-gray-100 bg-white p-4 sm:grid-cols-3">
