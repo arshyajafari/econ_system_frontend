@@ -15,7 +15,7 @@ type OrderFormProps = {
   onCancel: () => void;
 };
 
-const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:bg-gray-100";
+const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 disabled:bg-gray-50";
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
 function orderToForm(order: Order): OrderFormData {
@@ -116,17 +116,17 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
       const discountValid = item.discount_type === "none" || (Number.isFinite(itemValue) && itemValue >= 0 && (item.discount_type !== "percentage" || itemValue <= 100) && (item.discount_type !== "fixed" || itemValue <= Number(item.quantity) * Number(item.unit_price)));
       return Boolean(item.product_id) && item.quantity >= 1 && item.unit_price !== "" && Number(item.unit_price) >= 0 && offerValid && discountValid;
     }) &&
-    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= subtotal));
+    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= (subtotal - itemDiscountAmount));
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
+    <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2>
         <p className="mt-1 text-sm text-gray-500">سفارش ابتدا به صورت پیش‌نویس ثبت می‌شود.</p>
       </div>
       {error ? <p role="alert" aria-live="polite" className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 p-5">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="مشتری" required>
             <select value={form.customer_id} onChange={(event) => update("customer_id", event.target.value)} disabled={isSubmitting} className={inputClass}>
@@ -141,7 +141,7 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
 
         <OrderItemsEditor items={form.items} products={products} disabled={isSubmitting} onChange={(items) => update("items", items)} />
 
-        <section className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+        <section className="rounded-2xl border border-gray-200 bg-gray-50/70 p-4 shadow-sm">
           <div className="mb-4">
             <h3 className="font-semibold text-gray-900">تخفیف و آفر سفارش</h3>
             <p className="mt-1 text-xs text-gray-500">تخفیف سفارش روی مبلغ نهایی فاکتور اعمال می‌شود؛ آفر برای ثبت و نمایش توضیح تجاری سفارش است.</p>
