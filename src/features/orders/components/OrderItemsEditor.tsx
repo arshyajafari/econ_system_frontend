@@ -68,7 +68,17 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
 
           <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-6">
             <div className="lg:col-span-2"><Field label="محصول" required><select value={item.product_id} onChange={e=>selectProduct(index,e.target.value)} disabled={disabled} className={inputClass}><option value="">انتخاب محصول</option>{products.map(p=><option key={p.id} value={p.id} disabled={used.includes(p.id)}>{p.title} — {p.code}</option>)}</select></Field></div>
-            <Field label="تعداد خرید" required><input dir="rtl" type="number" min={1} step={1} value={item.quantity} onChange={e=>{const quantity=Math.max(1,Math.trunc(Number(e.target.value)||1));updateItem(index,{quantity,offer_buy_quantity:getFree(item)>0?String(quantity):"0"})}} disabled={disabled} className={inputClass} placeholder={availableQuantity !== null ? "موجودی: " + numberFormatter.format(availableQuantity) + " عدد" : "موجودی نامشخص"}/></Field>
+            <Field label="تعداد خرید" required>
+              <input dir="rtl" type="number" min={1} step={1} value={item.quantity} onChange={e=>{const quantity=Math.max(1,Math.trunc(Number(e.target.value)||1));updateItem(index,{quantity,offer_buy_quantity:getFree(item)>0?String(quantity):"0"})}} disabled={disabled} className={inputClass}/>
+              {item.product_id ? (
+                <div className="mt-1.5 text-xs font-medium text-gray-500">
+                  موجودی قابل فروش:{" "}
+                  <span className="font-bold text-gray-700">
+                    {availableQuantity !== null ? numberFormatter.format(availableQuantity) + " عدد" : "نامشخص"}
+                  </span>
+                </div>
+              ) : null}
+            </Field>
             <Field label="قیمت واحد" required><FormattedNumberInput dir="rtl" min={0} step="0.01" value={item.unit_price} onValueChange={value=>updateItem(index,{unit_price:value})} disabled={disabled} className={inputClass}/></Field>
             <Field label="درصد تخفیف"><FormattedNumberInput dir="rtl" min={0} max={100} step="0.01" value={item.discount_value} onValueChange={value=>updateItem(index,{discount_type:"percentage",discount_value:value})} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
             <Field label="تعداد هدیه"><input aria-label="تعداد هدیه" dir="rtl" type="number" min={0} step={1} value={getFree(item) || ""} onChange={e=>updateGift(index,e.target.value)} disabled={disabled} className={inputClass} placeholder="اختیاری"/></Field>
