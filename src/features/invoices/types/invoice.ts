@@ -7,6 +7,10 @@ export type InvoiceItem = {
   quantity: number;
   free_quantity: number;
   total_quantity?: number;
+  offer_type?: "none" | "buy_x_get_y";
+  offer_buy_quantity?: number | null;
+  offer_free_quantity_per_cycle?: number | null;
+  offer_title?: string | null;
   unit_price: number | string;
   total_price: number | string;
   description: string | null;
