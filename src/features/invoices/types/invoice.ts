@@ -5,6 +5,8 @@ export type InvoiceItem = {
   order_item_id?: string;
   product: { id: string; code: string; title: string } | null;
   quantity: number;
+  free_quantity: number;
+  total_quantity?: number;
   unit_price: number | string;
   total_price: number | string;
   description: string | null;
