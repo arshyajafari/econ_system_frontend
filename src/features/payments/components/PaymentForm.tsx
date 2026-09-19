@@ -154,7 +154,6 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
       : 0;
   const remainingAmount = Math.max(0, invoiceRemainingBeforePending - pendingAmount);
   const customerCredit = Math.max(0, -(customerBalance ?? 0));
-  const cashRequiredAfterCredit = Math.max(0, remainingAmount - customerCredit);
 
   function handleCustomerChange(nextCustomerId: string) {
     if (payment) return;
@@ -174,15 +173,14 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     if (!payment && nextInvoiceId) {
       const nextInvoice = invoiceOptions.find((invoice) => invoice.id === nextInvoiceId);
       const nextRemaining = Number(nextInvoice?.remaining_amount ?? 0);
-      const nextCredit = Math.max(0, -(customerBalance ?? 0));
-      setAmount(String(Math.max(0, nextRemaining - nextCredit)));
+      setAmount(String(nextRemaining));
     }
   }
 
   useEffect(() => {
     if (payment || !selectedInvoice || customerBalance === null) return;
     if (amount.trim() !== "") return;
-    setAmount(String(cashRequiredAfterCredit));
+    setAmount(String(remainingAmount));
   }, [payment, selectedInvoice, customerBalance, amount, cashRequiredAfterCredit]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
