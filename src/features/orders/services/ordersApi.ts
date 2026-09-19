@@ -55,9 +55,9 @@ function normalizeOrderPayload(payload: OrderFormData): OrderApiPayload {
       ...(item.description.trim() ? { description: item.description.trim() } : {}),
       discount_type: item.discount_type ?? "none",
       discount_value: item.discount_type === "none" ? 0 : Number(item.discount_value) || 0,
-      offer_type: item.offer_type ?? "none",
-      offer_buy_quantity: item.offer_type === "buy_x_get_y" ? Math.max(0, Math.trunc(Number(item.offer_buy_quantity) || 0)) : 0,
-      offer_free_quantity: item.offer_type === "buy_x_get_y" ? Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)) : 0,
+      offer_type: Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)) > 0 ? "buy_x_get_y" : "none",
+      offer_buy_quantity: Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)) > 0 ? Math.max(1, Math.trunc(item.quantity)) : 0,
+      offer_free_quantity: Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)),
       ...(item.offer_title.trim() ? { offer_title: item.offer_title.trim() } : {}),
     })),
   };
