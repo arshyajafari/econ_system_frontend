@@ -42,14 +42,6 @@ function orderToForm(order: Order): OrderFormData {
   };
 }
 
-function getItemDiscountAmount(form: OrderFormData): number {
-  return form.items.reduce((sum, item) => {
-    const gross = (Number(item.quantity) || 0) * (Number(item.unit_price) || 0);
-    const value = Number(item.discount_value) || 0;
-    return sum + (item.discount_type === "percentage" ? Math.min(gross, gross * value / 100) : item.discount_type === "fixed" ? Math.min(gross, value) : 0);
-  }, 0);
-}
-
 function getDiscountAmount(form: OrderFormData): number {
   const subtotal = form.items.reduce((sum, item) => {
     const gross = (Number(item.quantity) || 0) * (Number(item.unit_price) || 0);
@@ -94,7 +86,7 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
     if (form.items.length === 0 || form.items.some((item) => !item.product_id || item.quantity < 1 || item.unit_price === "" || Number(item.unit_price) < 0)) return;
     const discountValue = Number(form.discount_value);
     if (form.discount_type === "percentage" && (!Number.isFinite(discountValue) || discountValue < 0 || discountValue > 100)) return;
-    if (form.discount_type === "fixed" && (!Number.isFinite(discountValue) || discountValue < 0 || discountValue > (getItemsSubtotal() - getItemDiscountAmount(form)))) return;
+    if (form.discount_type === "fixed" && (!Number.isFinite(discountValue) || discountValue < 0 || discountValue > (getItemsSubtotal() - itemDiscountAmount))) return;
     if (form.items.some((item) => {
       const value = Number(item.discount_value);
       if (item.discount_type === "percentage" && (!Number.isFinite(value) || value < 0 || value > 100)) return true;
@@ -110,7 +102,11 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
   }
 
   const subtotal = getItemsSubtotal();
-  const itemDiscountAmount = getItemDiscountAmount(form);
+  const itemDiscountAmount = form.items.reduce((sum, item) => {
+    const gross = (Number(item.quantity) || 0) * (Number(item.unit_price) || 0);
+    const value = Number(item.discount_value) || 0;
+    return sum + (item.discount_type === "percentage" ? Math.min(gross, gross * value / 100) : item.discount_type === "fixed" ? Math.min(gross, value) : 0);
+  }, 0);
   const discountAmount = getDiscountAmount(form);
   const finalAmount = Math.max(0, subtotal - itemDiscountAmount - discountAmount);
   const isValid = Boolean(form.customer_id) && Boolean(form.sales_employee_id) && form.items.length > 0 &&
