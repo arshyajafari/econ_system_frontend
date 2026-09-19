@@ -116,7 +116,7 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
       const discountValid = item.discount_type === "none" || (Number.isFinite(itemValue) && itemValue >= 0 && (item.discount_type !== "percentage" || itemValue <= 100) && (item.discount_type !== "fixed" || itemValue <= Number(item.quantity) * Number(item.unit_price)));
       return Boolean(item.product_id) && item.quantity >= 1 && item.unit_price !== "" && Number(item.unit_price) >= 0 && offerValid && discountValid;
     }) &&
-    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= subtotal));
+    (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= Math.max(0, subtotal - itemDiscountAmount)));
 
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-5">
@@ -171,8 +171,9 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
             </Field>
           </div>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <Summary label="جمع اقلام" value={subtotal} />
-            <Summary label="تخفیف" value={discountAmount} />
+            <Summary label="جمع ناخالص اقلام" value={subtotal} />
+            <Summary label="تخفیف اقلام" value={itemDiscountAmount} />
+            <Summary label="تخفیف سفارش" value={discountAmount} />
             <Summary label="مبلغ نهایی سفارش" value={finalAmount} emphasized />
           </div>
         </section>
