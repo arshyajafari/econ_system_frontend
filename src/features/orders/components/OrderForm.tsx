@@ -168,7 +168,7 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
               <input value={form.offer_title} onChange={(event) => update("offer_title", event.target.value)} disabled={isSubmitting} className={inputClass} placeholder="مثلاً آفر ویژه داروخانه" />
             </Field>
             <Field label="توضیحات آفر">
-              <textarea value={form.offer_description} onChange={(event) => update("offer_description", event.target.value)} disabled={isSubmitting} rows={3} className={inputClass} placeholder="شرایط یا توضیح آفر..." />
+              <textarea value={form.offer_description} onChange={(event) => update("offer_description", event.target.value)} disabled={isSubmitting} rows={1} className={inputClass} placeholder="شرایط یا توضیح آفر..." />
             </Field>
           </div>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
