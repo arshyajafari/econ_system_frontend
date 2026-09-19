@@ -6,7 +6,27 @@ export type OrderSalesEmployee = { id: string; code: string; name: string };
 export type OrderProductPrice = { id: string; sale_price: string; effective_from: string | null };
 export type OrderProduct = { id: string; code: string; title: string; current_price: OrderProductPrice | null; sale_price?: string | null };
 export type OrderItemAllocation = { id: string; quantity: number; inventory_batch_id?: string };
-export type OrderItem = { id: string; product: OrderProduct | null; quantity: number; unit_price: number; total_price: number; description: string | null; created_at: string | null; updated_at: string | null; allocations?: OrderItemAllocation[] };
+export type OrderItem = {
+  id: string;
+  product: OrderProduct | null;
+  quantity: number;
+  free_quantity: number;
+  fulfillment_quantity: number;
+  unit_price: number;
+  gross_total_price?: number;
+  total_price: number;
+  discount_type: OrderItemDiscountType;
+  discount_value: number;
+  discount_amount: number;
+  offer_type: OrderItemOfferType;
+  offer_buy_quantity: number;
+  offer_free_quantity: number;
+  offer_title: string | null;
+  description: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  allocations?: OrderItemAllocation[];
+};
 export type Order = {
   id: string;
   code: string;
