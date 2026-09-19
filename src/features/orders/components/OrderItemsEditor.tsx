@@ -70,16 +70,16 @@ export function OrderItemsEditor({items,products,disabled=false,onChange}:Props)
           <div className="mx-4 mb-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-white p-4">
             <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <div className="flex items-center gap-2"><span className="rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">آفر محصول</span><h4 className="text-sm font-bold text-gray-900">آفر این آیتم</h4></div>
-                <p className="mt-1 text-xs leading-5 text-gray-500">قانون آفر را وارد کنید؛ سیستم تعداد رایگان را برای کل تعداد خرید خودکار محاسبه می‌کند.</p>
+                <div className="flex items-center gap-2"><span className="rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">🎁 آفر</span><h4 className="text-sm font-bold text-gray-900">آفر / محصول رایگان</h4></div>
+                <p className="mt-1 text-xs leading-5 text-gray-500">اینجا آفر همین محصول را ثبت کنید؛ مثلاً «۶ عدد بخر، ۱ عدد رایگان». تعداد رایگان و تعداد تحویلی خودکار محاسبه می‌شود.</p>
               </div>
               {offerEnabled && free>0 ? <div className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm">قابل تحویل: {numberFormatter.format(Number(item.quantity)+free)} عدد</div> : null}
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
               <Field label="نوع آفر">
                 <select value={item.offer_type} onChange={e=>updateItem(index,{offer_type:e.target.value as OrderItemOfferType})} disabled={disabled} className={inputClass}>
-                  <option value="none">بدون آفر</option>
-                  <option value="buy_x_get_y">خرید X، هدیه Y</option>
+                  <option value="none">بدون آفر / محصول رایگان</option>
+                  <option value="buy_x_get_y">🎁 خرید X، هدیه Y</option>
                 </select>
               </Field>
               <Field label="خرید X عدد">
