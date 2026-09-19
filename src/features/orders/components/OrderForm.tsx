@@ -15,7 +15,7 @@ type OrderFormProps = {
   onCancel: () => void;
 };
 
-const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 disabled:bg-gray-50";
+const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:bg-gray-100";
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
 function orderToForm(order: Order): OrderFormData {
@@ -124,15 +124,13 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
 
   return (
     <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-5 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-900 text-xs font-black tracking-wide text-white">ORD</div>
-          <div><h2 className="text-xl font-bold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2><p className="mt-1 text-xs text-gray-500">قیمت، تخفیف و آفر هر قلم را قبل از ثبت نهایی کنترل کنید.</p></div>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2>
+        <p className="mt-1 text-sm text-gray-500">سفارش ابتدا به صورت پیش‌نویس ثبت می‌شود.</p>
       </div>
       {error ? <p role="alert" aria-live="polite" className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
-      <form onSubmit={handleSubmit} className="space-y-6 p-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="مشتری" required>
             <select value={form.customer_id} onChange={(event) => update("customer_id", event.target.value)} disabled={isSubmitting} className={inputClass}>
@@ -147,7 +145,7 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
 
         <OrderItemsEditor items={form.items} products={products} disabled={isSubmitting} onChange={(items) => update("items", items)} />
 
-        <section className="rounded-2xl border border-gray-200 bg-gray-50/70 p-4 shadow-sm">
+        <section className="rounded-xl border border-gray-200 bg-gray-50 p-4">
           <div className="mb-4">
             <h3 className="font-semibold text-gray-900">تخفیف و آفر سفارش</h3>
             <p className="mt-1 text-xs text-gray-500">تخفیف سفارش روی مبلغ نهایی فاکتور اعمال می‌شود؛ آفر برای ثبت و نمایش توضیح تجاری سفارش است.</p>
