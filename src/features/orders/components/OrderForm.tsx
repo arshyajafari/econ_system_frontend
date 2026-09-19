@@ -120,9 +120,11 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
 
   return (
     <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2>
-        <p className="mt-1 text-sm text-gray-500">سفارش ابتدا به صورت پیش‌نویس ثبت می‌شود.</p>
+      <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-5 py-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-900 text-xs font-black tracking-wide text-white">ORD</div>
+          <div><h2 className="text-xl font-bold text-gray-900">{order ? "ویرایش سفارش" : "سفارش جدید"}</h2><p className="mt-1 text-xs text-gray-500">قیمت، تخفیف و آفر هر قلم را قبل از ثبت نهایی کنترل کنید.</p></div>
+        </div>
       </div>
       {error ? <p role="alert" aria-live="polite" className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
