@@ -32,6 +32,12 @@ function orderToForm(order: Order): OrderFormData {
       quantity: item.quantity,
       unit_price: String(item.unit_price),
       description: item.description ?? "",
+      discount_type: item.discount_type ?? "none",
+      discount_value: String(item.discount_value ?? 0),
+      offer_type: item.offer_type ?? "none",
+      offer_buy_quantity: String(item.offer_buy_quantity ?? 6),
+      offer_free_quantity: String(item.offer_free_quantity ?? 1),
+      offer_title: item.offer_title ?? "",
     })),
   };
 }
@@ -58,7 +64,11 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
     discount_value: "0",
     offer_title: "",
     offer_description: "",
-    items: [{ product_id: "", quantity: 1, unit_price: "", description: "" }],
+    items: [{
+      product_id: "", quantity: 1, unit_price: "", description: "",
+      discount_type: "none", discount_value: "0",
+      offer_type: "none", offer_buy_quantity: "6", offer_free_quantity: "1", offer_title: "",
+    }],
   });
 
   function update<K extends keyof OrderFormData>(key: K, value: OrderFormData[K]) {
@@ -72,6 +82,13 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
     const discountValue = Number(form.discount_value);
     if (form.discount_type === "percentage" && (!Number.isFinite(discountValue) || discountValue < 0 || discountValue > 100)) return;
     if (form.discount_type === "fixed" && (!Number.isFinite(discountValue) || discountValue < 0 || discountValue > getItemsSubtotal())) return;
+    if (form.items.some((item) => {
+      const value = Number(item.discount_value);
+      if (item.discount_type === "percentage" && (!Number.isFinite(value) || value < 0 || value > 100)) return true;
+      if (item.discount_type === "fixed" && (!Number.isFinite(value) || value < 0 || value > Number(item.quantity) * Number(item.unit_price))) return true;
+      if (item.offer_type === "buy_x_get_y" && (!(Number(item.offer_buy_quantity) > 0) || !(Number(item.offer_free_quantity) > 0) || Number(item.quantity) < Number(item.offer_buy_quantity))) return true;
+      return false;
+    })) return;
     onSubmit(form);
   }
 
@@ -80,10 +97,20 @@ export function OrderForm({ order, customers, products, isSubmitting, error, onS
   }
 
   const subtotal = getItemsSubtotal();
-  const discountAmount = getDiscountAmount(form);
-  const finalAmount = Math.max(0, subtotal - discountAmount);
+  const itemDiscountAmount = form.items.reduce((sum, item) => {
+    const gross = (Number(item.quantity) || 0) * (Number(item.unit_price) || 0);
+    const value = Number(item.discount_value) || 0;
+    return sum + (item.discount_type === "percentage" ? Math.min(gross, gross * value / 100) : item.discount_type === "fixed" ? Math.min(gross, value) : 0);
+  }, 0);
+  const discountAmount = getDiscountAmount({...form, items: form.items});
+  const finalAmount = Math.max(0, subtotal - itemDiscountAmount - discountAmount);
   const isValid = Boolean(form.customer_id) && Boolean(form.sales_employee_id) && form.items.length > 0 &&
-    form.items.every((item) => Boolean(item.product_id) && item.quantity >= 1 && item.unit_price !== "" && Number(item.unit_price) >= 0) &&
+    form.items.every((item) => {
+      const itemValue = Number(item.discount_value);
+      const offerValid = item.offer_type === "none" || (Number(item.offer_buy_quantity) > 0 && Number(item.offer_free_quantity) > 0 && item.quantity >= Number(item.offer_buy_quantity));
+      const discountValid = item.discount_type === "none" || (Number.isFinite(itemValue) && itemValue >= 0 && (item.discount_type !== "percentage" || itemValue <= 100) && (item.discount_type !== "fixed" || itemValue <= Number(item.quantity) * Number(item.unit_price)));
+      return Boolean(item.product_id) && item.quantity >= 1 && item.unit_price !== "" && Number(item.unit_price) >= 0 && offerValid && discountValid;
+    }) &&
     (form.discount_type === "none" || (Number.isFinite(Number(form.discount_value)) && Number(form.discount_value) >= 0 && (form.discount_type !== "percentage" || Number(form.discount_value) <= 100)) && (form.discount_type !== "fixed" || Number(form.discount_value) <= subtotal));
 
   return (
