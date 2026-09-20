@@ -177,11 +177,6 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
     }
   }
 
-  useEffect(() => {
-    if (payment || !selectedInvoice || customerBalance === null) return;
-    if (amount.trim() !== "") return;
-    setAmount(String(remainingAmount));
-  }, [payment, selectedInvoice, customerBalance, amount]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
