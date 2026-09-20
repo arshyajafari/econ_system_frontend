@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IranAddressFields } from "../../../components/IranAddressFields";
 
 import type { Customer, CustomerFormData } from "../types/customer";
 
@@ -97,18 +98,7 @@ export function CustomerForm({ customer, isSubmitting, error, onSubmit, onCancel
           <Field label="وضعیت"><select value={form.status} onChange={(event) => update("status", event.target.value as CustomerFormData["status"])} disabled={isSubmitting} className={inputClass}><option value="active">فعال</option><option value="inactive">غیرفعال</option><option value="blocked">مسدود</option></select></Field>
         </div>
 
-        <div className="border-t border-gray-100 pt-6">
-          <h3 className="mb-4 text-sm font-semibold text-gray-900">آدرس</h3>
-          <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="استان"><input value={form.address.province} onChange={(event) => updateAddress("province", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="شهر"><input value={form.address.city} onChange={(event) => updateAddress("city", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(event) => updateAddress("postal_code", event.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field>
-            <Field label="آدرس"><textarea value={form.address.address} onChange={(event) => updateAddress("address", event.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
-          </div>
-        </div>
-
-        <Field label="توضیحات"><textarea value={form.description} onChange={(event) => update("description", event.target.value)} disabled={isSubmitting} rows={4} className={inputClass} /></Field>
+        <div className="border-t border-gray-100 pt-6"><h3 className="mb-4 text-sm font-semibold text-gray-900">آدرس</h3><p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p><div className="grid grid-cols-1 gap-4 md:grid-cols-2"><IranAddressFields province={form.address.province} city={form.address.city} onProvinceChange={(value) => updateAddress("province", value)} onCityChange={(value) => updateAddress("city", value)} disabled={isSubmitting} /><Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(event) => updateAddress("postal_code", event.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field><Field label="آدرس"><textarea value={form.address.address} onChange={(event) => updateAddress("address", event.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field></div></div><Field label="توضیحات"><textarea value={form.description} onChange={(event) => update("description", event.target.value)} disabled={isSubmitting} rows={4} className={inputClass} /></Field>
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button type="button" onClick={onCancel} disabled={isSubmitting} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بازگشت به مشتریان</button>

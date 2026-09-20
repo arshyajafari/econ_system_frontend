@@ -1,5 +1,6 @@
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
+import { IranAddressFields } from "../../../components/IranAddressFields";
 import type { Doctor, DoctorFormData, DoctorSpecialty } from "../types/doctor";
 
 type DoctorFormProps = {
@@ -55,17 +56,7 @@ export function DoctorForm({ doctor, isSubmitting, error, onSubmit, onCancel }: 
           <Field label="تخصص" required><select value={form.specialty} onChange={(e) => update("specialty", e.target.value as DoctorSpecialty)} disabled={isSubmitting} className={inputClass}>{specialties.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></Field>
           <Field label="وضعیت" required><select value={form.status} onChange={(e) => update("status", e.target.value as DoctorFormData["status"])} disabled={isSubmitting} className={inputClass}><option value="active">فعال</option><option value="inactive">غیرفعال</option><option value="suspended">تعلیق‌شده</option></select></Field>
         </div>
-        <div className="border-t border-gray-100 pt-6">
-          <h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3>
-          <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="استان"><input value={form.address.province} onChange={(e) => updateAddress("province", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="شهر"><input value={form.address.city} onChange={(e) => updateAddress("city", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(e) => updateAddress("postal_code", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field>
-            <Field label="آدرس"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
-          </div>
-        </div>
-        <Field label="توضیحات"><textarea value={form.description} onChange={(e) => update("description", e.target.value)} disabled={isSubmitting} rows={4} className={inputClass} /></Field>
+        <div className="border-t border-gray-100 pt-6"><h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3><p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p><div className="grid grid-cols-1 gap-4 md:grid-cols-2"><IranAddressFields province={form.address.province} city={form.address.city} onProvinceChange={(value) => updateAddress("province", value)} onCityChange={(value) => updateAddress("city", value)} disabled={isSubmitting} /><Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(e) => updateAddress("postal_code", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field><Field label="آدرس"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field></div></div><Field label="توضیحات"><textarea value={form.description} onChange={(e) => update("description", e.target.value)} disabled={isSubmitting} rows={4} className={inputClass} /></Field>
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button type="button" onClick={onCancel} disabled={isSubmitting} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بازگشت به پزشکان</button>
           <button type="submit" disabled={isSubmitting || !form.first_name.trim() || !form.last_name.trim()} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "در حال ذخیره..." : doctor ? "ذخیره تغییرات" : "ثبت پزشک"}</button>
