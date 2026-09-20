@@ -89,7 +89,7 @@ export function OrdersPage() {
 
       setCustomers(customersResponse);
         setProducts(productsResponse);
-        if (isAdmin) setEmployees(await getOrderEmployees());
+        if (isAdmin || isAccountant) setEmployees(await getOrderEmployees());
         else setEmployees([]);
     } catch (error: unknown) {
       setError(
@@ -100,7 +100,7 @@ export function OrdersPage() {
     } finally {
       setIsLoadingLookups(false);
     }
-  }, [isAdmin]);
+  }, [isAdmin, isAccountant]);
 
   const loadOrders = useCallback(async () => {
     const requestId = ++requestIdRef.current;
