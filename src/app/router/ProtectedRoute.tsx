@@ -14,6 +14,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   const can = (permission: string) => isAdmin || permissions.includes(permission);
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
+  if (pathname === "/invoices/new") return isAdmin || roles.includes("accountant") && permissions.includes("invoices.create");
   if (pathname === "/employee-locations" || pathname.startsWith("/employee-locations/")) return isAdmin;
   if (pathname === "/catalog" || pathname.startsWith("/catalog/")) return isAdmin;
   if (pathname === "/products" || pathname.startsWith("/products/")) return isAdmin || isSalesVisitor;

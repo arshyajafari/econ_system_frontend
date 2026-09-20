@@ -5,6 +5,7 @@ import { formatJalaliDate } from "../../../utils/date";
 import { getCustomers } from "../../customers/services/customersApi";
 import type { Customer } from "../../customers/types/customer";
 import { getInvoices } from "../services/invoicesApi";
+import { useAuth } from "../../auth";
 import type { Invoice, InvoiceListParams, InvoiceStatus } from "../types/invoice";
 import { invoiceStatusLabel } from "../types/invoice";
 
@@ -19,6 +20,8 @@ function statusClass(status: InvoiceStatus): string {
 
 export function InvoicesPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canManageInvoices = user?.roles.includes("admin") || user?.roles.includes("accountant");
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
@@ -78,7 +81,7 @@ export function InvoicesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div><h1 className="text-2xl font-bold text-gray-900">فاکتورها</h1><p className="mt-1 text-sm text-gray-500">مدیریت فاکتورهای صادرشده از سفارش‌ها</p></div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => navigate("/invoices/new")} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700">ثبت فاکتور</button>
+          {canManageInvoices ? <button type="button" onClick={() => navigate("/invoices/new")} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700">ثبت فاکتور</button> : null}
           <button type="button" onClick={() => void load()} disabled={loading} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">بروزرسانی</button>
         </div>
       </div>

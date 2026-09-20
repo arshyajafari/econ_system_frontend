@@ -27,7 +27,7 @@ export function OrderStatusActions({
     });
   }
 
-  if (order.status === "pending") {
+  if (order.status === "pending" && isAdmin) {
     actions.push({
       action: "confirm",
       label: "تأیید سفارش",
@@ -49,6 +49,14 @@ export function OrderStatusActions({
       label: "لغو",
       className: "border-red-200 text-red-700 hover:bg-red-50",
     });
+  }
+
+  if (actions.length === 0 && order.status === "pending" && !isAdmin) {
+    return (
+      <div className="rounded-lg bg-yellow-50 px-3 py-1.5 text-xs font-medium text-yellow-700">
+        در انتظار تأیید مدیر
+      </div>
+    );
   }
 
   if (actions.length === 0 && order.status === "confirmed" && !isAdmin) {

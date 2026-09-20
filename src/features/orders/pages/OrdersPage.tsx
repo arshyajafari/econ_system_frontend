@@ -33,6 +33,7 @@ import type {
 export function OrdersPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const isAccountant = user?.roles.includes("accountant") ?? false;
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -88,7 +89,7 @@ export function OrdersPage() {
 
       setCustomers(customersResponse);
         setProducts(productsResponse);
-        if (isAdmin) setEmployees(await getOrderEmployees());
+        if (isAdmin || isAccountant) setEmployees(await getOrderEmployees());
         else setEmployees([]);
     } catch (error: unknown) {
       setError(
@@ -99,7 +100,7 @@ export function OrdersPage() {
     } finally {
       setIsLoadingLookups(false);
     }
-  }, [isAdmin]);
+  }, [isAdmin, isAccountant]);
 
   const loadOrders = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -185,7 +186,7 @@ export function OrdersPage() {
   }
 
   function openEditForm(order: Order) {
-    if (order.status !== "draft") {
+    if (!isAdmin && !isAccountant && order.status !== "draft" && order.status !== "pending") {
       return;
     }
 
@@ -418,6 +419,7 @@ export function OrdersPage() {
       <OrderTable
         orders={orders}
         isAdmin={isAdmin}
+        isAccountant={isAccountant}
         isLoading={isLoading}
         pendingOrderId={pendingOrderId}
         onView={(order) => {
