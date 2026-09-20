@@ -39,6 +39,15 @@ export type Payment = {
 
 export type PaymentInvoiceOption = PaymentInvoice & { customer: PaymentCustomer | null };
 
+export function isPayablePaymentInvoice(invoice: PaymentInvoice): boolean {
+  return (
+    invoice.status === "issued" &&
+    invoice.is_settled !== true &&
+    invoice.remaining_amount != null &&
+    Number(invoice.remaining_amount) > 0
+  );
+}
+
 export type PaymentListParams = {
   invoice_id?: string;
   customer_id?: string;

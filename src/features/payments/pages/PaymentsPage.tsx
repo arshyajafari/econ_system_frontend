@@ -18,6 +18,8 @@ import {
   updatePayment,
 } from "../services/paymentsApi";
 
+import { isPayablePaymentInvoice } from "../types/payment";
+
 import type {
   Payment,
   PaymentFormData,
@@ -73,11 +75,7 @@ export function PaymentsPage() {
       const response = await getPaymentInvoices({ settled: false, payable: true });
 
       setInvoices(
-        response.filter(
-          (invoice) =>
-            invoice.is_settled !== true &&
-            Number(invoice.remaining_amount ?? 0) > 0,
-        ),
+        response.filter((invoice) => isPayablePaymentInvoice(invoice)),
       );
     } catch (error: unknown) {
       setError(
