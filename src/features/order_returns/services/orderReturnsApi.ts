@@ -129,6 +129,10 @@ function normalizePayload(payload: OrderReturnFormData): OrderReturnFormData {
 
     description: payload.description.trim(),
 
+    ...(payload.return_amount?.trim()
+      ? { return_amount: payload.return_amount.trim() }
+      : {}),
+
     items: payload.items.map((item) => ({
       order_item_id: item.order_item_id,
 
