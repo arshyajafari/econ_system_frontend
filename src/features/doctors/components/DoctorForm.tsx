@@ -1,7 +1,6 @@
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import { IranAddressFields } from "../../../components/IranAddressFields";
-import { IranAddressFields } from "../../../components/IranAddressFields";
 import type { Doctor, DoctorFormData, DoctorSpecialty } from "../types/doctor";
 
 type DoctorFormProps = {
