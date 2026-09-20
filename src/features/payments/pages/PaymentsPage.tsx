@@ -65,7 +65,6 @@ export function PaymentsPage() {
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
 
   const requestIdRef = useRef(0);
-  const invoiceRequestIdRef = useRef(0);
 
   const loadInvoices = useCallback(async () => {
     setIsLoadingInvoices(true);
