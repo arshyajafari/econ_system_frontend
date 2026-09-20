@@ -33,6 +33,7 @@ import type {
 export function OrdersPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const isAccountant = user?.roles.includes("accountant") ?? false;
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -185,7 +186,7 @@ export function OrdersPage() {
   }
 
   function openEditForm(order: Order) {
-    if (order.status !== "draft") {
+    if (!isAdmin && !isAccountant && order.status !== "draft" && order.status !== "pending") {
       return;
     }
 
