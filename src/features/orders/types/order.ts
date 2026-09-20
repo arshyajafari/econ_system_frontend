@@ -90,4 +90,4 @@ export const ORDER_STATUS_OPTIONS: OrderStatusOption[] = [
 export function getOrderStatusLabel(status: OrderStatus): string {
   return ORDER_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
 }
-export function canEditOrder(status: OrderStatus): boolean { return status === "draft"; }
+export function canEditOrder(status: OrderStatus): boolean { return status === "draft" || status === "pending"; }
