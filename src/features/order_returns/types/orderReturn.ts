@@ -29,6 +29,9 @@ export type OrderReturn = {
 
   status: OrderReturnStatus;
 
+  return_amount: number;
+  is_manual_amount: boolean;
+
   completed_at: string | null;
 
   description: string | null;
@@ -147,6 +150,8 @@ export type OrderReturnFormData = {
   order_id: string;
 
   description: string;
+
+  return_amount?: string;
 
   items: OrderReturnItemFormData[];
 };
