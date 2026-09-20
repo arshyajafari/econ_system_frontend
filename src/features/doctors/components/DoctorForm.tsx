@@ -1,5 +1,7 @@
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
+import { IranAddressFields } from "../../../components/IranAddressFields";
+import { IranAddressFields } from "../../../components/IranAddressFields";
 import type { Doctor, DoctorFormData, DoctorSpecialty } from "../types/doctor";
 
 type DoctorFormProps = {
@@ -59,10 +61,8 @@ export function DoctorForm({ doctor, isSubmitting, error, onSubmit, onCancel }: 
           <h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3>
           <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="استان"><input value={form.address.province} onChange={(e) => updateAddress("province", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="شهر"><input value={form.address.city} onChange={(e) => updateAddress("city", e.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(e) => updateAddress("postal_code", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field>
-            <Field label="آدرس"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
+            <IranAddressFields province={form.address.province} city={form.address.city} onProvinceChange={(value) => updateAddress("province", value)} onCityChange={(value) => updateAddress("city", value)} disabled={isSubmitting} />
+            <Field label="کد پستی"><textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
           </div>
         </div>
         <Field label="توضیحات"><textarea value={form.description} onChange={(e) => update("description", e.target.value)} disabled={isSubmitting} rows={4} className={inputClass} /></Field>
