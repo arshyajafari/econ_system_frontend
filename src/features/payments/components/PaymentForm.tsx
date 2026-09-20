@@ -9,6 +9,7 @@ import type { Customer } from "../../customers/types/customer";
 import { getPayments, getPaymentInvoices } from "../services/paymentsApi";
 import { PAYMENT_METHOD_OPTIONS } from "../types/payment";
 import type { Payment, PaymentFormData, PaymentInvoiceOption, PaymentMethod } from "../types/payment";
+import { isPayablePaymentInvoice } from "../types/payment";
 
 type PaymentFormProps = { payment: Payment | null; invoices: PaymentInvoiceOption[]; isSubmitting: boolean; error: string | null; onSubmit: (data: PaymentFormData) => void; onCancel: () => void };
 const numberFormatter = new Intl.NumberFormat("fa-IR");
@@ -16,12 +17,9 @@ const numberFormatter = new Intl.NumberFormat("fa-IR");
 export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, onCancel }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const isPayableInvoice = (invoice: PaymentInvoiceOption) =>
-    invoice.is_settled !== true && Number(invoice.remaining_amount ?? 0) > 0;
-
   const [invoiceOptions, setInvoiceOptions] = useState<PaymentInvoiceOption[]>(() =>
     payment
-      ? invoices.filter((invoice) => isPayableInvoice(invoice) || invoice.id === payment.invoice?.id)
+      ? invoices.filter((invoice) => isPayablePaymentInvoice(invoice) || invoice.id === payment.invoice?.id)
       : [],
   );
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
@@ -80,9 +78,7 @@ export function PaymentForm({ payment, invoices, isSubmitting, error, onSubmit, 
           setInvoiceOptions([
             ...currentOption,
             ...response.filter(
-              (invoice) =>
-                invoice.is_settled !== true &&
-                Number(invoice.remaining_amount ?? 0) > 0,
+              (invoice) => isPayablePaymentInvoice(invoice),
             ),
           ]);
         }
