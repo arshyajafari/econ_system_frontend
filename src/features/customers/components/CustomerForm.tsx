@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IranAddressFields } from "../../../components/IranAddressFields";
 
 import type { Customer, CustomerFormData } from "../types/customer";
 
@@ -101,10 +102,8 @@ export function CustomerForm({ customer, isSubmitting, error, onSubmit, onCancel
           <h3 className="mb-4 text-sm font-semibold text-gray-900">آدرس</h3>
           <p className="mb-4 text-xs text-gray-500">اطلاعات مرتبط به آدرس</p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="استان"><input value={form.address.province} onChange={(event) => updateAddress("province", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="شهر"><input value={form.address.city} onChange={(event) => updateAddress("city", event.target.value)} disabled={isSubmitting} className={inputClass} /></Field>
-            <Field label="کد پستی"><input dir="ltr" value={form.address.postal_code} onChange={(event) => updateAddress("postal_code", event.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} /></Field>
-            <Field label="آدرس"><textarea value={form.address.address} onChange={(event) => updateAddress("address", event.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
+            <IranAddressFields province={form.address.province} city={form.address.city} onProvinceChange={(value) => updateAddress("province", value)} onCityChange={(value) => updateAddress("city", value)} disabled={isSubmitting} />
+            <Field label="کد پستی"><textarea value={form.address.address} onChange={(event) => updateAddress("address", event.target.value)} disabled={isSubmitting} rows={1} className={inputClass} /></Field>
           </div>
         </div>
 
