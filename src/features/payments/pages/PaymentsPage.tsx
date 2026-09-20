@@ -18,6 +18,8 @@ import {
   updatePayment,
 } from "../services/paymentsApi";
 
+import { isPayablePaymentInvoice } from "../types/payment";
+
 import type {
   Payment,
   PaymentFormData,
