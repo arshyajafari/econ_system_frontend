@@ -14,6 +14,8 @@ function normalizePayload(data: EmployeeFormData, editing: boolean) {
   const hasAddress = Boolean(address.province.trim() || address.city.trim() || address.address.trim() || address.postal_code.trim() || address.latitude.trim() || address.longitude.trim());
   return {
     first_name: data.first_name.trim(), last_name: data.last_name.trim(), national_code: data.national_code.trim(), phone_number: data.phone_number.trim(),
+    card_number: data.card_number.trim() || undefined,
+    iban_number: data.iban_number.trim() || undefined,
     social_link: data.social_link.trim() || undefined, email: data.email.trim() || undefined, gender: data.gender, birth_date: data.birth_date || undefined,
     employment_type: data.employment_type, activities: data.activities, activity_type: data.activities[0], hire_date: data.hire_date, termination_date: data.termination_date || undefined, status: data.status,
     ...(editing ? {} : { login: data.login.trim(), password: data.password, password_confirmation: data.password_confirmation, roles: data.roles }),
