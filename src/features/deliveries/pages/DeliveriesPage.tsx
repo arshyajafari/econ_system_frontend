@@ -23,7 +23,7 @@ import type {
   DeliveryFormData,
   DeliveryStatus,
 } from "../types/delivery";
-import type { Order } from "../../orders/types/order";
+import type { Invoice } from "../../invoices/types/invoice";
 
 const empty: DeliveryFormData = {
   order_id: "",
@@ -39,7 +39,7 @@ export function DeliveriesPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
   const [items, setItems] = useState<Delivery[]>([]),
-    [orders, setOrders] = useState<Order[]>([]),
+    [invoices, setInvoices] = useState<Invoice[]>([]),
     [status, setStatus] = useState<DeliveryStatus | "">(""),
     [search, setSearch] = useState(""),
     [page, setPage] = useState(1),
@@ -111,14 +111,14 @@ export function DeliveriesPage() {
   }, [page, search, status]);
   useEffect(() => {
     if (!isAdmin) {
-      setOrders([]);
+      setInvoices([]);
       return;
     }
 
-    getAvailableOrders()
-      .then(setOrders)
+    getAvailableInvoices()
+      .then(setInvoices)
       .catch((e: unknown) => {
-        setOrders([]);
+        setInvoices([]);
         setError(
           e instanceof ApiError
             ? e.message
