@@ -9,4 +9,17 @@ export async function prepareDelivery(id:string){const r=await apiClient.post<De
 export async function shipDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/ship`);return r.data}
 export async function completeDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`);return r.data}
 export async function cancelDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/cancel`);return r.data}
-export async function getAvailableOrders(){const r=await apiClient.get<OrderListResponse>("/deliveries/available-orders");return r.data.data}
+export async function getAvailableOrders(): Promise<Order[]> {
+  const r = await apiClient.get<OrderListResponse | Order[]>("/deliveries/available-orders");
+  const payload = r.data;
+
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (Array.isArray(payload?.data)) {
+    return payload.data;
+  }
+
+  return [];
+}
