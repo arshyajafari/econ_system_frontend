@@ -6,6 +6,7 @@ import {
   EMPLOYEE_ROLE_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
   EMPLOYEE_STATUS_OPTIONS,
+  EMPLOYEE_ACTIVITY_OPTIONS,
   type Employee,
   type EmployeeRole,
   type EmployeeActivityType,
@@ -340,6 +341,41 @@ export function EmployeeForm({
               ))}
             </select>
           </Field>
+        </div>
+        <div className="border-t border-gray-100 pt-6">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold">نوع فعالیت</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              می‌توانید یک یا چند نوع فعالیت را برای کارمند انتخاب کنید.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
+              const checked = form.activities.includes(option.value);
+              return (
+                <label
+                  key={option.value}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 transition hover:border-gray-400"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() =>
+                      update(
+                        "activities",
+                        checked
+                          ? form.activities.filter((activity) => activity !== option.value)
+                          : [...form.activities, option.value],
+                      )
+                    }
+                    disabled={isSubmitting}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">{option.label}</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-4 text-sm font-semibold">آدرس</h3>
