@@ -9,8 +9,6 @@ import {
   type Employee,
   type EmployeeFormData,
   type Gender,
-  type EmployeeActivityType,
-  type EmployeeRole,
 } from "../types/employee";
 
 type Props = {
@@ -130,21 +128,6 @@ export function EmployeeForm({
       ...current,
       address: { ...current.address, [key]: value },
     }));
-  const toggleRole = (value: EmployeeRole) =>
-    setForm((current) => {
-      const roles = current.roles.includes(value)
-        ? current.roles.filter((item) => item !== value)
-        : [...current.roles, value];
-      const mappedActivities = roles.map((role) => roleActivityMap[role]);
-      const unmappedActivities = current.activities.filter(
-        (activity) => !Object.values(roleActivityMap).includes(activity),
-      );
-      return {
-        ...current,
-        roles,
-        activities: [...new Set([...mappedActivities, ...unmappedActivities])],
-      };
-    });
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (

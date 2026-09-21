@@ -18,7 +18,7 @@ export function EmployeeBankingPage() {
       setError(e instanceof ApiError ? e.message : "خطا در دریافت اطلاعات بانکی کارکنان.");
     } finally { setLoading(false); }
   }, [search]);
-  useEffect(() => { const id = window.setTimeout(() => void load(), search.trim() ? 300 : 0); return () => window.clearTimeout(id); }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
   return <section className="space-y-6 p-4 md:p-6">
     <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
