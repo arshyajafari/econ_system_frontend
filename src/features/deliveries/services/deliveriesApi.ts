@@ -10,7 +10,7 @@ export async function shipDelivery(id:string){const r=await apiClient.post<Deliv
 export async function completeDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`);return r.data}
 export async function cancelDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/cancel`);return r.data}
 export async function getAvailableInvoices(): Promise<Invoice[]> {
-  const r = await apiClient.get<InvoiceListResponse | Invoice[]>("/deliveries/available-orders");
+  const r = await apiClient.get<InvoiceListResponse | Invoice[]>("/deliveries/available-invoices");
   const payload = r.data;
 
   if (Array.isArray(payload)) return payload;
