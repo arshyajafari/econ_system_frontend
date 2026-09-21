@@ -12,7 +12,7 @@ export function EmployeeBankingPage() {
   const load = useCallback(async () => {
     setLoading(true); setError(null);
     try {
-      const response = await getEmployees({ search: search.trim() || undefined, per_page: 500, page: 1 });
+      const response = await getEmployees({ search: search.trim() || undefined, per_page: 100, page: 1 });
       setItems(response.data);
     } catch (e: unknown) {
       setError(e instanceof ApiError ? e.message : "خطا در دریافت اطلاعات بانکی کارکنان.");
