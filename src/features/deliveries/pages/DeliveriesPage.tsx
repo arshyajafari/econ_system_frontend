@@ -4,7 +4,7 @@ import { useAuth } from "../../auth";
 import { IranAddressFields } from "../../../components/IranAddressFields";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
-import { cancelDelivery, completeDelivery, createDelivery, getDeliveries, getPendingOrders, prepareDelivery, shipDelivery, updateDelivery } from "../services/deliveriesApi";
+import { cancelDelivery, completeDelivery, createDelivery, getDeliveries, getAvailableOrders, prepareDelivery, shipDelivery, updateDelivery } from "../services/deliveriesApi";
 import { DELIVERY_STATUS_OPTIONS, getDeliveryStatusLabel } from "../types/delivery";
 import type { Delivery, DeliveryFormData, DeliveryStatus } from "../types/delivery";
 import type { Order } from "../../orders/types/order";
@@ -24,9 +24,21 @@ export function DeliveriesPage() {
   };
 
   useEffect(() => { let dead = false; const run = async () => { setLoading(true); setError(null); try { const r = await getDeliveries({ search: search.trim() || undefined, status: status || undefined, sort: "-created_at", page, per_page: 20 }); if (!dead) { setItems(r.data); setLast(r.meta.last_page); setTotal(r.meta.total); } } catch (e: unknown) { if (!dead) setError(e instanceof ApiError ? e.message : "خطا در دریافت ارسال‌ها"); } finally { if (!dead) setLoading(false); } }; void run(); return () => { dead = true; }; }, [page, search, status]);
-  useEffect(() => { getPendingOrders().then(setOrders).catch(() => setOrders([])); }, []);
+  useEffect(() => {
+    if (!isAdmin) {
+      setOrders([]);
+      return;
+    }
 
-  const submit = async (e: React.FormEvent) => { e.preventDefault(); setSaving(true); setError(null); try { const saved = editing ? await updateDelivery(editing.id, form) : await createDelivery(form); setItems(x => editing ? x.map(i => i.id === saved.id ? saved : i) : [saved, ...x].slice(0, 20)); if (!editing) setTotal(x => x + 1); setForm(empty); setEditing(null); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در ذخیره ارسال."); } finally { setSaving(false); } };
+    getAvailableOrders()
+      .then(setOrders)
+      .catch((e: unknown) => {
+        setOrders([]);
+        setError(e instanceof ApiError ? e.message : "خطا در دریافت سفارش‌های آماده ارسال.");
+      });
+  }, [isAdmin]);
+
+  const submit = async (e: React.FormEvent) => { e.preventDefault(); setSaving(true); setError(null); try { const saved = editing ? await updateDelivery(editing.id, form) : await createDelivery(form); setItems(x => editing ? x.map(i => i.id === saved.id ? saved : i) : [saved, ...x].slice(0, 20)); if (!editing) { setTotal(x => x + 1); setOrders(x => x.filter(order => order.id !== form.order_id)); } setForm(empty); setEditing(null); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در ذخیره ارسال."); } finally { setSaving(false); } };
   const action = async (d: Delivery, a: "prepare" | "ship" | "complete" | "cancel") => { if (actionId) return; setActionId(d.id); try { const u = a === "prepare" ? await prepareDelivery(d.id) : a === "ship" ? await shipDelivery(d.id) : a === "complete" ? await completeDelivery(d.id) : await cancelDelivery(d.id); setItems(x => x.map(i => i.id === u.id ? u : i)); } catch (e: unknown) { setError(e instanceof ApiError ? e.message : "خطا در تغییر وضعیت ارسال."); } finally { setActionId(null); } };
   const startEdit = (d: Delivery) => { setEditing(d); setForm({ order_id: d.order?.id ?? "", recipient_name: d.recipient_name, recipient_phone: d.recipient_phone ?? "", province: d.province ?? "", city: d.city ?? "", address: d.address ?? "", description: d.description ?? "" }); };
 
