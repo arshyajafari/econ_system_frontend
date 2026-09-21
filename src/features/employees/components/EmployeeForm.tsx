@@ -59,6 +59,9 @@ const roleActivityMap: Record<EmployeeRole, EmployeeActivityType> = {
   "settlement operator": "settlement_operator",
   "delivery operator": "delivery_operator",
 };
+const activityRoleMap: Partial<Record<EmployeeActivityType, EmployeeRole>> = Object.fromEntries(
+  Object.entries(roleActivityMap).map(([role, activity]) => [activity, role as EmployeeRole]),
+) as Partial<Record<EmployeeActivityType, EmployeeRole>>;
 function toForm(employee: Employee): EmployeeFormData {
   const roles = (employee.user?.roles ?? []).filter(
     (role): role is EmployeeRole =>
@@ -360,14 +363,29 @@ export function EmployeeForm({
                   <input
                     type="checkbox"
                     checked={checked}
-                    onChange={() =>
-                      update(
-                        "activities",
-                        checked
-                          ? form.activities.filter((activity) => activity !== option.value)
-                          : [...form.activities, option.value],
-                      )
-                    }
+                    onChange={() => {
+                      const activities = checked
+                        ? form.activities.filter((activity) => activity !== option.value)
+                        : [...form.activities, option.value];
+                      const mappedRoles = activities
+                        .map((activity) => activityRoleMap[activity])
+                        .filter((role): role is EmployeeRole => Boolean(role));
+                      const currentMappedRoles = form.roles.filter(
+                        (role) => roleActivityMap[role] !== undefined,
+                      );
+                      const preservedRoles = form.roles.filter(
+                        (role) => roleActivityMap[role] === undefined,
+                      );
+                      const roles = mappedRoles.length
+                        ? Array.from(new Set([
+                            ...preservedRoles,
+                            ...mappedRoles,
+                          ]))
+                        : currentMappedRoles.length
+                          ? form.roles
+                          : form.roles;
+                      setForm((current) => ({ ...current, activities, roles }));
+                    }}
                     disabled={isSubmitting}
                     className="h-4 w-4 rounded border-gray-300"
                   />
