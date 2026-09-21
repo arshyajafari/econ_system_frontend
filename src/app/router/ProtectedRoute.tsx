@@ -24,6 +24,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
     ["/customers", "customers.view"],
     ["/doctors", "doctors.view"],
     ["/employees", "employees.view"],
+    ["/employee-banking", "employees.view"],
     ["/orders", "orders.view"],
     ["/invoices", "invoices.view"],
     ["/reports", "reports.view"],
