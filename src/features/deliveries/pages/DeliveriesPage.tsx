@@ -9,7 +9,7 @@ import {
   completeDelivery,
   createDelivery,
   getDeliveries,
-  getAvailableOrders,
+  getAvailableInvoices,
   prepareDelivery,
   shipDelivery,
   updateDelivery,
@@ -122,7 +122,7 @@ export function DeliveriesPage() {
         setError(
           e instanceof ApiError
             ? e.message
-            : "خطا در دریافت سفارش‌های آماده ارسال.",
+            : "خطا در دریافت فاکتورهای آماده ارسال.",
         );
       });
   }, [isAdmin]);
@@ -142,7 +142,7 @@ export function DeliveriesPage() {
       );
       if (!editing) {
         setTotal((x) => x + 1);
-        setOrders((x) => x.filter((order) => order.id !== form.order_id));
+        setInvoices((x) => x.filter((invoice) => invoice.order?.id !== form.order_id));
       }
       setForm(empty);
       setEditing(null);
@@ -227,10 +227,11 @@ export function DeliveriesPage() {
             onChange={(e) => setForm({ ...form, order_id: e.target.value })}
             className="rounded-lg border px-3 py-2"
           >
-            <option value="">انتخاب سفارش تأییدشده</option>
-            {orders.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.code} — {o.customer?.customer_name ?? "بدون مشتری"}
+            <option value="">انتخاب فاکتور صادرشده</option>
+            {invoices.map((invoice) => (
+              <option key={invoice.id} value={invoice.order?.id ?? ""}>
+                {invoice.code} — {invoice.customer?.name ?? "بدون مشتری"}
+                {invoice.order?.code ? ` — ${invoice.order.code}` : ""}
               </option>
             ))}
           </select>
