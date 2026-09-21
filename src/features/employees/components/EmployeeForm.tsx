@@ -230,51 +230,51 @@ export function EmployeeForm({
               className={input}
             />
           </Field>
-
-          <div className="md:col-span-2 rounded-2xl border border-gray-200 bg-gray-50/70 p-4">
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">اطلاعات بانکی</h3>
-              <p className="mt-1 text-xs text-gray-500">شماره کارت و شبا را وارد کنید؛ نمایش بانکی به‌صورت زنده به‌روزرسانی می‌شود.</p>
+          <Field label="شماره کارت">
+            <input
+              dir="ltr"
+              inputMode="numeric"
+              maxLength={19}
+              placeholder="0000 0000 0000 0000"
+              value={form.card_number
+                .replace(/\D/g, "")
+                .replace(/(.{4})/g, "$1 ")
+                .trim()}
+              onChange={(e) =>
+                update(
+                  "card_number",
+                  e.target.value.replace(/\D/g, "").slice(0, 16),
+                )
+              }
+              disabled={isSubmitting}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
+            />
+          </Field>
+          <Field label="شماره شبا">
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center font-mono text-sm font-semibold text-gray-500">
+                IR
+              </span>
+              <input
+                dir="ltr"
+                inputMode="numeric"
+                maxLength={29}
+                placeholder="59-0300-1234-5678-9012-3456-78"
+                value={form.iban_number
+                  .replace(/\D/g, "")
+                  .replace(/(.{4})/g, "$1-")
+                  .replace(/-$/, "")}
+                onChange={(e) =>
+                  update(
+                    "iban_number",
+                    e.target.value.replace(/\D/g, "").slice(0, 24),
+                  )
+                }
+                disabled={isSubmitting}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pl-10 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
+              />
             </div>
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-              <div className="space-y-3">
-                <Field label="شماره کارت">
-                  <input dir="ltr" inputMode="numeric" maxLength={19} placeholder="0000 0000 0000 0000"
-                    value={form.card_number.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim()}
-                    onChange={(e) => update("card_number", e.target.value.replace(/\D/g, "").slice(0, 16))}
-                    disabled={isSubmitting} className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100" />
-                </Field>
-                <div className="overflow-hidden rounded-2xl bg-gray-900 p-5 text-white shadow-sm">
-                  <div className="flex items-start justify-between">
-                    <div><p className="text-[11px] text-gray-400">کارت بانکی</p>
-                      <p className="mt-1 text-sm font-semibold">{form.first_name || "نام"} {form.last_name || "کارمند"}</p></div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xs font-bold">BANK</div>
-                  </div>
-                  <p dir="ltr" className="mt-7 text-center font-mono text-lg tracking-[0.18em]">{form.card_number ? form.card_number.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim() : "0000 0000 0000 0000"}</p>
-                  <p className="mt-3 text-right text-[10px] text-gray-400">اطلاعات بانکی کارمند</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <Field label="شماره شبا">
-                  <div className="relative">
-                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center font-mono text-sm font-semibold text-gray-500">IR</span>
-                    <input dir="ltr" inputMode="numeric" maxLength={29} placeholder="59-0300-1234-5678-9012-3456-78"
-                      value={form.iban_number.replace(/\D/g, "").replace(/(.{4})/g, "$1-").replace(/-$/, "")}
-                      onChange={(e) => update("iban_number", e.target.value.replace(/\D/g, "").slice(0, 24))}
-                      disabled={isSubmitting} className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pl-10 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100" />
-                  </div>
-                </Field>
-                <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <div><p className="text-[11px] text-gray-400">شماره شبا</p>
-                      <p className="mt-1 text-sm font-semibold text-gray-900">حساب بانکی کارمند</p></div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 font-mono text-xs font-bold text-gray-700">IR</div>
-                  </div>
-                  <p dir="ltr" className="mt-7 break-all text-center font-mono text-sm leading-7 tracking-wide text-gray-800">IR{form.iban_number ? form.iban_number.replace(/\D/g, "").replace(/(.{4})/g, "$1-").replace(/-$/, "") : "59-0300-1234-5678-9012-3456-78"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          </Field>
           <Field label="لینک شبکه اجتماعی">
             <input
               dir="ltr"

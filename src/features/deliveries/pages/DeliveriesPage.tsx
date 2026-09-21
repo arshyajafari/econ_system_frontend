@@ -142,7 +142,9 @@ export function DeliveriesPage() {
       );
       if (!editing) {
         setTotal((x) => x + 1);
-        setInvoices((x) => x.filter((invoice) => invoice.order?.id !== form.order_id));
+        setInvoices((x) =>
+          x.filter((invoice) => invoice.order?.id !== form.order_id),
+        );
       }
       setForm(empty);
       setEditing(null);
@@ -245,6 +247,18 @@ export function DeliveriesPage() {
             placeholder="نام گیرنده"
             className="rounded-lg border px-3 py-2"
           />
+          <IranAddressFields
+            province={form.province}
+            city={form.city}
+            onProvinceChange={(province) =>
+              setForm((current) => ({ ...current, province, city: "" }))
+            }
+            onCityChange={(city) =>
+              setForm((current) => ({ ...current, city }))
+            }
+            disabled={saving}
+            className="md:col-span-1"
+          />
           <input
             disabled={saving}
             value={form.recipient_phone}
@@ -260,18 +274,6 @@ export function DeliveriesPage() {
             onChange={(e) => setForm({ ...form, address: e.target.value })}
             placeholder="آدرس"
             className="rounded-lg border px-3 py-2 md:col-span-1"
-          />
-          <IranAddressFields
-            province={form.province}
-            city={form.city}
-            onProvinceChange={(province) =>
-              setForm((current) => ({ ...current, province, city: "" }))
-            }
-            onCityChange={(city) =>
-              setForm((current) => ({ ...current, city }))
-            }
-            disabled={saving}
-            className="md:col-span-1"
           />
           <textarea
             disabled={saving}
