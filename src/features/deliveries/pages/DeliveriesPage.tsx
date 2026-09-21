@@ -110,10 +110,7 @@ export function DeliveriesPage() {
     };
   }, [page, search, status]);
   useEffect(() => {
-    if (!isAdmin) {
-      setInvoices([]);
-      return;
-    }
+    if (!isAdmin) return;
 
     getAvailableInvoices()
       .then(setInvoices)
