@@ -12,6 +12,7 @@ const navigation: NavConfig[] = [
   { label: "مشتریان", to: "/customers", icon: "customers", requiredPermission: "customers.view" },
   { label: "پزشکان", to: "/doctors", icon: "doctors", requiredPermission: "doctors.view" },
   { label: "کارکنان", to: "/employees", icon: "employees", requiredPermission: "employees.view" },
+  { label: "اطلاعات بانکی کارکنان", to: "/employee-banking", icon: "payments", requiredPermission: "employees.view" },
   { label: "موقعیت کارکنان", to: "/employee-locations", icon: "employees", adminOnly: true },
   { label: "برندها و دسته‌بندی‌ها", to: "/catalog", icon: "catalog", requiredPermission: "brands.view" },
   { label: "محصولات", to: "/products", icon: "products", requiredPermission: "products.view" },
