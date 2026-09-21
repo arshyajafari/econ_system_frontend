@@ -7,6 +7,8 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   EMPLOYEE_STATUS_OPTIONS,
   type Employee,
+  type EmployeeRole,
+  type EmployeeActivityType,
   type EmployeeFormData,
   type Gender,
 } from "../types/employee";
