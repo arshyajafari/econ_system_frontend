@@ -9,4 +9,4 @@ export async function prepareDelivery(id:string){const r=await apiClient.post<De
 export async function shipDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/ship`);return r.data}
 export async function completeDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`);return r.data}
 export async function cancelDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/cancel`);return r.data}
-export async function getPendingOrders(){const r=await apiClient.get<OrderListResponse>("/orders",{params:{status:"pending",deliverable:true,per_page:500}});return r.data.data}
+export async function getPendingOrders(){const r=await apiClient.get<OrderListResponse>("/orders",{params:{status:"confirmed",deliverable:true,per_page:500}});return r.data.data}
