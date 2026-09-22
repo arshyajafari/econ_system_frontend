@@ -38,6 +38,8 @@ const empty: DeliveryFormData = {
 export function DeliveriesPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const isDeliveryOperator = user?.roles.includes("delivery operator") ?? false;
+  const canOperate = isAdmin || isDeliveryOperator;
   const [items, setItems] = useState<Delivery[]>([]),
     [invoices, setInvoices] = useState<Invoice[]>([]),
     [status, setStatus] = useState<DeliveryStatus | "">(""),
@@ -195,16 +197,18 @@ export function DeliveriesPage() {
             مدیریت آماده‌سازی، ارسال و تحویل سفارش‌ها
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setEditing(null);
-            setForm(empty);
-          }}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-white"
-        >
-          ارسال جدید
-        </button>
+        {isAdmin ? (
+          <button
+            type="button"
+            onClick={() => {
+              setEditing(null);
+              setForm(empty);
+            }}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-white"
+          >
+            ارسال جدید
+          </button>
+        ) : null}
       </header>
       {error && (
         <div
@@ -214,6 +218,7 @@ export function DeliveriesPage() {
           {error}
         </div>
       )}
+      {isAdmin ? (
       <form
         onSubmit={submit}
         className="space-y-3 rounded-xl border bg-white p-4"
@@ -302,6 +307,7 @@ export function DeliveriesPage() {
           )}
         </div>
       </form>
+      ) : null}
       <div className="flex gap-3">
         <input
           value={search}
@@ -393,9 +399,11 @@ export function DeliveriesPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
-                      {isAdmin ? (
+                      {canOperate ? (
                         <>
                           {d.status === "pending" && (
+                            <>
+                              {isAdmin ? (
                             <>
                               <button
                                 type="button"
@@ -404,6 +412,15 @@ export function DeliveriesPage() {
                               >
                                 ویرایش
                               </button>
+                              {isAdmin ? (
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(d)}
+                                  className="rounded border px-2 py-1 text-xs"
+                                >
+                                  ویرایش
+                                </button>
+                              ) : null}
                               <button
                                 type="button"
                                 disabled={actionId === d.id}
