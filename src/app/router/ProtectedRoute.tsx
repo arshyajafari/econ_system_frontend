@@ -11,7 +11,8 @@ function getHomePath(roles: string[]): string {
 function canAccessPath(pathname: string, roles: string[], permissions: string[]): boolean {
   const isAdmin = roles.includes("admin");
   const isSalesVisitor = roles.includes("sales visitor");
-  const can = (permission: string) => isAdmin || permissions.includes(permission);
+  const isScientificVisitor = roles.includes("scientific visitor");
+  const can = (permission: string) => isAdmin || isScientificVisitor || permissions.includes(permission);
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
   if (pathname === "/invoices/new") return isAdmin || roles.includes("accountant") && permissions.includes("invoices.create");
