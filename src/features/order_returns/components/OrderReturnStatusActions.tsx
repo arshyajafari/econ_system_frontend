@@ -42,7 +42,9 @@ export function OrderReturnStatusActions({
   disabled = false,
   onAction,
 }: Props) {
-  const actions = getAvailableActions(orderReturn.status);
+  const actions = getAvailableActions(orderReturn.status).filter((action) =>
+    canApprove || (action !== "confirm" && action !== "complete")
+  );
 
   if (actions.length === 0) {
     return null;
