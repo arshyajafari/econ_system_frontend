@@ -95,7 +95,7 @@ export function PaymentsPage() {
     } finally {
       setIsLoadingInvoices(false);
     }
-  }, [isAdmin, isAccountant, isSettlementOperator]);
+  }, []);
 
   const loadPayments = useCallback(async () => {
     const requestId = ++requestIdRef.current;
