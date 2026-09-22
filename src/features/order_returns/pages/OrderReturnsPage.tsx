@@ -18,6 +18,10 @@ import { ORDER_RETURN_STATUS_OPTIONS } from "../types/orderReturn";
 import { OrderReturnTable } from "../components/OrderReturnTable";
 
 export function OrderReturnsPage() {
+  const { user } = useAuth();
+  const roles = user?.roles ?? [];
+  const canCreateReturn = roles.includes("admin") || roles.includes("accountant") || roles.includes("sales visitor");
+
   const [orderReturns, setOrderReturns] = useState<OrderReturn[]>([]);
 
   const [status, setStatus] = useState<OrderReturnStatus | "">("");
