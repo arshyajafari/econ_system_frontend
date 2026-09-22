@@ -1,4 +1,5 @@
 import { apiClient } from "../../../api/client";
+import type { Order } from "../../orders/types/order";
 
 import type {
   InventoryBatch,
@@ -141,4 +142,9 @@ function normalizePayload(payload: OrderReturnFormData): OrderReturnFormData {
       description: item.description.trim(),
     })),
   };
+}
+
+export async function getReturnableOrders(): Promise<Order[]> {
+  const r = await apiClient.get<{ data: Order[] } | Order[]>("/order-returns/returnable-orders");
+  return Array.isArray(r.data) ? r.data : r.data.data ?? [];
 }
