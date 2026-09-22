@@ -139,6 +139,12 @@ export function PaymentsPage() {
   }, [method, page, search, status]);
 
   useEffect(() => {
+    if (!canCreatePayment) {
+      setInvoices([]);
+      setIsLoadingInvoices(false);
+      return;
+    }
+
     const timeoutId = window.setTimeout(() => {
       void loadInvoices();
     }, 0);
@@ -146,7 +152,7 @@ export function PaymentsPage() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [loadInvoices]);
+  }, [canCreatePayment, loadInvoices]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
