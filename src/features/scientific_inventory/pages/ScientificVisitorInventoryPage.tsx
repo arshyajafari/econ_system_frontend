@@ -50,7 +50,7 @@ export function ScientificVisitorInventoryPage() {
     let cancelled = false;
     Promise.all([
       getEmployees({ activity_type: "scientific_visitor", status: "active", per_page: 100 }),
-      getInventory({ sort: "-created_at", per_page: 500 }),
+      getInventory({ sort: "-created_at", per_page: 100 }),
     ]).then(([employeeResponse, inventoryResponse]) => {
       if (cancelled) return;
       setEmployees(employeeResponse.data);
