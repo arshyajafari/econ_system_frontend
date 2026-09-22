@@ -20,6 +20,15 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   // including scientific visitors. Keep this check before the role-specific home restriction.
   if (pathname === "/notifications" || pathname.startsWith("/notifications/")) return true;
 
+  const isDeliveryOperator = roles.includes("delivery operator");
+  const isSettlementOperator = roles.includes("settlement operator");
+  if ((isDeliveryOperator || isSettlementOperator) && !isAdmin && !isAccountant) {
+    return pathname === "/customers" || pathname.startsWith("/customers/")
+      || pathname === "/deliveries" || pathname.startsWith("/deliveries/")
+      || pathname === "/order-returns" || pathname.startsWith("/order-returns/")
+      || pathname === "/payments" || pathname.startsWith("/payments/");
+  }
+
   if (isScientificVisitor && !isAdmin && !isAccountant) {
     return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");
   }
