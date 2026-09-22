@@ -16,7 +16,11 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   const isScientificVisitor = roles.includes("scientific visitor");
   const can = (permission: string) => isAdmin || permissions.includes(permission);
 
-  if (isScientificVisitor && !isAdmin && !isAccountant) {\n    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");\n  }\n\n  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
+  if (isScientificVisitor && !isAdmin && !isAccountant) {
+    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");
+  }
+
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
   if (pathname === "/invoices/new") return isAdmin || (isAccountant && permissions.includes("invoices.create"));
   if (pathname === "/employee-locations" || pathname.startsWith("/employee-locations/")) return isAdmin;
   if (pathname === "/catalog" || pathname.startsWith("/catalog/")) return isAdmin;
