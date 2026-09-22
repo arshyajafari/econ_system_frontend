@@ -6,7 +6,8 @@ function getHomePath(roles: string[]): string {
   if (roles.includes("admin")) return "/dashboard";
   if (roles.includes("scientific visitor")) return "/scientific-inventory";
   if (roles.includes("sales visitor")) return "/products";
-  if (roles.includes("delivery operator") || roles.includes("settlement operator")) return "/customers";
+  if (roles.includes("delivery operator")) return "/deliveries";
+  if (roles.includes("settlement operator")) return "/customers";
   if (roles.includes("accountant")) return "/orders";
   return "/customers";
 }
@@ -24,7 +25,11 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
 
   const isDeliveryOperator = roles.includes("delivery operator");
   const isSettlementOperator = roles.includes("settlement operator");
-  if ((isDeliveryOperator || isSettlementOperator) && !isAdmin && !isAccountant) {
+  if (isDeliveryOperator && !isAdmin && !isAccountant) {
+    return pathname === "/deliveries" || pathname.startsWith("/deliveries/")
+      || pathname === "/order-returns" || pathname.startsWith("/order-returns/");
+  }
+  if (isSettlementOperator && !isAdmin && !isAccountant) {
     return pathname === "/customers" || pathname.startsWith("/customers/")
       || pathname === "/deliveries" || pathname.startsWith("/deliveries/")
       || pathname === "/order-returns" || pathname.startsWith("/order-returns/")

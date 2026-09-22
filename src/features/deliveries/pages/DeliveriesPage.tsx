@@ -39,7 +39,9 @@ export function DeliveriesPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
   const isDeliveryOperator = user?.roles.includes("delivery operator") ?? false;
-  const canOperate = isAdmin || isDeliveryOperator;
+  const isAccountant = user?.roles.includes("accountant") ?? false;
+  const canOperate = isAdmin || isAccountant || isDeliveryOperator;
+  const canApproveDelivery = isAdmin || isAccountant;
   const canManageForm = isAdmin || isDeliveryOperator;
   const [items, setItems] = useState<Delivery[]>([]),
     [availableOrders, setAvailableOrders] = useState<DeliveryOrderSource[]>([]),
@@ -410,20 +412,13 @@ export function DeliveriesPage() {
                                   ویرایش
                                 </button>
                               ) : null}
-                              <button
+{canApproveDelivery ? <button
                                 type="button"
                                 disabled={actionId === d.id}
-                                onClick={() =>
-                                  setActionTarget({
-                                    delivery: d,
-                                    action: "prepare",
-                                  })
-                                }
+                                onClick={() => setActionTarget({ delivery: d, action: "prepare" })}
                                 className="rounded border px-2 py-1 text-xs"
-                              >
-                                آماده‌سازی
-                              </button>
-                              <button
+                              >آماده‌سازی</button> : null}
+                              {canApproveDelivery ? <button
                                 type="button"
                                 disabled={actionId === d.id}
                                 onClick={() =>
@@ -435,10 +430,10 @@ export function DeliveriesPage() {
                                 className="rounded border px-2 py-1 text-xs"
                               >
                                 لغو
-                              </button>
+                              </button> : null}
                             </>
                           )}
-                          {d.status === "preparing" && (
+                          {d.status === "preparing" && canApproveDelivery && (
                             <>
                               <button
                                 type="button"
@@ -468,7 +463,7 @@ export function DeliveriesPage() {
                               </button>
                             </>
                           )}
-                          {d.status === "shipped" && (
+                          {d.status === "shipped" && isDeliveryOperator && (
                             <button
                               type="button"
                               disabled={actionId === d.id}
@@ -483,6 +478,7 @@ export function DeliveriesPage() {
                               تحویل
                             </button>
                           )}
+                          {canApproveDelivery && d.status !== "shipped" && d.status !== "delivered" ? null : null}
                         </>
                       ) : (
                         <span className="text-xs text-gray-400">
