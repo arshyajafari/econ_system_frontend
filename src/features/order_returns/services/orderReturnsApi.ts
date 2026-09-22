@@ -148,3 +148,8 @@ export async function getReturnableOrders(): Promise<Order[]> {
   const r = await apiClient.get<{ data: Order[] } | Order[]>("/order-returns/returnable-orders");
   return Array.isArray(r.data) ? r.data : r.data.data ?? [];
 }
+
+export async function receiveOrderReturn(id: string): Promise<OrderReturn> {
+  const response = await apiClient.post<OrderReturn>(`/order-returns/${id}/receive`);
+  return response.data;
+}
