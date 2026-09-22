@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { useAuth } from "../../auth";
 import { getEmployees } from "../../employees/services/employeesApi";
@@ -107,7 +108,7 @@ export function ScientificVisitorInventoryPage() {
     setEditDescription("");
   }
 
-  async function submit(event: React.FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (!employeeId || !batchId || quantity < 1 || quantity > (selectedBatch?.available_quantity ?? 0)) return;
 
@@ -131,7 +132,7 @@ export function ScientificVisitorInventoryPage() {
     }
   }
 
-  async function submitEdit(event: React.FormEvent) {
+  async function submitEdit(event: FormEvent) {
     event.preventDefault();
     if (!editingItem || editQuantity < editingItem.used_quantity || (editNeedsBatch && !editBatchId)) return;
 
