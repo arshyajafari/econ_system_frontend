@@ -140,8 +140,6 @@ export function PaymentsPage() {
 
   useEffect(() => {
     if (!canCreatePayment) {
-      setInvoices([]);
-      setIsLoadingInvoices(false);
       return;
     }
 
