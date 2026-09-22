@@ -20,7 +20,7 @@ import { OrderReturnTable } from "../components/OrderReturnTable";
 export function OrderReturnsPage() {
   const { user } = useAuth();
   const roles = user?.roles ?? [];
-  const canCreateReturn = roles.includes("admin") || roles.includes("accountant") || roles.includes("sales visitor");
+  const canCreateReturn = roles.includes("admin") || roles.includes("accountant") || roles.includes("sales visitor") || roles.includes("delivery operator");
 
   const [orderReturns, setOrderReturns] = useState<OrderReturn[]>([]);
 
