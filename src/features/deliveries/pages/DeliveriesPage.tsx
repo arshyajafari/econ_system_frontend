@@ -403,8 +403,6 @@ export function DeliveriesPage() {
                         <>
                           {d.status === "pending" && (
                             <>
-                              {isAdmin ? (
-                            <>
                               <button
                                 type="button"
                                 onClick={() => startEdit(d)}
@@ -412,15 +410,6 @@ export function DeliveriesPage() {
                               >
                                 ویرایش
                               </button>
-                              {isAdmin ? (
-                                <button
-                                  type="button"
-                                  onClick={() => startEdit(d)}
-                                  className="rounded border px-2 py-1 text-xs"
-                                >
-                                  ویرایش
-                                </button>
-                              ) : null}
                               <button
                                 type="button"
                                 disabled={actionId === d.id}
