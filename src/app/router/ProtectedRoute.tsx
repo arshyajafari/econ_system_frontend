@@ -6,7 +6,9 @@ function getHomePath(roles: string[]): string {
   if (roles.includes("admin")) return "/dashboard";
   if (roles.includes("scientific visitor")) return "/scientific-inventory";
   if (roles.includes("sales visitor")) return "/products";
-  return "/orders";
+  if (roles.includes("delivery operator") || roles.includes("settlement operator")) return "/customers";
+  if (roles.includes("accountant")) return "/orders";
+  return "/customers";
 }
 
 function canAccessPath(pathname: string, roles: string[], permissions: string[]): boolean {

@@ -3,15 +3,17 @@ import type { Payment, PaymentStatusAction } from "../types/payment";
 type PaymentStatusActionsProps = {
   payment: Payment;
   disabled?: boolean;
+  canAct?: boolean;
   onAction: (action: PaymentStatusAction) => void;
 };
 
 export function PaymentStatusActions({
   payment,
   disabled = false,
+  canAct = true,
   onAction,
 }: PaymentStatusActionsProps) {
-  if (payment.status !== "pending") {
+  if (payment.status !== "pending" || !canAct) {
     return null;
   }
 

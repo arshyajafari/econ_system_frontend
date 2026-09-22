@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
+import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 
 import { PaymentFilters } from "../components/PaymentFilters";
@@ -31,6 +32,14 @@ import type {
 
 export function PaymentsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const roles = user?.roles ?? [];
+  const isAdmin = roles.includes("admin");
+  const isAccountant = roles.includes("accountant");
+  const isSettlementOperator = roles.includes("settlement operator");
+  const canCreatePayment = isAdmin || isAccountant || isSettlementOperator;
+  const canEditPayment = isAdmin || isAccountant;
+  const canManagePaymentStatus = isAdmin || isAccountant || isSettlementOperator;
 
   const [payments, setPayments] = useState<Payment[]>([]);
 
@@ -262,7 +271,7 @@ export function PaymentsPage() {
     void executeAction(payment, action);
   }
 
-  const canCreate = !isLoadingInvoices && invoices.length > 0;
+  const canCreate = canCreatePayment && !isLoadingInvoices && invoices.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -369,6 +378,8 @@ export function PaymentsPage() {
         payments={payments}
         isLoading={isLoading}
         pendingPaymentId={pendingPaymentId}
+        canEdit={canEditPayment}
+        canAct={canManagePaymentStatus}
         onView={(payment) => {
           navigate(`/payments/${payment.id}`);
         }}
