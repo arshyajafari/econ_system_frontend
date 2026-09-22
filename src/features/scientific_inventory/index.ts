@@ -1,0 +1,1 @@
+export { ScientificVisitorInventoryPage } from "./pages/ScientificVisitorInventoryPage";

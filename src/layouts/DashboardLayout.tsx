@@ -22,6 +22,7 @@ const navigation: NavConfig[] = [
   { label: "نمونه‌ها", to: "/samples", icon: "samples", requiredPermission: "samples.view" },
   { label: "ارسال‌ها", to: "/deliveries", icon: "deliveries", requiredPermission: "deliveries.view" },
   { label: "موجودی", to: "/inventory", icon: "inventory", requiredPermission: "inventory_batches.view" },
+  { label: "موجودی ویزیتور علمی", to: "/scientific-inventory", icon: "inventory" },
   { label: "مرجوعی‌ها", to: "/order-returns", icon: "returns", requiredPermission: "order_returns.view" },
   { label: "پرداخت‌ها", to: "/payments", icon: "payments", requiredPermission: "payments.view" },
 ];
@@ -62,7 +63,7 @@ export function DashboardLayout() {
   const { user, logout } = useAuth(); const navigate = useNavigate(); const [isSidebarOpen,setIsSidebarOpen]=useState(false); const [isCollapsed,setIsCollapsed]=useState(false); const [unreadCount,setUnreadCount]=useState(0);
   const refreshUnreadCount=useCallback(()=>{void getUnreadNotificationCount().then(setUnreadCount).catch(()=>setUnreadCount(0));},[]);
   useEffect(()=>{refreshUnreadCount();const handler=()=>refreshUnreadCount();window.addEventListener("notifications:changed",handler);return()=>window.removeEventListener("notifications:changed",handler);},[refreshUnreadCount]);
-  const closeMobileSidebar=()=>setIsSidebarOpen(false); const roles=user?.roles ?? []; const permissions=user?.permissions ?? []; const isAdmin=roles.includes("admin"); const isAccountant=roles.includes("accountant"); const isDeliveryOperator=roles.includes("delivery operator"); const isSalesVisitor=roles.includes("sales visitor"); const isScientificVisitor=roles.includes("scientific visitor"); const can=(permission:string)=>isAdmin||permissions.includes(permission); const canSeeNav=(item:NavConfig)=>{ if(isScientificVisitor && !isAdmin && !isAccountant) return ["/orders","/visits","/samples"].includes(item.to); if(item.to==="/dashboard"||item.adminOnly) return isAdmin; if(item.to==="/catalog") return isAdmin; if(item.to==="/products"||item.to==="/inventory") return isAdmin||isSalesVisitor; if(item.to==="/orders") return isAdmin || isAccountant || isSalesVisitor || isScientificVisitor;
+  const closeMobileSidebar=()=>setIsSidebarOpen(false); const roles=user?.roles ?? []; const permissions=user?.permissions ?? []; const isAdmin=roles.includes("admin"); const isAccountant=roles.includes("accountant"); const isDeliveryOperator=roles.includes("delivery operator"); const isSalesVisitor=roles.includes("sales visitor"); const isScientificVisitor=roles.includes("scientific visitor"); const can=(permission:string)=>isAdmin||permissions.includes(permission); const canSeeNav=(item:NavConfig)=>{ if(isScientificVisitor && !isAdmin && !isAccountant) return ["/visits","/samples","/scientific-inventory"].includes(item.to); if(item.to==="/dashboard"||item.adminOnly) return isAdmin; if(item.to==="/catalog") return isAdmin; if(item.to==="/products"||item.to==="/inventory") return isAdmin||isSalesVisitor||isAccountant; if(item.to==="/orders") return isAdmin || isAccountant || isSalesVisitor;
   if(item.to==="/invoices") return isAdmin || isAccountant || isDeliveryOperator;
   if(item.to==="/deliveries") return isAdmin || isAccountant || isDeliveryOperator;
   return !item.requiredPermission||can(item.requiredPermission); };

@@ -4,29 +4,40 @@ import { useAuth } from "../../features/auth";
 
 function getHomePath(roles: string[]): string {
   if (roles.includes("admin")) return "/dashboard";
+  if (roles.includes("scientific visitor")) return "/scientific-inventory";
   if (roles.includes("sales visitor")) return "/products";
   return "/orders";
 }
 
 function canAccessPath(pathname: string, roles: string[], permissions: string[]): boolean {
   const isAdmin = roles.includes("admin");
+  const isAccountant = roles.includes("accountant");
   const isSalesVisitor = roles.includes("sales visitor");
   const isScientificVisitor = roles.includes("scientific visitor");
-  const can = (permission: string) => isAdmin || isScientificVisitor || permissions.includes(permission);
+  const can = (permission: string) => isAdmin || permissions.includes(permission);
+
+  if (isScientificVisitor && !isAdmin && !isAccountant) {
+    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");
+  }
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
-  if (pathname === "/invoices/new") return isAdmin || roles.includes("accountant") && permissions.includes("invoices.create");
+  if (pathname === "/invoices/new") return isAdmin || (isAccountant && permissions.includes("invoices.create"));
   if (pathname === "/employee-locations" || pathname.startsWith("/employee-locations/")) return isAdmin;
   if (pathname === "/catalog" || pathname.startsWith("/catalog/")) return isAdmin;
   if (pathname === "/products" || pathname.startsWith("/products/")) return isAdmin || isSalesVisitor;
-  if (pathname === "/inventory" || pathname.startsWith("/inventory/")) return isAdmin || isSalesVisitor;
+  if (pathname === "/inventory" || pathname.startsWith("/inventory/")) return isAdmin || isSalesVisitor || isAccountant;
+  if (pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/")) {
+    return isAdmin || isAccountant || isScientificVisitor;
+  }
+  if (pathname === "/orders" || pathname.startsWith("/orders/")) {
+    return isAdmin || isAccountant || isSalesVisitor;
+  }
 
   const permissionRules: Array<[string, string]> = [
     ["/customers", "customers.view"],
     ["/doctors", "doctors.view"],
     ["/employees", "employees.view"],
     ["/employee-banking", "employees.view"],
-    ["/orders", "orders.view"],
     ["/invoices", "invoices.view"],
     ["/reports", "reports.view"],
     ["/order-returns", "order_returns.view"],
@@ -37,7 +48,12 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   ];
 
   const rule = permissionRules.find(([prefix]) => pathname === prefix || pathname.startsWith(prefix + "/"));
-  return rule ? can(rule[1]) : pathname === "/notifications" || pathname.startsWith("/notifications/");
+  if (rule) {
+    if (isScientificVisitor && (rule[0] === "/visits" || rule[0] === "/samples")) return true;
+    return can(rule[1]);
+  }
+
+  return pathname === "/notifications" || pathname.startsWith("/notifications/");
 }
 
 export function ProtectedRoute() {
