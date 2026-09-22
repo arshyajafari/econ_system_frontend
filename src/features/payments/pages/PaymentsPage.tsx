@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
+import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 
 import { PaymentFilters } from "../components/PaymentFilters";
@@ -86,7 +87,7 @@ export function PaymentsPage() {
     } finally {
       setIsLoadingInvoices(false);
     }
-  }, []);
+  }, [canCreatePayment]);
 
   const loadPayments = useCallback(async () => {
     const requestId = ++requestIdRef.current;
