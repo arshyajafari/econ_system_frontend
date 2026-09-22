@@ -37,9 +37,13 @@ export async function deleteSample(id: string): Promise<void> {
 
 export async function getSampleVisits(): Promise<Visit[]> {
   const response = await apiClient.get<VisitListResponse>("/visits", {
-    params: { status: "completed", sort: "-visit_date", per_page: 100 },
+    // Samples are registered as part of a visit workflow, so a draft visit
+    // must also be selectable before the visit is completed. Cancelled visits
+    // are excluded because they can no longer receive samples.
+    params: { sort: "-visit_date", per_page: 100 },
   });
-  return response.data.data;
+
+  return response.data.data.filter((visit) => visit.status !== "cancelled");
 }
 
 export async function getSampleProducts(): Promise<Product[]> {
