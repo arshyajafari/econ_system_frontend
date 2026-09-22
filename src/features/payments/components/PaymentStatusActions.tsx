@@ -3,6 +3,7 @@ import type { Payment, PaymentStatusAction } from "../types/payment";
 type PaymentStatusActionsProps = {
   payment: Payment;
   disabled?: boolean;
+  canAct?: boolean;
   onAction: (action: PaymentStatusAction) => void;
 };
 
