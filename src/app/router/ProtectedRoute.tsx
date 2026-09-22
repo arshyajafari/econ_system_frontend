@@ -16,7 +16,13 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   const isScientificVisitor = roles.includes("scientific visitor");
   const can = (permission: string) => isAdmin || permissions.includes(permission);
 
-  // Notifications are an authenticated system feature and must remain reachable for every role,\n  // including scientific visitors. Keep this check before the role-specific home restriction.\n  if (pathname === "/notifications" || pathname.startsWith("/notifications/")) return true;\n\n  if (isScientificVisitor && !isAdmin && !isAccountant) {\n    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");\n  }
+  // Notifications are an authenticated system feature and must remain reachable for every role,
+  // including scientific visitors. Keep this check before the role-specific home restriction.
+  if (pathname === "/notifications" || pathname.startsWith("/notifications/")) return true;
+
+  if (isScientificVisitor && !isAdmin && !isAccountant) {
+    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");
+  }
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin;
   if (pathname === "/invoices/new") return isAdmin || (isAccountant && permissions.includes("invoices.create"));
@@ -51,7 +57,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
     return can(rule[1]);
   }
 
-  return pathname === "/notifications" || pathname.startsWith("/notifications/");
+  return false;
 }
 
 export function ProtectedRoute() {
