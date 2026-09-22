@@ -378,6 +378,8 @@ export function PaymentsPage() {
         payments={payments}
         isLoading={isLoading}
         pendingPaymentId={pendingPaymentId}
+        canEdit={canEditPayment}
+        canAct={canManagePaymentStatus}
         onView={(payment) => {
           navigate(`/payments/${payment.id}`);
         }}
