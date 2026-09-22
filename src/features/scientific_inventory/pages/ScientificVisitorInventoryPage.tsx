@@ -33,7 +33,7 @@ export function ScientificVisitorInventoryPage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await getScientificInventory({ available_only: isScientificVisitor, per_page: 100, sort: "-last_received_at" });
+        const response = await getScientificInventory({ available_only: true, per_page: 100, sort: "-last_received_at" });
         if (!cancelled) setItems(response.data);
       } catch (err: unknown) {
         if (!cancelled) setError(err instanceof ApiError ? err.message : "خطا در دریافت موجودی نمونه ویزیتور علمی.");
