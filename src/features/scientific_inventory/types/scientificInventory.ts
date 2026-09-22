@@ -4,3 +4,4 @@ export type ScientificInventoryItem={id:string;employee:ScientificInventoryEmplo
 export type ScientificInventoryListResponse={data:ScientificInventoryItem[];meta:{current_page:number;last_page:number;total:number;per_page:number};links?:Record<string,string|null>};
 export type ScientificInventoryListParams={employee_id?:string;product_id?:string;available_only?:boolean;search?:string;sort?:string;page?:number;per_page?:number};
 export type AssignScientificInventoryData={employee_id:string;inventory_batch_id:string;quantity:number;description:string};
+export type UpdateScientificInventoryData={quantity:number;inventory_batch_id?:string;description:string};

@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { useAuth } from "../../auth";
 import { getEmployees } from "../../employees/services/employeesApi";
 import type { Employee } from "../../employees/types/employee";
 import { getInventory } from "../../inventory/services/inventoryApi";
 import type { InventoryBatch } from "../../inventory/types/inventory";
-import { assignScientificInventory, getScientificInventory } from "../services/scientificInventoryApi";
+import {
+  assignScientificInventory,
+  getScientificInventory,
+  updateScientificInventory,
+} from "../services/scientificInventoryApi";
 import type { ScientificInventoryItem } from "../types/scientificInventory";
 
 const numberFormat = new Intl.NumberFormat("fa-IR");
@@ -15,6 +20,7 @@ export function ScientificVisitorInventoryPage() {
   const roles = user?.roles ?? [];
   const isManager = roles.includes("admin") || roles.includes("accountant");
   const isScientificVisitor = roles.includes("scientific visitor");
+
   const [items, setItems] = useState<ScientificInventoryItem[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [batches, setBatches] = useState<InventoryBatch[]>([]);
@@ -22,6 +28,10 @@ export function ScientificVisitorInventoryPage() {
   const [batchId, setBatchId] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [description, setDescription] = useState("");
+  const [editingItem, setEditingItem] = useState<ScientificInventoryItem | null>(null);
+  const [editQuantity, setEditQuantity] = useState(0);
+  const [editBatchId, setEditBatchId] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +46,9 @@ export function ScientificVisitorInventoryPage() {
         const response = await getScientificInventory({ per_page: 100, sort: "-last_received_at" });
         if (!cancelled) setItems(response.data);
       } catch (err: unknown) {
-        if (!cancelled) setError(err instanceof ApiError ? err.message : "خطا در دریافت موجودی نمونه ویزیتور علمی.");
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.message : "خطا در دریافت موجودی نمونه ویزیتور علمی.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -47,6 +59,7 @@ export function ScientificVisitorInventoryPage() {
 
   useEffect(() => {
     if (!isManager) return;
+
     let cancelled = false;
     Promise.all([
       getEmployees({ activity_type: "scientific_visitor", status: "active", per_page: 100 }),
@@ -54,28 +67,87 @@ export function ScientificVisitorInventoryPage() {
     ]).then(([employeeResponse, inventoryResponse]) => {
       if (cancelled) return;
       setEmployees(employeeResponse.data);
-      setBatches(inventoryResponse.data.filter((batch) => batch.available_quantity > 0 && !batch.is_expired));
+      setBatches(
+        inventoryResponse.data.filter((batch) => !batch.is_expired)
+      );
     }).catch((err: unknown) => {
-      if (!cancelled) setError(err instanceof ApiError ? err.message : "خطا در دریافت اطلاعات تحویل محصول.");
+      if (!cancelled) {
+        setError(err instanceof ApiError ? err.message : "خطا در دریافت اطلاعات تحویل محصول.");
+      }
     });
+
     return () => { cancelled = true; };
   }, [isManager, refreshKey]);
 
-  const selectedBatch = useMemo(() => batches.find((batch) => batch.id === batchId) ?? null, [batches, batchId]);
+  const selectedBatch = useMemo(
+    () => batches.find((batch) => batch.id === batchId) ?? null,
+    [batches, batchId]
+  );
 
-  async function submit(event: React.FormEvent) {
+  const editingDelta = editingItem ? editQuantity - editingItem.received_quantity : 0;
+  const editNeedsBatch = editingDelta !== 0;
+  const editProductBatches = useMemo(
+    () => editingItem
+      ? batches.filter((batch) => batch.product?.id === editingItem.product?.id)
+      : [],
+    [batches, editingItem]
+  );
+
+  function openEdit(item: ScientificInventoryItem) {
+    setEditingItem(item);
+    setEditQuantity(item.received_quantity);
+    setEditDescription(item.description ?? "");
+    setEditBatchId("");
+    setError(null);
+  }
+
+  function closeEdit() {
+    if (saving) return;
+    setEditingItem(null);
+    setEditBatchId("");
+    setEditDescription("");
+  }
+
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (!employeeId || !batchId || quantity < 1 || quantity > (selectedBatch?.available_quantity ?? 0)) return;
+
     setSaving(true);
     setError(null);
     try {
-      await assignScientificInventory({ employee_id: employeeId, inventory_batch_id: batchId, quantity, description });
+      await assignScientificInventory({
+        employee_id: employeeId,
+        inventory_batch_id: batchId,
+        quantity,
+        description,
+      });
       setQuantity(1);
       setDescription("");
       setBatchId("");
       setRefreshKey((value) => value + 1);
     } catch (err: unknown) {
       setError(err instanceof ApiError ? err.message : "خطا در تحویل محصول به ویزیتور علمی.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function submitEdit(event: FormEvent) {
+    event.preventDefault();
+    if (!editingItem || editQuantity < editingItem.used_quantity || (editNeedsBatch && !editBatchId)) return;
+
+    setSaving(true);
+    setError(null);
+    try {
+      await updateScientificInventory(editingItem.id, {
+        quantity: editQuantity,
+        inventory_batch_id: editNeedsBatch ? editBatchId : undefined,
+        description: editDescription,
+      });
+      closeEdit();
+      setRefreshKey((value) => value + 1);
+    } catch (err: unknown) {
+      setError(err instanceof ApiError ? err.message : "خطا در ویرایش موجودی نمونه.");
     } finally {
       setSaving(false);
     }
@@ -88,47 +160,218 @@ export function ScientificVisitorInventoryPage() {
         <p className="text-sm text-gray-500">محصولات تحویل‌شده و موجودی قابل استفاده برای ثبت نمونه</p>
       </header>
 
-      {error ? <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {error ? (
+        <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
 
       {isManager ? (
         <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
           <div className="grid gap-3 md:grid-cols-4">
             <select required disabled={saving} value={employeeId} onChange={(event) => setEmployeeId(event.target.value)} className="rounded-lg border px-3 py-2">
               <option value="">انتخاب ویزیتور علمی</option>
-              {employees.map((employee) => <option key={employee.id} value={employee.id}>{employee.code} — {employee.first_name} {employee.last_name}</option>)}
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.code} — {employee.first_name} {employee.last_name}
+                </option>
+              ))}
             </select>
+
             <select required disabled={saving} value={batchId} onChange={(event) => setBatchId(event.target.value)} className="rounded-lg border px-3 py-2">
               <option value="">انتخاب محصول / بچ</option>
-              {batches.map((batch) => <option key={batch.id} value={batch.id}>{batch.product?.title ?? "محصول"}{batch.batch_number ? " — بچ " + batch.batch_number : ""} — موجودی {numberFormat.format(batch.available_quantity)}</option>)}
+              {batches.map((batch) => (
+                <option key={batch.id} value={batch.id} disabled={batch.available_quantity <= 0}>
+                  {batch.product?.title ?? "محصول"}
+                  {batch.batch_number ? " — بچ " + batch.batch_number : ""}
+                  {" — موجودی " + numberFormat.format(batch.available_quantity)}
+                </option>
+              ))}
             </select>
-            <input required min={1} max={selectedBatch?.available_quantity ?? undefined} type="number" disabled={saving} value={quantity} onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))} className="rounded-lg border px-3 py-2" placeholder="تعداد تحویل" />
-            <input disabled={saving} value={description} onChange={(event) => setDescription(event.target.value)} className="rounded-lg border px-3 py-2" placeholder="توضیحات" />
+
+            <input
+              required
+              min={1}
+              max={selectedBatch?.available_quantity ?? undefined}
+              type="number"
+              disabled={saving}
+              value={quantity}
+              onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
+              className="rounded-lg border px-3 py-2"
+              placeholder="تعداد تحویل"
+            />
+
+            <input
+              disabled={saving}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              className="rounded-lg border px-3 py-2"
+              placeholder="توضیحات"
+            />
           </div>
-          {selectedBatch ? <p className="text-xs text-gray-500">موجودی قابل تحویل این بچ: {numberFormat.format(selectedBatch.available_quantity)} عدد</p> : null}
-          <button disabled={saving || !employeeId || !batchId || quantity < 1 || quantity > (selectedBatch?.available_quantity ?? 0)} className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50">{saving ? "در حال ثبت..." : "تحویل محصول"}</button>
+
+          {selectedBatch ? (
+            <p className="text-xs text-gray-500">
+              موجودی قابل تحویل این بچ: {numberFormat.format(selectedBatch.available_quantity)} عدد
+            </p>
+          ) : null}
+
+          <button
+            disabled={saving || !employeeId || !batchId || quantity < 1 || quantity > (selectedBatch?.available_quantity ?? 0)}
+            className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
+          >
+            {saving ? "در حال ثبت..." : "تحویل محصول"}
+          </button>
         </form>
       ) : null}
 
       <div className="overflow-x-auto rounded-xl border bg-white">
         <table className="min-w-full text-right text-sm">
           <thead className="bg-gray-50">
-            <tr>{(isManager ? ["ویزیتور علمی", "محصول", "دریافتی", "مصرف‌شده", "موجودی قابل استفاده", "آخرین تحویل"] : ["محصول", "دریافتی", "مصرف‌شده", "موجودی قابل استفاده", "آخرین تحویل"]).map((title) => <th key={title} className="px-4 py-3">{title}</th>)}</tr>
+            <tr>
+              {(isManager
+                ? ["ویزیتور علمی", "محصول", "دریافتی", "مصرف‌شده", "موجودی قابل استفاده", "آخرین تحویل", "عملیات"]
+                : ["محصول", "دریافتی", "مصرف‌شده", "موجودی قابل استفاده", "آخرین تحویل"]
+              ).map((title) => <th key={title} className="px-4 py-3">{title}</th>)}
+            </tr>
           </thead>
           <tbody className="divide-y">
-            {loading && !items.length ? <tr><td colSpan={isManager ? 6 : 5} className="p-10 text-center">در حال دریافت...</td></tr> :
-              !items.length ? <tr><td colSpan={isManager ? 6 : 5} className="p-10 text-center">موجودی نمونه‌ای ثبت نشده است.</td></tr> :
-              items.map((item) => <tr key={item.id}>
-                {isManager ? <td className="px-4 py-3">{item.employee?.name ?? "—"}<div className="text-xs text-gray-500">{item.employee?.code ?? ""}</div></td> : null}
-                <td className="px-4 py-3 font-medium">{item.product?.title ?? "—"}<div className="text-xs text-gray-500">{item.product?.code ?? ""}</div></td>
-                <td className="px-4 py-3">{numberFormat.format(item.received_quantity)}</td>
-                <td className="px-4 py-3">{numberFormat.format(item.used_quantity)}</td>
-                <td className="px-4 py-3 font-semibold">{numberFormat.format(item.available_quantity)}</td>
-                <td className="px-4 py-3">{item.last_received_at ? new Date(item.last_received_at).toLocaleDateString("fa-IR") : "—"}</td>
-              </tr>)
-            }
+            {loading && !items.length ? (
+              <tr><td colSpan={isManager ? 7 : 5} className="p-10 text-center">در حال دریافت...</td></tr>
+            ) : !items.length ? (
+              <tr><td colSpan={isManager ? 7 : 5} className="p-10 text-center">موجودی نمونه‌ای ثبت نشده است.</td></tr>
+            ) : (
+              items.map((item) => (
+                <tr key={item.id}>
+                  {isManager ? (
+                    <td className="px-4 py-3">
+                      {item.employee?.name ?? "—"}
+                      <div className="text-xs text-gray-500">{item.employee?.code ?? ""}</div>
+                    </td>
+                  ) : null}
+
+                  <td className="px-4 py-3 font-medium">
+                    {item.product?.title ?? "—"}
+                    <div className="text-xs text-gray-500">{item.product?.code ?? ""}</div>
+                  </td>
+                  <td className="px-4 py-3">{numberFormat.format(item.received_quantity)}</td>
+                  <td className="px-4 py-3">{numberFormat.format(item.used_quantity)}</td>
+                  <td className="px-4 py-3 font-semibold">{numberFormat.format(item.available_quantity)}</td>
+                  <td className="px-4 py-3">
+                    {item.last_received_at ? new Date(item.last_received_at).toLocaleDateString("fa-IR") : "—"}
+                  </td>
+
+                  {isManager ? (
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(item)}
+                        disabled={saving}
+                        className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        ویرایش
+                      </button>
+                    </td>
+                  ) : null}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {editingItem ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="edit-scientific-inventory-title">
+          <form onSubmit={submitEdit} className="w-full max-w-lg space-y-4 rounded-2xl bg-white p-5 shadow-xl">
+            <div>
+              <h2 id="edit-scientific-inventory-title" className="text-lg font-bold">ویرایش نمونه تحویلی</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                {editingItem.employee?.name ?? "—"} — {editingItem.product?.title ?? "—"}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-gray-50 p-3 text-sm">
+              <div>دریافتی فعلی: <strong>{numberFormat.format(editingItem.received_quantity)}</strong> عدد</div>
+              <div>مصرف‌شده: <strong>{numberFormat.format(editingItem.used_quantity)}</strong> عدد</div>
+              <div>موجودی قابل استفاده: <strong>{numberFormat.format(editingItem.available_quantity)}</strong> عدد</div>
+            </div>
+
+            <label className="block space-y-1">
+              <span className="text-sm font-medium">دریافتی جدید</span>
+              <input
+                required
+                min={editingItem.used_quantity}
+                type="number"
+                disabled={saving}
+                value={editQuantity}
+                onChange={(event) => setEditQuantity(Math.max(editingItem.used_quantity, Number(event.target.value)))}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </label>
+
+            {editNeedsBatch ? (
+              <label className="block space-y-1">
+                <span className="text-sm font-medium">
+                  {editingDelta < 0 ? "بچ بازگشت نمونه" : "بچ تأمین افزایش نمونه"}
+                </span>
+                <select
+                  required
+                  disabled={saving}
+                  value={editBatchId}
+                  onChange={(event) => setEditBatchId(event.target.value)}
+                  className="w-full rounded-lg border px-3 py-2"
+                >
+                  <option value="">انتخاب بچ</option>
+                  {editProductBatches.map((batch) => (
+                    <option
+                      key={batch.id}
+                      value={batch.id}
+                      disabled={editingDelta > 0 && batch.available_quantity <= 0}
+                    >
+                      {batch.batch_number ? "بچ " + batch.batch_number + " — " : ""}
+                      موجودی {numberFormat.format(batch.available_quantity)}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500">
+                  {editingDelta < 0
+                    ? "با کاهش دریافتی، این تعداد به موجودی بچ انتخاب‌شده برمی‌گردد."
+                    : "با افزایش دریافتی، این تعداد از موجودی بچ انتخاب‌شده کم می‌شود."}
+                </p>
+              </label>
+            ) : null}
+
+            <label className="block space-y-1">
+              <span className="text-sm font-medium">توضیحات</span>
+              <input
+                disabled={saving}
+                value={editDescription}
+                onChange={(event) => setEditDescription(event.target.value)}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+            </label>
+
+            {editingItem && editQuantity < editingItem.used_quantity ? (
+              <p className="text-sm text-red-600">
+                دریافتی جدید نمی‌تواند کمتر از مصرف‌شده باشد.
+              </p>
+            ) : null}
+
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={closeEdit} disabled={saving} className="rounded-lg border px-4 py-2">
+                انصراف
+              </button>
+              <button
+                type="submit"
+                disabled={saving || editQuantity < editingItem.used_quantity || (editNeedsBatch && !editBatchId)}
+                className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
+              >
+                {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
     </section>
   );
 }
