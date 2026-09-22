@@ -178,7 +178,7 @@ export function OrderReturnsPage() {
         </div>
       ) : null}
 
-      <OrderReturnTable orderReturns={orderReturns} isLoading={isLoading} />
+      <OrderReturnTable orderReturns={orderReturns} isLoading={isLoading} onUpdated={(updated) => setOrderReturns((current) => current.map((item) => item.id === updated.id ? updated : item))} />
     </section>
   );
 }
