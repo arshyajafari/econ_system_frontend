@@ -24,13 +24,13 @@ export type NotificationPage = {
 
 export type NotificationRecipients = {
   users: Array<{ id: string; name: string }>;
-  roles: string[];
+  positions: Array<{ value: string; label: string }>;
 };
 
 export type SendSystemMessagePayload = {
-  target_type: "all" | "users" | "roles";
+  target_type: "all" | "users" | "positions";
   user_ids?: string[];
-  role_names?: string[];
+  position_types?: string[];
   title: string;
   body: string;
   priority: "low" | "normal" | "high" | "urgent";
