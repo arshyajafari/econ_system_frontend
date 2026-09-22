@@ -2,7 +2,7 @@ import { apiClient } from "../../../api/client";
 import type { AssignScientificInventoryData, ScientificInventoryListParams, ScientificInventoryListResponse } from "../types/scientificInventory";
 
 export async function getScientificInventory(params: ScientificInventoryListParams = {}): Promise<ScientificInventoryListResponse> {
-  const response = await apiClient.get<ScientificInventoryListResponse>("/scientific-visitor-inventory", { params: { ...params, available_only: params.available_only === undefined ? undefined : params.available_only ? 1 : 0 }, });
+  const response = await apiClient.get<ScientificInventoryListResponse>("/scientific-visitor-inventory", { params: { ...params, available_only: params.available_only === undefined ? undefined : params.available_only ? true : false }, });
   return response.data;
 }
 
