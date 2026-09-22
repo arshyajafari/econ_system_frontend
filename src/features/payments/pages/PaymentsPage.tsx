@@ -263,7 +263,7 @@ export function PaymentsPage() {
     void executeAction(payment, action);
   }
 
-  const canCreate = !isLoadingInvoices && invoices.length > 0;
+  const canCreate = canCreatePayment && !isLoadingInvoices && invoices.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
