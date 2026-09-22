@@ -10,6 +10,7 @@ type PaymentStatusActionsProps = {
 export function PaymentStatusActions({
   payment,
   disabled = false,
+  canAct = true,
   onAction,
 }: PaymentStatusActionsProps) {
   if (payment.status !== "pending" || !canAct) {
