@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { BackButton } from "../../../components/BackButton";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -17,6 +18,13 @@ function getTotal(orderReturn: OrderReturn): number { return Number(orderReturn.
 type Action = "submit" | "confirm" | "complete" | "cancel";
 
 export function OrderReturnDetailsPage() {
+  const { user } = useAuth();
+  const roles = user?.roles ?? [];
+  const isAdmin = roles.includes("admin");
+  const isAccountant = roles.includes("accountant");
+  const isSalesVisitor = roles.includes("sales visitor");
+  const canOperateReturn = isAdmin || isAccountant || isSalesVisitor;
+  const canAllocateReturn = isAdmin || isAccountant;
   const { id } = useParams<{ id: string }>();
   const [orderReturn, setOrderReturn] = useState<OrderReturn | null>(null); const [isLoading, setIsLoading] = useState(true); const [pendingAction, setPendingAction] = useState<Action | null>(null); const [confirmAction, setConfirmAction] = useState<Exclude<Action, "submit"> | null>(null); const [error, setError] = useState<string | null>(null);
   const loadOrderReturn = useCallback(async () => { if (!id) { setError("شناسه مرجوعی نامعتبر است."); setIsLoading(false); return; } setIsLoading(true); setError(null); try { setOrderReturn(await getOrderReturn(id)); } catch (error: unknown) { setError(error instanceof ApiError && error.message ? error.message : "دریافت اطلاعات مرجوعی ناموفق بود."); } finally { setIsLoading(false); } }, [id]);
@@ -31,8 +39,8 @@ export function OrderReturnDetailsPage() {
     {error ? <div role="alert" aria-live="polite" className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"><span>{error}</span><button type="button" onClick={() => void loadOrderReturn()} className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto">تلاش مجدد</button></div> : null}
     <div className="grid gap-4 md:grid-cols-3"><div className="rounded-xl border border-gray-200 bg-white p-5"><div className="text-xs text-gray-500">سفارش</div><div className="mt-2 font-semibold text-gray-900">{orderReturn.order?.code ?? "—"}</div></div><div className="rounded-xl border border-gray-200 bg-white p-5"><div className="text-xs text-gray-500">مشتری</div><div className="mt-2 font-semibold text-gray-900">{orderReturn.customer?.name ?? "—"}</div></div><div className="rounded-xl border border-gray-200 bg-white p-5"><div className="text-xs text-gray-500">{orderReturn.is_manual_amount ? "مبلغ دستی مرجوعی" : "مبلغ مرجوعی"}</div><div dir="ltr" className="mt-2 font-semibold text-gray-900">{formatNumber(total)}</div></div></div>
     <div className="rounded-xl border border-gray-200 bg-white"><div className="border-b border-gray-100 px-5 py-4"><h2 className="font-semibold text-gray-900">اقلام مرجوعی</h2></div><div className="overflow-x-auto"><table className="min-w-[850px] w-full text-sm"><thead className="bg-gray-50 text-right text-gray-600"><tr><th className="px-5 py-3 font-medium">محصول</th><th className="px-5 py-3 font-medium">تعداد</th><th className="px-5 py-3 font-medium">قیمت واحد</th><th className="px-5 py-3 font-medium">مبلغ</th><th className="px-5 py-3 font-medium">تخصیص</th></tr></thead><tbody className="divide-y divide-gray-100">{orderReturn.items.map((item) => { const allocated = item.allocations?.reduce((sum, allocation) => sum + Number(allocation.quantity || 0), 0) ?? 0; return <tr key={item.id}><td className="px-5 py-4"><div className="font-medium text-gray-900">{item.product?.title ?? "—"}</div>{item.product?.code ? <div className="mt-1 text-xs text-gray-500">{item.product.code}</div> : null}</td><td className="px-5 py-4">{formatNumber(Number(item.quantity))}</td><td dir="ltr" className="px-5 py-4">{formatNumber(Number(item.unit_price || 0))}</td><td dir="ltr" className="px-5 py-4 font-medium">{formatNumber(Number(item.total_price || 0))}</td><td className="px-5 py-4">{formatNumber(allocated)} از {formatNumber(Number(item.quantity))}</td></tr>; })}</tbody></table></div></div>
-    {canAllocate ? orderReturn.items.map((item) => <OrderReturnAllocationForm key={item.id} item={item} disabled={pendingAction !== null} onSaved={() => void loadOrderReturn()} />) : null}
+    {canAllocate && canAllocateReturn ? orderReturn.items.map((item) => <OrderReturnAllocationForm key={item.id} item={item} disabled={pendingAction !== null} onSaved={() => void loadOrderReturn()} />) : null}
     {orderReturn.description ? <div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="text-sm font-semibold text-gray-900">توضیحات</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-600">{orderReturn.description}</p></div> : null}
-    <div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="mb-4 text-sm font-semibold text-gray-900">عملیات مرجوعی</h2><OrderReturnStatusActions orderReturn={orderReturn} disabled={pendingAction !== null} onAction={(action) => { void handleAction(action); }} /></div>
+    <div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="mb-4 text-sm font-semibold text-gray-900">عملیات مرجوعی</h2>{canOperateReturn ? <OrderReturnStatusActions orderReturn={orderReturn} disabled={pendingAction !== null} onAction={(action) => { void handleAction(action); }} /> : <p className="text-sm text-gray-500">این نقش فقط امکان مشاهده مرجوعی را دارد.</p>}</div>
   </section>;
 }
