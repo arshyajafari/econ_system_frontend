@@ -42,7 +42,7 @@ export function DeliveriesPage() {
   const canOperate = isAdmin || isDeliveryOperator;
   const canManageForm = isAdmin || isDeliveryOperator;
   const [items, setItems] = useState<Delivery[]>([]),
-    [availableOrders, setAvailableOrders] = useState<Invoice[]>([]),
+    [availableOrders, setAvailableOrders] = useState<DeliveryOrderSource[]>([]),
     [status, setStatus] = useState<DeliveryStatus | "">(""),
     [search, setSearch] = useState(""),
     [page, setPage] = useState(1),
@@ -118,11 +118,11 @@ export function DeliveriesPage() {
     getAvailableOrders()
       .then(setAvailableOrders)
       .catch((e: unknown) => {
-        setInvoices([]);
+        setAvailableOrders([]);
         setError(
           e instanceof ApiError
             ? e.message
-            : "خطا در دریافت فاکتورهای آماده ارسال.",
+            : "خطا در دریافت سفارش‌های آماده ارسال.",
         );
       });
   }, [canManageForm]);
