@@ -9,7 +9,7 @@ import {
   completeDelivery,
   createDelivery,
   getDeliveries,
-  getAvailableInvoices,
+  getAvailableOrders,
   prepareDelivery,
   shipDelivery,
   updateDelivery,
@@ -23,7 +23,7 @@ import type {
   DeliveryFormData,
   DeliveryStatus,
 } from "../types/delivery";
-import type { Invoice } from "../../invoices/types/invoice";
+import type { DeliveryOrderSource } from "../services/deliveriesApi";
 
 const empty: DeliveryFormData = {
   order_id: "",
@@ -40,8 +40,9 @@ export function DeliveriesPage() {
   const isAdmin = user?.roles.includes("admin") ?? false;
   const isDeliveryOperator = user?.roles.includes("delivery operator") ?? false;
   const canOperate = isAdmin || isDeliveryOperator;
+  const canManageForm = isAdmin || isDeliveryOperator;
   const [items, setItems] = useState<Delivery[]>([]),
-    [invoices, setInvoices] = useState<Invoice[]>([]),
+    [availableOrders, setAvailableOrders] = useState<Invoice[]>([]),
     [status, setStatus] = useState<DeliveryStatus | "">(""),
     [search, setSearch] = useState(""),
     [page, setPage] = useState(1),
@@ -112,10 +113,10 @@ export function DeliveriesPage() {
     };
   }, [page, search, status]);
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!canManageForm) return;
 
-    getAvailableInvoices()
-      .then(setInvoices)
+    getAvailableOrders()
+      .then(setAvailableOrders)
       .catch((e: unknown) => {
         setInvoices([]);
         setError(
@@ -124,7 +125,7 @@ export function DeliveriesPage() {
             : "خطا در دریافت فاکتورهای آماده ارسال.",
         );
       });
-  }, [isAdmin]);
+  }, [canManageForm]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,9 +142,7 @@ export function DeliveriesPage() {
       );
       if (!editing) {
         setTotal((x) => x + 1);
-        setInvoices((x) =>
-          x.filter((invoice) => invoice.order?.id !== form.order_id),
-        );
+        setAvailableOrders((x) => x.filter((order) => order.id !== form.order_id));
       }
       setForm(empty);
       setEditing(null);
@@ -197,7 +196,7 @@ export function DeliveriesPage() {
             مدیریت آماده‌سازی، ارسال و تحویل سفارش‌ها
           </p>
         </div>
-        {isAdmin ? (
+        {canManageForm ? (
           <button
             type="button"
             onClick={() => {
@@ -218,7 +217,7 @@ export function DeliveriesPage() {
           {error}
         </div>
       )}
-      {isAdmin ? (
+      {canManageForm ? (
       <form
         onSubmit={submit}
         className="space-y-3 rounded-xl border bg-white p-4"
@@ -231,11 +230,10 @@ export function DeliveriesPage() {
             onChange={(e) => setForm({ ...form, order_id: e.target.value })}
             className="rounded-lg border px-3 py-2"
           >
-            <option value="">انتخاب فاکتور صادرشده</option>
-            {invoices.map((invoice) => (
-              <option key={invoice.id} value={invoice.order?.id ?? ""}>
-                {invoice.code} — {invoice.customer?.name ?? "بدون مشتری"}
-                {invoice.order?.code ? ` — ${invoice.order.code}` : ""}
+            <option value="">انتخاب سفارش آماده ارسال</option>
+            {availableOrders.map((order) => (
+              <option key={order.id} value={order.id}>
+                {order.code} — {order.customer?.name ?? "بدون مشتری"}
               </option>
             ))}
           </select>
@@ -403,7 +401,7 @@ export function DeliveriesPage() {
                         <>
                           {d.status === "pending" && (
                             <>
-                              {isAdmin ? (
+                              {canManageForm ? (
                                 <button
                                   type="button"
                                   onClick={() => startEdit(d)}
@@ -488,7 +486,7 @@ export function DeliveriesPage() {
                         </>
                       ) : (
                         <span className="text-xs text-gray-400">
-                          فقط ادمین مجاز است
+                          فقط نقش مسئول تحویل یا ادمین مجاز است
                         </span>
                       )}
                     </div>
