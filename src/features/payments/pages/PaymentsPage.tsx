@@ -32,6 +32,14 @@ import type {
 
 export function PaymentsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const roles = user?.roles ?? [];
+  const isAdmin = roles.includes("admin");
+  const isAccountant = roles.includes("accountant");
+  const isSettlementOperator = roles.includes("settlement operator");
+  const canCreatePayment = isAdmin || isAccountant || isSettlementOperator;
+  const canEditPayment = isAdmin || isAccountant;
+  const canManagePaymentStatus = isAdmin || isAccountant || isSettlementOperator;
 
   const [payments, setPayments] = useState<Payment[]>([]);
 
