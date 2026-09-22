@@ -30,11 +30,9 @@ export type OrderReturn = {
   status: OrderReturnStatus;
 
   return_amount: number;
-  is_manual_amount: boolean;
-
-  completed_at: string | null;
-
-  description: string | null;
+  is_manual_amount: boolean;  completed_at: string | null;
+  delivered_at: string | null;
+description: string | null;
 
   items: OrderReturnItem[];
 
