@@ -144,6 +144,11 @@ function normalizePayload(payload: OrderReturnFormData): OrderReturnFormData {
   };
 }
 
+export async function getReturnableOrder(id: string): Promise<Order> {
+  const response = await apiClient.get<Order>(`/order-returns/returnable-orders/${encodeURIComponent(id)}`);
+  return response.data;
+}
+
 export async function getReturnableOrders(): Promise<Order[]> {
   const r = await apiClient.get<{ data: Order[] } | Order[]>("/order-returns/returnable-orders");
   return Array.isArray(r.data) ? r.data : r.data.data ?? [];
