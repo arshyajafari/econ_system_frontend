@@ -11,7 +11,7 @@ export function PaymentStatusActions({
   disabled = false,
   onAction,
 }: PaymentStatusActionsProps) {
-  if (payment.status !== "pending") {
+  if (payment.status !== "pending" || !canAct) {
     return null;
   }
 
