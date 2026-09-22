@@ -1,5 +1,4 @@
 import { apiClient } from "../../../api/client";
-import type { Invoice, InvoiceListResponse } from "../../invoices/types/invoice";
 import type { Delivery, DeliveryFormData, DeliveryListParams, DeliveryListResponse } from "../types/delivery";
 export async function getDeliveries(params:DeliveryListParams={}){const r=await apiClient.get<DeliveryListResponse>("/deliveries",{params});return r.data}
 export async function getDelivery(id:string){const r=await apiClient.get<Delivery>(`/deliveries/${id}`);return r.data}
@@ -9,12 +8,15 @@ export async function prepareDelivery(id:string){const r=await apiClient.post<De
 export async function shipDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/ship`);return r.data}
 export async function completeDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`);return r.data}
 export async function cancelDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/cancel`);return r.data}
-export async function getAvailableInvoices(): Promise<Invoice[]> {
-  const r = await apiClient.get<InvoiceListResponse | Invoice[]>("/deliveries/available-invoices");
+export type DeliveryOrderSource = {
+  id: string;
+  code: string;
+  status: string;
+  customer: { id: string; code: string; name: string; phone: string | null } | null;
+};
+
+export async function getAvailableOrders(): Promise<DeliveryOrderSource[]> {
+  const r = await apiClient.get<{ data: DeliveryOrderSource[] } | DeliveryOrderSource[]>("/deliveries/available-orders");
   const payload = r.data;
-
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-
-  return [];
+  return Array.isArray(payload) ? payload : payload.data ?? [];
 }
