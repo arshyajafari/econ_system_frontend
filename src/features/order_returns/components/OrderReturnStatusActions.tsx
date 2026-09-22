@@ -4,9 +4,8 @@ type OrderReturnAction = "submit" | "confirm" | "complete" | "cancel";
 
 type Props = {
   orderReturn: OrderReturn;
-
   disabled?: boolean;
-
+  canApprove?: boolean;
   onAction: (action: OrderReturnAction) => void;
 };
 
@@ -19,42 +18,32 @@ const actionLabels: Record<OrderReturnAction, string> = {
 
 function getAvailableActions(status: OrderReturnStatus): OrderReturnAction[] {
   switch (status) {
-    case "draft":
-      return ["submit", "cancel"];
-
-    case "pending":
-      return ["confirm", "cancel"];
-
-    case "confirmed":
-      return ["complete", "cancel"];
-
+    case "draft": return ["submit", "cancel"];
+    case "pending": return ["confirm", "cancel"];
+    case "confirmed": return ["complete", "cancel"];
     case "completed":
     case "cancelled":
-      return [];
-
-    default:
-      return [];
+    default: return [];
   }
 }
 
 export function OrderReturnStatusActions({
   orderReturn,
   disabled = false,
+  canApprove = true,
   onAction,
 }: Props) {
-  const actions = getAvailableActions(orderReturn.status);
+  const actions = getAvailableActions(orderReturn.status).filter(
+    (action) => canApprove || (action !== "confirm" && action !== "complete"),
+  );
 
-  if (actions.length === 0) {
-    return null;
-  }
+  if (actions.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
       {actions.map((action) => {
         const isDanger = action === "cancel";
-
         const isPrimary = action === "complete" || action === "confirm";
-
         return (
           <button
             key={action}
