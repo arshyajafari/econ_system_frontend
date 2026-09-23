@@ -174,7 +174,20 @@ export function PaymentsPage() {
   async function executeAction(payment: Payment, action: PaymentStatusAction) {
     if (pendingPaymentId) return;
     if (action === "cancel") {
-      setCancelTarget(payment);
+      setPendingPaymentId(payment.id);
+      setError(null);
+      try {
+        await cancelPayment(payment.id);
+        await Promise.all([loadPayments(), loadInvoices()]);
+      } catch (error: unknown) {
+        setError(
+          error instanceof ApiError && error.message
+            ? error.message
+            : "عملیات پرداخت انجام نشد.",
+        );
+      } finally {
+        setPendingPaymentId(null);
+      }
       return;
     }
     if (!canConfirmPayment) return;
