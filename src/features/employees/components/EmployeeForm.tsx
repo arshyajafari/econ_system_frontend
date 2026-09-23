@@ -134,6 +134,8 @@ export function EmployeeForm({
       ...current,
       address: { ...current.address, [key]: value },
     }));
+  const accountRequired = !employee || !employee.user;
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const passwordMismatch =
@@ -147,10 +149,11 @@ export function EmployeeForm({
       !form.hire_date ||
       form.roles.length === 0 ||
       form.activities.length === 0 ||
-      (!employee &&
+      (accountRequired &&
         (!form.login.trim() ||
           form.password.length < 8 ||
-          !form.password_confirmation)) ||
+          !form.password_confirmation ||
+          form.roles.length === 0)) ||
       passwordMismatch
     ) {
       return;
@@ -181,6 +184,25 @@ export function EmployeeForm({
         </p>
       ) : null}
       <form onSubmit={submit} className="space-y-6">
+        <div className="border-t border-gray-100 pt-6">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold">حساب ورود</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              برای کارمند جدید، نام کاربری، رمز عبور و حداقل یک نقش الزامی است. در ویرایش کارمندی که حساب دارد، تغییر رمز عبور اختیاری است.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field label="نام کاربری" required={accountRequired}>
+              <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+            <Field label={employee ? "رمز عبور جدید" : "رمز عبور"} required={accountRequired}>
+              <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+            <Field label="تکرار رمز عبور" required={accountRequired || Boolean(form.password)}>
+              <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+          </div>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="نام" required>
             <input
@@ -354,25 +376,6 @@ export function EmployeeForm({
         </div>
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
-            <h3 className="text-sm font-semibold">حساب ورود</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              نام کاربری و نقش دسترسی را مشخص کنید. در ویرایش، رمز عبور اختیاری است.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="نام کاربری" required>
-              <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-            <Field label={employee ? "رمز عبور جدید" : "رمز عبور"} required={!employee}>
-              <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-            <Field label="تکرار رمز عبور" required={!employee && Boolean(form.password)}>
-              <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-          </div>
-        </div>
-        <div className="border-t border-gray-100 pt-6">
-          <div className="mb-4">
             <h3 className="text-sm font-semibold">نوع فعالیت</h3>
             <p className="mt-1 text-xs text-gray-500">
               می‌توانید یک یا چند نوع فعالیت را برای کارمند انتخاب کنید.
@@ -510,10 +513,11 @@ export function EmployeeForm({
               !form.hire_date ||
               form.activities.length === 0 ||
               form.roles.length === 0 ||
-              (!employee &&
+              (accountRequired &&
                 (!form.login.trim() ||
                   form.password.length < 8 ||
-                  !form.password_confirmation)) ||
+                  !form.password_confirmation ||
+                  form.roles.length === 0)) ||
               (form.password.length > 0 &&
                 form.password !== form.password_confirmation)
             }
