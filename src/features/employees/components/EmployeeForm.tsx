@@ -59,9 +59,13 @@ const roleActivityMap: Record<EmployeeRole, EmployeeActivityType> = {
   "settlement operator": "settlement_operator",
   "delivery operator": "delivery_operator",
 };
-const activityRoleMap: Partial<Record<EmployeeActivityType, EmployeeRole>> = Object.fromEntries(
-  Object.entries(roleActivityMap).map(([role, activity]) => [activity, role as EmployeeRole]),
-) as Partial<Record<EmployeeActivityType, EmployeeRole>>;
+const activityRoleMap: Partial<Record<EmployeeActivityType, EmployeeRole>> =
+  Object.fromEntries(
+    Object.entries(roleActivityMap).map(([role, activity]) => [
+      activity,
+      role as EmployeeRole,
+    ]),
+  ) as Partial<Record<EmployeeActivityType, EmployeeRole>>;
 function toForm(employee: Employee): EmployeeFormData {
   const roles = (employee.user?.roles ?? []).filter(
     (role): role is EmployeeRole =>
@@ -139,8 +143,7 @@ export function EmployeeForm({
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const passwordMismatch =
-      Boolean(form.password) &&
-      form.password !== form.password_confirmation;
+      Boolean(form.password) && form.password !== form.password_confirmation;
     if (
       !form.first_name.trim() ||
       !form.last_name.trim() ||
@@ -184,25 +187,6 @@ export function EmployeeForm({
         </p>
       ) : null}
       <form onSubmit={submit} className="space-y-6">
-        <div className="border-t border-gray-100 pt-6">
-          <div className="mb-4">
-            <h3 className="text-sm font-semibold">حساب ورود</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              برای کارمند جدید، نام کاربری، رمز عبور و حداقل یک نقش الزامی است. در ویرایش کارمندی که حساب دارد، تغییر رمز عبور اختیاری است.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="نام کاربری" required={accountRequired}>
-              <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-            <Field label={employee ? "رمز عبور جدید" : "رمز عبور"} required={accountRequired}>
-              <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-            <Field label="تکرار رمز عبور" required={accountRequired || Boolean(form.password)}>
-              <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
-            </Field>
-          </div>
-        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="نام" required>
             <input
@@ -374,6 +358,46 @@ export function EmployeeForm({
             </select>
           </Field>
         </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Field label="نام کاربری" required={accountRequired}>
+            <input
+              dir="ltr"
+              autoComplete="username"
+              value={form.login}
+              onChange={(e) => update("login", e.target.value)}
+              disabled={isSubmitting}
+              className={input}
+            />
+          </Field>
+          <Field
+            label={employee ? "رمز عبور جدید" : "رمز عبور"}
+            required={accountRequired}
+          >
+            <input
+              dir="ltr"
+              type="password"
+              autoComplete="new-password"
+              value={form.password}
+              onChange={(e) => update("password", e.target.value)}
+              disabled={isSubmitting}
+              className={input}
+            />
+          </Field>
+          <Field
+            label="تکرار رمز عبور"
+            required={accountRequired || Boolean(form.password)}
+          >
+            <input
+              dir="ltr"
+              type="password"
+              autoComplete="new-password"
+              value={form.password_confirmation}
+              onChange={(e) => update("password_confirmation", e.target.value)}
+              disabled={isSubmitting}
+              className={input}
+            />
+          </Field>
+        </div>
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نوع فعالیت</h3>
@@ -381,7 +405,7 @@ export function EmployeeForm({
               می‌توانید یک یا چند نوع فعالیت را برای کارمند انتخاب کنید.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
               const checked = form.activities.includes(option.value);
               return (
@@ -394,7 +418,9 @@ export function EmployeeForm({
                     checked={checked}
                     onChange={() => {
                       const activities = checked
-                        ? form.activities.filter((activity) => activity !== option.value)
+                        ? form.activities.filter(
+                            (activity) => activity !== option.value,
+                          )
                         : [...form.activities, option.value];
                       const mappedRoles = activities
                         .map((activity) => activityRoleMap[activity])
@@ -406,10 +432,9 @@ export function EmployeeForm({
                         (role) => roleActivityMap[role] === undefined,
                       );
                       const roles = mappedRoles.length
-                        ? Array.from(new Set([
-                            ...preservedRoles,
-                            ...mappedRoles,
-                          ]))
+                        ? Array.from(
+                            new Set([...preservedRoles, ...mappedRoles]),
+                          )
                         : currentMappedRoles.length
                           ? form.roles
                           : form.roles;
@@ -427,13 +452,18 @@ export function EmployeeForm({
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نقش ورود</h3>
-            <p className="mt-1 text-xs text-gray-500">نقش دسترسی سامانه را جدا از نوع فعالیت انتخاب کنید.</p>
+            <p className="mt-1 text-xs text-gray-500">
+              نقش دسترسی سامانه را جدا از نوع فعالیت انتخاب کنید.
+            </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {EMPLOYEE_ROLE_OPTIONS.map((option) => {
               const checked = form.roles.includes(option.value);
               return (
-                <label key={option.value} className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 transition hover:border-gray-400">
+                <label
+                  key={option.value}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 transition hover:border-gray-400"
+                >
                   <input
                     type="checkbox"
                     checked={checked}
@@ -441,7 +471,9 @@ export function EmployeeForm({
                       setForm((current) => ({
                         ...current,
                         roles: checked
-                          ? current.roles.filter((role) => role !== option.value)
+                          ? current.roles.filter(
+                              (role) => role !== option.value,
+                            )
                           : [...current.roles, option.value],
                       }))
                     }
