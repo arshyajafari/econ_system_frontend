@@ -26,7 +26,13 @@ import type {
 export function CustomersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
+  const roles = user?.roles ?? [];
+  const permissions = user?.permissions ?? [];
+  const isAdmin = roles.includes("admin");
+  const isSettlementOperator = roles.includes("settlement operator");
+  const canCreateCustomer = isAdmin || permissions.includes("customers.create");
+  const canEditCustomer = !isSettlementOperator && (isAdmin || permissions.includes("customers.update"));
+  const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
@@ -263,13 +269,15 @@ export function CustomersPage() {
             بروزرسانی
           </button>
 
-          <button
-            type="button"
-            onClick={openCreateForm}
-            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            مشتری جدید
-          </button>
+          {canCreateCustomer ? (
+            <button
+              type="button"
+              onClick={openCreateForm}
+              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+            >
+              مشتری جدید
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -339,7 +347,9 @@ export function CustomersPage() {
         pendingStatusId={pendingStatusId}
         pendingDeleteId={pendingDeleteId}
         isAdmin={isAdmin}
-        onEdit={openEditForm}
+        canEdit={canEditCustomer}
+        canChangeStatus={canChangeCustomerStatus}
+onEdit={openEditForm}
         onDelete={requestDelete}
         onStatusChange={(customer, nextStatus) => {
           void handleStatusChange(customer, nextStatus);
