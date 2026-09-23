@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -41,6 +42,9 @@ const inputClass =
 const labelClass = "mb-1.5 block text-xs font-medium text-gray-600";
 
 export function CatalogPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles.includes("admin") ?? false;
+  const canEdit = isAdmin || (user?.roles.includes("accountant") ?? false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [brandSearch, setBrandSearch] = useState("");
@@ -212,7 +216,7 @@ export function CatalogPage() {
                 <label className={labelClass}>نام برند</label>
                 <input
                   required
-                  disabled={saving}
+                  disabled={saving || !canEdit}
                   value={brandForm.title}
                   onChange={(e) =>
                     setBrandForm({ ...brandForm, title: e.target.value })
@@ -226,7 +230,7 @@ export function CatalogPage() {
                 <input
                   min={0}
                   type="number"
-                  disabled={saving}
+                  disabled={saving || !canEdit}
                   value={brandForm.sort_order}
                   onChange={(e) =>
                     setBrandForm({
@@ -251,7 +255,7 @@ export function CatalogPage() {
             <div>
               <label className={labelClass}>توضیحات</label>
               <textarea
-                disabled={saving}
+                disabled={saving || !canEdit}
                 value={brandForm.description}
                 onChange={(e) =>
                   setBrandForm({ ...brandForm, description: e.target.value })
@@ -272,7 +276,7 @@ export function CatalogPage() {
               </span>
               <input
                 type="checkbox"
-                disabled={saving}
+                disabled={saving || !canEdit}
                 checked={brandForm.is_active}
                 onChange={(e) =>
                   setBrandForm({ ...brandForm, is_active: e.target.checked })
@@ -282,7 +286,7 @@ export function CatalogPage() {
             </label>
             <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4">
               <button
-                disabled={saving}
+                disabled={saving || !canEdit}
                 className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
               >
                 {editingBrand ? "ذخیره تغییرات" : "افزودن برند"}
@@ -348,6 +352,7 @@ export function CatalogPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        if (!canEdit) return;
                         setEditingBrand(b.id);
                         setBrandForm({
                           title: b.title,
@@ -362,7 +367,7 @@ export function CatalogPage() {
                     >
                       ویرایش
                     </button>
-                    <button
+                    {isAdmin ? <button
                       type="button"
                       onClick={() =>
                         void changeBrandActivity(b.id, !b.is_active)
@@ -376,16 +381,17 @@ export function CatalogPage() {
                           )
                       }
                       className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                      disabled={!isAdmin}
                     >
                       {b.is_active ? "غیرفعال" : "فعال"}
-                    </button>
-                    <button
+                    </button> : null}
+                    {isAdmin ? <button
                       type="button"
                       onClick={() => void removeBrand(b)}
                       className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                     >
                       حذف
-                    </button>
+                    </button> : null}
                   </div>
                 </div>
               ))
@@ -412,7 +418,7 @@ export function CatalogPage() {
                 <label className={labelClass}>نام دسته‌بندی</label>
                 <input
                   required
-                  disabled={saving}
+                  disabled={saving || !canEdit}
                   value={categoryForm.title}
                   onChange={(e) =>
                     setCategoryForm({ ...categoryForm, title: e.target.value })
@@ -424,7 +430,7 @@ export function CatalogPage() {
               <div>
                 <label className={labelClass}>دسته والد</label>
                 <select
-                  disabled={saving}
+                  disabled={saving || !canEdit}
                   value={categoryForm.parent_id}
                   onChange={(e) =>
                     setCategoryForm({
@@ -449,7 +455,7 @@ export function CatalogPage() {
                 <input
                   min={0}
                   type="number"
-                  disabled={saving}
+                  disabled={saving || !canEdit}
                   value={categoryForm.sort_order}
                   onChange={(e) =>
                     setCategoryForm({
@@ -469,7 +475,7 @@ export function CatalogPage() {
                   </span>
                   <input
                     type="checkbox"
-                    disabled={saving}
+                    disabled={saving || !canEdit}
                     checked={categoryForm.is_active}
                     onChange={(e) =>
                       setCategoryForm({
@@ -485,7 +491,7 @@ export function CatalogPage() {
             <div>
               <label className={labelClass}>توضیحات</label>
               <textarea
-                disabled={saving}
+                disabled={saving || !canEdit}
                 value={categoryForm.description}
                 onChange={(e) =>
                   setCategoryForm({
@@ -500,7 +506,7 @@ export function CatalogPage() {
             </div>
             <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4">
               <button
-                disabled={saving}
+                disabled={saving || !canEdit}
                 className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 disabled:opacity-50"
               >
                 {editingCategory ? "ذخیره تغییرات" : "افزودن دسته‌بندی"}
@@ -556,6 +562,7 @@ export function CatalogPage() {
                       <button
                         type="button"
                         onClick={() => {
+                          if (!canEdit) return;
                           setEditingCategory(c.id);
                           setCategoryForm({
                             title: c.title,
@@ -569,7 +576,7 @@ export function CatalogPage() {
                       >
                         ویرایش
                       </button>
-                      <button
+                      {isAdmin ? <button
                         type="button"
                         onClick={() =>
                           void changeCategoryActivity(c.id, !c.is_active)
@@ -583,16 +590,18 @@ export function CatalogPage() {
                             )
                         }
                         className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                        disabled={!isAdmin}
                       >
                         {c.is_active ? "غیرفعال" : "فعال"}
                       </button>
                       <button
                         type="button"
-                        onClick={() => void removeCategory(c)}
+                        disabled={!isAdmin}
+                        onClick={() => void removeCategory(c)
                         className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                       >
                         حذف
-                      </button>
+                      </button> : null}
                     </div>
                   </div>
                 );

@@ -26,6 +26,7 @@ import type {
 export function ProductsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const canEdit = isAdmin || (user?.roles.includes("accountant") ?? false);
   const [products, setProducts] = useState<Product[]>([]);
 
   const [brands, setBrands] = useState<ProductBrand[]>([]);
@@ -309,7 +310,7 @@ export function ProductsPage() {
             بروزرسانی
           </button>
 
-          {isAdmin ? (
+          {canEdit ? (
             <button
               type="button"
               onClick={openCreateForm}
@@ -399,6 +400,7 @@ export function ProductsPage() {
         pendingStatusId={pendingStatusId}
         pendingDeleteId={pendingDeleteId}
         isAdmin={isAdmin}
+        canEdit={canEdit}
         onEdit={openEditForm}
         onDelete={requestDelete}
         onStatusChange={(product, nextStatus) => {
