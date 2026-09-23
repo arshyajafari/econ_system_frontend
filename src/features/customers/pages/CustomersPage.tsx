@@ -349,8 +349,7 @@ export function CustomersPage() {
         isAdmin={isAdmin}
         canEdit={canEditCustomer}
         canChangeStatus={canChangeCustomerStatus}
-        isSettlementOperator={isSettlementOperator}
-        onEdit={openEditForm}
+onEdit={openEditForm}
         onDelete={requestDelete}
         onStatusChange={(customer, nextStatus) => {
           void handleStatusChange(customer, nextStatus);
