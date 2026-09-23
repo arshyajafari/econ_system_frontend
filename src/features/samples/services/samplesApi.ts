@@ -40,7 +40,10 @@ export async function getSampleVisits(): Promise<Visit[]> {
   const response = await apiClient.get<VisitListResponse>("/visits", {
     params: { sort: "-visit_date", per_page: 100 },
   });
-  return response.data.data.filter((visit) => visit.status !== "cancelled");
+  // A visit can be used to register samples only once. Once a sample exists for it,
+  // do not offer the visit again in the selector; otherwise selecting the same
+  // visit/product pair can hit the samples.visit_id_product_id unique constraint.
+  return response.data.data.filter((visit) => visit.status !== "cancelled" && !(visit.samples?.length));
 }
 
 export async function getSampleProducts(isScientificVisitor = false): Promise<Product[]> {
