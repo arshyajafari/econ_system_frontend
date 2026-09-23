@@ -345,6 +345,27 @@ export function EmployeeForm({
             </select>
           </Field>
         </div>
+        {!employee ? (
+          <div className="border-t border-gray-100 pt-6">
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold">حساب ورود</h3>
+              <p className="mt-1 text-xs text-gray-500">
+                نام کاربری و رمز عبور کارمند برای ورود به سامانه را تعیین کنید.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field label="نام کاربری" required>
+                <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
+              </Field>
+              <Field label="رمز عبور" required>
+                <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
+              </Field>
+              <Field label="تکرار رمز عبور" required>
+                <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
+              </Field>
+            </div>
+          </div>
+        ) : null}
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نوع فعالیت</h3>
