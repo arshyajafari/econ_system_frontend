@@ -51,7 +51,7 @@ export function PaymentsPage() {
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingInvoices, setIsLoadingInvoices] = useState(true);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingPaymentId, setPendingPaymentId] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Payment | null>(null);
