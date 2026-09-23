@@ -30,7 +30,7 @@ function getAvailableActions(status: OrderReturnStatus): OrderReturnAction[] {
 export function OrderReturnStatusActions({
   orderReturn,
   disabled = false,
-  canApprove = true,
+  canApprove = false,
   onAction,
 }: Props) {
   const actions = getAvailableActions(orderReturn.status).filter(
