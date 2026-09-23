@@ -124,43 +124,62 @@ export function EmployeeForm({
   const [form, setForm] = useState<EmployeeFormData>(() =>
     employee ? toForm(employee) : emptyForm,
   );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const input =
     "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100";
   const update = <K extends keyof EmployeeFormData>(
     key: K,
     value: EmployeeFormData[K],
-  ) => setForm((current) => ({ ...current, [key]: value }));
+  ) => {
+    setValidationError(null);
+    setForm((current) => ({ ...current, [key]: value }));
+  };
   const updateAddress = (
     key: keyof EmployeeFormData["address"],
     value: string,
-  ) =>
+  ) => {
+    setValidationError(null);
     setForm((current) => ({
       ...current,
       address: { ...current.address, [key]: value },
     }));
+  };
   const accountRequired = !employee || !employee.user;
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setValidationError(null);
+
     const passwordMismatch =
       Boolean(form.password) && form.password !== form.password_confirmation;
-    if (
-      !form.first_name.trim() ||
-      !form.last_name.trim() ||
-      !form.national_code.trim() ||
-      !form.phone_number.trim() ||
-      !form.hire_date ||
-      form.roles.length === 0 ||
-      form.activities.length === 0 ||
-      (accountRequired &&
-        (!form.login.trim() ||
-          form.password.length < 8 ||
-          !form.password_confirmation ||
-          form.roles.length === 0)) ||
-      passwordMismatch
-    ) {
+
+    const missingFields: string[] = [];
+    if (!form.first_name.trim()) missingFields.push("نام");
+    if (!form.last_name.trim()) missingFields.push("نام خانوادگی");
+    if (!form.national_code.trim()) missingFields.push("کد ملی");
+    if (!form.phone_number.trim()) missingFields.push("شماره موبایل");
+    if (!form.hire_date) missingFields.push("تاریخ استخدام");
+    if (form.roles.length === 0 || form.activities.length === 0) {
+      missingFields.push("نقش و نوع فعالیت");
+    }
+    if (accountRequired && !form.login.trim()) missingFields.push("نام کاربری");
+    if (accountRequired && form.password.length < 8) {
+      missingFields.push("رمز عبور حداقل ۸ کاراکتر");
+    }
+    if (accountRequired && !form.password_confirmation) {
+      missingFields.push("تکرار رمز عبور");
+    }
+    if (passwordMismatch) {
+      missingFields.push("یکسان بودن رمز عبور و تکرار آن");
+    }
+
+    if (missingFields.length > 0) {
+      setValidationError(
+        `لطفاً موارد زیر را تکمیل کنید: ${missingFields.join("، ")}.`,
+      );
       return;
     }
+
     onSubmit({
       ...form,
       iban_number: form.iban_number
@@ -184,6 +203,14 @@ export function EmployeeForm({
           className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
         >
           {error}
+        </p>
+      ) : null}
+      {validationError ? (
+        <p
+          role="alert"
+          className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800"
+        >
+          {validationError}
         </p>
       ) : null}
       <form onSubmit={submit} className="space-y-6">
@@ -329,7 +356,6 @@ export function EmployeeForm({
               value={form.hire_date}
               onChange={(value) => update("hire_date", value)}
               disabled={isSubmitting}
-              required
               className={input}
             />
           </Field>
