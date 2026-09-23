@@ -62,7 +62,6 @@ export function PaymentsPage() {
   const requestIdRef = useRef(0);
 
   const loadInvoices = useCallback(async () => {
-    setIsLoadingInvoices(true);
     try {
       const response = await getPaymentInvoices({ settled: false, payable: true });
       setInvoices(response.filter((invoice) => isPayablePaymentInvoice(invoice)));
@@ -72,8 +71,6 @@ export function PaymentsPage() {
           ? error.message
           : "خطا در دریافت فاکتورها.",
       );
-    } finally {
-      setIsLoadingInvoices(false);
     }
   }, []);
 
