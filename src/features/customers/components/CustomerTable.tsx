@@ -6,6 +6,8 @@ type CustomerTableProps = {
   pendingStatusId: string | null;
   pendingDeleteId: string | null;
   isAdmin: boolean;
+  canEdit: boolean;
+  canChangeStatus: boolean;
   onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
@@ -119,7 +121,7 @@ export function CustomerTable({
                     <select
                       aria-label={`تغییر وضعیت ${customer.customer_name}`}
                       value={customer.status}
-                      disabled={isPending}
+                      disabled={isPending || !canChangeStatus}
                       onChange={(event) =>
                         onStatusChange(
                           customer,
@@ -153,14 +155,16 @@ export function CustomerTable({
                         حساب
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => onEdit(customer)}
-                        disabled={isPending}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        ویرایش
-                      </button>
+                      {canEdit ? (
+                        <button
+                          type="button"
+                          onClick={() => onEdit(customer)}
+                          disabled={isPending}
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          ویرایش
+                        </button>
+                      ) : null}
 
                       {isAdmin ? (<button
                         type="button"
