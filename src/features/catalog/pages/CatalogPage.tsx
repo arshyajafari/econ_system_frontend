@@ -593,11 +593,10 @@ export function CatalogPage() {
                         disabled={!isAdmin}
                       >
                         {c.is_active ? "غیرفعال" : "فعال"}
-                      </button>
-                      <button
+                      </button> : null}
+                      {isAdmin ? <button
                         type="button"
-                        disabled={!isAdmin}
-                        onClick={() => void removeCategory(c)
+                        onClick={() => void removeCategory(c)}
                         className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                       >
                         حذف
