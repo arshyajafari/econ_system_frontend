@@ -205,6 +205,8 @@ export function PaymentsPage() {
     }
   }
 
+  const canCreate = canCreatePayment;
+
   function handleAction(payment: Payment, action: PaymentStatusAction) {
     if (pendingPaymentId) return;
     if (action === "cancel") {
