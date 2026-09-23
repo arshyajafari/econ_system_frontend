@@ -26,7 +26,13 @@ import type {
 export function CustomersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const roles = user?.roles ?? [];\n  const permissions = user?.permissions ?? [];\n  const isAdmin = roles.includes("admin");\n  const isSettlementOperator = roles.includes("settlement operator");\n  const canCreateCustomer = isAdmin || permissions.includes("customers.create");\n  const canEditCustomer = !isSettlementOperator && (isAdmin || permissions.includes("customers.update"));\n  const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
+  const roles = user?.roles ?? [];
+  const permissions = user?.permissions ?? [];
+  const isAdmin = roles.includes("admin");
+  const isSettlementOperator = roles.includes("settlement operator");
+  const canCreateCustomer = isAdmin || permissions.includes("customers.create");
+  const canEditCustomer = !isSettlementOperator && (isAdmin || permissions.includes("customers.update"));
+  const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
@@ -339,6 +345,8 @@ export function CustomersPage() {
         pendingStatusId={pendingStatusId}
         pendingDeleteId={pendingDeleteId}
         isAdmin={isAdmin}
+        canEdit={canEditCustomer}
+        canChangeStatus={canChangeCustomerStatus}
         onEdit={openEditForm}
         onDelete={requestDelete}
         onStatusChange={(customer, nextStatus) => {
