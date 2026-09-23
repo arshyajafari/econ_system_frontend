@@ -217,7 +217,8 @@ export function PaymentsPage() {
     void executeAction(payment, action);
   }
 
-  // Creating a payment is a role permission, not dependent on whether invoice options have finished loading.\n  // The form itself handles an empty invoice list and shows the appropriate state.\n  const canCreate = canCreatePayment;
+  // Creating a payment is a role permission, not dependent on whether invoice options have finished loading.
+  // The form itself handles an empty invoice list and shows the appropriate state.
 
   return (
     <section className="space-y-6 p-4 md:p-6">

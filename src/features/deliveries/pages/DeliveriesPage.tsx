@@ -41,7 +41,7 @@ export function DeliveriesPage() {
   const isDeliveryOperator = user?.roles.includes("delivery operator") ?? false;
   const isAccountant = user?.roles.includes("accountant") ?? false;
   const canOperate = isAdmin || isAccountant || isDeliveryOperator;
-  const canApproveDelivery = isAdmin || isAccountant;
+  const canApproveDelivery = isAdmin;
   const canManageForm = isAdmin || isDeliveryOperator;
   const [items, setItems] = useState<Delivery[]>([]),
     [availableOrders, setAvailableOrders] = useState<DeliveryOrderSource[]>([]),
