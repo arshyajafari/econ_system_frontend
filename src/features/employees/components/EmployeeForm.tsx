@@ -451,14 +451,16 @@ export function EmployeeForm({
         </div>
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
-            <h3 className="text-sm font-semibold">نقش ورود</h3>
+            <h3 className="text-sm font-semibold">نقش و نوع فعالیت</h3>
             <p className="mt-1 text-xs text-gray-500">
-              نقش دسترسی سامانه را جدا از نوع فعالیت انتخاب کنید.
+              نقش ورود و نوع فعالیت با هم هماهنگ هستند؛ با انتخاب هر مورد، نقش دسترسی همان فعالیت نیز به‌صورت خودکار انتخاب می‌شود.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {EMPLOYEE_ROLE_OPTIONS.map((option) => {
-              const checked = form.roles.includes(option.value);
+            {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
+              const checked = form.activities.includes(option.value);
+              const mappedRole = activityRoleMap[option.value];
+
               return (
                 <label
                   key={option.value}
@@ -468,19 +470,36 @@ export function EmployeeForm({
                     type="checkbox"
                     checked={checked}
                     onChange={() =>
-                      setForm((current) => ({
-                        ...current,
-                        roles: checked
-                          ? current.roles.filter(
-                              (role) => role !== option.value,
+                      setForm((current) => {
+                        const activities = checked
+                          ? current.activities.filter(
+                              (activity) => activity !== option.value,
                             )
-                          : [...current.roles, option.value],
-                      }))
+                          : [...current.activities, option.value];
+
+                        const roles = Array.from(
+                          new Set(
+                            activities
+                              .map((activity) => activityRoleMap[activity])
+                              .filter(
+                                (role): role is EmployeeRole =>
+                                  Boolean(role),
+                              ),
+                          ),
+                        );
+
+                        return { ...current, activities, roles };
+                      })
                     }
                     disabled={isSubmitting}
                     className="h-4 w-4 rounded border-gray-300"
                   />
                   <span className="text-sm text-gray-700">{option.label}</span>
+                  {mappedRole ? (
+                    <span className="mr-auto text-xs text-gray-400">
+                      نقش ورود: {option.label}
+                    </span>
+                  ) : null}
                 </label>
               );
             })}
