@@ -269,13 +269,15 @@ export function CustomersPage() {
             بروزرسانی
           </button>
 
-          <button
-            type="button"
-            onClick={openCreateForm}
-            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            مشتری جدید
-          </button>
+          {canCreateCustomer ? (
+            <button
+              type="button"
+              onClick={openCreateForm}
+              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+            >
+              مشتری جدید
+            </button>
+          ) : null}
         </div>
       </div>
 
