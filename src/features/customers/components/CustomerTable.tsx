@@ -8,6 +8,7 @@ type CustomerTableProps = {
   isAdmin: boolean;
   canEdit: boolean;
   canChangeStatus: boolean;
+  isSettlementOperator: boolean;
   onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
