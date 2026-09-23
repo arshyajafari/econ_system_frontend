@@ -51,7 +51,7 @@ export function PaymentsPage() {
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingInvoices, setIsLoadingInvoices] = useState(true);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingPaymentId, setPendingPaymentId] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Payment | null>(null);
@@ -62,7 +62,6 @@ export function PaymentsPage() {
   const requestIdRef = useRef(0);
 
   const loadInvoices = useCallback(async () => {
-    setIsLoadingInvoices(true);
     try {
       const response = await getPaymentInvoices({ settled: false, payable: true });
       setInvoices(response.filter((invoice) => isPayablePaymentInvoice(invoice)));
@@ -72,8 +71,6 @@ export function PaymentsPage() {
           ? error.message
           : "خطا در دریافت فاکتورها.",
       );
-    } finally {
-      setIsLoadingInvoices(false);
     }
   }, []);
 
@@ -208,6 +205,8 @@ export function PaymentsPage() {
     }
   }
 
+  const canCreate = canCreatePayment;
+
   function handleAction(payment: Payment, action: PaymentStatusAction) {
     if (pendingPaymentId) return;
     if (action === "cancel") {
@@ -218,7 +217,7 @@ export function PaymentsPage() {
     void executeAction(payment, action);
   }
 
-  const canCreate = canCreatePayment && !isLoadingInvoices && invoices.length > 0;
+  // Creating a payment is a role permission, not dependent on whether invoice options have finished loading.\n  // The form itself handles an empty invoice list and shows the appropriate state.\n  const canCreate = canCreatePayment;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
