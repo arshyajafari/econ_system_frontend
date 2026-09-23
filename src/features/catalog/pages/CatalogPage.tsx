@@ -180,7 +180,7 @@ export function CatalogPage() {
         </div>
         <button
           type="button"
-          disabled={loading || !canEdit}
+          disabled={loading}
           onClick={() => void load()}
           className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
         >
@@ -367,7 +367,7 @@ export function CatalogPage() {
                     >
                       ویرایش
                     </button>
-                    <button
+                    {isAdmin ? <button
                       type="button"
                       onClick={() =>
                         void changeBrandActivity(b.id, !b.is_active)
@@ -384,15 +384,14 @@ export function CatalogPage() {
                       disabled={!isAdmin}
                     >
                       {b.is_active ? "غیرفعال" : "فعال"}
-                    </button>
-                    <button
+                    </button> : null}
+                    {isAdmin ? <button
                       type="button"
-                      disabled={!isAdmin}
                       onClick={() => void removeBrand(b)}
                       className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                     >
                       حذف
-                    </button>
+                    </button> : null}
                   </div>
                 </div>
               ))
@@ -577,7 +576,7 @@ export function CatalogPage() {
                       >
                         ویرایش
                       </button>
-                      <button
+                      {isAdmin ? <button
                         type="button"
                         onClick={() =>
                           void changeCategoryActivity(c.id, !c.is_active)
@@ -602,7 +601,7 @@ export function CatalogPage() {
                         className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                       >
                         حذف
-                      </button>
+                      </button> : null}
                     </div>
                   </div>
                 );
