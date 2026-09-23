@@ -459,8 +459,6 @@ export function EmployeeForm({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
               const checked = form.activities.includes(option.value);
-              const mappedRole = activityRoleMap[option.value];
-
               return (
                 <label
                   key={option.value}
@@ -495,11 +493,6 @@ export function EmployeeForm({
                     className="h-4 w-4 rounded border-gray-300"
                   />
                   <span className="text-sm text-gray-700">{option.label}</span>
-                  {mappedRole ? (
-                    <span className="mr-auto text-xs text-gray-400">
-                      نقش ورود: {option.label}
-                    </span>
-                  ) : null}
                 </label>
               );
             })}
