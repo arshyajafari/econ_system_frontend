@@ -8,8 +8,7 @@ type CustomerTableProps = {
   isAdmin: boolean;
   canEdit: boolean;
   canChangeStatus: boolean;
-  isSettlementOperator: boolean;
-  onEdit: (customer: Customer) => void;
+onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
   onViewLedger: (customer: Customer) => void;
@@ -38,8 +37,7 @@ export function CustomerTable({
   isAdmin,
   canEdit,
   canChangeStatus,
-  isSettlementOperator,
-  onEdit,
+onEdit,
   onDelete,
   onStatusChange,
   onViewLedger,
