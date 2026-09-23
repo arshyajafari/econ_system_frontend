@@ -30,7 +30,7 @@ export async function performPaymentStatusAction(id: string, action: PaymentStat
   switch (action) { case "confirm": return confirmPayment(id); case "cancel": return cancelPayment(id); }
 }
 export async function getPaymentInvoices(filters: PaymentInvoiceFilters = {}): Promise<PaymentInvoiceOption[]> {
-  const response = await apiClient.get<InvoiceListResponse>("/invoices", { params: { status: "issued", customer_id: filters.customer_id || undefined, settled: filters.settled, payable: filters.payable, per_page: 100 } });
+  const response = await apiClient.get<InvoiceListResponse>("/invoices/payable-for-payment", { params: { status: "issued", customer_id: filters.customer_id || undefined, settled: filters.settled, payable: filters.payable, per_page: 100 } });
   return response.data.data;
 }
 function normalizePaymentPayload(payload: PaymentFormData, isUpdate = false): PaymentApiPayload {
