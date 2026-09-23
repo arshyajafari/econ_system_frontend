@@ -26,7 +26,7 @@ import type {
 export function CustomersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
+  const roles = user?.roles ?? [];\n  const permissions = user?.permissions ?? [];\n  const isAdmin = roles.includes("admin");\n  const isSettlementOperator = roles.includes("settlement operator");\n  const canCreateCustomer = isAdmin || permissions.includes("customers.create");\n  const canEditCustomer = !isSettlementOperator && (isAdmin || permissions.includes("customers.update"));\n  const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
