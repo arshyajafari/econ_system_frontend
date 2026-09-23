@@ -497,23 +497,7 @@ export function EmployeeForm({
           </button>
           <button
             type="submit"
-            disabled={
-              isSubmitting ||
-              !form.first_name.trim() ||
-              !form.last_name.trim() ||
-              !form.national_code.trim() ||
-              !form.phone_number.trim() ||
-              !form.hire_date ||
-              form.activities.length === 0 ||
-              form.roles.length === 0 ||
-              (accountRequired &&
-                (!form.login.trim() ||
-                  form.password.length < 8 ||
-                  !form.password_confirmation ||
-                  form.roles.length === 0)) ||
-              (form.password.length > 0 &&
-                form.password !== form.password_confirmation)
-            }
+            disabled={isSubmitting}
             className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
           >
             {isSubmitting
