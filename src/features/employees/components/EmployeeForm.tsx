@@ -33,7 +33,7 @@ const emptyForm: EmployeeFormData = {
   gender: "male",
   birth_date: "",
   employment_type: "full_time",
-  activities: ["other"],
+  activities: ["sales_visitor"],
   hire_date: "",
   termination_date: "",
   status: "active",
@@ -91,7 +91,7 @@ function toForm(employee: Employee): EmployeeFormData {
     hire_date: employee.hire_date?.slice(0, 10) ?? "",
     termination_date: employee.termination_date?.slice(0, 10) ?? "",
     status: employee.status,
-    login: "",
+    login: employee.user?.login ?? "",
     password: "",
     password_confirmation: "",
     roles: roles.length
@@ -136,6 +136,9 @@ export function EmployeeForm({
     }));
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const passwordMismatch =
+      Boolean(form.password) &&
+      form.password !== form.password_confirmation;
     if (
       !form.first_name.trim() ||
       !form.last_name.trim() ||
@@ -145,9 +148,13 @@ export function EmployeeForm({
       form.roles.length === 0 ||
       form.activities.length === 0 ||
       (!employee &&
-        (!form.login.trim() || !form.password || !form.password_confirmation))
-    )
+        (!form.login.trim() ||
+          form.password.length < 8 ||
+          !form.password_confirmation)) ||
+      passwordMismatch
+    ) {
       return;
+    }
     onSubmit({
       ...form,
       iban_number: form.iban_number
@@ -345,27 +352,25 @@ export function EmployeeForm({
             </select>
           </Field>
         </div>
-        {!employee ? (
-          <div className="border-t border-gray-100 pt-6">
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold">حساب ورود</h3>
-              <p className="mt-1 text-xs text-gray-500">
-                نام کاربری و رمز عبور کارمند برای ورود به سامانه را تعیین کنید.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Field label="نام کاربری" required>
-                <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
-              </Field>
-              <Field label="رمز عبور" required>
-                <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
-              </Field>
-              <Field label="تکرار رمز عبور" required>
-                <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
-              </Field>
-            </div>
+        <div className="border-t border-gray-100 pt-6">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold">حساب ورود</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              نام کاربری و نقش دسترسی را مشخص کنید. در ویرایش، رمز عبور اختیاری است.
+            </p>
           </div>
-        ) : null}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field label="نام کاربری" required>
+              <input dir="ltr" autoComplete="username" value={form.login} onChange={(e) => update("login", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+            <Field label={employee ? "رمز عبور جدید" : "رمز عبور"} required={!employee}>
+              <input dir="ltr" type="password" autoComplete="new-password" value={form.password} onChange={(e) => update("password", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+            <Field label="تکرار رمز عبور" required={!employee && Boolean(form.password)}>
+              <input dir="ltr" type="password" autoComplete="new-password" value={form.password_confirmation} onChange={(e) => update("password_confirmation", e.target.value)} disabled={isSubmitting} className={input} />
+            </Field>
+          </div>
+        </div>
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نوع فعالیت</h3>
@@ -407,6 +412,36 @@ export function EmployeeForm({
                           : form.roles;
                       setForm((current) => ({ ...current, activities, roles }));
                     }}
+                    disabled={isSubmitting}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">{option.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+        <div className="border-t border-gray-100 pt-6">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold">نقش ورود</h3>
+            <p className="mt-1 text-xs text-gray-500">نقش دسترسی سامانه را جدا از نوع فعالیت انتخاب کنید.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {EMPLOYEE_ROLE_OPTIONS.map((option) => {
+              const checked = form.roles.includes(option.value);
+              return (
+                <label key={option.value} className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 transition hover:border-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() =>
+                      setForm((current) => ({
+                        ...current,
+                        roles: checked
+                          ? current.roles.filter((role) => role !== option.value)
+                          : [...current.roles, option.value],
+                      }))
+                    }
                     disabled={isSubmitting}
                     className="h-4 w-4 rounded border-gray-300"
                   />
@@ -477,8 +512,10 @@ export function EmployeeForm({
               form.roles.length === 0 ||
               (!employee &&
                 (!form.login.trim() ||
-                  !form.password ||
-                  !form.password_confirmation))
+                  form.password.length < 8 ||
+                  !form.password_confirmation)) ||
+              (form.password.length > 0 &&
+                form.password !== form.password_confirmation)
             }
             className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
           >
