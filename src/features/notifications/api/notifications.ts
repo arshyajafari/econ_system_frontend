@@ -9,6 +9,8 @@ export type SystemNotification = {
   created_at: string | null;
   read_at: string | null;
   message_id: string | null;
+  target_type: "all" | "users" | "positions" | null;
+  target_values: string[];
   can_manage: boolean;
 };
 
@@ -67,5 +69,13 @@ export async function sendSystemMessage(payload: SendSystemMessagePayload): Prom
   return response.data;
 }
 
-export async function updateSystemMessage(id: string, payload: Pick<SendSystemMessagePayload, "title" | "body" | "priority">): Promise<void> { await apiClient.put(`/notifications/${id}`, payload); }
-export async function deleteSystemMessage(id: string): Promise<void> { await apiClient.delete(`/notifications/${id}`); }
+export async function updateSystemMessage(
+  id: string,
+  payload: Pick<SendSystemMessagePayload, "title" | "body" | "priority">
+): Promise<void> {
+  await apiClient.put(`/notifications/${id}`, payload);
+}
+
+export async function deleteSystemMessage(id: string): Promise<void> {
+  await apiClient.delete(`/notifications/${id}`);
+}
