@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { getEmployees } from "../../employees/services/employeesApi";
 import type { Employee } from "../../employees/types/employee";
 import { useAuth } from "../../auth";
@@ -312,13 +313,13 @@ export function ExpensesPage() {
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ هزینه</label>
-              <input
-                required
-                type="date"
+              <JalaliDateInput
                 value={form.expense_date}
-                onChange={(event) => setForm((current) => ({ ...current, expense_date: event.target.value }))}
+                onChange={(value) => setForm((current) => ({ ...current, expense_date: value }))}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 disabled={saving}
+                required
+                aria-label="تاریخ هزینه"
               />
             </div>
 
@@ -376,8 +377,8 @@ export function ExpensesPage() {
           <option value="">همه مسئولان</option>
           {employees.map((employee) => <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>)}
         </select>
-        <input type="date" value={dateFrom} onChange={(event) => { setDateFrom(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="از تاریخ" />
-        <input type="date" value={dateTo} onChange={(event) => { setDateTo(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="تا تاریخ" />
+        <JalaliDateInput value={dateFrom} onChange={(value) => { setDateFrom(value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="از تاریخ" />
+        <JalaliDateInput value={dateTo} onChange={(value) => { setDateTo(value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="تا تاریخ" />
         <button type="button" onClick={resetFilters} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 lg:col-span-5 lg:w-fit">
           پاک کردن فیلترها
         </button>
