@@ -14,17 +14,13 @@ import {
   cancelPayment,
   confirmPayment,
   createPayment,
-  getPaymentInvoices,
   getPayments,
   updatePayment,
 } from "../services/paymentsApi";
 
-import { isPayablePaymentInvoice } from "../types/payment";
-
 import type {
   Payment,
   PaymentFormData,
-  PaymentInvoiceOption,
   PaymentMethod,
   PaymentStatus,
   PaymentStatusAction,
@@ -43,7 +39,6 @@ export function PaymentsPage() {
   const canCancelPayment = isAdmin || isAccountant || isSettlementOperator;
 
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [invoices, setInvoices] = useState<PaymentInvoiceOption[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PaymentStatus | "">("");
   const [method, setMethod] = useState<PaymentMethod | "">("");
@@ -60,19 +55,6 @@ export function PaymentsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const requestIdRef = useRef(0);
-
-  const loadInvoices = useCallback(async () => {
-    try {
-      const response = await getPaymentInvoices({ settled: false, payable: true });
-      setInvoices(response.filter((invoice) => isPayablePaymentInvoice(invoice)));
-    } catch (error: unknown) {
-      setError(
-        error instanceof ApiError && error.message
-          ? error.message
-          : "خطا در دریافت فاکتورها.",
-      );
-    }
-  }, []);
 
   const loadPayments = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -101,12 +83,6 @@ export function PaymentsPage() {
       if (requestId === requestIdRef.current) setIsLoading(false);
     }
   }, [method, page, search, status]);
-
-  useEffect(() => {
-    if (!canCreatePayment) return;
-    const timeoutId = window.setTimeout(() => void loadInvoices(), 0);
-    return () => window.clearTimeout(timeoutId);
-  }, [canCreatePayment, loadInvoices]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -156,7 +132,7 @@ export function PaymentsPage() {
       setIsFormOpen(false);
       setEditingPayment(null);
       setFormError(null);
-      await Promise.all([loadPayments(), loadInvoices()]);
+      await loadPayments();
     } catch (error: unknown) {
       setFormError(
         error instanceof ApiError && error.message
@@ -257,7 +233,7 @@ export function PaymentsPage() {
           <span>{error}</span>
           <button
             type="button"
-            onClick={() => void Promise.all([loadPayments(), loadInvoices()])}
+            onClick={() => void loadPayments()}
             className="rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100"
           >
             تلاش مجدد
