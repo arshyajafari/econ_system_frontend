@@ -5,7 +5,8 @@ type OrderReturnAction = "submit" | "confirm" | "complete" | "cancel";
 type Props = {
   orderReturn: OrderReturn;
   disabled?: boolean;
-  canApprove?: boolean;
+  canConfirm?: boolean;
+  canComplete?: boolean;
   onAction: (action: OrderReturnAction) => void;
 };
 
@@ -30,12 +31,15 @@ function getAvailableActions(status: OrderReturnStatus): OrderReturnAction[] {
 export function OrderReturnStatusActions({
   orderReturn,
   disabled = false,
-  canApprove = false,
+  canConfirm = false,
+  canComplete = false,
   onAction,
 }: Props) {
-  const actions = getAvailableActions(orderReturn.status).filter(
-    (action) => canApprove || (action !== "confirm" && action !== "complete"),
-  );
+  const actions = getAvailableActions(orderReturn.status).filter((action) => {
+    if (action === "confirm") return canConfirm;
+    if (action === "complete") return canComplete;
+    return true;
+  });
 
   if (actions.length === 0) return null;
 
