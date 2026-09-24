@@ -110,28 +110,17 @@ main section[class*="space-y-"] button,
 main section[class*="space-y-"] button:not(:disabled):active,
 [role="dialog"] button:not(:disabled):active { transform: translateY(1px); }
 
-/* Default outlined actions only; semantic colored actions keep their color. */
-main section[class*="space-y-"] button[class~="border"],
-main section[class*="space-y-"] button[class~="border-gray-200"],
-main section[class*="space-y-"] button[class~="border-gray-300"],
-main section[class~="border"],
-main section[class*="space-y-"] button[class~="border-slate-200"],
-[role="dialog"] button[class~="border"],
-[role="dialog"] button[class~="border-gray-200"],
-[role="dialog"] button[class~="border-gray-300"],
-[role="dialog"] button[class~="border-slate-200"] {
+/* Default outlined actions.
+   Only a bare `border` utility gets the system default. Explicit Tailwind
+   border-color utilities (for example border-yellow-200) remain authoritative. */
+main section[class*="space-y-"] button[class~="border"]:not([class*="border-"]),
+[role="dialog"] button[class~="border"]:not([class*="border-"]) {
   border-color: var(--ui-border-hover);
   background: var(--ui-surface);
   color: var(--ui-text-soft);
 }
-main section[class*="space-y-"] button[class~="border"]:hover,
-main section[class*="space-y-"] button[class~="border-gray-200"]:hover,
-main section[class*="space-y-"] button[class~="border-gray-300"]:hover,
-main section[class*="space-y-"] button[class~="border-slate-200"]:hover,
-[role="dialog"] button[class~="border"]:hover,
-[role="dialog"] button[class~="border-gray-200"]:hover,
-[role="dialog"] button[class~="border-gray-300"]:hover,
-[role="dialog"] button[class~="border-slate-200"]:hover {
+main section[class*="space-y-"] button[class~="border"]:not([class*="border-"]):hover,
+[role="dialog"] button[class~="border"]:not([class*="border-"]):hover {
   border-color: #94a3b8;
   background: var(--ui-surface-muted);
   color: var(--ui-text);
