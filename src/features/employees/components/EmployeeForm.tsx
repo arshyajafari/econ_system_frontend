@@ -193,9 +193,6 @@ export function EmployeeForm({
         <h2 className="text-lg font-semibold">
           {employee ? "ویرایش کارمند" : "کارمند جدید"}
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          اطلاعات شغلی، دسترسی ورود و آدرس کارمند را ثبت کنید.
-        </p>
       </div>
       {error ? (
         <p
@@ -427,9 +424,6 @@ export function EmployeeForm({
         <div className="border-t border-gray-100 pt-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نقش و نوع فعالیت</h3>
-            <p className="mt-1 text-xs text-gray-500">
-              نقش ورود و نوع فعالیت با هم هماهنگ هستند؛ با انتخاب هر مورد، نقش دسترسی همان فعالیت نیز به‌صورت خودکار انتخاب می‌شود.
-            </p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
@@ -454,9 +448,8 @@ export function EmployeeForm({
                           new Set(
                             activities
                               .map((activity) => activityRoleMap[activity])
-                              .filter(
-                                (role): role is EmployeeRole =>
-                                  Boolean(role),
+                              .filter((role): role is EmployeeRole =>
+                                Boolean(role),
                               ),
                           ),
                         );
@@ -475,7 +468,7 @@ export function EmployeeForm({
         </div>
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-4 text-sm font-semibold">آدرس</h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <IranAddressFields
               province={form.address.province}
               city={form.address.city}
@@ -492,6 +485,8 @@ export function EmployeeForm({
                 className={input}
               />
             </Field>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 pt-2">
             <Field label="آدرس">
               <textarea
                 rows={1}
@@ -501,17 +496,17 @@ export function EmployeeForm({
                 className={input}
               />
             </Field>
+            <Field label="توضیحات">
+              <textarea
+                rows={1}
+                value={form.description}
+                onChange={(e) => update("description", e.target.value)}
+                disabled={isSubmitting}
+                className={input}
+              />
+            </Field>
           </div>
         </div>
-        <Field label="توضیحات">
-          <textarea
-            rows={4}
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-            disabled={isSubmitting}
-            className={input}
-          />
-        </Field>
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"

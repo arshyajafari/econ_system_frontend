@@ -33,7 +33,8 @@ export function CustomersPage() {
   const isAccountant = roles.includes("accountant");
   const canCreateCustomer = isAdmin || isAccountant;
   const canEditCustomer = !isSettlementOperator && (isAdmin || isAccountant);
-  const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
+  const canChangeCustomerStatus =
+    isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
@@ -252,10 +253,6 @@ export function CustomersPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">مشتریان</h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            مدیریت مشتریان و اطلاعات پایه آن‌ها
-          </p>
         </div>
 
         <div className="flex gap-2">
@@ -350,7 +347,7 @@ export function CustomersPage() {
         isAdmin={isAdmin}
         canEdit={canEditCustomer}
         canChangeStatus={canChangeCustomerStatus}
-onEdit={openEditForm}
+        onEdit={openEditForm}
         onDelete={requestDelete}
         onStatusChange={(customer, nextStatus) => {
           void handleStatusChange(customer, nextStatus);
@@ -363,7 +360,11 @@ onEdit={openEditForm}
       <ConfirmModal
         open={deleteTarget !== null}
         title="حذف مشتری"
-        description={deleteTarget ? `آیا از حذف «${deleteTarget.customer_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""}
+        description={
+          deleteTarget
+            ? `آیا از حذف «${deleteTarget.customer_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+            : ""
+        }
         confirmLabel="حذف مشتری"
         cancelLabel="انصراف"
         variant="danger"
@@ -371,7 +372,9 @@ onEdit={openEditForm}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
           if (deleteTarget) {
-            void handleDelete(deleteTarget).finally(() => setDeleteTarget(null));
+            void handleDelete(deleteTarget).finally(() =>
+              setDeleteTarget(null),
+            );
           }
         }}
       />
