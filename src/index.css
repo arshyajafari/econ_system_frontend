@@ -36,7 +36,32 @@ html, body { background: #f4f7fb; }
 html { direction: rtl; }
 body { min-width: 320px; min-height: 100vh; color: var(--ui-text); direction: rtl; }
 main, [role="dialog"], form, table, thead, tbody, tr, th, td { direction: rtl; }
-button, input, textarea, select { font: inherit; }\n\n/* Global RTL form controls. Numeric/date/code values keep readable LTR direction where needed. */\ninput:not([type="checkbox"]):not([type="radio"]),\nselect,\ntextarea {\n  direction: rtl;\n  text-align: right;\n}\n\ninput[type="number"],\ninput[type="tel"],\ninput[type="email"],\ninput[inputmode="numeric"],\ninput[inputmode="decimal"],\ninput[inputmode="tel"] {\n  direction: ltr;\n  text-align: right;\n}\n\ninput[type="date"],\ninput[type="time"],\ninput[type="datetime-local"] {\n  direction: ltr;\n  text-align: right;\n}
+button, input, textarea, select { font: inherit; }
+
+/* Global RTL form controls. Numeric/date/code values keep readable LTR direction where needed. */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[inputmode="numeric"],
+input[inputmode="decimal"],
+input[inputmode="tel"] {
+  direction: ltr;
+  text-align: right;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  direction: ltr;
+  text-align: right;
+}
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 
