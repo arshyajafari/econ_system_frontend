@@ -34,7 +34,7 @@ export function PaymentsPage() {
   const isAccountant = roles.includes("accountant");
   const isSettlementOperator = roles.includes("settlement operator");
   const canCreatePayment = isAdmin || isAccountant || isSettlementOperator;
-  const canEditPayment = isAdmin || isAccountant;
+  const canEditPayment = isAdmin || isAccountant || isSettlementOperator;
   const canConfirmPayment = isAdmin;
   const canCancelPayment = isAdmin || isAccountant || isSettlementOperator;
 
