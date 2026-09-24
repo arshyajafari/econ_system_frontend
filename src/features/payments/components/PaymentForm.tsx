@@ -75,7 +75,14 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
         const balance = await getCustomerPayableBalance(customerId);
         if (!cancelled) {
           setCustomerBalance(balance);
-          if (!payment) setAmount(balance > 0 ? String(balance) : "");
+          if (!payment) {
+            setAmount(balance > 0 ? String(balance) : "");
+          } else {
+            setAmount((current) => {
+              const currentAmount = Number(current || 0);
+              return currentAmount > balance && balance >= 0 ? String(balance) : current;
+            });
+          }
         }
       } catch (requestError: unknown) {
         if (!cancelled) {
@@ -113,7 +120,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
       numericAmount <= 0 ||
       !Number.isFinite(numericDiscount) ||
       numericDiscount < 0 ||
-      (customerBalance !== null && numericDiscount > customerBalance) ||
+      (customerBalance !== null && (numericAmount + numericDiscount > customerBalance || numericDiscount > customerBalance)) ||
       receiptError
     ) return;
 
@@ -169,7 +176,14 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
             dir="ltr"
             disabled={isSubmitting || isLoadingBalance || !customerId}
             value={amount}
-            onValueChange={setAmount}
+            onValueChange={(value) => {
+              const numericValue = Number(value || 0);
+              if (customerBalance !== null && numericValue > customerBalance) {
+                setAmount(String(customerBalance));
+                return;
+              }
+              setAmount(value);
+            }}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
             placeholder="مثلاً 1,500,000"
           />
