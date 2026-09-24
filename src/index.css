@@ -9,26 +9,31 @@
   background: #f4f7fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-soft: #eff6ff;
-  --page-bg: #f4f7fb;
-  --surface: #ffffff;
-  --surface-soft: #f8fafc;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --muted: #64748b;
-  --text: #0f172a;
-  --text-soft: #475569;
-  --radius: 0.8rem;
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.035);
-  --shadow-md: 0 12px 32px rgb(15 23 42 / 0.07);
+  --ui-primary: #2563eb;
+  --ui-primary-hover: #1d4ed8;
+  --ui-primary-soft: #eff6ff;
+  --ui-text: #0f172a;
+  --ui-text-soft: #475569;
+  --ui-muted: #64748b;
+  --ui-border: #e2e8f0;
+  --ui-border-hover: #cbd5e1;
+  --ui-surface: #fff;
+  --ui-surface-muted: #f8fafc;
+  --ui-danger: #dc2626;
+  --ui-danger-soft: #fef2f2;
+  --ui-radius: 10px;
+  --ui-card-radius: 16px;
+  --ui-control-height: 42px;
+  --ui-control-height-sm: 36px;
+  --ui-page-max: 1600px;
+  --ui-page-x: clamp(16px, 2.4vw, 32px);
+  --ui-shadow-sm: 0 1px 2px rgb(15 23 42 / .035), 0 8px 24px rgb(15 23 42 / .035);
 }
 
 * { box-sizing: border-box; }
 html, body, #root { min-height: 100%; margin: 0; }
-html { background: var(--page-bg); }
-body { min-width: 320px; min-height: 100vh; background: var(--page-bg); color: var(--text); }
+html, body { background: #f4f7fb; }
+body { min-width: 320px; min-height: 100vh; color: var(--ui-text); }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
@@ -39,272 +44,119 @@ button:disabled { cursor: not-allowed; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-main section.space-y-6 {
-  max-width: 1600px;
-  margin-inline: auto;
-  padding: 1.5rem clamp(1rem, 2.4vw, 2rem) 2.25rem;
-}
-
-main section.space-y-6 > div:first-child {
-  min-height: 58px;
-  align-items: center;
-}
-
-main section.space-y-6 > div:first-child h1,
-main h1 {
-  letter-spacing: -0.025em;
-  color: #0f172a;
-}
-
-main h1 + p,
-main section.space-y-6 > div:first-child > div:first-child > p,
-main section.space-y-6 > div:first-child > p {
-  display: none !important;
-}
-
-main section button.rounded-lg {
-  border-radius: var(--radius) !important;
-  min-height: 42px;
-  font-weight: 600;
-  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-}
-
-main section button.bg-gray-900,
-main .bg-gray-900 {
-  background: var(--primary) !important;
-  box-shadow: 0 6px 18px rgb(37 99 235 / 0.14);
-}
-
-main section button.bg-gray-900:hover,
-main .hover\:bg-gray-800:hover {
-  background: var(--primary-dark) !important;
-  box-shadow: 0 8px 22px rgb(37 99 235 / 0.18);
-}
-
-main section button.border-gray-300 {
-  border-color: var(--border-strong) !important;
-  background: var(--surface);
-}
-
-main section button.border-gray-300:hover {
-  background: var(--surface-soft) !important;
-  border-color: #94a3b8 !important;
-}
-
-main section input,
-main section textarea,
-main section select {
-  border-radius: var(--radius) !important;
-  border-color: var(--border) !important;
-  background: var(--surface) !important;
-  color: var(--text);
-  min-height: 42px;
-  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
-}
-
-main section input:hover,
-main section textarea:hover,
-main section select:hover { border-color: #cbd5e1 !important; }
-
-main section input:focus,
-main section textarea:focus,
-main section select:focus {
-  border-color: #93c5fd !important;
-  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08) !important;
-  outline: none;
-}
-
-main section label { color: var(--text-soft); font-weight: 500; }
-
-main section .rounded-lg.border.border-gray-200.bg-white,
-main section .rounded-xl.border.border-gray-200.bg-white,
-main section .rounded-lg.border.border-gray-300.bg-white,
-main section .rounded-xl.border.border-gray-300.bg-white {
-  border-color: var(--border) !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow-sm);
-}
-
-main section .bg-gray-50 { background: var(--surface-soft) !important; }
-
-main section .overflow-x-auto {
-  border-radius: 16px;
-  scrollbar-width: thin;
-  background: var(--surface);
-}
-
-main section table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 720px;
-}
-
-main section table thead { background: var(--surface-soft); }
-main section table th {
-  color: #64748b !important;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-main section table th,
-main section table td { border-color: #eef2f7 !important; }
-
-main section table tbody tr { transition: background-color 120ms ease; }
-main section table tbody tr:hover { background: #f8fafc !important; }
-main section span.rounded-full { white-space: nowrap; }
-
-main section [role="alert"] {
-  border: 1px solid #fecaca;
-  border-radius: 14px !important;
-  box-shadow: none !important;
-}
-
-main section > div:last-child button.border-gray-300 { min-width: 82px; }
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 3px solid rgb(37 99 235 / 0.22);
-  outline-offset: 2px;
-}
-
-@media (max-width: 1023px) {
-  main section.space-y-6 { padding-top: 1.25rem; }
-}
-
-@media (max-width: 639px) {
-  body { overflow-x: hidden; }
-  main section.space-y-6 { padding: 1rem 0.875rem 1.5rem; }
-  main section.space-y-6 > div:first-child { gap: 0.75rem; min-height: auto; }
-  main section.space-y-6 > div:first-child h1,
-  main h1 { font-size: 1.375rem; }
-  main section.space-y-6 > div:first-child > div:last-child { width: 100%; }
-  main section.space-y-6 > div:first-child > div:last-child > button { flex: 1; }
-  main section table { min-width: 680px; }
-}
-
-.bg-gray-900 { background-color: var(--primary) !important; }
-.hover\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
-.focus\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
-
-/* -------------------------------------------------------------------------- */
-/* Unified application UI system                                              */
-/* -------------------------------------------------------------------------- */
-
-:root {
-  --ui-primary: #2563eb;
-  --ui-primary-hover: #1d4ed8;
-  --ui-primary-soft: #eff6ff;
-  --ui-text: #0f172a;
-  --ui-text-muted: #64748b;
-  --ui-border: #e2e8f0;
-  --ui-border-hover: #cbd5e1;
-  --ui-surface: #ffffff;
-  --ui-surface-muted: #f8fafc;
-  --ui-danger: #dc2626;
-  --ui-radius: 10px;
-  --ui-control-height: 42px;
-  --ui-control-height-sm: 36px;
-}
-
-/* Page shell: all feature pages use the same rhythm regardless of space-y-4/5/6. */
 main section[class*="space-y-"] {
   width: 100%;
-  max-width: 1600px;
+  max-width: var(--ui-page-max);
   margin-inline: auto;
-  padding: 24px clamp(16px, 2.4vw, 32px) 36px;
+  padding: 24px var(--ui-page-x) 36px;
 }
 
-/* Consistent page heading. */
 main section[class*="space-y-"] > header:first-child,
 main section[class*="space-y-"] > div:first-child {
   min-height: 58px;
   align-items: center;
+  gap: 12px;
 }
 
 main section[class*="space-y-"] h1 {
+  margin: 0;
   color: var(--ui-text);
   font-size: 1.5rem;
   line-height: 1.35;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -.02em;
 }
+main section[class*="space-y-"] h2 { color: var(--ui-text); font-weight: 700; }
+main section[class*="space-y-"] p { color: var(--ui-muted); }
+main h1 + p { display: block; }
 
-main section[class*="space-y-"] h2 {
-  color: var(--ui-text);
-  font-weight: 700;
-}
-
-/* Primary/secondary/danger controls share one geometry everywhere. */
-main section[class*="space-y-"] button {
+main section[class*="space-y-"] button,
+[role="dialog"] button {
   min-height: var(--ui-control-height);
   border-radius: var(--ui-radius) !important;
   padding: 9px 14px;
-  font-size: 0.875rem;
+  font-size: .875rem;
   font-weight: 600;
   line-height: 1.4;
-  transition: background-color 150ms ease, border-color 150ms ease,
-    color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+main section[class*="space-y-"] button:not(:disabled):active,
+[role="dialog"] button:not(:disabled):active { transform: translateY(1px); }
+
+/* Default outlined actions only; semantic colored actions keep their color. */
+main section[class*="space-y-"] button[class~="border"],
+main section[class*="space-y-"] button[class~="border-gray-200"],
+main section[class*="space-y-"] button[class~="border-gray-300"],
+main section[class~="border"],
+main section[class*="space-y-"] button[class~="border-slate-200"],
+[role="dialog"] button[class~="border"],
+[role="dialog"] button[class~="border-gray-200"],
+[role="dialog"] button[class~="border-gray-300"],
+[role="dialog"] button[class~="border-slate-200"] {
+  border-color: var(--ui-border-hover);
+  background: var(--ui-surface);
+  color: var(--ui-text-soft);
+}
+main section[class*="space-y-"] button[class~="border"]:hover,
+main section[class*="space-y-"] button[class~="border-gray-200"]:hover,
+main section[class*="space-y-"] button[class~="border-gray-300"]:hover,
+main section[class*="space-y-"] button[class~="border-slate-200"]:hover,
+[role="dialog"] button[class~="border"]:hover,
+[role="dialog"] button[class~="border-gray-200"]:hover,
+[role="dialog"] button[class~="border-gray-300"]:hover,
+[role="dialog"] button[class~="border-slate-200"]:hover {
+  border-color: #94a3b8;
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
 }
 
-main section[class*="space-y-"] button:not(:disabled):active {
-  transform: translateY(1px);
-}
-
+/* Primary actions. */
 main section[class*="space-y-"] button.bg-gray-900,
-main section[class*="space-y-"] button[class*="bg-blue-"] {
+main section[class*="space-y-"] button[class*="bg-blue-"],
+[role="dialog"] button.bg-gray-900,
+[role="dialog"] button[class*="bg-blue-"] {
   background: var(--ui-primary) !important;
   border-color: var(--ui-primary) !important;
   color: #fff !important;
-  box-shadow: 0 5px 14px rgb(37 99 235 / 0.14);
+  box-shadow: 0 5px 14px rgb(37 99 235 / .14);
 }
-
 main section[class*="space-y-"] button.bg-gray-900:hover,
-main section[class*="space-y-"] button[class*="hover:bg-blue-"]:hover {
+main section[class*="space-y-"] button[class*="bg-blue-"]:hover,
+[role="dialog"] button.bg-gray-900:hover,
+[role="dialog"] button[class*="bg-blue-"]:hover {
   background: var(--ui-primary-hover) !important;
   border-color: var(--ui-primary-hover) !important;
-  box-shadow: 0 7px 18px rgb(37 99 235 / 0.18);
 }
 
-main section[class*="space-y-"] button.border,
-main section[class*="space-y-"] button[class*="border-"] {
-  border-color: var(--ui-border-hover);
-  background: var(--ui-surface);
-  color: #475569;
+/* Danger actions. */
+main section[class*="space-y-"] button[class*="border-red-"],
+main section[class*="space-y-"] button[class*="border-rose-"],
+[role="dialog"] button[class*="border-red-"],
+[role="dialog"] button[class*="border-rose-"] {
+  border-color: #fecaca !important;
+  background: #fff !important;
+  color: var(--ui-danger) !important;
 }
-
-main section[class*="space-y-"] button.border:hover,
-main section[class*="space-y-"] button[class*="border-"]:hover {
-  border-color: #94a3b8;
-  background: var(--ui-surface-muted);
-  color: #0f172a;
+main section[class*="space-y-"] button[class*="border-red-"]:hover,
+main section[class*="space-y-"] button[class*="border-rose-"]:hover,
+[role="dialog"] button[class*="border-red-"]:hover,
+[role="dialog"] button[class*="border-rose-"]:hover {
+  border-color: #fca5a5 !important;
+  background: var(--ui-danger-soft) !important;
+  color: #b91c1c !important;
 }
+main section[class*="space-y-"] button:disabled,
+[role="dialog"] button:disabled { opacity: .55; box-shadow: none; transform: none; }
 
-main section[class*="space-y-"] button.text-red-600,
-main section[class*="space-y-"] button[class*="text-red-"] {
-  color: var(--ui-danger);
-}
-
-main section[class*="space-y-"] button:disabled {
-  opacity: 0.55;
-  box-shadow: none;
-  transform: none;
-}
-
-/* Table action clusters: never allow adjacent action buttons to visually touch. */
-main section[class*="space-y-"] table td:last-child > div.flex,
-main section[class*="space-y-"] table td:last-child > div[class*="flex"] {
+/* Action spacing: View / Edit / Delete / status actions never touch. */
+main section[class*="space-y-"] table td:last-child > div[class*="flex"],
+main section[class*="space-y-"] [data-action-group],
+main section[class*="space-y-"] header > div[class*="flex"] {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px !important;
 }
-
 main section[class*="space-y-"] table td:last-child button {
   min-height: var(--ui-control-height-sm);
   padding: 7px 11px;
@@ -312,168 +164,134 @@ main section[class*="space-y-"] table td:last-child button {
   white-space: nowrap;
   flex: 0 0 auto;
 }
+main section[class*="space-y-"] table td:last-child button + button { margin-inline-start: 0 !important; }
 
-main section[class*="space-y-"] table td:last-child button + button {
-  margin-inline-start: 0 !important;
-}
-
-/* Pagination/action toolbars use the same spacing. */
-main section[class*="space-y-"] > div[class*="justify-center"],
-main section[class*="space-y-"] > div[class*="justify-between"],
-main section[class*="space-y-"] > header > div[class*="flex"],
-main section[class*="space-y-"] > div > div[class*="flex"] {
-  gap: 8px;
-}
-
-/* Inputs/selects/textareas: one control height, radius, border and focus treatment. */
+/* Inputs / selects / textareas. */
 main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]),
 main section[class*="space-y-"] select,
-main section[class*="space-y-"] textarea {
+main section[class*="space-y-"] textarea,
+[role="dialog"] input:not([type="checkbox"]):not([type="radio"]),
+[role="dialog"] select,
+[role="dialog"] textarea {
+  width: 100%;
   min-height: var(--ui-control-height);
   border: 1px solid var(--ui-border) !important;
   border-radius: var(--ui-radius) !important;
   background: var(--ui-surface) !important;
   color: var(--ui-text);
   padding: 9px 12px;
-  font-size: 0.875rem;
+  font-size: .875rem;
   line-height: 1.5;
   box-shadow: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
-
-main section[class*="space-y-"] textarea {
-  min-height: 96px;
-  resize: vertical;
-}
-
+main section[class*="space-y-"] textarea, [role="dialog"] textarea { min-height: 96px; resize: vertical; }
 main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):hover,
 main section[class*="space-y-"] select:hover,
-main section[class*="space-y-"] textarea:hover {
-  border-color: var(--ui-border-hover) !important;
-}
-
+main section[class*="space-y-"] textarea:hover,
+[role="dialog"] input:not([type="checkbox"]):not([type="radio"]):hover,
+[role="dialog"] select:hover,
+[role="dialog"] textarea:hover { border-color: var(--ui-border-hover) !important; }
 main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):focus,
 main section[class*="space-y-"] select:focus,
-main section[class*="space-y-"] textarea:focus {
+main section[class*="space-y-"] textarea:focus,
+[role="dialog"] input:not([type="checkbox"]):not([type="radio"]):focus,
+[role="dialog"] select:focus,
+[role="dialog"] textarea:focus {
   border-color: #93c5fd !important;
-  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08) !important;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / .08) !important;
   outline: none;
 }
-
 main section[class*="space-y-"] input::placeholder,
-main section[class*="space-y-"] textarea::placeholder {
-  color: #94a3b8;
-}
-
-/* Form labels and field groups. */
+main section[class*="space-y-"] textarea::placeholder,
+[role="dialog"] input::placeholder,
+[role="dialog"] textarea::placeholder { color: #94a3b8; }
 main section[class*="space-y-"] form label {
   display: inline-block;
   margin-bottom: 6px;
-  color: #475569;
-  font-size: 0.8125rem;
+  color: var(--ui-text-soft);
+  font-size: .8125rem;
   font-weight: 600;
 }
-
-main section[class*="space-y-"] form fieldset {
+main section[class*="space-y-"] form fieldset, [role="dialog"] form fieldset {
   border-color: var(--ui-border);
   border-radius: 14px;
 }
-
-main section[class*="space-y-"] form [role="alert"],
-main section[class*="space-y-"] [role="alert"] {
-  margin-top: 4px;
+main section[class*="space-y-"] input[type="checkbox"],
+main section[class*="space-y-"] input[type="radio"],
+[role="dialog"] input[type="checkbox"],
+[role="dialog"] input[type="radio"] {
+  width: 16px; height: 16px; min-height: 0; padding: 0;
+  accent-color: var(--ui-primary);
+}
+main section[class*="space-y-"] [role="alert"], [role="dialog"] [role="alert"] {
+  border: 1px solid #fecaca;
+  border-radius: 12px !important;
+  background: var(--ui-danger-soft);
+  color: #b91c1c;
 }
 
-/* Cards/filters/forms use one surface language. */
-main section[class*="space-y-"] > .rounded-lg.border.bg-white,
-main section[class*="space-y-"] > .rounded-xl.border.bg-white,
+/* Cards / tables. */
 main section[class*="space-y-"] .rounded-lg.border.bg-white,
-main section[class*="space-y-"] .rounded-xl.border.bg-white {
+main section[class*="space-y-"] .rounded-xl.border.bg-white,
+main section[class*="space-y-"] .rounded-2xl.border.bg-white {
   border-color: var(--ui-border) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.035), 0 8px 24px rgb(15 23 42 / 0.035);
+  border-radius: var(--ui-card-radius) !important;
+  box-shadow: var(--ui-shadow-sm);
 }
-
-/* Tables: same header, cells and outer frame on every feature. */
 main section[class*="space-y-"] .overflow-x-auto {
   overflow-x: auto;
   border: 1px solid var(--ui-border);
-  border-radius: 16px;
+  border-radius: var(--ui-card-radius);
   background: var(--ui-surface);
+  scrollbar-width: thin;
 }
-
 main section[class*="space-y-"] table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
-
-main section[class*="space-y-"] table thead {
-  background: var(--ui-surface-muted);
-}
-
+main section[class*="space-y-"] table thead { background: var(--ui-surface-muted); }
 main section[class*="space-y-"] table th {
   padding: 12px 16px;
-  color: #64748b !important;
-  font-size: 0.75rem;
+  color: var(--ui-muted) !important;
+  font-size: .75rem;
   font-weight: 700;
   white-space: nowrap;
 }
-
 main section[class*="space-y-"] table td {
   padding: 12px 16px;
   border-color: #eef2f7 !important;
   vertical-align: middle;
 }
-
-main section[class*="space-y-"] table tbody tr {
-  transition: background-color 120ms ease;
-}
-
-main section[class*="space-y-"] table tbody tr:hover {
-  background: #f8fafc !important;
-}
-
-/* Status pills remain compact and visually consistent. */
+main section[class*="space-y-"] table tbody tr { transition: background-color 120ms ease; }
+main section[class*="space-y-"] table tbody tr:hover { background: #f8fafc !important; }
 main section[class*="space-y-"] span.rounded-full {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   padding-inline: 9px;
-  font-size: 0.75rem;
+  white-space: nowrap;
+  font-size: .75rem;
   font-weight: 600;
 }
+main section[class*="space-y-"] .bg-gray-50 { background: var(--ui-surface-muted) !important; }
 
-/* Checkbox/radio controls must not inherit text-input sizing. */
-main section[class*="space-y-"] input[type="checkbox"],
-main section[class*="space-y-"] input[type="radio"] {
-  min-height: 0;
-  width: 16px;
-  height: 16px;
-  padding: 0;
-  accent-color: var(--ui-primary);
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid rgb(37 99 235 / .22);
+  outline-offset: 2px;
 }
 
-/* Small-screen layout remains touch friendly without oversized controls. */
+@media (max-width: 1023px) {
+  main section[class*="space-y-"] { padding-top: 20px; }
+}
 @media (max-width: 639px) {
-  main section[class*="space-y-"] {
-    padding: 16px 14px 24px;
-  }
-
-  main section[class*="space-y-"] h1 {
-    font-size: 1.3rem;
-  }
-
+  body { overflow-x: hidden; }
+  main section[class*="space-y-"] { padding: 16px 14px 24px; }
   main section[class*="space-y-"] > header:first-child,
-  main section[class*="space-y-"] > div:first-child {
-    min-height: auto;
-  }
-
-  main section[class*="space-y-"] table {
-    min-width: 680px;
-  }
-
-  main section[class*="space-y-"] table td:last-child > div.flex {
-    flex-wrap: wrap;
-  }
+  main section[class*="space-y-"] > div:first-child { min-height: auto; }
+  main section[class*="space-y-"] h1 { font-size: 1.3rem; }
+  main section[class*="space-y-"] table { min-width: 680px; }
+  main section[class*="space-y-"] header > div[class*="flex"] { width: 100%; }
+  main section[class*="space-y-"] header > div[class*="flex"] > button { flex: 1 1 auto; }
 }
-
