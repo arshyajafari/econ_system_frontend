@@ -64,7 +64,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
   useEffect(() => {
     let cancelled = false;
 
-    if (!customerId) {
+    if (!customerId || payment) {
       return () => { cancelled = true; };
     }
 
@@ -233,7 +233,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
       <div className="mt-5 flex gap-2">
         <button
           type="submit"
-          disabled={isSubmitting || !customerId || isLoadingBalance || customerBalance === null || customerBalance <= 0 || Boolean(receiptError)}
+          disabled={isSubmitting || !customerId || Boolean(receiptError) || (!payment && (isLoadingBalance || customerBalance === null || customerBalance <= 0))}
           className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "در حال ذخیره..." : "ذخیره پرداخت"}
