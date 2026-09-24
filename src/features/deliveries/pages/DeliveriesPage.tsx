@@ -417,6 +417,14 @@ export function DeliveriesPage() {
                     <div className="flex flex-wrap gap-2">
                       {canOperate ? (
                         <>
+                          <button
+                            type="button"
+                            disabled={detailsLoading}
+                            onClick={() => void openDetails(d)}
+                            className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            مشاهده
+                          </button>
                           {d.status === "pending" && (
                             <>
                               {canManageForm ? (
@@ -434,13 +442,6 @@ export function DeliveriesPage() {
                                 onClick={() => setActionTarget({ delivery: d, action: "prepare" })}
                                 className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                               >آماده‌سازی</button> : null}
-                              <button
-                                type="button"
-                                onClick={() => void openDetails(d)}
-                                className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-                              >
-                                مشاهده
-                              </button>
                               {canApproveDelivery ? <button
                                 type="button"
                                 disabled={actionId === d.id}
@@ -480,7 +481,7 @@ export function DeliveriesPage() {
                                     action: "cancel",
                                   })
                                 }
-                                className="rounded border px-2 py-1 text-xs"
+                                className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
                               >
                                 لغو
                               </button>
@@ -496,7 +497,7 @@ export function DeliveriesPage() {
                                   action: "complete",
                                 })
                               }
-                              className="rounded border px-2 py-1 text-xs"
+                              className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                             >
                               تحویل
                             </button>
