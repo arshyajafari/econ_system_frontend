@@ -12,6 +12,7 @@ export type SystemNotification = {
   target_type: "all" | "users" | "positions" | null;
   target_values: string[];
   can_manage: boolean;
+  is_sent: boolean;
 };
 
 export type NotificationPage = {
