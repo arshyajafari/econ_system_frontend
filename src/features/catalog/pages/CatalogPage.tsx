@@ -265,7 +265,7 @@ export function CatalogPage() {
                   className={`${inputClass} resize-none`}
                 />
               </div>
-              <label className="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3">
+              <label className="w-full flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3">
                 <span>
                   <span className="block text-sm font-medium text-gray-800">
                     وضعیت برند
@@ -284,10 +284,10 @@ export function CatalogPage() {
                   className="h-4 w-4 rounded border-gray-300"
                 />
               </label>
-              <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4">
+              <div className="w-full flex flex-wrap gap-2 pt-4">
                 <button
                   disabled={saving || !canEdit}
-                  className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
+                  className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingBrand ? "ذخیره تغییرات" : "افزودن برند"}
                 </button>
@@ -381,7 +381,7 @@ export function CatalogPage() {
                                 ),
                               )
                           }
-                          className="rounded-lg border border-yellow-200 bg-white px-2.5 py-1.5 text-xs font-medium text-yellow-700 hover:bg-gray-50"
+                          className="rounded-lg border border-orange-200 bg-white px-2.5 py-1.5 text-xs font-medium text-orange-700 hover:bg-gray-50"
                           disabled={!isAdmin}
                         >
                           {b.is_active ? "غیرفعال" : "فعال"}
@@ -473,7 +473,7 @@ export function CatalogPage() {
                 </div>
                 <div>
                   <label className={labelClass}>وضعیت</label>
-                  <div className="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-0.5">
+                  <div className="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-2.5">
                     <span className="text-sm font-medium text-gray-800">
                       فعال
                     </span>
@@ -508,10 +508,10 @@ export function CatalogPage() {
                   className={`${inputClass} resize-none`}
                 />
               </div>
-              <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-4">
+              <div className="w-full flex flex-wrap gap-2 border-gray-100 pt-4">
                 <button
                   disabled={saving || !canEdit}
-                  className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 disabled:opacity-50"
+                  className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingCategory ? "ذخیره تغییرات" : "افزودن دسته‌بندی"}
                 </button>
@@ -595,7 +595,7 @@ export function CatalogPage() {
                                   ),
                                 )
                             }
-                            className="rounded-lg border border-yellow-200 bg-white px-2.5 py-1.5 text-xs font-medium text-yellow-700 hover:bg-gray-50"
+                            className="rounded-lg border border-orange-200 bg-white px-2.5 py-1.5 text-xs font-medium text-orange-700 hover:bg-gray-50"
                             disabled={!isAdmin}
                           >
                             {c.is_active ? "غیرفعال" : "فعال"}
