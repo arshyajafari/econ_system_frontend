@@ -169,7 +169,7 @@ export function PaymentsPage() {
     setError(null);
     try {
       await confirmPayment(payment.id);
-      await Promise.all([loadPayments(), loadInvoices()]);
+      await loadPayments();
     } catch (error: unknown) {
       setError(
         error instanceof ApiError && error.message
