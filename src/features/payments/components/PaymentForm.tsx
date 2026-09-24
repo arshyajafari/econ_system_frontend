@@ -65,8 +65,6 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
     let cancelled = false;
 
     if (!customerId) {
-      setCustomerBalance(null);
-      setIsLoadingBalance(false);
       return () => { cancelled = true; };
     }
 
@@ -124,6 +122,7 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
     setAmount("");
     setSettlementDiscountAmount("0");
     setBalanceError(null);
+    setIsLoadingBalance(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
