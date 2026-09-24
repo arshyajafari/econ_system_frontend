@@ -64,39 +64,57 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
   useEffect(() => {
     let cancelled = false;
 
-    if (!customerId || payment) {
+    if (!customerId) {
+      setCustomerBalance(null);
+      setIsLoadingBalance(false);
       return () => { cancelled = true; };
     }
 
     async function loadBalance() {
       setIsLoadingBalance(true);
       setBalanceError(null);
+
       try {
         const balance = await getCustomerPayableBalance(customerId);
-        if (!cancelled) {
-          setCustomerBalance(balance);
-          if (!payment) {
-            setAmount(balance > 0 ? String(balance) : "");
-          } else {
-            setAmount((current) => {
-              const currentAmount = Number(current || 0);
-              return currentAmount > balance && balance >= 0 ? String(balance) : current;
-            });
-          }
+
+        if (cancelled) return;
+
+        setCustomerBalance(balance);
+
+        // For a new payment the server is the single source of truth.
+        // Always replace the initial/stale amount with the freshly fetched
+        // customer balance. The user can then reduce it for a partial payment.
+        if (!payment) {
+          setAmount(balance > 0 ? String(balance) : "");
+          setSettlementDiscountAmount("0");
+        } else {
+          // When editing, preserve the existing amount unless it is now above
+          // the customer's current payable balance.
+          setAmount((current) => {
+            const currentAmount = Number(current || 0);
+            return currentAmount > balance ? String(balance) : current;
+          });
         }
       } catch (requestError: unknown) {
-        if (!cancelled) {
-          setCustomerBalance(null);
-          setAmount("");
-          setBalanceError(requestError instanceof ApiError && requestError.message ? requestError.message : "خطا در دریافت مانده قابل پرداخت مشتری.");
-        }
+        if (cancelled) return;
+
+        setCustomerBalance(null);
+        setAmount("");
+        setBalanceError(
+          requestError instanceof ApiError && requestError.message
+            ? requestError.message
+            : "خطا در دریافت مانده قابل پرداخت مشتری.",
+        );
       } finally {
         if (!cancelled) setIsLoadingBalance(false);
       }
     }
 
-    const timeoutId = window.setTimeout(() => void loadBalance(), 0);
-    return () => { cancelled = true; window.clearTimeout(timeoutId); };
+    void loadBalance();
+
+    return () => {
+      cancelled = true;
+    };
   }, [customerId, payment]);
 
   function handleCustomerChange(nextCustomerId: string) {
