@@ -65,7 +65,7 @@ export function PaymentTable({
         <table className="min-w-[1150px] w-full text-sm">
           <thead className="bg-gray-50 text-right text-gray-600">
             <tr>
-              {["فاکتور", "مشتری", "مبلغ", "تخفیف تسویه", "روش", "وضعیت", "تاریخ", "عملیات"].map(
+              {["مشتری", "مبلغ", "تخفیف تسویه", "روش", "وضعیت", "تاریخ", "عملیات"].map(
                 (label) => (
                   <th key={label} className="px-4 py-3 font-medium">
                     {label}
@@ -77,9 +77,6 @@ export function PaymentTable({
           <tbody className="divide-y divide-gray-100">
             {payments.map((payment) => (
               <tr key={payment.id}>
-                <td className="px-4 py-4 align-top">
-                  <div className="font-semibold text-gray-900">{payment.invoice?.code ?? "—"}</div>
-                </td>
                 <td className="px-4 py-4 align-top">
                   <div className="font-medium text-gray-800">{payment.customer?.name ?? "—"}</div>
                   {payment.customer?.code ? (

@@ -37,17 +37,6 @@ export type Payment = {
   updated_at: string | null;
 };
 
-export type PaymentInvoiceOption = PaymentInvoice & { customer: PaymentCustomer | null };
-
-export function isPayablePaymentInvoice(invoice: PaymentInvoice): boolean {
-  return (
-    invoice.status === "issued" &&
-    invoice.is_settled !== true &&
-    invoice.remaining_amount != null &&
-    Number(invoice.remaining_amount) > 0
-  );
-}
-
 export type PaymentListParams = {
   invoice_id?: string;
   customer_id?: string;
@@ -66,7 +55,7 @@ export type PaymentPaginationLinks = { first: string | null; last: string | null
 export type PaymentListResponse = { data: Payment[]; links: PaymentPaginationLinks; meta: PaymentPaginationMeta };
 
 export type PaymentFormData = {
-  invoice_id: string;
+  customer_id: string;
   method: PaymentMethod;
   amount: string;
   settlement_discount_amount: string;
@@ -92,7 +81,7 @@ export const PAYMENT_METHOD_OPTIONS = [
 export function getPaymentStatusLabel(status: PaymentStatus): string {
   return PAYMENT_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
 }
-export function getPaymentMethodLabel(method: PaymentMethod): string {
-  return PAYMENT_METHOD_OPTIONS.find((option) => option.value === method)?.label ?? method;
+export function getPaymentMethodLabel(status: PaymentMethod): string {
+  return PAYMENT_METHOD_OPTIONS.find((option) => option.value === status)?.label ?? status;
 }
 export function canEditPayment(status: PaymentStatus): boolean { return status === "pending"; }
