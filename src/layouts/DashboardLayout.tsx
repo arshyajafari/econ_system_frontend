@@ -4,7 +4,7 @@ import { getUnreadNotificationCount } from "../features/notifications/api/notifi
 import { useAuth } from "../features/auth";
 import { EmployeeLocationShare } from "../features/employee_locations/components/EmployeeLocationShare";
 
-type IconName = "dashboard"|"reports"|"customers"|"doctors"|"employees"|"catalog"|"products"|"orders"|"invoices"|"visits"|"samples"|"deliveries"|"inventory"|"returns"|"payments";
+type IconName = "dashboard"|"reports"|"customers"|"doctors"|"employees"|"catalog"|"products"|"orders"|"invoices"|"visits"|"samples"|"deliveries"|"inventory"|"returns"|"payments"|"expenses";
 type NavConfig = { label: string; to: string; icon: IconName; requiredPermission?: string; adminOnly?: boolean };
 const navigation: NavConfig[] = [
   { label: "داشبورد", to: "/dashboard", icon: "dashboard", requiredPermission: "dashboard.view" },
@@ -25,6 +25,7 @@ const navigation: NavConfig[] = [
   { label: "موجودی ویزیتور علمی", to: "/scientific-inventory", icon: "inventory" },
   { label: "مرجوعی‌ها", to: "/order-returns", icon: "returns", requiredPermission: "order_returns.view" },
   { label: "پرداخت‌ها", to: "/payments", icon: "payments", requiredPermission: "payments.view" },
+  { label: "هزینه‌ها", to: "/expenses", icon: "expenses", requiredPermission: "expenses.view" },
 ];
 
 function Icon({ name, size = 20 }: { name: IconName | "bell" | "search" | "menu" | "chevron-left" | "chevron-right"; size?: number }) {
@@ -45,6 +46,7 @@ function Icon({ name, size = 20 }: { name: IconName | "bell" | "search" | "menu"
     inventory: <><path d="m4 7 8-4 8 4-8 4-8-4Z"/><path d="M4 7v10l8 4 8-4V7"/><path d="M8 9v8M16 9v8"/></>,
     returns: <><path d="M9 7H4v5"/><path d="M4 12a8 8 0 1 0 3-6"/><path d="m4 12 3-3"/></>,
     payments: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></>,
+    expenses: <><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></>,
     bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></>,
     search: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,
     menu: <><path d="M4 6h16M4 12h16M4 18h16"/></>,
