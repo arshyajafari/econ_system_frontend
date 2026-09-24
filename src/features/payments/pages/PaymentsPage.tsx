@@ -151,7 +151,7 @@ export function PaymentsPage() {
       setError(null);
       try {
         await cancelPayment(payment.id);
-        await Promise.all([loadPayments(), loadInvoices()]);
+        await loadPayments();
       } catch (error: unknown) {
         setError(
           error instanceof ApiError && error.message
@@ -192,9 +192,6 @@ export function PaymentsPage() {
     if (!canConfirmPayment) return;
     void executeAction(payment, action);
   }
-
-  // Creating a payment is a role permission, not dependent on whether invoice options have finished loading.
-  // The form itself handles an empty invoice list and shows the appropriate state.
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -245,7 +242,6 @@ export function PaymentsPage() {
         <PaymentForm
           key={editingPayment?.id ?? "new"}
           payment={editingPayment}
-          invoices={invoices}
           isSubmitting={isSubmitting}
           error={formError}
           onSubmit={(data) => void handleSubmit(data)}
