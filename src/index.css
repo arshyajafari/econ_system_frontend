@@ -191,3 +191,289 @@ select:focus-visible {
 .bg-gray-900 { background-color: var(--primary) !important; }
 .hover\:bg-gray-800:hover { background-color: var(--primary-dark) !important; }
 .focus\:ring-gray-200:focus { --tw-ring-color: #dbeafe !important; }
+
+/* -------------------------------------------------------------------------- */
+/* Unified application UI system                                              */
+/* -------------------------------------------------------------------------- */
+
+:root {
+  --ui-primary: #2563eb;
+  --ui-primary-hover: #1d4ed8;
+  --ui-primary-soft: #eff6ff;
+  --ui-text: #0f172a;
+  --ui-text-muted: #64748b;
+  --ui-border: #e2e8f0;
+  --ui-border-hover: #cbd5e1;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #f8fafc;
+  --ui-danger: #dc2626;
+  --ui-radius: 10px;
+  --ui-control-height: 42px;
+  --ui-control-height-sm: 36px;
+}
+
+/* Page shell: all feature pages use the same rhythm regardless of space-y-4/5/6. */
+main section[class*="space-y-"] {
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+  padding: 24px clamp(16px, 2.4vw, 32px) 36px;
+}
+
+/* Consistent page heading. */
+main section[class*="space-y-"] > header:first-child,
+main section[class*="space-y-"] > div:first-child {
+  min-height: 58px;
+  align-items: center;
+}
+
+main section[class*="space-y-"] h1 {
+  color: var(--ui-text);
+  font-size: 1.5rem;
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+main section[class*="space-y-"] h2 {
+  color: var(--ui-text);
+  font-weight: 700;
+}
+
+/* Primary/secondary/danger controls share one geometry everywhere. */
+main section[class*="space-y-"] button {
+  min-height: var(--ui-control-height);
+  border-radius: var(--ui-radius) !important;
+  padding: 9px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  transition: background-color 150ms ease, border-color 150ms ease,
+    color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+main section[class*="space-y-"] button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+main section[class*="space-y-"] button.bg-gray-900,
+main section[class*="space-y-"] button[class*="bg-blue-"] {
+  background: var(--ui-primary) !important;
+  border-color: var(--ui-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.14);
+}
+
+main section[class*="space-y-"] button.bg-gray-900:hover,
+main section[class*="space-y-"] button[class*="hover:bg-blue-"]:hover {
+  background: var(--ui-primary-hover) !important;
+  border-color: var(--ui-primary-hover) !important;
+  box-shadow: 0 7px 18px rgb(37 99 235 / 0.18);
+}
+
+main section[class*="space-y-"] button.border,
+main section[class*="space-y-"] button[class*="border-"] {
+  border-color: var(--ui-border-hover);
+  background: var(--ui-surface);
+  color: #475569;
+}
+
+main section[class*="space-y-"] button.border:hover,
+main section[class*="space-y-"] button[class*="border-"]:hover {
+  border-color: #94a3b8;
+  background: var(--ui-surface-muted);
+  color: #0f172a;
+}
+
+main section[class*="space-y-"] button.text-red-600,
+main section[class*="space-y-"] button[class*="text-red-"] {
+  color: var(--ui-danger);
+}
+
+main section[class*="space-y-"] button:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Table action clusters: never allow adjacent action buttons to visually touch. */
+main section[class*="space-y-"] table td:last-child > div.flex,
+main section[class*="space-y-"] table td:last-child > div[class*="flex"] {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px !important;
+}
+
+main section[class*="space-y-"] table td:last-child button {
+  min-height: var(--ui-control-height-sm);
+  padding: 7px 11px;
+  border-radius: 8px !important;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+main section[class*="space-y-"] table td:last-child button + button {
+  margin-inline-start: 0 !important;
+}
+
+/* Pagination/action toolbars use the same spacing. */
+main section[class*="space-y-"] > div[class*="justify-center"],
+main section[class*="space-y-"] > div[class*="justify-between"],
+main section[class*="space-y-"] > header > div[class*="flex"],
+main section[class*="space-y-"] > div > div[class*="flex"] {
+  gap: 8px;
+}
+
+/* Inputs/selects/textareas: one control height, radius, border and focus treatment. */
+main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]),
+main section[class*="space-y-"] select,
+main section[class*="space-y-"] textarea {
+  min-height: var(--ui-control-height);
+  border: 1px solid var(--ui-border) !important;
+  border-radius: var(--ui-radius) !important;
+  background: var(--ui-surface) !important;
+  color: var(--ui-text);
+  padding: 9px 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  box-shadow: none;
+}
+
+main section[class*="space-y-"] textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):hover,
+main section[class*="space-y-"] select:hover,
+main section[class*="space-y-"] textarea:hover {
+  border-color: var(--ui-border-hover) !important;
+}
+
+main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):focus,
+main section[class*="space-y-"] select:focus,
+main section[class*="space-y-"] textarea:focus {
+  border-color: #93c5fd !important;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08) !important;
+  outline: none;
+}
+
+main section[class*="space-y-"] input::placeholder,
+main section[class*="space-y-"] textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Form labels and field groups. */
+main section[class*="space-y-"] form label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+main section[class*="space-y-"] form fieldset {
+  border-color: var(--ui-border);
+  border-radius: 14px;
+}
+
+main section[class*="space-y-"] form [role="alert"],
+main section[class*="space-y-"] [role="alert"] {
+  margin-top: 4px;
+}
+
+/* Cards/filters/forms use one surface language. */
+main section[class*="space-y-"] > .rounded-lg.border.bg-white,
+main section[class*="space-y-"] > .rounded-xl.border.bg-white,
+main section[class*="space-y-"] .rounded-lg.border.bg-white,
+main section[class*="space-y-"] .rounded-xl.border.bg-white {
+  border-color: var(--ui-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.035), 0 8px 24px rgb(15 23 42 / 0.035);
+}
+
+/* Tables: same header, cells and outer frame on every feature. */
+main section[class*="space-y-"] .overflow-x-auto {
+  overflow-x: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+}
+
+main section[class*="space-y-"] table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+main section[class*="space-y-"] table thead {
+  background: var(--ui-surface-muted);
+}
+
+main section[class*="space-y-"] table th {
+  padding: 12px 16px;
+  color: #64748b !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+main section[class*="space-y-"] table td {
+  padding: 12px 16px;
+  border-color: #eef2f7 !important;
+  vertical-align: middle;
+}
+
+main section[class*="space-y-"] table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+main section[class*="space-y-"] table tbody tr:hover {
+  background: #f8fafc !important;
+}
+
+/* Status pills remain compact and visually consistent. */
+main section[class*="space-y-"] span.rounded-full {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding-inline: 9px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Checkbox/radio controls must not inherit text-input sizing. */
+main section[class*="space-y-"] input[type="checkbox"],
+main section[class*="space-y-"] input[type="radio"] {
+  min-height: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  accent-color: var(--ui-primary);
+}
+
+/* Small-screen layout remains touch friendly without oversized controls. */
+@media (max-width: 639px) {
+  main section[class*="space-y-"] {
+    padding: 16px 14px 24px;
+  }
+
+  main section[class*="space-y-"] h1 {
+    font-size: 1.3rem;
+  }
+
+  main section[class*="space-y-"] > header:first-child,
+  main section[class*="space-y-"] > div:first-child {
+    min-height: auto;
+  }
+
+  main section[class*="space-y-"] table {
+    min-width: 680px;
+  }
+
+  main section[class*="space-y-"] table td:last-child > div.flex {
+    flex-wrap: wrap;
+  }
+}
+
