@@ -30,8 +30,9 @@ export function CustomersPage() {
   const permissions = user?.permissions ?? [];
   const isAdmin = roles.includes("admin");
   const isSettlementOperator = roles.includes("settlement operator");
-  const canCreateCustomer = isAdmin || permissions.includes("customers.create");
-  const canEditCustomer = !isSettlementOperator && (isAdmin || permissions.includes("customers.update"));
+  const isAccountant = roles.includes("accountant");
+  const canCreateCustomer = isAdmin || isAccountant;
+  const canEditCustomer = !isSettlementOperator && (isAdmin || isAccountant);
   const canChangeCustomerStatus = isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
