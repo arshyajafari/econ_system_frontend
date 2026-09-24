@@ -13,6 +13,7 @@ import {
   prepareDelivery,
   shipDelivery,
   updateDelivery,
+  getDelivery,
 } from "../services/deliveriesApi";
 import {
   DELIVERY_STATUS_OPTIONS,
@@ -56,6 +57,8 @@ export function DeliveriesPage() {
     [actionId, setActionId] = useState<string | null>(null),
     [form, setForm] = useState<DeliveryFormData>(empty),
     [editing, setEditing] = useState<Delivery | null>(null),
+    [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null),
+    [detailsLoading, setDetailsLoading] = useState(false),
     [actionTarget, setActionTarget] = useState<{
       delivery: Delivery;
       action: "prepare" | "ship" | "complete" | "cancel";
@@ -176,6 +179,19 @@ export function DeliveriesPage() {
       setActionId(null);
     }
   };
+  const openDetails = async (d: Delivery) => {
+    setDetailsLoading(true);
+    setError(null);
+    try {
+      const details = await getDelivery(d.id);
+      setSelectedDelivery(details);
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در دریافت جزئیات ارسال.");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   const startEdit = (d: Delivery) => {
     setEditing(d);
     setForm({
@@ -401,13 +417,21 @@ export function DeliveriesPage() {
                     <div className="flex flex-wrap gap-2">
                       {canOperate ? (
                         <>
+                          <button
+                            type="button"
+                            disabled={detailsLoading}
+                            onClick={() => void openDetails(d)}
+                            className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            مشاهده
+                          </button>
                           {d.status === "pending" && (
                             <>
                               {canManageForm ? (
                                 <button
                                   type="button"
                                   onClick={() => startEdit(d)}
-                                  className="rounded border px-2 py-1 text-xs"
+                                  className="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                   ویرایش
                                 </button>
@@ -416,7 +440,7 @@ export function DeliveriesPage() {
                                 type="button"
                                 disabled={actionId === d.id}
                                 onClick={() => setActionTarget({ delivery: d, action: "prepare" })}
-                                className="rounded border px-2 py-1 text-xs"
+                                className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                               >آماده‌سازی</button> : null}
                               {canApproveDelivery ? <button
                                 type="button"
@@ -427,7 +451,7 @@ export function DeliveriesPage() {
                                     action: "cancel",
                                   })
                                 }
-                                className="rounded border px-2 py-1 text-xs"
+                                className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
                               >
                                 لغو
                               </button> : null}
@@ -444,7 +468,7 @@ export function DeliveriesPage() {
                                     action: "ship",
                                   })
                                 }
-                                className="rounded border px-2 py-1 text-xs"
+                                className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                               >
                                 ارسال
                               </button>
@@ -457,7 +481,7 @@ export function DeliveriesPage() {
                                     action: "cancel",
                                   })
                                 }
-                                className="rounded border px-2 py-1 text-xs"
+                                className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
                               >
                                 لغو
                               </button>
@@ -473,7 +497,7 @@ export function DeliveriesPage() {
                                   action: "complete",
                                 })
                               }
-                              className="rounded border px-2 py-1 text-xs"
+                              className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                             >
                               تحویل
                             </button>
@@ -516,6 +540,34 @@ export function DeliveriesPage() {
           </button>
         </div>
       )}
+      {selectedDelivery ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="delivery-details-title">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b px-5 py-4">
+              <div>
+                <h2 id="delivery-details-title" className="text-lg font-bold text-gray-900">جزئیات ارسال</h2>
+                <p className="mt-1 text-sm text-gray-500">{selectedDelivery.order?.code ?? "بدون سفارش"}</p>
+              </div>
+              <button type="button" onClick={() => setSelectedDelivery(null)} className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">بستن</button>
+            </div>
+            <div className="grid gap-4 p-5 md:grid-cols-2">
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">وضعیت</div><div className="mt-1 font-semibold">{getDeliveryStatusLabel(selectedDelivery.status)}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">مشتری</div><div className="mt-1 font-semibold">{selectedDelivery.customer?.name ?? "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">کارمند</div><div className="mt-1 font-semibold">{selectedDelivery.employee?.name ?? "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">گیرنده</div><div className="mt-1 font-semibold">{selectedDelivery.recipient_name || "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">تلفن گیرنده</div><div dir="ltr" className="mt-1 text-right font-semibold">{selectedDelivery.recipient_phone || "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4"><div className="text-xs text-gray-500">استان / شهر</div><div className="mt-1 font-semibold">{[selectedDelivery.province, selectedDelivery.city].filter(Boolean).join(" / ") || "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4 md:col-span-2"><div className="text-xs text-gray-500">آدرس</div><div className="mt-1 leading-7">{selectedDelivery.address || "—"}</div></div>
+              <div className="rounded-xl bg-gray-50 p-4 md:col-span-2"><div className="text-xs text-gray-500">توضیحات</div><div className="mt-1 leading-7">{selectedDelivery.description || "—"}</div></div>
+              <div className="rounded-xl border p-4"><div className="text-xs text-gray-500">زمان ایجاد</div><div className="mt-1">{formatJalaliDateTime(selectedDelivery.created_at)}</div></div>
+              <div className="rounded-xl border p-4"><div className="text-xs text-gray-500">آماده‌سازی</div><div className="mt-1">{formatJalaliDateTime(selectedDelivery.prepared_at)}</div></div>
+              <div className="rounded-xl border p-4"><div className="text-xs text-gray-500">ارسال</div><div className="mt-1">{formatJalaliDateTime(selectedDelivery.shipped_at)}</div></div>
+              <div className="rounded-xl border p-4"><div className="text-xs text-gray-500">تحویل</div><div className="mt-1">{formatJalaliDateTime(selectedDelivery.delivered_at)}</div></div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <ConfirmModal
         open={actionTarget !== null}
         title="تأیید عملیات ارسال"
