@@ -184,7 +184,7 @@ export function CatalogPage() {
           onClick={() => void load()}
           className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
         >
-          ↻ بروزرسانی
+          بروزرسانی
         </button>
       </header>
       {error && (
