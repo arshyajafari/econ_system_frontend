@@ -165,7 +165,9 @@ export function ExpensesPage() {
       } else {
         await createExpense(form);
       }
-      closeForm();
+      setFormOpen(false);
+      setEditingExpense(null);
+      setFormError(null);
       await load();
     } catch (requestError: unknown) {
       setFormError(
@@ -372,7 +374,7 @@ export function ExpensesPage() {
         </select>
         <select value={employeeId} onChange={(event) => { setEmployeeId(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
           <option value="">همه مسئولان</option>
-          {employees.map((employee) => <option key={employee.id} value={employee.id}>{employee.full_name ?? `${employee.first_name} ${employee.last_name}`}</option>)}
+          {employees.map((employee) => <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>)}
         </select>
         <input type="date" value={dateFrom} onChange={(event) => { setDateFrom(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="از تاریخ" />
         <input type="date" value={dateTo} onChange={(event) => { setDateTo(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="تا تاریخ" />
