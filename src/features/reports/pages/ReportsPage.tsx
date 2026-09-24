@@ -74,22 +74,22 @@ export function ReportsPage() {
           if (from <= to) void loadReport(from, to);
           else setError("تاریخ شروع باید قبل از تاریخ پایان باشد.");
         }}
-        className="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+        className="grid items-end gap-4 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-3"
       >
-        <label className="text-sm">
+        <label className="block text-sm">
           از تاریخ
           <JalaliDateInput
             value={from}
             onChange={setFrom}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
+            className="mt-2 w-full"
           />
         </label>
-        <label className="text-sm">
+        <label className="block text-sm">
           تا تاریخ
           <JalaliDateInput
             value={to}
             onChange={setTo}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
+            className="mt-2 w-full"
           />
         </label>
         <button
@@ -184,28 +184,44 @@ export function ReportsPage() {
               </dl>
             </div>
 
-            <div className="rounded-xl border bg-white p-4">
-              <h2 className="mb-4 font-semibold">پرفروش‌ترین محصولات</h2>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-semibold text-slate-900">پرفروش‌ترین محصولات</h2>
+                  <p className="mt-1 text-xs text-slate-400">بر اساس تعداد فروش در بازه انتخاب‌شده</p>
+                </div>
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  {money(report.top_products.length)} محصول
+                </span>
+              </div>
               {report.top_products.length === 0 ? (
-                <p className="text-sm text-gray-500">داده‌ای وجود ندارد.</p>
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+                  داده‌ای برای این بازه وجود ندارد.
+                </div>
               ) : (
-                <div className="divide-y">
+                <div className="space-y-2">
                   {report.top_products.map((product, index) => (
                     <div
                       key={product.id}
-                      className="flex items-center justify-between gap-3 py-3 text-sm"
+                      className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-3 transition hover:border-slate-200 hover:bg-white"
                     >
-                      <div>
-                        <span className="ml-2 text-gray-400">{index + 1}</span>
-                        <span className="font-medium">{product.title}</span>
-                        <span className="mr-2 text-xs text-gray-400">
-                          {product.code}
-                        </span>
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-500 shadow-sm ring-1 ring-slate-200">
+                        {index + 1}
                       </div>
-                      <div className="text-left">
-                        <div>{money(product.total_amount)} تومان</div>
-                        <div className="text-xs text-gray-400">
-                          {money(product.quantity)} عدد
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold text-slate-800">
+                          {product.title}
+                        </div>
+                        <div className="mt-1 text-xs text-slate-400">
+                          کد محصول: {product.code}
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-left">
+                        <div className="text-sm font-bold text-slate-800">
+                          {money(product.total_amount)} تومان
+                        </div>
+                        <div className="mt-1 inline-flex rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
+                          {money(product.quantity)} عدد فروش
                         </div>
                       </div>
                     </div>
