@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { getEmployees } from "../../employees/services/employeesApi";
@@ -147,7 +147,7 @@ export function ExpensesPage() {
     setFormError(null);
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (saving) return;
 
@@ -330,7 +330,7 @@ export function ExpensesPage() {
               >
                 <option value="">بدون ثبت شخص</option>
                 {employees.map((employee) => (
-                  <option key={employee.id} value={employee.id}>{employee.full_name ?? `${employee.first_name} ${employee.last_name}`}</option>
+                  <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>
                 ))}
               </select>
             </div>
