@@ -306,24 +306,6 @@ export function PaymentsPage() {
       />
 
       {<Pagination page={page} lastPage={lastPage} isLoading={isLoading} total={total} onPageChange={setPage} />}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50"
-          >
-            قبلی
-          </button>
-          <span className="text-sm text-gray-600">
-            صفحه {new Intl.NumberFormat("fa-IR").format(page)} از{" "}
-            {new Intl.NumberFormat("fa-IR").format(lastPage)}
-          </span>
-          <button
-            type="button"
-            disabled={page >= lastPage || isLoading}
-            onClick={() => setPage((current) => Math.min(lastPage, current + 1))}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50"
-          >
-            بعدی
-          </button>
-        </div>
-      ) : null}
-    </section>
+</section>
   );
 }
