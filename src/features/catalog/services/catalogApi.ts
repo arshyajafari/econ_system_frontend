@@ -8,7 +8,7 @@ export async function uploadBrandLogo(id: string, file: File): Promise<Brand> { 
 export async function deleteBrand(id: string): Promise<void> { await apiClient.delete(`/brands/${id}`); }
 export async function changeBrandActivity(id: string, is_active: boolean): Promise<Brand> { const r = await apiClient.patch<Brand>(`/brands/${id}/activity`, { is_active }); return r.data; }
 export async function getCategories(params: { search?: string; is_active?: boolean; parent_id?: string; page?: number; per_page?: number } = {}): Promise<CategoryListResponse> { const response = await apiClient.get<CategoryListResponse>("/product-categories", { params }); return response.data; }
-export async function getCategoryTree(): Promise<ProductCategory[]> { const r = await apiClient.get<{ data: ProductCategory[] }>("/product-categories/tree"); return r.data.data; }
+export async function getCategoryTree(): Promise<ProductCategory[]> { const r = await apiClient.get<ProductCategory[] | { data?: ProductCategory[] }>("/product-categories/tree"); const payload = r.data; return Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : []; }
 export async function createCategory(payload: CategoryFormData): Promise<ProductCategory> { const r = await apiClient.post<ProductCategory>("/product-categories", normalizeCategory(payload)); return r.data; }
 export async function updateCategory(id: string, payload: CategoryFormData): Promise<ProductCategory> { const r = await apiClient.put<ProductCategory>(`/product-categories/${id}`, normalizeCategory(payload)); return r.data; }
 export async function deleteCategory(id: string): Promise<void> { await apiClient.delete(`/product-categories/${id}`); }
