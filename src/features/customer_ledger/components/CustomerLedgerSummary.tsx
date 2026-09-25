@@ -1,3 +1,5 @@
+import { formatJalaliDate } from "../../../utils/date";
+
 type CustomerLedgerSummaryProps = {
   openingBalance: number | string;
   totalDebit: number | string;
@@ -27,6 +29,8 @@ export function CustomerLedgerSummary({
     ? formatJalaliDate(averageDueDate)
     : "—";
 
+  const averageDueDateLabel = averageDueDate ? formatJalaliDate(averageDueDate) : "—";
+
   const items = [
     {
       title: "مانده ابتدای بازه",
@@ -51,7 +55,7 @@ export function CustomerLedgerSummary({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
       {items.map((item) => (
         <div
           key={item.title}
@@ -59,7 +63,7 @@ export function CustomerLedgerSummary({
         >
           <p className="text-sm text-gray-500">{item.title}</p>
 
-          <p dir="ltr" className={`mt-2 text-xl font-bold ${item.valueClass}`}>
+          <p className={`mt-2 text-xl font-bold ${item.valueClass}`}>
             {item.value}
           </p>
         </div>
