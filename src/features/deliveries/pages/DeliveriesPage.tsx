@@ -448,7 +448,7 @@ export function DeliveriesPage() {
                           </button>
                           {d.status === "pending" && (
                             <>
-                              {canManageForm ? (
+                              {isAdmin ? (
                                 <button
                                   type="button"
                                   onClick={() => startEdit(d)}
