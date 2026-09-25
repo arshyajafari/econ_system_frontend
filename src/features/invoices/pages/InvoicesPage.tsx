@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../../api/client";
 import { formatJalaliDate } from "../../../utils/date";
@@ -116,7 +117,7 @@ export function InvoicesPage() {
         </table>
       </div>
 
-      {lastPage > 1 ? <div className="flex items-center justify-center gap-3"><button type="button" disabled={page <= 1 || loading} onClick={() => setPage((v) => Math.max(1, v - 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50">قبلی</button><span className="text-sm text-gray-600">صفحه {nf.format(page)} از {nf.format(lastPage)}</span><button type="button" disabled={page >= lastPage || loading} onClick={() => setPage((v) => Math.min(lastPage, v + 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50">بعدی</button></div> : null}
+      {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
     </section>
   );
 }
