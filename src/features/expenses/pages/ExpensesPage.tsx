@@ -588,7 +588,7 @@ export function ExpensesPage() {
                           type="button"
                           onClick={() => openEdit(expense)}
                           disabled={!isManager || deletingId !== null}
-                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                         >
                           ویرایش
                         </button>
@@ -597,7 +597,7 @@ export function ExpensesPage() {
                             type="button"
                             onClick={() => void handleDelete(expense)}
                             disabled={deletingId !== null}
-                            className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+                            className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                           >
                             {deletingId === expense.id
                               ? "در حال حذف..."

@@ -538,7 +538,7 @@ export function NotificationsPage() {
                               event.stopPropagation();
                               setDeleteTarget(notification);
                             }}
-                            className="rounded-lg border border-red-100 px-2 py-1 text-xs text-red-600"
+                            className="ui-btn-delete rounded-lg border px-2 py-1 text-xs"
                           >
                             حذف
                           </button>

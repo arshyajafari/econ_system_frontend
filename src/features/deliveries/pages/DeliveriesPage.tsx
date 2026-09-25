@@ -425,7 +425,7 @@ export function DeliveriesPage() {
                             type="button"
                             disabled={detailsLoading}
                             onClick={() => void openDetails(d)}
-                            className="rounded-lg bg-blue px-2.5 py-1.5 text-xs font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             مشاهده
                           </button>
@@ -435,7 +435,7 @@ export function DeliveriesPage() {
                                 <button
                                   type="button"
                                   onClick={() => startEdit(d)}
-                                  className="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                                  className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                 >
                                   ویرایش
                                 </button>

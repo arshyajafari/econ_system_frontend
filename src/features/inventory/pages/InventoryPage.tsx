@@ -402,7 +402,7 @@ export function InventoryPage() {
                         <button
                           type="button"
                           onClick={() => void view(item)}
-                          className="rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
+                          className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                         >
                           مشاهده
                         </button>
@@ -410,7 +410,7 @@ export function InventoryPage() {
                           <button
                             type="button"
                             onClick={() => startEdit(item)}
-                            className="rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                            className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           >
                             ویرایش
                           </button>
@@ -419,7 +419,7 @@ export function InventoryPage() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(item.id)}
-                            className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+                            className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           >
                             حذف
                           </button>

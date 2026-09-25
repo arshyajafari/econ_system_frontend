@@ -396,7 +396,7 @@ export function VisitsPage() {
                                 setFormError(null);
                                 setFormOpen(true);
                               }}
-                              className="rounded border px-2 py-1 text-xs"
+                              className="ui-btn-edit rounded border px-2 py-1 text-xs"
                             >
                               ویرایش
                             </button>
@@ -409,7 +409,7 @@ export function VisitsPage() {
                                   action: "complete",
                                 })
                               }
-                              className="rounded border px-2 py-1 text-xs"
+                              className="ui-btn-edit rounded border px-2 py-1 text-xs"
                             >
                               تکمیل
                             </button>
@@ -419,7 +419,7 @@ export function VisitsPage() {
                               onClick={() =>
                                 setActionTarget({ visit: v, action: "cancel" })
                               }
-                              className="rounded border px-2 py-1 text-xs"
+                              className="ui-btn-edit rounded border px-2 py-1 text-xs"
                             >
                               لغو
                             </button>
@@ -430,7 +430,7 @@ export function VisitsPage() {
                             type="button"
                             disabled={actionId === v.id}
                             onClick={() => setDeleteTarget(v)}
-                            className="rounded border border-red-100 px-2 py-1 text-xs text-red-600"
+                            className="ui-btn-delete rounded border px-2 py-1 text-xs"
                           >
                             حذف
                           </button>

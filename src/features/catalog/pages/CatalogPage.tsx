@@ -401,7 +401,7 @@ export function CatalogPage() {
                         <button
                           type="button"
                           onClick={() => void removeBrand(b)}
-                          className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                          className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                         >
                           حذف
                         </button>
@@ -615,7 +615,7 @@ export function CatalogPage() {
                           <button
                             type="button"
                             onClick={() => void removeCategory(c)}
-                            className="rounded-lg border border-red-100 bg-white px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                            className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           >
                             حذف
                           </button>

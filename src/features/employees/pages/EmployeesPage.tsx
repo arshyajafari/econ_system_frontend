@@ -396,7 +396,7 @@ export function EmployeesPage() {
                         type="button"
                         disabled={busyId === item.id}
                         onClick={() => requestDelete(item)}
-                        className="rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-700"
+                        className="ui-btn-delete rounded-md border px-3 py-1.5 text-xs"
                       >
                         حذف
                       </button>

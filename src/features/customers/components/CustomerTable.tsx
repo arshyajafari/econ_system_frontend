@@ -152,7 +152,7 @@ onEdit,
                         type="button"
                         onClick={() => onViewLedger(customer)}
                         disabled={isPending}
-                        className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         حساب
                       </button>
@@ -162,7 +162,7 @@ onEdit,
                           type="button"
                           onClick={() => onEdit(customer)}
                           disabled={isPending}
-                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           ویرایش
                         </button>
