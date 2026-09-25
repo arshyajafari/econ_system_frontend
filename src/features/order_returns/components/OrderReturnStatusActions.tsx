@@ -44,7 +44,7 @@ export function OrderReturnStatusActions({
   if (actions.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {actions.map((action) => {
         const isDanger = action === "cancel";
         const isPrimary = action === "complete" || action === "confirm";
@@ -58,10 +58,10 @@ export function OrderReturnStatusActions({
               "rounded-lg px-4 py-2 text-sm font-medium transition",
               "disabled:cursor-not-allowed disabled:opacity-50",
               isDanger
-                ? "border border-red-200 bg-white text-red-700 hover:bg-red-50"
+                ? "ui-btn-delete border"
                 : isPrimary
-                  ? "bg-gray-900 text-white hover:bg-gray-800"
-                  : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                  ? "ui-btn-primary border"
+                  : "ui-btn-view border",
             ].join(" ")}
           >
             {actionLabels[action]}
