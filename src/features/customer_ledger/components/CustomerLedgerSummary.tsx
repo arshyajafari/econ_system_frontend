@@ -23,6 +23,10 @@ export function CustomerLedgerSummary({
   totalCredit,
   closingBalance,
 }: CustomerLedgerSummaryProps) {
+  const averageDueDateLabel = averageDueDate
+    ? new Intl.DateTimeFormat("fa-IR").format(new Date(averageDueDate + "T00:00:00"))
+    : "—";
+
   const items = [
     {
       title: "مانده ابتدای بازه",
