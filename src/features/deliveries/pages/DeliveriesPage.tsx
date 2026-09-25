@@ -59,6 +59,7 @@ export function DeliveriesPage() {
     [form, setForm] = useState<DeliveryFormData>(empty),
     [editing, setEditing] = useState<Delivery | null>(null),
     [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null),
+    [deleteTarget, setDeleteTarget] = useState<Delivery | null>(null),
     [detailsLoading, setDetailsLoading] = useState(false),
     [actionTarget, setActionTarget] = useState<{
       delivery: Delivery;
@@ -182,6 +183,22 @@ export function DeliveriesPage() {
       setActionId(null);
     }
   };
+  const confirmDelete = async () => {
+    if (!deleteTarget || actionId) return;
+    setActionId(deleteTarget.id);
+    setError(null);
+    try {
+      await deleteDelivery(deleteTarget.id);
+      setItems((current) => current.filter((item) => item.id !== deleteTarget.id));
+      setTotal((current) => Math.max(0, current - 1));
+      setDeleteTarget(null);
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در حذف ارسال.");
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const openDetails = async (d: Delivery) => {
     setDetailsLoading(true);
     setError(null);
@@ -440,6 +457,16 @@ export function DeliveriesPage() {
                                   ویرایش
                                 </button>
                               ) : null}
+                              {isAdmin ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeleteTarget(d)}
+                                  disabled={actionId === d.id}
+                                  className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                  حذف
+                                </button>
+                              ) : null}
                               {canApproveDelivery ? (
                                 <button
                                   type="button"
@@ -652,6 +679,22 @@ export function DeliveriesPage() {
           </div>
         </div>
       ) : null}
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="حذف ارسال"
+        description={
+          deleteTarget
+            ? `آیا از حذف ارسال مربوط به «${deleteTarget.recipient_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+            : ""
+        }
+        confirmLabel="حذف ارسال"
+        cancelLabel="انصراف"
+        variant="danger"
+        isLoading={actionId === deleteTarget?.id}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => void confirmDelete()}
+      />
 
       <ConfirmModal
         open={actionTarget !== null}
