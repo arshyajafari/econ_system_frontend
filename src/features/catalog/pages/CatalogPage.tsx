@@ -3,6 +3,7 @@ import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { ConfirmModal } from "../../../components/ConfirmModal";
+import { Pagination } from "../../../components/Pagination";
 import {
   changeBrandActivity,
   changeCategoryActivity,
@@ -14,6 +15,7 @@ import {
   getCategories,
   updateBrand,
   updateCategory,
+  getCategoryTree,
 } from "../services/catalogApi";
 import type {
   Brand,
@@ -47,6 +49,13 @@ export function CatalogPage() {
   const canEdit = isAdmin || (user?.roles.includes("accountant") ?? false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [categoryTree, setCategoryTree] = useState<ProductCategory[]>([]);
+  const [brandPage, setBrandPage] = useState(1);
+  const [categoryPage, setCategoryPage] = useState(1);
+  const [brandLastPage, setBrandLastPage] = useState(1);
+  const [categoryLastPage, setCategoryLastPage] = useState(1);
+  const [brandTotal, setBrandTotal] = useState(0);
+  const [categoryTotal, setCategoryTotal] = useState(0);
   const [brandSearch, setBrandSearch] = useState("");
   const [categorySearch, setCategorySearch] = useState("");
   const [brandForm, setBrandForm] = useState<BrandFormData>(emptyBrand);
@@ -67,11 +76,16 @@ export function CatalogPage() {
     setError(null);
     try {
       const [b, c] = await Promise.all([
-        getBrands({ per_page: 100 }),
-        getCategories({ per_page: 100 }),
+        getBrands({ search: brandSearch.trim() || undefined, page: brandPage, per_page: 20 }),
+        getCategories({ search: categorySearch.trim() || undefined, page: categoryPage, per_page: 20 }),
       ]);
       setBrands(b.data);
       setCategories(c.data);
+      setBrandLastPage(b.meta.last_page);
+      setCategoryLastPage(c.meta.last_page);
+      setBrandTotal(b.meta.total);
+      setCategoryTotal(c.meta.total);
+      setCategoryTree((await getCategoryTree()).filter((item) => item.id !== editingCategory));
     } catch (e: unknown) {
       setError(
         e instanceof ApiError
@@ -81,22 +95,14 @@ export function CatalogPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [brandPage, brandSearch, categoryPage, categorySearch, editingCategory]);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
   }, [load]);
-  const filteredBrands = brands.filter((b) =>
-    `${b.title} ${b.code}`
-      .toLocaleLowerCase()
-      .includes(brandSearch.trim().toLocaleLowerCase()),
-  );
-  const filteredCategories = categories.filter((c) =>
-    `${c.title} ${c.code}`
-      .toLocaleLowerCase()
-      .includes(categorySearch.trim().toLocaleLowerCase()),
-  );
-  const parentOptions = categories.filter((c) => c.id !== editingCategory);
+  const filteredBrands = brands;
+  const filteredCategories = categories;
+  const parentOptions = categoryTree;
   async function saveBrand(e: React.FormEvent) {
     e.preventDefault();
     if (!brandForm.title.trim() || saving) return;
@@ -307,7 +313,7 @@ export function CatalogPage() {
               <label className="sr-only">جستجوی برند</label>
               <input
                 value={brandSearch}
-                onChange={(e) => setBrandSearch(e.target.value)}
+                onChange={(e) => { setBrandSearch(e.target.value); setBrandPage(1); }}
                 placeholder="جستجوی برند..."
                 className={inputClass}
               />
@@ -530,7 +536,7 @@ export function CatalogPage() {
             <div className="border-t border-gray-100 p-5">
               <input
                 value={categorySearch}
-                onChange={(e) => setCategorySearch(e.target.value)}
+                onChange={(e) => { setCategorySearch(e.target.value); setCategoryPage(1); }}
                 placeholder="جستجوی دسته‌بندی..."
                 className={inputClass}
               />
@@ -618,6 +624,8 @@ export function CatalogPage() {
             </div>
           </div>
         </div>
+        <Pagination page={brandPage} lastPage={brandLastPage} isLoading={loading} total={brandTotal} onPageChange={setBrandPage} />
+        <Pagination page={categoryPage} lastPage={categoryLastPage} isLoading={loading} total={categoryTotal} onPageChange={setCategoryPage} />
       </section>
     </>
   );
