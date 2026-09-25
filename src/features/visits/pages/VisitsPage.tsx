@@ -220,16 +220,8 @@ export function VisitsPage() {
           </table>
         </div>
 
-        {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />} className="rounded border px-4 py-2">
-              قبلی
-            </button>
-            <span className="py-2">صفحه {page} از {lastPage}</span>
-            <button type="button" disabled={page >= lastPage || loading} onClick={() => setPage((x) => x + 1)} className="rounded border px-4 py-2">
-              بعدی
-            </button>
-          </div>
-        )}
-      </section>
+        {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
+</section>
     </>
   );
 }

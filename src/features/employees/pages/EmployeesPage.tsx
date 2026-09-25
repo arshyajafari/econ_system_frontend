@@ -427,23 +427,6 @@ export function EmployeesPage() {
         }}
       />
       {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
-            className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
-          >
-            قبلی
-          </button>
-          <span className="text-sm text-gray-600">
-            صفحه {page} از {lastPage}
-          </span>
-          <button
-            type="button"
-            disabled={page >= lastPage || loading}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
-          >
-            بعدی
-          </button>
-        </div>
-      )}
-    </section>
+</section>
   );
 }
