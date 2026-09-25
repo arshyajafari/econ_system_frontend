@@ -72,7 +72,7 @@ export function OrderStatusActions({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {actions.map((item) => (
         <button
           key={item.action}
