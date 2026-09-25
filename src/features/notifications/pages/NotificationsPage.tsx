@@ -42,6 +42,7 @@ export function NotificationsPage() {
   const [notifications, setNotifications] = useState<SystemNotification[]>([]),
     [page, setPage] = useState(1),
     [lastPage, setLastPage] = useState(1),
+    [total, setTotal] = useState(0),
     [loading, setLoading] = useState(true),
     [actionLoading, setActionLoading] = useState(false),
     [error, setError] = useState<string | null>(null),
@@ -61,6 +62,7 @@ export function NotificationsPage() {
       setNotifications(result.data);
       setPage(result.meta.current_page);
       setLastPage(result.meta.last_page);
+      setTotal(result.meta.total);
     } catch (requestError) {
       setError(normalizeApiError(requestError).message);
     } finally {
@@ -73,6 +75,7 @@ export function NotificationsPage() {
         setNotifications(result.data);
         setPage(result.meta.current_page);
         setLastPage(result.meta.last_page);
+        setTotal(result.meta.total);
       })
       .catch((requestError) =>
         setError(normalizeApiError(requestError).message),
@@ -552,6 +555,7 @@ export function NotificationsPage() {
             page={page}
             lastPage={lastPage}
             isLoading={loading}
+            total={total}
             onPageChange={(nextPage) => void loadNotifications(nextPage)}
           />
         </div>
