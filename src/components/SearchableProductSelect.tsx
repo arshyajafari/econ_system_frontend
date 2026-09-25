@@ -57,7 +57,7 @@ export function SearchableProductSelect({
 
     return availableProducts.filter((product) => {
       const title = normalizeSearchValue(product.title);
-      const code = normalizeSearchValue(product.code);
+      const code = normalizeSearchValue(product.code ?? "");
       return title.includes(normalizedQuery) || code.includes(normalizedQuery);
     });
   }, [products, query, usedProductIds]);
