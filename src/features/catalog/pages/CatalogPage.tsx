@@ -89,7 +89,7 @@ export function CatalogPage() {
       setCategoryLastPage(c.meta.last_page);
       setBrandTotal(b.meta.total);
       setCategoryTotal(c.meta.total);
-      setCategoryTree(await getCategoryTree());
+      setCategoryTree((await getCategoryTree()) ?? []);
     } catch (e: unknown) {
       setError(
         e instanceof ApiError
