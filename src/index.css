@@ -191,7 +191,7 @@ main section[class*="space-y-"] button:disabled,
 
 
 /* Action spacing: View / Edit / Delete / status actions never touch. */
-main section[class*="space-y-"] table td:last-child > div[class*="flex"],
+main section[class*="space-y-"] table td:last-child div[class*="flex"],
 main section[class*="space-y-"] [data-action-group],
 main section[class*="space-y-"] header > div[class*="flex"] {
   display: flex;
