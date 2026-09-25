@@ -76,10 +76,6 @@ export function SearchableProductSelect({
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
 
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [query]);
-
   function selectProduct(product: SearchableProduct) {
     if (usedProductIds.includes(product.id)) return;
     onChange(product.id);
@@ -143,6 +139,7 @@ export function SearchableProductSelect({
           onFocus={() => setIsOpen(true)}
           onChange={(event) => {
             setQuery(event.target.value);
+            setActiveIndex(0);
             setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
