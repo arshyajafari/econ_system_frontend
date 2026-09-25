@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { useAuth } from "../../auth";
@@ -219,9 +220,7 @@ export function VisitsPage() {
           </table>
         </div>
 
-        {lastPage > 1 && (
-          <div className="flex justify-center gap-3">
-            <button type="button" disabled={page <= 1 || loading} onClick={() => setPage((x) => x - 1)} className="rounded border px-4 py-2">
+        {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />} className="rounded border px-4 py-2">
               قبلی
             </button>
             <span className="py-2">صفحه {page} از {lastPage}</span>
