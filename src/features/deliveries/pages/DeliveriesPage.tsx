@@ -40,9 +40,12 @@ const empty: DeliveryFormData = {
 
 export function DeliveriesPage() {
   const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
-  const isDeliveryOperator = user?.roles.includes("delivery operator") ?? false;
-  const isAccountant = user?.roles.includes("accountant") ?? false;
+  const normalizedRoles = (user?.roles ?? []).map((role) =>
+    role.trim().toLowerCase().replace(/[_-]+/g, " "),
+  );
+  const isAdmin = normalizedRoles.includes("admin");
+  const isDeliveryOperator = normalizedRoles.includes("delivery operator");
+  const isAccountant = normalizedRoles.includes("accountant");
   const canOperate = isAdmin || isAccountant || isDeliveryOperator;
   const canApproveDelivery = isAdmin;
   const canManageForm = isAdmin || isDeliveryOperator;
@@ -212,6 +215,21 @@ export function DeliveriesPage() {
       );
     } finally {
       setDetailsLoading(false);
+    }
+  };
+
+  const getStatusClass = (s: DeliveryStatus) => {
+    switch (s) {
+      case "pending":
+        return "ui-status-pending";
+      case "preparing":
+        return "ui-status-preparing";
+      case "shipped":
+        return "ui-status-shipped";
+      case "delivered":
+        return "ui-status-delivered";
+      case "cancelled":
+        return "ui-status-cancelled";
     }
   };
 
@@ -425,7 +443,9 @@ export function DeliveriesPage() {
                   </td>
                   <td className="px-4 py-3">{d.employee?.name ?? "—"}</td>
                   <td className="px-4 py-3">
-                    {getDeliveryStatusLabel(d.status)}
+                    <span className={`ui-status-pill ${getStatusClass(d.status)}`}>
+                      {getDeliveryStatusLabel(d.status)}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     {formatJalaliDateTime(
@@ -530,7 +550,7 @@ export function DeliveriesPage() {
                               </button>
                             </>
                           )}
-                          {d.status === "shipped" && isDeliveryOperator && (
+                          {d.status === "shipped" && (isDeliveryOperator || isAdmin) && (
                             <button
                               type="button"
                               disabled={actionId === d.id}

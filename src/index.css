@@ -581,3 +581,42 @@ select:focus-visible {
     flex: 1 1 auto;
   }
 }
+
+
+/* Delivery status badges */
+.ui-status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ui-status-pending {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #a16207;
+}
+.ui-status-preparing {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.ui-status-shipped {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #15803d;
+}
+.ui-status-delivered {
+  border-color: #6ee7b7;
+  background: #ecfdf5;
+  color: #047857;
+}
+.ui-status-cancelled {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+}
