@@ -388,7 +388,7 @@ export function EmployeesPage() {
                         type="button"
                         disabled={Boolean(busyId)}
                         onClick={() => edit(item)}
-                        className="rounded-md border px-3 py-1.5 text-xs"
+                        className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                       >
                         ویرایش
                       </button>
@@ -426,7 +426,15 @@ export function EmployeesPage() {
           }
         }}
       />
-      {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
-</section>
+      {
+        <Pagination
+          page={page}
+          lastPage={lastPage}
+          isLoading={loading}
+          total={total}
+          onPageChange={setPage}
+        />
+      }
+    </section>
   );
 }

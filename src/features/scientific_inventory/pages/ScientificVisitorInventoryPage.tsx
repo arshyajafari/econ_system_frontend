@@ -387,7 +387,7 @@ export function ScientificVisitorInventoryPage() {
                         type="button"
                         onClick={() => openEdit(item)}
                         disabled={saving}
-                        className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50"
+                        className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50"
                       >
                         ویرایش
                       </button>

@@ -528,7 +528,7 @@ export function NotificationsPage() {
                                 priority: notification.priority,
                               });
                             }}
-                            className="rounded-lg border px-2 py-1 text-xs"
+                            className="ui-btn-edit rounded-lg border px-2 py-1 text-xs"
                           >
                             ویرایش
                           </button>

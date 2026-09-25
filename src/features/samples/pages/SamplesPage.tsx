@@ -349,7 +349,7 @@ export function SamplesPage() {
                             type="button"
                             disabled={deletingId === sample.id}
                             onClick={() => requestDelete(sample)}
-                            className="ui-btn-edit rounded border px-2 py-1 text-xs"
+                            className="ui-btn-delete rounded border px-2 py-1 text-xs"
                           >
                             حذف
                           </button>
