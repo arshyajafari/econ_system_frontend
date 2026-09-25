@@ -152,10 +152,10 @@ export function OrderReturnsPage() {
             <select
               id="order-return-status"
               value={status}
-              onChange={(event) =>
+              onChange={(event) => {
                 setStatus(event.target.value as OrderReturnStatus | "");
-                setPage(1)
-              }
+                setPage(1);
+              }}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-500"
             >
               <option value="">همه وضعیت‌ها</option>
