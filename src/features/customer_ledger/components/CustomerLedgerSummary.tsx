@@ -5,6 +5,7 @@ type CustomerLedgerSummaryProps = {
   totalDebit: number | string;
   totalCredit: number | string;
   closingBalance: number | string;
+  averageDueDate: string | null;
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
@@ -24,13 +25,8 @@ export function CustomerLedgerSummary({
   totalDebit,
   totalCredit,
   closingBalance,
+  averageDueDate,
 }: CustomerLedgerSummaryProps) {
-  const averageDueDateLabel = averageDueDate
-    ? formatJalaliDate(averageDueDate)
-    : "—";
-
-  const averageDueDateLabel = averageDueDate ? formatJalaliDate(averageDueDate) : "—";
-
   const items = [
     {
       title: "مانده ابتدای بازه",
@@ -47,22 +43,28 @@ export function CustomerLedgerSummary({
       value: formatAmount(totalCredit),
       valueClass: "text-green-700",
     },
-    {
-      title: "مانده نهایی",
-      value: formatAmount(closingBalance),
-      valueClass: "text-gray-900",
-    },
   ];
+
+  const averageDueDateItem = {
+    title: "میانگین سررسید فاکتورها",
+    value: averageDueDate ? formatJalaliDate(averageDueDate) : "—",
+    valueClass: "text-blue-700",
+  };
+
+  const closingBalanceItem = {
+    title: "مانده نهایی",
+    value: formatAmount(closingBalance),
+    valueClass: "text-gray-900",
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-      {items.map((item) => (
+      {[...items, averageDueDateItem, closingBalanceItem].map((item) => (
         <div
           key={item.title}
           className="rounded-xl border border-gray-200 bg-white p-5"
         >
           <p className="text-sm text-gray-500">{item.title}</p>
-
           <p className={`mt-2 text-xl font-bold ${item.valueClass}`}>
             {item.value}
           </p>
