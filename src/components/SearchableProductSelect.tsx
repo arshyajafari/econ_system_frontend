@@ -1,9 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type { OrderProductOption } from "../types/order";
-
 type SearchableProductSelectProps = {
   value: string;
-  products: OrderProductOption[];
+  products: SearchableProduct[];
   usedProductIds?: string[];
   disabled?: boolean;
   onChange: (productId: string) => void;
@@ -19,7 +17,16 @@ function normalizeSearchValue(value: string): string {
     .replace(/ۀ/g, "ه");
 }
 
-function getProductPrice(product: OrderProductOption): string {
+type SearchableProduct = {
+  id: string;
+  code?: string | null;
+  title: string;
+  available_quantity?: number | null;
+  current_price?: { sale_price: string } | null;
+  sale_price?: string | null;
+};
+
+function getProductPrice(product: SearchableProduct): string {
   return product.current_price?.sale_price ?? product.sale_price ?? "";
 }
 
@@ -50,7 +57,7 @@ export function SearchableProductSelect({
 
     return availableProducts.filter((product) => {
       const title = normalizeSearchValue(product.title);
-      const code = normalizeSearchValue(product.code);
+      const code = normalizeSearchValue(product.code ?? "");
       return title.includes(normalizedQuery) || code.includes(normalizedQuery);
     });
   }, [products, query, usedProductIds]);
@@ -73,7 +80,7 @@ export function SearchableProductSelect({
     setActiveIndex(0);
   }, [query]);
 
-  function selectProduct(product: OrderProductOption) {
+  function selectProduct(product: SearchableProduct) {
     if (usedProductIds.includes(product.id)) return;
     onChange(product.id);
     setQuery("");

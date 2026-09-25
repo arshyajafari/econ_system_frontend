@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
+import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
 import { getEmployees } from "../../employees/services/employeesApi";
 import type { Employee } from "../../employees/types/employee";
@@ -22,6 +23,9 @@ export function ScientificVisitorInventoryPage() {
   const isScientificVisitor = roles.includes("scientific visitor");
 
   const [items, setItems] = useState<ScientificInventoryItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [batches, setBatches] = useState<InventoryBatch[]>([]);
   const [employeeId, setEmployeeId] = useState("");
@@ -43,8 +47,12 @@ export function ScientificVisitorInventoryPage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await getScientificInventory({ per_page: 100, sort: "-last_received_at" });
-        if (!cancelled) setItems(response.data);
+        const response = await getScientificInventory({ page, per_page: 20, sort: "-last_received_at" });
+        if (!cancelled) {
+          setItems(response.data);
+          setLastPage(response.meta.last_page);
+          setTotal(response.meta.total);
+        }
       } catch (err: unknown) {
         if (!cancelled) {
           setError(err instanceof ApiError ? err.message : "خطا در دریافت موجودی نمونه ویزیتور علمی.");
@@ -55,7 +63,7 @@ export function ScientificVisitorInventoryPage() {
     };
     void run();
     return () => { cancelled = true; };
-  }, [refreshKey, isScientificVisitor]);
+  }, [page, refreshKey, isScientificVisitor]);
 
   useEffect(() => {
     if (!isManager) return;
@@ -372,6 +380,7 @@ export function ScientificVisitorInventoryPage() {
           </form>
         </div>
       ) : null}
+      <Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />
     </section>
   );
 }

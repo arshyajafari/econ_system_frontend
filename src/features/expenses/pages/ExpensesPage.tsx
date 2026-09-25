@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
@@ -439,13 +440,7 @@ export function ExpensesPage() {
         </table>
       </div>
 
-      {lastPage > 1 ? (
-        <div className="flex items-center justify-center gap-3">
-          <button type="button" disabled={page <= 1 || loading} onClick={() => setPage((current) => Math.max(1, current - 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50">قبلی</button>
-          <span className="text-sm text-gray-600">صفحه {numberFormatter.format(page)} از {numberFormatter.format(lastPage)}</span>
-          <button type="button" disabled={page >= lastPage || loading} onClick={() => setPage((current) => Math.min(lastPage, current + 1))} className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:opacity-50">بعدی</button>
-        </div>
-      ) : null}
+      {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
+import { Pagination } from "../../../components/Pagination";
 
 import { getOrderReturns } from "../services/orderReturnsApi";
 
@@ -27,6 +28,10 @@ export function OrderReturnsPage() {
   const [status, setStatus] = useState<OrderReturnStatus | "">("");
 
   const [search, setSearch] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -64,6 +69,8 @@ export function OrderReturnsPage() {
       }
 
       setOrderReturns(response.data);
+      setLastPage(response.meta.last_page);
+      setTotal(response.meta.total);
     } catch (error: unknown) {
       if (requestId !== requestIdRef.current) {
         return;
@@ -79,7 +86,7 @@ export function OrderReturnsPage() {
         setIsLoading(false);
       }
     }
-  }, [search, status]);
+  }, [page, search, status]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -125,7 +132,10 @@ export function OrderReturnsPage() {
             <input
               id="order-return-search"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
               placeholder="کد مرجوعی، سفارش یا توضیحات..."
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
             />
@@ -143,7 +153,8 @@ export function OrderReturnsPage() {
               id="order-return-status"
               value={status}
               onChange={(event) =>
-                setStatus(event.target.value as OrderReturnStatus | "")
+                setStatus(event.target.value as OrderReturnStatus | "");
+                setPage(1)
               }
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-500"
             >
@@ -178,7 +189,13 @@ export function OrderReturnsPage() {
         </div>
       ) : null}
 
+      <div className="flex items-center justify-between text-sm text-gray-500">
+        <span>{new Intl.NumberFormat("fa-IR").format(total)} مرجوعی</span>
+      </div>
+
       <OrderReturnTable orderReturns={orderReturns} isLoading={isLoading} onUpdated={(updated) => setOrderReturns((current) => current.map((item) => item.id === updated.id ? updated : item))} />
+
+      <Pagination page={page} lastPage={lastPage} isLoading={isLoading} total={total} onPageChange={setPage} />
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
-import { SearchableProductSelect } from "./SearchableProductSelect";
+import { SearchableProductSelect } from "../../../components/SearchableProductSelect";
 import type { OrderItemFormData, OrderProductOption } from "../types/order";
 
 type Props = {
