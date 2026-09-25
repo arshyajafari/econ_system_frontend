@@ -145,7 +145,7 @@ export function OrderReturnTable({
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      className="rounded border px-2 py-1 text-xs"
+                      className="ui-btn-view rounded border px-2 py-1 text-xs"
                       onClick={() =>
                         navigate(`/order-returns/${orderReturn.id}`)
                       }
@@ -158,7 +158,7 @@ export function OrderReturnTable({
                       <button
                         type="button"
                         disabled={receivingId === orderReturn.id}
-                        className="rounded border border-green-200 bg-green-50 px-2 py-1 text-xs text-green-700"
+                        className="ui-btn-success rounded border px-2 py-1 text-xs"
                         onClick={async () => {
                           setReceivingId(orderReturn.id);
                           try {
