@@ -158,7 +158,7 @@ export function InvoiceDetailsPage() {
                   `/order-returns/new?order_id=${encodeURIComponent(invoice.order!.id)}`,
                 )
               }
-              className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700"
+              className="ui-btn-warning rounded-lg border px-4 py-2 text-sm"
             >
               ثبت مرجوعی
             </button>
@@ -169,7 +169,7 @@ export function InvoiceDetailsPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => void editDraft()}
-                className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
+                className="ui-btn-edit rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
               >
                 ویرایش مبلغ
               </button>
@@ -178,7 +178,7 @@ export function InvoiceDetailsPage() {
                   type="button"
                   disabled={busy}
                   onClick={() => void action("issue")}
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+                  className="ui-btn-primary rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
                 >
                   صدور فاکتور
                 </button>
@@ -191,7 +191,7 @@ export function InvoiceDetailsPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => void action("cancel")}
-                className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-700 disabled:opacity-50"
+                className="ui-btn-delete rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
               >
                 لغو
               </button>
