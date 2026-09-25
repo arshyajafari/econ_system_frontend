@@ -112,7 +112,6 @@ export function ProductForm({
               className={inputClass}
             />
           </Field>
-
           <Field label="برند" required>
             <select
               value={form.brand_id}
@@ -128,7 +127,6 @@ export function ProductForm({
               ))}
             </select>
           </Field>
-
           <Field label="دسته‌بندی" required>
             <select
               value={form.product_category_id}
@@ -146,7 +144,6 @@ export function ProductForm({
               ))}
             </select>
           </Field>
-
           <Field label="قیمت فروش" required>
             <FormattedNumberInput
               dir="ltr"
@@ -159,7 +156,6 @@ export function ProductForm({
               placeholder="قیمت به ریال"
             />
           </Field>
-
           <Field label="بارکد">
             <input
               dir="ltr"
@@ -169,7 +165,6 @@ export function ProductForm({
               className={`${inputClass} text-right`}
             />
           </Field>
-
           <Field label="ترتیب نمایش">
             <input
               dir="ltr"
@@ -186,7 +181,6 @@ export function ProductForm({
               className={`${inputClass} text-right`}
             />
           </Field>
-
           <Field label="وضعیت">
             <select
               value={form.status}
@@ -207,7 +201,6 @@ export function ProductForm({
             </select>
           </Field>
         </div>
-
         <Field label="تصویر محصول">
           <ImageUploadField
             label=""
@@ -217,17 +210,15 @@ export function ProductForm({
             onFileChange={(file) => update("image_file", file)}
           />
         </Field>
-
         <Field label="توضیحات">
           <textarea
             value={form.description}
             onChange={(event) => update("description", event.target.value)}
             disabled={isSubmitting}
-            rows={4}
+            rows={1}
             className={inputClass}
           />
         </Field>
-
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"
@@ -235,7 +226,7 @@ export function ProductForm({
             disabled={isSubmitting}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
-            بازگشت به محصولات
+            انصراف
           </button>
           <button
             type="submit"

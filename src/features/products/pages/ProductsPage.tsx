@@ -292,10 +292,6 @@ export function ProductsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">محصولات</h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            مدیریت محصولات، برندها و دسته‌بندی محصولات
-          </p>
         </div>
 
         <div className="flex gap-2">
@@ -315,7 +311,9 @@ export function ProductsPage() {
               type="button"
               onClick={openCreateForm}
               disabled={
-                isLoadingLookups || brands.length === 0 || categories.length === 0
+                isLoadingLookups ||
+                brands.length === 0 ||
+                categories.length === 0
               }
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -411,7 +409,11 @@ export function ProductsPage() {
       <ConfirmModal
         open={deleteTarget !== null}
         title="حذف محصول"
-        description={deleteTarget ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.` : ""}
+        description={
+          deleteTarget
+            ? `آیا از حذف «${deleteTarget.title}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+            : ""
+        }
         confirmLabel="حذف محصول"
         cancelLabel="انصراف"
         variant="danger"
@@ -419,7 +421,9 @@ export function ProductsPage() {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
           if (deleteTarget) {
-            void handleDelete(deleteTarget).finally(() => setDeleteTarget(null));
+            void handleDelete(deleteTarget).finally(() =>
+              setDeleteTarget(null),
+            );
           }
         }}
       />

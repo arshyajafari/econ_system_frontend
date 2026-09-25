@@ -66,7 +66,10 @@ export function OrdersPage() {
 
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
-  const [actionTarget, setActionTarget] = useState<{ order: Order; action: OrderStatusAction } | null>(null);
+  const [actionTarget, setActionTarget] = useState<{
+    order: Order;
+    action: OrderStatusAction;
+  } | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -83,14 +86,14 @@ export function OrdersPage() {
 
     try {
       const [customersResponse, productsResponse] = await Promise.all([
-          getOrderCustomers(),
-          getOrderProducts(),
-        ]);
+        getOrderCustomers(),
+        getOrderProducts(),
+      ]);
 
       setCustomers(customersResponse);
-        setProducts(productsResponse);
-        if (isAdmin || isAccountant) setEmployees(await getOrderEmployees());
-        else setEmployees([]);
+      setProducts(productsResponse);
+      if (isAdmin || isAccountant) setEmployees(await getOrderEmployees());
+      else setEmployees([]);
     } catch (error: unknown) {
       setError(
         error instanceof ApiError && error.message
@@ -186,7 +189,12 @@ export function OrdersPage() {
   }
 
   function openEditForm(order: Order) {
-    if (!isAdmin && !isAccountant && order.status !== "draft" && order.status !== "pending") {
+    if (
+      !isAdmin &&
+      !isAccountant &&
+      order.status !== "draft" &&
+      order.status !== "pending"
+    ) {
       return;
     }
 
@@ -297,19 +305,13 @@ export function OrdersPage() {
   }
 
   const canCreate =
-    !isLoadingLookups &&
-    customers.length > 0 &&
-    products.length > 0;
+    !isLoadingLookups && customers.length > 0 && products.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">سفارش‌ها</h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            مدیریت سفارش‌ها و فرآیند تأیید و تکمیل آن‌ها
-          </p>
         </div>
 
         <div className="flex gap-2">
@@ -408,12 +410,21 @@ export function OrdersPage() {
       <ConfirmModal
         open={actionTarget !== null}
         title="لغو سفارش"
-        description={actionTarget ? `آیا از لغو سفارش «${actionTarget.order.code}» مطمئن هستید؟` : ""}
+        description={
+          actionTarget
+            ? `آیا از لغو سفارش «${actionTarget.order.code}» مطمئن هستید؟`
+            : ""
+        }
         confirmLabel="لغو سفارش"
         variant="danger"
         isLoading={pendingOrderId !== null}
         onCancel={() => setActionTarget(null)}
-        onConfirm={() => { if (actionTarget) { void executeAction(actionTarget.order, actionTarget.action); setActionTarget(null); } }}
+        onConfirm={() => {
+          if (actionTarget) {
+            void executeAction(actionTarget.order, actionTarget.action);
+            setActionTarget(null);
+          }
+        }}
       />
 
       <OrderTable
