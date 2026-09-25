@@ -28,6 +28,7 @@ export type CustomerLedger = {
   total_debit: number | string;
   total_credit: number | string;
   closing_balance: number | string;
+  average_due_date: string | null;
   transactions: CustomerLedgerTransaction[];
 };
 
