@@ -85,7 +85,7 @@ export function CatalogPage() {
       setCategoryLastPage(c.meta.last_page);
       setBrandTotal(b.meta.total);
       setCategoryTotal(c.meta.total);
-      setCategoryTree((await getCategoryTree()).filter((item) => item.id !== editingCategory));
+      setCategoryTree(await getCategoryTree());
     } catch (e: unknown) {
       setError(
         e instanceof ApiError
@@ -95,14 +95,14 @@ export function CatalogPage() {
     } finally {
       setLoading(false);
     }
-  }, [brandPage, brandSearch, categoryPage, categorySearch, editingCategory]);
+  }, [brandPage, brandSearch, categoryPage, categorySearch]);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
   }, [load]);
   const filteredBrands = brands;
   const filteredCategories = categories;
-  const parentOptions = categoryTree;
+  const parentOptions = categoryTree.filter((item) => item.id !== editingCategory);
   async function saveBrand(e: React.FormEvent) {
     e.preventDefault();
     if (!brandForm.title.trim() || saving) return;
