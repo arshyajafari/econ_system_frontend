@@ -43,7 +43,7 @@ const inputClass =
   "w-full rounded-xl border border-gray-200 bg-gray-50/70 px-3.5 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-4 focus:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-60";
 const labelClass = "mb-1.5 block text-xs font-medium text-gray-600";
 
-function flattenCategories(categories: ProductCategory[]): ProductCategory[] {
+function flattenCategories(categories: ProductCategory[] = []): ProductCategory[] {
   return categories.flatMap((category) => [category, ...flattenCategories(category.children ?? [])]);
 }
 
