@@ -408,7 +408,7 @@ export function DoctorsPage() {
                         type="button"
                         onClick={() => openEditForm(doctor)}
                         disabled={Boolean(pendingDeleteId)}
-                        className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                        className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                       >
                         ویرایش
                       </button>
@@ -420,7 +420,7 @@ export function DoctorsPage() {
                             pendingDeleteId === doctor.id ||
                             pendingStatusId === doctor.id
                           }
-                          className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+                          className="ui-btn-delete rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                         >
                           {pendingDeleteId === doctor.id
                             ? "در حال حذف..."
