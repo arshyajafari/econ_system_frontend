@@ -240,7 +240,7 @@ export function ExpensesPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">هزینه‌ها</h1>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             onClick={() => void load()}
