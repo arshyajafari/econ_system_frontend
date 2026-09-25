@@ -147,7 +147,7 @@ onEdit,
                   </td>
 
                   <td className="whitespace-nowrap px-4 py-3">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => onViewLedger(customer)}
@@ -172,7 +172,7 @@ onEdit,
                         type="button"
                         onClick={() => onDelete(customer)}
                         disabled={isPending}
-                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {isDeletePending ? "در حال حذف..." : "حذف"}
                       </button>) : null}
