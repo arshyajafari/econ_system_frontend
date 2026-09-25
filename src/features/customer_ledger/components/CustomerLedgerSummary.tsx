@@ -24,7 +24,7 @@ export function CustomerLedgerSummary({
   closingBalance,
 }: CustomerLedgerSummaryProps) {
   const averageDueDateLabel = averageDueDate
-    ? new Intl.DateTimeFormat("fa-IR").format(new Date(averageDueDate + "T00:00:00"))
+    ? formatJalaliDate(averageDueDate)
     : "—";
 
   const items = [
