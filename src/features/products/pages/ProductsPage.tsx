@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
@@ -428,12 +429,7 @@ export function ProductsPage() {
         }}
       />
 
-      {lastPage > 1 ? (
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            disabled={page <= 1 || isLoading}
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+      {<Pagination page={page} lastPage={lastPage} isLoading={isLoading} total={total} onPageChange={setPage} />}
             className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             قبلی
