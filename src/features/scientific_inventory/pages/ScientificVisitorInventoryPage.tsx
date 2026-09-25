@@ -9,6 +9,7 @@ import { getInventory } from "../../inventory/services/inventoryApi";
 import type { InventoryBatch } from "../../inventory/types/inventory";
 import {
   assignScientificInventory,
+  deleteScientificInventory,
   getScientificInventory,
   updateScientificInventory,
 } from "../services/scientificInventoryApi";
@@ -33,6 +34,8 @@ export function ScientificVisitorInventoryPage() {
   const [quantity, setQuantity] = useState(1);
   const [description, setDescription] = useState("");
   const [editingItem, setEditingItem] =
+    useState<ScientificInventoryItem | null>(null);
+  const [deleteTarget, setDeleteTarget] =
     useState<ScientificInventoryItem | null>(null);
   const [editQuantity, setEditQuantity] = useState(0);
   const [editBatchId, setEditBatchId] = useState("");
@@ -170,6 +173,26 @@ export function ScientificVisitorInventoryPage() {
         err instanceof ApiError
           ? err.message
           : "خطا در تحویل محصول به ویزیتور علمی.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+
+    setSaving(true);
+    setError(null);
+    try {
+      await deleteScientificInventory(deleteTarget.id);
+      setDeleteTarget(null);
+      setRefreshKey((value) => value + 1);
+    } catch (err: unknown) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "خطا در حذف موجودی ویزیتور علمی.",
       );
     } finally {
       setSaving(false);
@@ -383,14 +406,24 @@ export function ScientificVisitorInventoryPage() {
 
                   {isManager ? (
                     <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => openEdit(item)}
-                        disabled={saving}
-                        className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50"
-                      >
-                        ویرایش
-                      </button>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(item)}
+                          disabled={saving}
+                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                        >
+                          ویرایش
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(item)}
+                          disabled={saving}
+                          className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                        >
+                          حذف
+                        </button>
+                      </div>
                     </td>
                   ) : null}
                 </tr>
@@ -546,6 +579,49 @@ export function ScientificVisitorInventoryPage() {
           </form>
         </div>
       ) : null}
+      {deleteTarget ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-scientific-inventory-title"
+        >
+          <div className="w-full max-w-md space-y-4 rounded-2xl bg-white p-5 shadow-xl">
+            <div>
+              <h2
+                id="delete-scientific-inventory-title"
+                className="text-lg font-bold"
+              >
+                حذف موجودی ویزیتور علمی
+              </h2>
+              <p className="mt-2 text-sm text-gray-600">
+                آیا از حذف موجودی «{deleteTarget.product?.title ?? "محصول"}» برای «
+                {deleteTarget.employee?.name ?? "ویزیتور علمی"}» مطمئن هستید؟
+                این عملیات قابل بازگشت نیست.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={saving}
+                className="ui-btn-secondary rounded-lg border px-4 py-2 disabled:opacity-50"
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmDelete()}
+                disabled={saving}
+                className="ui-btn-delete rounded-lg border px-4 py-2 disabled:opacity-50"
+              >
+                {saving ? "در حال حذف..." : "حذف موجودی"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <Pagination
         page={page}
         lastPage={lastPage}

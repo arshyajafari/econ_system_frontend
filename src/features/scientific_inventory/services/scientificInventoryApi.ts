@@ -16,6 +16,11 @@ export async function assignScientificInventory(data: AssignScientificInventoryD
   return response.data;
 }
 
+export async function deleteScientificInventory(id: string) {
+  const response = await apiClient.delete(`/scientific-visitor-inventory/${id}`);
+  return response.data;
+}
+
 export async function updateScientificInventory(id: string, data: UpdateScientificInventoryData) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${id}`, {
     quantity: data.quantity,
