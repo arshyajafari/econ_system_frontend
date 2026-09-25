@@ -101,7 +101,7 @@ export function PaymentTable({
                   {formatJalaliDate(payment.payment_date)}
                 </td>
                 <td className="px-4 py-4 align-top">
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       type="button"
                       disabled={pendingPaymentId === payment.id}
