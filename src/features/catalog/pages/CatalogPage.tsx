@@ -43,8 +43,13 @@ const inputClass =
   "w-full rounded-xl border border-gray-200 bg-gray-50/70 px-3.5 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-4 focus:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-60";
 const labelClass = "mb-1.5 block text-xs font-medium text-gray-600";
 
-function flattenCategories(categories: ProductCategory[] = []): ProductCategory[] {
-  return categories.flatMap((category) => [category, ...flattenCategories(category.children ?? [])]);
+function flattenCategories(
+  categories: ProductCategory[] = [],
+): ProductCategory[] {
+  return categories.flatMap((category) => [
+    category,
+    ...flattenCategories(category.children ?? []),
+  ]);
 }
 
 export function CatalogPage() {
@@ -80,8 +85,16 @@ export function CatalogPage() {
     setError(null);
     try {
       const [b, c] = await Promise.all([
-        getBrands({ search: brandSearch.trim() || undefined, page: brandPage, per_page: 20 }),
-        getCategories({ search: categorySearch.trim() || undefined, page: categoryPage, per_page: 20 }),
+        getBrands({
+          search: brandSearch.trim() || undefined,
+          page: brandPage,
+          per_page: 20,
+        }),
+        getCategories({
+          search: categorySearch.trim() || undefined,
+          page: categoryPage,
+          per_page: 20,
+        }),
       ]);
       setBrands(b.data);
       setCategories(c.data);
@@ -106,7 +119,9 @@ export function CatalogPage() {
   }, [load]);
   const filteredBrands = brands;
   const filteredCategories = categories;
-  const parentOptions = flattenCategories(categoryTree).filter((item) => item.id !== editingCategory);
+  const parentOptions = flattenCategories(categoryTree).filter(
+    (item) => item.id !== editingCategory,
+  );
   async function saveBrand(e: React.FormEvent) {
     e.preventDefault();
     if (!brandForm.title.trim() || saving) return;
@@ -317,7 +332,10 @@ export function CatalogPage() {
               <label className="sr-only">جستجوی برند</label>
               <input
                 value={brandSearch}
-                onChange={(e) => { setBrandSearch(e.target.value); setBrandPage(1); }}
+                onChange={(e) => {
+                  setBrandSearch(e.target.value);
+                  setBrandPage(1);
+                }}
                 placeholder="جستجوی برند..."
                 className={inputClass}
               />
@@ -373,7 +391,7 @@ export function CatalogPage() {
                             description: b.description ?? "",
                           });
                         }}
-                        className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                        className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                       >
                         ویرایش
                       </button>
@@ -391,7 +409,7 @@ export function CatalogPage() {
                                 ),
                               )
                           }
-                          className="rounded-lg border border-orange-200 bg-white px-2.5 py-1.5 text-xs font-medium text-orange-700 hover:bg-gray-50"
+                          className="ui-btn-disable rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           disabled={!isAdmin}
                         >
                           {b.is_active ? "غیرفعال" : "فعال"}
@@ -540,7 +558,10 @@ export function CatalogPage() {
             <div className="border-t border-gray-100 p-5">
               <input
                 value={categorySearch}
-                onChange={(e) => { setCategorySearch(e.target.value); setCategoryPage(1); }}
+                onChange={(e) => {
+                  setCategorySearch(e.target.value);
+                  setCategoryPage(1);
+                }}
                 placeholder="جستجوی دسته‌بندی..."
                 className={inputClass}
               />
@@ -587,7 +608,7 @@ export function CatalogPage() {
                               description: c.description ?? "",
                             });
                           }}
-                          className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                          className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                         >
                           ویرایش
                         </button>
@@ -605,7 +626,7 @@ export function CatalogPage() {
                                   ),
                                 )
                             }
-                            className="rounded-lg border border-orange-200 bg-white px-2.5 py-1.5 text-xs font-medium text-orange-700 hover:bg-gray-50"
+                            className="ui-btn-disable rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                             disabled={!isAdmin}
                           >
                             {c.is_active ? "غیرفعال" : "فعال"}
@@ -628,8 +649,20 @@ export function CatalogPage() {
             </div>
           </div>
         </div>
-        <Pagination page={brandPage} lastPage={brandLastPage} isLoading={loading} total={brandTotal} onPageChange={setBrandPage} />
-        <Pagination page={categoryPage} lastPage={categoryLastPage} isLoading={loading} total={categoryTotal} onPageChange={setCategoryPage} />
+        <Pagination
+          page={brandPage}
+          lastPage={brandLastPage}
+          isLoading={loading}
+          total={brandTotal}
+          onPageChange={setBrandPage}
+        />
+        <Pagination
+          page={categoryPage}
+          lastPage={categoryLastPage}
+          isLoading={loading}
+          total={categoryTotal}
+          onPageChange={setCategoryPage}
+        />
       </section>
     </>
   );

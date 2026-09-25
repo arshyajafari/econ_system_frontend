@@ -27,16 +27,49 @@
   --ui-control-height-sm: 36px;
   --ui-page-max: 1600px;
   --ui-page-x: clamp(16px, 2.4vw, 32px);
-  --ui-shadow-sm: 0 1px 2px rgb(15 23 42 / .035), 0 8px 24px rgb(15 23 42 / .035);
+  --ui-shadow-sm:
+    0 1px 2px rgb(15 23 42 / 0.035), 0 8px 24px rgb(15 23 42 / 0.035);
 }
 
-* { box-sizing: border-box; }
-html, body, #root { min-height: 100%; margin: 0; }
-html, body { background: #f4f7fb; }
-html { direction: rtl; }
-body { min-width: 320px; min-height: 100vh; color: var(--ui-text); direction: rtl; }
-main, [role="dialog"], form, table, thead, tbody, tr, th, td { direction: rtl; }
-button, input, textarea, select { font: inherit; }
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+html,
+body {
+  background: #f4f7fb;
+}
+html {
+  direction: rtl;
+}
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ui-text);
+  direction: rtl;
+}
+main,
+[role="dialog"],
+form,
+table,
+thead,
+tbody,
+tr,
+th,
+td {
+  direction: rtl;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
 
 /* Global RTL form controls. Numeric/date/code values keep readable LTR direction where needed. */
 input:not([type="checkbox"]):not([type="radio"]),
@@ -62,14 +95,31 @@ input[type="datetime-local"] {
   direction: ltr;
   text-align: right;
 }
-button { cursor: pointer; }
-button:disabled { cursor: not-allowed; }
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
 
-::selection { background: #dbeafe; color: #1e3a8a; }
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::selection {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 main section[class*="space-y-"] {
   width: 100%;
@@ -91,24 +141,38 @@ main section[class*="space-y-"] h1 {
   font-size: 1.5rem;
   line-height: 1.35;
   font-weight: 800;
-  letter-spacing: -.02em;
+  letter-spacing: -0.02em;
 }
-main section[class*="space-y-"] h2 { color: var(--ui-text); font-weight: 700; }
-main section[class*="space-y-"] p { color: var(--ui-muted); }
-main h1 + p { display: block; }
+main section[class*="space-y-"] h2 {
+  color: var(--ui-text);
+  font-weight: 700;
+}
+main section[class*="space-y-"] p {
+  color: var(--ui-muted);
+}
+main h1 + p {
+  display: block;
+}
 
 main section[class*="space-y-"] button,
 [role="dialog"] button {
   min-height: var(--ui-control-height);
   border-radius: var(--ui-radius) !important;
   padding: 9px 14px;
-  font-size: .875rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.4;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 main section[class*="space-y-"] button:not(:disabled):active,
-[role="dialog"] button:not(:disabled):active { transform: translateY(1px); }
+[role="dialog"] button:not(:disabled):active {
+  transform: translateY(1px);
+}
 
 /* Default outlined actions.
    Only a bare `border` utility gets the system default. Explicit Tailwind
@@ -119,7 +183,9 @@ main section[class*="space-y-"] button[class~="border"]:not([class*="border-"]),
   background: var(--ui-surface);
   color: var(--ui-text-soft);
 }
-main section[class*="space-y-"] button[class~="border"]:not([class*="border-"]):hover,
+main
+  section[class*="space-y-"]
+  button[class~="border"]:not([class*="border-"]):hover,
 [role="dialog"] button[class~="border"]:not([class*="border-"]):hover {
   border-color: #94a3b8;
   background: var(--ui-surface-muted);
@@ -134,7 +200,7 @@ main section[class*="space-y-"] button[class*="bg-blue-"],
   background: var(--ui-primary) !important;
   border-color: var(--ui-primary) !important;
   color: #fff !important;
-  box-shadow: 0 5px 14px rgb(37 99 235 / .14);
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.14);
 }
 main section[class*="space-y-"] button.bg-gray-900:hover,
 main section[class*="space-y-"] button[class*="bg-blue-"]:hover,
@@ -162,7 +228,11 @@ main section[class*="space-y-"] button[class*="border-rose-"]:hover,
   color: #b91c1c !important;
 }
 main section[class*="space-y-"] button:disabled,
-[role="dialog"] button:disabled { opacity: .55; box-shadow: none; transform: none; }
+[role="dialog"] button:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
 
 /* Semantic action buttons: one consistent visual language across tables and dialogs. */
 .ui-btn-view,
@@ -170,25 +240,91 @@ main section[class*="space-y-"] button:disabled,
 .ui-btn-delete,
 .ui-btn-success,
 .ui-btn-warning,
+.ui-btn-disable,
 .ui-btn-primary,
 .ui-btn-secondary {
   box-shadow: none !important;
 }
-.ui-btn-view { border: 1px solid #93c5fd !important; background: #fff !important; color: #2563eb !important; }
-.ui-btn-view:hover:not(:disabled) { border-color: #60a5fa !important; background: #eff6ff !important; color: #1d4ed8 !important; }
-.ui-btn-edit { border: 1px solid #facc15 !important; background: #fff !important; color: #ca8a04 !important; }
-.ui-btn-edit:hover:not(:disabled) { border-color: #eab308 !important; background: #fefce8 !important; color: #a16207 !important; }
-.ui-btn-delete { border: 1px solid #fca5a5 !important; background: #fff !important; color: #dc2626 !important; }
-.ui-btn-delete:hover:not(:disabled) { border-color: #f87171 !important; background: #fef2f2 !important; color: #b91c1c !important; }
-.ui-btn-success { border: 1px solid #86efac !important; background: #fff !important; color: #16a34a !important; }
-.ui-btn-success:hover:not(:disabled) { border-color: #4ade80 !important; background: #f0fdf4 !important; color: #15803d !important; }
-.ui-btn-warning { border: 1px solid #fcd34d !important; background: #fff !important; color: #d97706 !important; }
-.ui-btn-warning:hover:not(:disabled) { border-color: #f59e0b !important; background: #fffbeb !important; color: #b45309 !important; }
-.ui-btn-primary { border: 1px solid var(--ui-primary) !important; background: var(--ui-primary) !important; color: #fff !important; box-shadow: 0 5px 14px rgb(37 99 235 / .14) !important; }
-.ui-btn-primary:hover:not(:disabled) { border-color: var(--ui-primary-hover) !important; background: var(--ui-primary-hover) !important; color: #fff !important; }
-.ui-btn-secondary { border: 1px solid #cbd5e1 !important; background: #fff !important; color: #475569 !important; }
-.ui-btn-secondary:hover:not(:disabled) { border-color: #94a3b8 !important; background: #f8fafc !important; color: #0f172a !important; }
-
+.ui-btn-view {
+  border: 1px solid #93c5fd !important;
+  background: #fff !important;
+  color: #2563eb !important;
+}
+.ui-btn-view:hover:not(:disabled) {
+  border-color: #60a5fa !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+.ui-btn-edit {
+  border: 1px solid #facc15 !important;
+  background: #fff !important;
+  color: #ca8a04 !important;
+}
+.ui-btn-edit:hover:not(:disabled) {
+  border-color: #eab308 !important;
+  background: #fefce8 !important;
+  color: #a16207 !important;
+}
+.ui-btn-delete {
+  border: 1px solid #fca5a5 !important;
+  background: #fff !important;
+  color: #dc2626 !important;
+}
+.ui-btn-delete:hover:not(:disabled) {
+  border-color: #f87171 !important;
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+.ui-btn-success {
+  border: 1px solid #86efac !important;
+  background: #fff !important;
+  color: #16a34a !important;
+}
+.ui-btn-success:hover:not(:disabled) {
+  border-color: #4ade80 !important;
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+}
+.ui-btn-warning {
+  border: 1px solid #fcd34d !important;
+  background: #fff !important;
+  color: #d97706 !important;
+}
+.ui-btn-warning:hover:not(:disabled) {
+  border-color: #f59e0b !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+}
+.ui-btn-disable {
+  border: none !important;
+  background: #e70404 !important;
+  color: #fff !important;
+}
+.ui-btn-disable:hover:not(:disabled) {
+  background: #b61a15 !important;
+  color: #eee !important;
+}
+.ui-btn-primary {
+  border: 1px solid var(--ui-primary) !important;
+  background: var(--ui-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 5px 14px rgb(37 99 235 / 0.14) !important;
+}
+.ui-btn-primary:hover:not(:disabled) {
+  border-color: var(--ui-primary-hover) !important;
+  background: var(--ui-primary-hover) !important;
+  color: #fff !important;
+}
+.ui-btn-secondary {
+  border: 1px solid #cbd5e1 !important;
+  background: #fff !important;
+  color: #475569 !important;
+}
+.ui-btn-secondary:hover:not(:disabled) {
+  border-color: #94a3b8 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
 
 /* Action spacing: View / Edit / Delete / status actions never touch. */
 main section[class*="space-y-"] table td:last-child div[class*="flex"],
@@ -206,7 +342,9 @@ main section[class*="space-y-"] table td:last-child button {
   white-space: nowrap;
   flex: 0 0 auto;
 }
-main section[class*="space-y-"] table td:last-child button + button { margin-inline-start: 0 !important; }
+main section[class*="space-y-"] table td:last-child button + button {
+  margin-inline-start: 0 !important;
+}
 
 /* RTL-safe date/time controls. */
 main section[class*="space-y-"] input[type="date"],
@@ -219,12 +357,22 @@ main section[class*="space-y-"] input[type="datetime-local"],
   text-align: right;
   padding-inline-start: 44px;
 }
-main section[class*="space-y-"] input[type="date"]::-webkit-calendar-picker-indicator,
-main section[class*="space-y-"] input[type="time"]::-webkit-calendar-picker-indicator,
-main section[class*="space-y-"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+main
+  section[class*="space-y-"]
+  input[type="date"]::-webkit-calendar-picker-indicator,
+main
+  section[class*="space-y-"]
+  input[type="time"]::-webkit-calendar-picker-indicator,
+main
+  section[class*="space-y-"]
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
 [role="dialog"] input[type="date"]::-webkit-calendar-picker-indicator,
 [role="dialog"] input[type="time"]::-webkit-calendar-picker-indicator,
-[role="dialog"] input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; margin-inline-start: 8px; }
+[role="dialog"]
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  margin-inline-start: 8px;
+}
 
 /* Checkbox/radio rows: aligned control, label and spacing. */
 main section[class*="space-y-"] label:has(input[type="checkbox"]),
@@ -243,10 +391,15 @@ main section[class*="space-y-"] label:has(input[type="radio"]),
 main section[class*="space-y-"] label:has(input[type="checkbox"]) input,
 main section[class*="space-y-"] label:has(input[type="radio"]) input,
 [role="dialog"] label:has(input[type="checkbox"]) input,
-[role="dialog"] label:has(input[type="radio"]) input { flex: 0 0 16px; margin: 0; }
+[role="dialog"] label:has(input[type="radio"]) input {
+  flex: 0 0 16px;
+  margin: 0;
+}
 
 /* Inputs / selects / textareas. */
-main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]),
+main
+  section[class*="space-y-"]
+  input:not([type="checkbox"]):not([type="radio"]),
 main section[class*="space-y-"] select,
 main section[class*="space-y-"] textarea,
 [role="dialog"] input:not([type="checkbox"]):not([type="radio"]),
@@ -259,40 +412,56 @@ main section[class*="space-y-"] textarea,
   background: var(--ui-surface) !important;
   color: var(--ui-text);
   padding: 9px 12px;
-  font-size: .875rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   box-shadow: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
 }
-main section[class*="space-y-"] textarea, [role="dialog"] textarea { min-height: 96px; resize: vertical; }
-main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):hover,
+main section[class*="space-y-"] textarea,
+[role="dialog"] textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+main
+  section[class*="space-y-"]
+  input:not([type="checkbox"]):not([type="radio"]):hover,
 main section[class*="space-y-"] select:hover,
 main section[class*="space-y-"] textarea:hover,
 [role="dialog"] input:not([type="checkbox"]):not([type="radio"]):hover,
 [role="dialog"] select:hover,
-[role="dialog"] textarea:hover { border-color: var(--ui-border-hover) !important; }
-main section[class*="space-y-"] input:not([type="checkbox"]):not([type="radio"]):focus,
+[role="dialog"] textarea:hover {
+  border-color: var(--ui-border-hover) !important;
+}
+main
+  section[class*="space-y-"]
+  input:not([type="checkbox"]):not([type="radio"]):focus,
 main section[class*="space-y-"] select:focus,
 main section[class*="space-y-"] textarea:focus,
 [role="dialog"] input:not([type="checkbox"]):not([type="radio"]):focus,
 [role="dialog"] select:focus,
 [role="dialog"] textarea:focus {
   border-color: #93c5fd !important;
-  box-shadow: 0 0 0 4px rgb(37 99 235 / .08) !important;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.08) !important;
   outline: none;
 }
 main section[class*="space-y-"] input::placeholder,
 main section[class*="space-y-"] textarea::placeholder,
 [role="dialog"] input::placeholder,
-[role="dialog"] textarea::placeholder { color: #94a3b8; }
+[role="dialog"] textarea::placeholder {
+  color: #94a3b8;
+}
 main section[class*="space-y-"] form label {
   display: inline-block;
   margin-bottom: 6px;
   color: var(--ui-text-soft);
-  font-size: .8125rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
-main section[class*="space-y-"] form fieldset, [role="dialog"] form fieldset {
+main section[class*="space-y-"] form fieldset,
+[role="dialog"] form fieldset {
   border-color: var(--ui-border);
   border-radius: 14px;
 }
@@ -300,10 +469,14 @@ main section[class*="space-y-"] input[type="checkbox"],
 main section[class*="space-y-"] input[type="radio"],
 [role="dialog"] input[type="checkbox"],
 [role="dialog"] input[type="radio"] {
-  width: 16px; height: 16px; min-height: 0; padding: 0;
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
   accent-color: var(--ui-primary);
 }
-main section[class*="space-y-"] [role="alert"], [role="dialog"] [role="alert"] {
+main section[class*="space-y-"] [role="alert"],
+[role="dialog"] [role="alert"] {
   border: 1px solid #fecaca;
   border-radius: 12px !important;
   background: var(--ui-danger-soft);
@@ -332,13 +505,15 @@ main section[class*="space-y-"] table {
   border-collapse: separate;
   border-spacing: 0;
 }
-main section[class*="space-y-"] table thead { background: var(--ui-surface-muted); }
+main section[class*="space-y-"] table thead {
+  background: var(--ui-surface-muted);
+}
 main section[class*="space-y-"] table th {
   direction: rtl;
   text-align: right;
   padding: 12px 16px;
   color: var(--ui-muted) !important;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -349,34 +524,60 @@ main section[class*="space-y-"] table td {
   border-color: #eef2f7 !important;
   vertical-align: middle;
 }
-main section[class*="space-y-"] table tbody tr { transition: background-color 120ms ease; }
-main section[class*="space-y-"] table tbody tr:hover { background: #f8fafc !important; }
+main section[class*="space-y-"] table tbody tr {
+  transition: background-color 120ms ease;
+}
+main section[class*="space-y-"] table tbody tr:hover {
+  background: #f8fafc !important;
+}
 main section[class*="space-y-"] span.rounded-full {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   padding-inline: 9px;
   white-space: nowrap;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
-main section[class*="space-y-"] .bg-gray-50 { background: var(--ui-surface-muted) !important; }
+main section[class*="space-y-"] .bg-gray-50 {
+  background: var(--ui-surface-muted) !important;
+}
 
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 3px solid rgb(37 99 235 / .22);
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgb(37 99 235 / 0.22);
   outline-offset: 2px;
 }
 
 @media (max-width: 1023px) {
-  main section[class*="space-y-"] { padding-top: 20px; }
+  main section[class*="space-y-"] {
+    padding-top: 20px;
+  }
 }
 @media (max-width: 639px) {
-  body { overflow-x: hidden; }
-  main section[class*="space-y-"] { padding: 16px 14px 24px; }
+  body {
+    overflow-x: hidden;
+  }
+  main section[class*="space-y-"] {
+    padding: 16px 14px 24px;
+  }
   main section[class*="space-y-"] > header:first-child,
-  main section[class*="space-y-"] > div:first-child { min-height: auto; }
-  main section[class*="space-y-"] h1 { font-size: 1.3rem; }
-  main section[class*="space-y-"] table { min-width: 680px; }
-  main section[class*="space-y-"] header > div[class*="flex"] { width: 100%; }
-  main section[class*="space-y-"] header > div[class*="flex"] > button { flex: 1 1 auto; }
+  main section[class*="space-y-"] > div:first-child {
+    min-height: auto;
+  }
+  main section[class*="space-y-"] h1 {
+    font-size: 1.3rem;
+  }
+  main section[class*="space-y-"] table {
+    min-width: 680px;
+  }
+  main section[class*="space-y-"] header > div[class*="flex"] {
+    width: 100%;
+  }
+  main section[class*="space-y-"] header > div[class*="flex"] > button {
+    flex: 1 1 auto;
+  }
 }
