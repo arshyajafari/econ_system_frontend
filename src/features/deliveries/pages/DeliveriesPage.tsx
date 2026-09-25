@@ -477,7 +477,7 @@ export function DeliveriesPage() {
                                       action: "prepare",
                                     })
                                   }
-                                  className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                                  className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                 >
                                   آماده‌سازی
                                 </button>
@@ -492,7 +492,7 @@ export function DeliveriesPage() {
                                       action: "cancel",
                                     })
                                   }
-                                  className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+                                  className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                 >
                                   لغو
                                 </button>
@@ -510,9 +510,9 @@ export function DeliveriesPage() {
                                     action: "ship",
                                   })
                                 }
-                                className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                                className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                               >
-                                ارسال
+                                ارسال شد
                               </button>
                               <button
                                 type="button"
@@ -539,9 +539,9 @@ export function DeliveriesPage() {
                                   action: "complete",
                                 })
                               }
-                              className="rounded-lg bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                              className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                             >
-                              تحویل
+                              تکمیل شد
                             </button>
                           )}
                           {canApproveDelivery &&
