@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type { OrderProductOption } from "../features/orders/types/order";
+import type { OrderProductOption } from "../types/order";
 
 type SearchableProductSelectProps = {
   value: string;
