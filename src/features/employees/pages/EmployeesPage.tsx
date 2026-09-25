@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useAuth } from "../../auth";
@@ -425,12 +426,7 @@ export function EmployeesPage() {
           }
         }}
       />
-      {lastPage > 1 && (
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            disabled={page <= 1 || loading}
-            onClick={() => setPage((p) => p - 1)}
+      {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
             className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
           >
             قبلی
