@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { OrderProductOption } from "../features/orders/types/order";
 
 type SearchableProductSelectProps = {
@@ -35,6 +35,7 @@ export function SearchableProductSelect({
   placeholder = "جستجوی محصول...",
 }: SearchableProductSelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const listboxId = `order-product-options-${useId().replace(/:/g, "")}`;
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -44,14 +45,15 @@ export function SearchableProductSelect({
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeSearchValue(query);
-    if (!normalizedQuery) return products;
+    const availableProducts = products.filter((product) => !usedProductIds.includes(product.id));
+    if (!normalizedQuery) return availableProducts;
 
-    return products.filter((product) => {
+    return availableProducts.filter((product) => {
       const title = normalizeSearchValue(product.title);
       const code = normalizeSearchValue(product.code);
       return title.includes(normalizedQuery) || code.includes(normalizedQuery);
     });
-  }, [products, query]);
+  }, [products, query, usedProductIds]);
 
   const visibleProducts = filteredProducts.slice(0, MAX_RESULTS);
   const hasMoreResults = filteredProducts.length > MAX_RESULTS;
@@ -129,7 +131,7 @@ export function SearchableProductSelect({
           role="combobox"
           aria-expanded={isOpen}
           aria-autocomplete="list"
-          aria-controls="order-product-options"
+          aria-controls={listboxId}
           aria-label="جستجوی محصول"
           onFocus={() => setIsOpen(true)}
           onChange={(event) => {
@@ -157,14 +159,13 @@ export function SearchableProductSelect({
 
       {isOpen ? (
         <div
-          id="order-product-options"
+          id={listboxId}
           role="listbox"
           className="absolute inset-x-0 z-50 mt-2 max-h-80 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1.5 shadow-xl"
         >
           {visibleProducts.length > 0 ? (
             <>
               {visibleProducts.map((product, index) => {
-                const isUsed = usedProductIds.includes(product.id);
                 const isActive = index === activeIndex;
                 const price = getProductPrice(product);
                 const stock = product.available_quantity;
@@ -175,16 +176,11 @@ export function SearchableProductSelect({
                     type="button"
                     role="option"
                     aria-selected={product.id === value}
-                    disabled={isUsed}
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => selectProduct(product)}
                     className={
                       "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-right transition " +
-                      (isUsed
-                        ? "cursor-not-allowed opacity-40"
-                        : isActive
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50")
+                      (isActive ? "bg-gray-100" : "hover:bg-gray-50")
                     }
                   >
                     <span className="min-w-0">
