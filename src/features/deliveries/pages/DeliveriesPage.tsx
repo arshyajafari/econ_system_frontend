@@ -9,6 +9,7 @@ import {
   cancelDelivery,
   completeDelivery,
   createDelivery,
+  deleteDelivery,
   getDeliveries,
   getAvailableOrders,
   prepareDelivery,
@@ -523,7 +524,7 @@ export function DeliveriesPage() {
                                     action: "cancel",
                                   })
                                 }
-                                className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+                                className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                               >
                                 لغو
                               </button>
@@ -544,11 +545,6 @@ export function DeliveriesPage() {
                               تکمیل شد
                             </button>
                           )}
-                          {canApproveDelivery &&
-                          d.status !== "shipped" &&
-                          d.status !== "delivered"
-                            ? null
-                            : null}
                         </>
                       ) : (
                         <span className="text-xs text-gray-400">
