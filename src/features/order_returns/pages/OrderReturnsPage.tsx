@@ -46,8 +46,8 @@ export function OrderReturnsPage() {
     setError(null);
 
     const params: OrderReturnListParams = {
-      page: 1,
-      per_page: 50,
+      page,
+      per_page: 20,
       sort: "-created_at",
     };
 
