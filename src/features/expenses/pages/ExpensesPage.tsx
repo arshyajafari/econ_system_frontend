@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
@@ -48,7 +54,9 @@ function emptyForm(): ExpenseFormData {
 export function ExpensesPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
-  const isManager = user?.roles.some((role) => role === "admin" || role === "accountant") ?? false;
+  const isManager =
+    user?.roles.some((role) => role === "admin" || role === "accountant") ??
+    false;
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -97,7 +105,10 @@ export function ExpensesPage() {
   }, [category, dateFrom, dateTo, employeeId, page, search]);
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => void load(), search.trim() ? 300 : 0);
+    const timeoutId = window.setTimeout(
+      () => void load(),
+      search.trim() ? 300 : 0,
+    );
     return () => window.clearTimeout(timeoutId);
   }, [load, search]);
 
@@ -105,7 +116,10 @@ export function ExpensesPage() {
     let cancelled = false;
     async function loadEmployees() {
       try {
-        const response = await getEmployees({ status: "active", per_page: 100 });
+        const response = await getEmployees({
+          status: "active",
+          per_page: 100,
+        });
         if (!cancelled) setEmployees(response.data);
       } catch {
         // Payer filtering is optional; the expense list remains usable.
@@ -118,7 +132,8 @@ export function ExpensesPage() {
   }, []);
 
   const pageTotal = useMemo(
-    () => expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0),
+    () =>
+      expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0),
     [expenses],
   );
 
@@ -155,7 +170,13 @@ export function ExpensesPage() {
     if (saving) return;
 
     const amount = Number(form.amount);
-    if (!form.title.trim() || !Number.isFinite(amount) || amount <= 0 || !form.category || !form.expense_date) {
+    if (
+      !form.title.trim() ||
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      !form.category ||
+      !form.expense_date
+    ) {
       setFormError("عنوان، مبلغ، دسته‌بندی و تاریخ هزینه الزامی هستند.");
       return;
     }
@@ -185,7 +206,8 @@ export function ExpensesPage() {
 
   async function handleDelete(expense: Expense) {
     if (deletingId) return;
-    if (!window.confirm(`آیا از حذف هزینه «${expense.title}» مطمئن هستید؟`)) return;
+    if (!window.confirm(`آیا از حذف هزینه «${expense.title}» مطمئن هستید؟`))
+      return;
 
     setDeletingId(expense.id);
     setError(null);
@@ -217,9 +239,6 @@ export function ExpensesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">هزینه‌ها</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            ثبت و مدیریت هزینه‌های جاری شرکت
-          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -243,13 +262,19 @@ export function ExpensesPage() {
       </div>
 
       {error ? (
-        <div role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div
+          role="alert"
+          className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
           {error}
         </div>
       ) : null}
 
       {formOpen ? (
-        <form onSubmit={(event) => void handleSubmit(event)} className="rounded-xl border border-gray-200 bg-white p-5">
+        <form
+          onSubmit={(event) => void handleSubmit(event)}
+          className="rounded-xl border border-gray-200 bg-white p-5"
+        >
           <div className="mb-5 flex items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
@@ -259,24 +284,39 @@ export function ExpensesPage() {
                 هزینه‌ها مستقل از فاکتور و پرداخت مشتری ثبت می‌شوند.
               </p>
             </div>
-            <button type="button" onClick={closeForm} disabled={saving} className="text-sm text-gray-500 hover:text-gray-900">
+            <button
+              type="button"
+              onClick={closeForm}
+              disabled={saving}
+              className="text-sm text-gray-500 hover:text-gray-900"
+            >
               بستن
             </button>
           </div>
 
           {formError ? (
-            <div role="alert" className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div
+              role="alert"
+              className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
               {formError}
             </div>
           ) : null}
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">عنوان هزینه</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                عنوان هزینه
+              </label>
               <input
                 required
                 value={form.title}
-                onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    title: event.target.value,
+                  }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 placeholder="مثلاً خرید ملزومات اداری"
                 disabled={saving}
@@ -284,14 +324,18 @@ export function ExpensesPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                مبلغ
+              </label>
               <FormattedNumberInput
                 required
                 min="0.01"
                 step="0.01"
                 dir="ltr"
                 value={form.amount}
-                onValueChange={(value) => setForm((current) => ({ ...current, amount: value }))}
+                onValueChange={(value) =>
+                  setForm((current) => ({ ...current, amount: value }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
                 placeholder="مثلاً 1,500,000"
                 disabled={saving}
@@ -299,25 +343,38 @@ export function ExpensesPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">دسته‌بندی</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                دسته‌بندی
+              </label>
               <select
                 required
                 value={form.category}
-                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    category: event.target.value,
+                  }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 disabled={saving}
               >
                 {EXPENSE_CATEGORY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ هزینه</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                تاریخ هزینه
+              </label>
               <JalaliDateInput
                 value={form.expense_date}
-                onChange={(value) => setForm((current) => ({ ...current, expense_date: value }))}
+                onChange={(value) =>
+                  setForm((current) => ({ ...current, expense_date: value }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 disabled={saving}
                 required
@@ -326,26 +383,43 @@ export function ExpensesPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">پرداخت‌کننده / مسئول هزینه</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                پرداخت‌کننده / مسئول هزینه
+              </label>
               <select
                 value={form.employee_id}
-                onChange={(event) => setForm((current) => ({ ...current, employee_id: event.target.value }))}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    employee_id: event.target.value,
+                  }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 disabled={saving}
               >
                 <option value="">بدون ثبت شخص</option>
                 {employees.map((employee) => (
-                  <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>
+                  <option
+                    key={employee.id}
+                    value={employee.id}
+                  >{`${employee.first_name} ${employee.last_name}`}</option>
                 ))}
               </select>
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                توضیحات
+              </label>
               <textarea
                 rows={3}
                 value={form.description}
-                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    description: event.target.value,
+                  }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 placeholder="توضیحات تکمیلی در صورت نیاز"
                 disabled={saving}
@@ -354,36 +428,95 @@ export function ExpensesPage() {
           </div>
 
           <div className="mt-5 flex gap-2">
-            <button type="submit" disabled={saving} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60">
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
+            >
               {saving ? "در حال ذخیره..." : "ذخیره هزینه"}
             </button>
-            <button type="button" onClick={closeForm} disabled={saving} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={closeForm}
+              disabled={saving}
+              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
               انصراف
             </button>
           </div>
         </form>
       ) : null}
 
-      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-2 lg:grid-cols-5">
-        <input
-          value={search}
-          onChange={(event) => { setSearch(event.target.value); setPage(1); }}
-          placeholder="جستجوی عنوان یا توضیحات"
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-        />
-        <select value={category} onChange={(event) => { setCategory(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-          <option value="">همه دسته‌بندی‌ها</option>
-          {EXPENSE_CATEGORY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-        </select>
-        <select value={employeeId} onChange={(event) => { setEmployeeId(event.target.value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-          <option value="">همه مسئولان</option>
-          {employees.map((employee) => <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>)}
-        </select>
-        <JalaliDateInput value={dateFrom} onChange={(value) => { setDateFrom(value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="از تاریخ" />
-        <JalaliDateInput value={dateTo} onChange={(value) => { setDateTo(value); setPage(1); }} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" aria-label="تا تاریخ" />
-        <button type="button" onClick={resetFilters} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 lg:col-span-5 lg:w-fit">
-          پاک کردن فیلترها
-        </button>
+      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-4">
+        <div className="grid gap-3 md:grid-cols-2">
+          <input
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
+            placeholder="جستجوی عنوان یا توضیحات"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          />
+          <select
+            value={category}
+            onChange={(event) => {
+              setCategory(event.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          >
+            <option value="">همه دسته‌بندی‌ها</option>
+            {EXPENSE_CATEGORY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          <select
+            value={employeeId}
+            onChange={(event) => {
+              setEmployeeId(event.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          >
+            <option value="">همه مسئولان</option>
+            {employees.map((employee) => (
+              <option
+                key={employee.id}
+                value={employee.id}
+              >{`${employee.first_name} ${employee.last_name}`}</option>
+            ))}
+          </select>
+          <JalaliDateInput
+            value={dateFrom}
+            onChange={(value) => {
+              setDateFrom(value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            aria-label="از تاریخ"
+          />
+          <JalaliDateInput
+            value={dateTo}
+            onChange={(value) => {
+              setDateTo(value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            aria-label="تا تاریخ"
+          />
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 lg:w-fit"
+          >
+            پاک کردن فیلترها
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
@@ -400,47 +533,95 @@ export function ExpensesPage() {
               <th className="px-5 py-3 font-medium">مبلغ</th>
               <th className="px-5 py-3 font-medium">تاریخ</th>
               <th className="px-5 py-3 font-medium">مسئول هزینه</th>
-              <th className="px-5 py-3 font-medium">ثبت‌کننده</th>
-              <th />
+              <th className="px-5 py-3 font-medium">عملیات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">در حال دریافت هزینه‌ها...</td></tr>
-            ) : null}
-            {!loading && expenses.length === 0 ? (
-              <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">هزینه‌ای پیدا نشد.</td></tr>
-            ) : null}
-            {!loading ? expenses.map((expense) => (
-              <tr key={expense.id} className="hover:bg-gray-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-gray-900">{expense.title}</div>
-                  {expense.description ? <div className="mt-1 max-w-xs truncate text-xs text-gray-500">{expense.description}</div> : null}
-                </td>
-                <td className="px-5 py-4">{getExpenseCategoryLabel(expense.category)}</td>
-                <td dir="ltr" className="px-5 py-4 font-semibold">{numberFormatter.format(Number(expense.amount || 0))}</td>
-                <td className="px-5 py-4">{formatDate(expense.expense_date)}</td>
-                <td className="px-5 py-4">{expense.employee?.name ?? "—"}</td>
-                <td className="px-5 py-4">{expense.created_by?.name ?? "—"}</td>
-                <td className="px-5 py-4 text-left">
-                  <div className="flex justify-end gap-2">
-                    <button type="button" onClick={() => openEdit(expense)} disabled={!isManager || deletingId !== null} className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 disabled:opacity-50">
-                      ویرایش
-                    </button>
-                    {isAdmin ? (
-                      <button type="button" onClick={() => void handleDelete(expense)} disabled={deletingId !== null} className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50">
-                        {deletingId === expense.id ? "در حال حذف..." : "حذف"}
-                      </button>
-                    ) : null}
-                  </div>
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-5 py-12 text-center text-gray-500"
+                >
+                  در حال دریافت هزینه‌ها...
                 </td>
               </tr>
-            )) : null}
+            ) : null}
+            {!loading && expenses.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-5 py-12 text-center text-gray-500"
+                >
+                  هزینه‌ای پیدا نشد.
+                </td>
+              </tr>
+            ) : null}
+            {!loading
+              ? expenses.map((expense) => (
+                  <tr key={expense.id} className="hover:bg-gray-50">
+                    <td className="px-5 py-4">
+                      <div className="font-medium text-gray-900">
+                        {expense.title}
+                      </div>
+                      {expense.description ? (
+                        <div className="mt-1 max-w-xs truncate text-xs text-gray-500">
+                          {expense.description}
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-5 py-4">
+                      {getExpenseCategoryLabel(expense.category)}
+                    </td>
+                    <td dir="ltr" className="px-5 py-4 font-semibold">
+                      {numberFormatter.format(Number(expense.amount || 0))}
+                    </td>
+                    <td className="px-5 py-4">
+                      {formatDate(expense.expense_date)}
+                    </td>
+                    <td className="px-5 py-4">
+                      {expense.employee?.name ?? "—"}
+                    </td>
+                    <td className="px-5 py-4 text-left">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(expense)}
+                          disabled={!isManager || deletingId !== null}
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                        >
+                          ویرایش
+                        </button>
+                        {isAdmin ? (
+                          <button
+                            type="button"
+                            onClick={() => void handleDelete(expense)}
+                            disabled={deletingId !== null}
+                            className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+                          >
+                            {deletingId === expense.id
+                              ? "در حال حذف..."
+                              : "حذف"}
+                          </button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : null}
           </tbody>
         </table>
       </div>
 
-      {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
+      {
+        <Pagination
+          page={page}
+          lastPage={lastPage}
+          isLoading={loading}
+          total={total}
+          onPageChange={setPage}
+        />
+      }
     </section>
   );
 }

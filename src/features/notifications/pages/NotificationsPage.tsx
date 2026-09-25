@@ -4,22 +4,202 @@ import { normalizeApiError } from "../../../api/client";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useAuth } from "../../auth";
-import { deleteSystemMessage, getNotificationRecipients, getNotifications, markAllNotificationsRead, markNotificationRead, sendSystemMessage, updateSystemMessage, type NotificationRecipients, type SendSystemMessagePayload, type SystemNotification } from "../api/notifications";
-const priorityLabels: Record<SendSystemMessagePayload["priority"], string> = { low:"کم",normal:"عادی",high:"مهم",urgent:"فوری" };
-function priorityClass(priority:SystemNotification["priority"]):string{if(priority==="urgent")return"bg-red-50 text-red-700";if(priority==="high")return"bg-amber-50 text-amber-700";if(priority==="low")return"bg-slate-100 text-slate-600";return"bg-blue-50 text-blue-700"}
-const initialForm:SendSystemMessagePayload={target_type:"all",title:"",body:"",priority:"normal"};
-export function NotificationsPage(){const { user } = useAuth(); const isAdmin = user?.roles.includes("admin") ?? false; const isAccountant = user?.roles.includes("accountant") ?? false; const canManageMessages = isAdmin || isAccountant; const[notifications,setNotifications]=useState<SystemNotification[]>([]),[page,setPage]=useState(1),[lastPage,setLastPage]=useState(1),[loading,setLoading]=useState(true),[actionLoading,setActionLoading]=useState(false),[error,setError]=useState<string|null>(null),[recipients,setRecipients]=useState<NotificationRecipients|null>(null),[canSend,setCanSend]=useState(false),[form,setForm]=useState<SendSystemMessagePayload>(initialForm),[success,setSuccess]=useState<string|null>(null),[editing,setEditing]=useState<SystemNotification|null>(null),[deleteTarget,setDeleteTarget]=useState<SystemNotification|null>(null);const selectedUserIds=form.user_ids??[],selectedPositions=form.position_types??[];
- const loadNotifications=async(targetPage:number)=>{setLoading(true);setError(null);try{const result=await getNotifications(targetPage);setNotifications(result.data);setPage(result.meta.current_page);setLastPage(result.meta.last_page)}catch(requestError){setError(normalizeApiError(requestError).message)}finally{setLoading(false)}};
- useEffect(()=>{void getNotifications(1).then(result=>{setNotifications(result.data);setPage(result.meta.current_page);setLastPage(result.meta.last_page)}).catch(requestError=>setError(normalizeApiError(requestError).message)).finally(()=>setLoading(false))},[]);
- useEffect(()=>{getNotificationRecipients().then(result=>{setRecipients(result);setCanSend(true)}).catch(()=>setCanSend(false))},[]);
- const selectedRecipientLabel=useMemo(()=>form.target_type==="all"?"همه کاربران فعال":form.target_type==="positions"?`${selectedPositions.length} پوزیشن انتخاب شده`:`${selectedUserIds.length} کاربر انتخاب شده`,[form.target_type,selectedPositions.length,selectedUserIds.length]);
- const targetSummary=(notification:SystemNotification)=>{if(notification.target_type==="all"||notification.target_type===null)return "همه کاربران فعال";if(notification.target_type==="positions"){const labels=notification.target_values.map(value=>recipients?.positions.find(position=>position.value===value)?.label??value);return labels.length?labels.join("، "):"پوزیشن نامشخص"}const names=notification.target_values.map(value=>recipients?.users.find(recipient=>recipient.id===value)?.name??value);return names.length?names.join("، "):"شخص نامشخص"};
- const canSubmit=form.title.trim().length>0&&form.body.trim().length>0&&(form.target_type==="all"||(form.target_type==="users"&&selectedUserIds.length>0)||(form.target_type==="positions"&&selectedPositions.length>0));
- const markRead=async(notification:SystemNotification)=>{if(notification.is_read)return;try{const updated=await markNotificationRead(notification.id);setNotifications(current=>current.map(item=>item.id===updated.id?updated:item));window.dispatchEvent(new Event("notifications:changed"))}catch(requestError){setError(normalizeApiError(requestError).message)}};
- const markAllRead=async()=>{setActionLoading(true);setError(null);try{await markAllNotificationsRead();setNotifications(current=>current.map(item=>({...item,is_read:true})));window.dispatchEvent(new Event("notifications:changed"))}catch(requestError){setError(normalizeApiError(requestError).message)}finally{setActionLoading(false)}};
- const removeMessage=async()=>{if(!deleteTarget?.message_id)return;setActionLoading(true);setError(null);try{await deleteSystemMessage(deleteTarget.message_id);setDeleteTarget(null);await loadNotifications(page);}catch(requestError){setError(normalizeApiError(requestError).message)}finally{setActionLoading(false)}};
- const sendMessage=async(event:FormEvent<HTMLFormElement>)=>{event.preventDefault();if(!canSubmit)return;setActionLoading(true);setError(null);setSuccess(null);try{if(editing){await updateSystemMessage(editing.message_id??editing.id,{title:form.title,body:form.body,priority:form.priority});setEditing(null);setSuccess("اعلان با موفقیت ویرایش شد.");await loadNotifications(page);setForm(initialForm);return;}const payload:SendSystemMessagePayload={...form,...(form.target_type==="users"?{user_ids:selectedUserIds}:{}),...(form.target_type==="positions"?{position_types:selectedPositions}:{})};const result=await sendSystemMessage(payload);setSuccess(`پیام با موفقیت برای ${result.recipients_count.toLocaleString("fa-IR")} کاربر ارسال شد.`);setForm(initialForm);window.dispatchEvent(new Event("notifications:changed"))}catch(requestError){setError(normalizeApiError(requestError).message)}finally{setActionLoading(false)}};
- return (
+import {
+  deleteSystemMessage,
+  getNotificationRecipients,
+  getNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+  sendSystemMessage,
+  updateSystemMessage,
+  type NotificationRecipients,
+  type SendSystemMessagePayload,
+  type SystemNotification,
+} from "../api/notifications";
+const priorityLabels: Record<SendSystemMessagePayload["priority"], string> = {
+  low: "کم",
+  normal: "عادی",
+  high: "مهم",
+  urgent: "فوری",
+};
+function priorityClass(priority: SystemNotification["priority"]): string {
+  if (priority === "urgent") return "bg-red-50 text-red-700";
+  if (priority === "high") return "bg-amber-50 text-amber-700";
+  if (priority === "low") return "bg-slate-100 text-slate-600";
+  return "bg-blue-50 text-blue-700";
+}
+const initialForm: SendSystemMessagePayload = {
+  target_type: "all",
+  title: "",
+  body: "",
+  priority: "normal",
+};
+export function NotificationsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles.includes("admin") ?? false;
+  const isAccountant = user?.roles.includes("accountant") ?? false;
+  const canManageMessages = isAdmin || isAccountant;
+  const [notifications, setNotifications] = useState<SystemNotification[]>([]),
+    [page, setPage] = useState(1),
+    [lastPage, setLastPage] = useState(1),
+    [loading, setLoading] = useState(true),
+    [actionLoading, setActionLoading] = useState(false),
+    [error, setError] = useState<string | null>(null),
+    [recipients, setRecipients] = useState<NotificationRecipients | null>(null),
+    [canSend, setCanSend] = useState(false),
+    [form, setForm] = useState<SendSystemMessagePayload>(initialForm),
+    [success, setSuccess] = useState<string | null>(null),
+    [editing, setEditing] = useState<SystemNotification | null>(null),
+    [deleteTarget, setDeleteTarget] = useState<SystemNotification | null>(null);
+  const selectedUserIds = form.user_ids ?? [],
+    selectedPositions = form.position_types ?? [];
+  const loadNotifications = async (targetPage: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getNotifications(targetPage);
+      setNotifications(result.data);
+      setPage(result.meta.current_page);
+      setLastPage(result.meta.last_page);
+    } catch (requestError) {
+      setError(normalizeApiError(requestError).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    void getNotifications(1)
+      .then((result) => {
+        setNotifications(result.data);
+        setPage(result.meta.current_page);
+        setLastPage(result.meta.last_page);
+      })
+      .catch((requestError) =>
+        setError(normalizeApiError(requestError).message),
+      )
+      .finally(() => setLoading(false));
+  }, []);
+  useEffect(() => {
+    getNotificationRecipients()
+      .then((result) => {
+        setRecipients(result);
+        setCanSend(true);
+      })
+      .catch(() => setCanSend(false));
+  }, []);
+  const selectedRecipientLabel = useMemo(
+    () =>
+      form.target_type === "all"
+        ? "همه کاربران فعال"
+        : form.target_type === "positions"
+          ? `${selectedPositions.length} پوزیشن انتخاب شده`
+          : `${selectedUserIds.length} کاربر انتخاب شده`,
+    [form.target_type, selectedPositions.length, selectedUserIds.length],
+  );
+  const targetSummary = (notification: SystemNotification) => {
+    if (notification.target_type === "all" || notification.target_type === null)
+      return "همه کاربران فعال";
+    if (notification.target_type === "positions") {
+      const labels = notification.target_values.map(
+        (value) =>
+          recipients?.positions.find((position) => position.value === value)
+            ?.label ?? value,
+      );
+      return labels.length ? labels.join("، ") : "پوزیشن نامشخص";
+    }
+    const names = notification.target_values.map(
+      (value) =>
+        recipients?.users.find((recipient) => recipient.id === value)?.name ??
+        value,
+    );
+    return names.length ? names.join("، ") : "شخص نامشخص";
+  };
+  const canSubmit =
+    form.title.trim().length > 0 &&
+    form.body.trim().length > 0 &&
+    (form.target_type === "all" ||
+      (form.target_type === "users" && selectedUserIds.length > 0) ||
+      (form.target_type === "positions" && selectedPositions.length > 0));
+  const markRead = async (notification: SystemNotification) => {
+    if (notification.is_read) return;
+    try {
+      const updated = await markNotificationRead(notification.id);
+      setNotifications((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+      window.dispatchEvent(new Event("notifications:changed"));
+    } catch (requestError) {
+      setError(normalizeApiError(requestError).message);
+    }
+  };
+  const markAllRead = async () => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      await markAllNotificationsRead();
+      setNotifications((current) =>
+        current.map((item) => ({ ...item, is_read: true })),
+      );
+      window.dispatchEvent(new Event("notifications:changed"));
+    } catch (requestError) {
+      setError(normalizeApiError(requestError).message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+  const removeMessage = async () => {
+    if (!deleteTarget?.message_id) return;
+    setActionLoading(true);
+    setError(null);
+    try {
+      await deleteSystemMessage(deleteTarget.message_id);
+      setDeleteTarget(null);
+      await loadNotifications(page);
+    } catch (requestError) {
+      setError(normalizeApiError(requestError).message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+  const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSubmit) return;
+    setActionLoading(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      if (editing) {
+        await updateSystemMessage(editing.message_id ?? editing.id, {
+          title: form.title,
+          body: form.body,
+          priority: form.priority,
+        });
+        setEditing(null);
+        setSuccess("اعلان با موفقیت ویرایش شد.");
+        await loadNotifications(page);
+        setForm(initialForm);
+        return;
+      }
+      const payload: SendSystemMessagePayload = {
+        ...form,
+        ...(form.target_type === "users" ? { user_ids: selectedUserIds } : {}),
+        ...(form.target_type === "positions"
+          ? { position_types: selectedPositions }
+          : {}),
+      };
+      const result = await sendSystemMessage(payload);
+      setSuccess(
+        `پیام با موفقیت برای ${result.recipients_count.toLocaleString("fa-IR")} کاربر ارسال شد.`,
+      );
+      setForm(initialForm);
+      window.dispatchEvent(new Event("notifications:changed"));
+    } catch (requestError) {
+      setError(normalizeApiError(requestError).message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+  return (
     <>
       <ConfirmModal
         open={deleteTarget !== null}
@@ -35,15 +215,16 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
       <section className="space-y-6 p-4 md:p-6">
         <div className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">پیام‌ها و اعلان‌ها</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              پیام‌های داخلی مدیریت را ببینید و اعلان‌های خوانده‌نشده را مدیریت کنید.
-            </p>
+            <h1 className="text-2xl font-bold text-slate-900">
+              پیام‌ها و اعلان‌ها
+            </h1>
           </div>
           <button
             type="button"
             onClick={() => void markAllRead()}
-            disabled={actionLoading || !notifications.some((item) => !item.is_read)}
+            disabled={
+              actionLoading || !notifications.some((item) => !item.is_read)
+            }
             className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
           >
             علامت همه به‌عنوان خوانده‌شده
@@ -51,20 +232,29 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
         </div>
 
         {error ? (
-          <div role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">{error}</div>
+          <div
+            role="alert"
+            className="rounded-xl bg-red-50 p-4 text-sm text-red-700"
+          >
+            {error}
+          </div>
         ) : null}
 
         {success ? (
-          <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700">{success}</div>
+          <div
+            role="status"
+            className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700"
+          >
+            {success}
+          </div>
         ) : null}
 
         {canSend ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
             <div className="mb-5">
-              <h2 className="text-lg font-bold text-slate-900">ارسال پیام مدیریتی</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                پیام را برای همه، یک یا چند کاربر، یا یک یا چند پوزیشن کاری ارسال کنید.
-              </p>
+              <h2 className="text-lg font-bold text-slate-900">
+                ارسال پیام مدیریتی
+              </h2>
             </div>
 
             <form className="space-y-5" onSubmit={sendMessage}>
@@ -80,11 +270,18 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
                     <button
                       key={target}
                       type="button"
-                      onClick={() => setForm((current) => ({ ...current, target_type: target }))}
-                      className={`rounded-xl border p-4 text-right transition ${form.target_type === target ? "border-blue-300 bg-blue-50 text-blue-800" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+                      onClick={() =>
+                        setForm((current) => ({
+                          ...current,
+                          target_type: target,
+                        }))
+                      }
+                      className={`rounded-xl border p-4 text-right transition ${form.target_type === target ? "border-blue-300 bg-blue-300 text-blue-800" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
                     >
-                      <span className="block text-sm font-bold">{labels[target]}</span>
-                      <span className="mt-1 block text-xs text-slate-500">
+                      <span className="block text-sm font-bold">
+                        {labels[target]}
+                      </span>
+                      <span className="mt-1 block text-xs text-white-200">
                         {target === "all"
                           ? "ارسال برای تمام کاربران فعال"
                           : target === "users"
@@ -98,10 +295,15 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
 
               {form.target_type === "users" && recipients ? (
                 <div>
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">کاربران دریافت‌کننده</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    کاربران دریافت‌کننده
+                  </span>
                   <div className="grid max-h-64 gap-2 overflow-y-auto rounded-xl border border-slate-200 p-2 sm:grid-cols-2 lg:grid-cols-3">
                     {recipients.users.map((recipient) => (
-                      <label key={recipient.id} className="flex items-center gap-2 rounded-lg p-3 text-sm text-slate-700 hover:bg-slate-50">
+                      <label
+                        key={recipient.id}
+                        className="flex items-center gap-2 rounded-lg p-3 text-sm text-slate-700 hover:bg-slate-50"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedUserIds.includes(recipient.id)}
@@ -110,7 +312,9 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
                               ...current,
                               user_ids: event.target.checked
                                 ? [...(current.user_ids ?? []), recipient.id]
-                                : (current.user_ids ?? []).filter((item) => item !== recipient.id),
+                                : (current.user_ids ?? []).filter(
+                                    (item) => item !== recipient.id,
+                                  ),
                             }))
                           }
                         />
@@ -123,10 +327,15 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
 
               {form.target_type === "positions" && recipients ? (
                 <div>
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">پوزیشن‌های دریافت‌کننده</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    پوزیشن‌های دریافت‌کننده
+                  </span>
                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {recipients.positions.map((position) => (
-                      <label key={position.value} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700 hover:bg-slate-50">
+                      <label
+                        key={position.value}
+                        className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700 hover:bg-slate-50"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedPositions.includes(position.value)}
@@ -134,8 +343,13 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
                             setForm((current) => ({
                               ...current,
                               position_types: event.target.checked
-                                ? [...(current.position_types ?? []), position.value]
-                                : (current.position_types ?? []).filter((item) => item !== position.value),
+                                ? [
+                                    ...(current.position_types ?? []),
+                                    position.value,
+                                  ]
+                                : (current.position_types ?? []).filter(
+                                    (item) => item !== position.value,
+                                  ),
                             }))
                           }
                         />
@@ -148,51 +362,72 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
 
               <div className="grid gap-4 md:grid-cols-[1fr_220px]">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">عنوان پیام</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    عنوان پیام
+                  </span>
                   <input
                     required
                     maxLength={120}
                     value={form.title}
-                    onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        title: event.target.value,
+                      }))
+                    }
                     placeholder="مثلاً تغییر ساعت جلسه فردا"
                     className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">اولویت</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    اولویت
+                  </span>
                   <select
                     value={form.priority}
                     onChange={(event) =>
                       setForm((current) => ({
                         ...current,
-                        priority: event.target.value as SendSystemMessagePayload["priority"],
+                        priority: event.target
+                          .value as SendSystemMessagePayload["priority"],
                       }))
                     }
                     className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
                   >
                     {Object.entries(priorityLabels).map(([value, label]) => (
-                      <option key={value} value={value}>{label}</option>
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
                     ))}
                   </select>
                 </label>
               </div>
 
-              <label className="block">
-                <span className="mb-2 block text-sm font-semibold text-slate-700">متن پیام</span>
+              <label className="w-full">
+                <span className="mb-2 block text-sm font-semibold text-slate-700">
+                  متن پیام
+                </span>
                 <textarea
                   required
                   maxLength={5000}
-                  rows={5}
+                  rows={1}
                   value={form.body}
-                  onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      body: event.target.value,
+                    }))
+                  }
                   placeholder="متن پیام مدیریتی را وارد کنید..."
                   className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"
                 />
               </label>
 
               <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-xs text-slate-400">گیرندگان: {selectedRecipientLabel}</span>
+                <span className="text-xs text-slate-400">
+                  گیرندگان: {selectedRecipientLabel}
+                </span>
                 <button
                   type="submit"
                   disabled={actionLoading || !canSubmit}
@@ -220,9 +455,13 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
           </div>
 
           {loading ? (
-            <div className="p-8 text-center text-sm text-slate-500">در حال دریافت پیام‌ها...</div>
+            <div className="p-8 text-center text-sm text-slate-500">
+              در حال دریافت پیام‌ها...
+            </div>
           ) : notifications.length === 0 ? (
-            <div className="p-10 text-center text-sm text-slate-500">پیامی برای نمایش وجود ندارد.</div>
+            <div className="p-10 text-center text-sm text-slate-500">
+              پیامی برای نمایش وجود ندارد.
+            </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {notifications.map((notification) => (
@@ -235,17 +474,19 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         {!notification.is_read ? (
-                          <span className="h-2 w-2 rounded-full bg-blue-600" aria-label="خوانده نشده" />
+                          <span
+                            className="h-2 w-2 rounded-full bg-blue-600"
+                            aria-label="خوانده نشده"
+                          />
                         ) : null}
                         {notification.is_sent ? (
                           <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
                             ارسالی
                           </span>
                         ) : null}
-                        <h3 className={`text-sm ${notification.is_read ? "font-semibold text-slate-800" : "font-bold text-slate-900"}`}>
-                          {notification.title}
-                        </h3>
-                        <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityClass(notification.priority)}`}>
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityClass(notification.priority)}`}
+                        >
                           {priorityLabels[notification.priority]}
                         </span>
                         {canManageMessages ? (
@@ -254,12 +495,22 @@ export function NotificationsPage(){const { user } = useAuth(); const isAdmin = 
                           </span>
                         ) : null}
                       </div>
-
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-600">{notification.body}</p>
+                      <div className="mt-2.5">
+                        <h3
+                          className={`text-sm ${notification.is_read ? "font-semibold text-slate-800" : "font-bold text-slate-900"}`}
+                        >
+                          {notification.title}
+                        </h3>
+                        <p className="mt-1 whitespace-pre-wrap text-sm leading-7 text-slate-600">
+                          {notification.body}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
-                      <time className="text-xs text-slate-400">{formatJalaliDateTime(notification.created_at)}</time>
+                      <time className="text-xs text-slate-400">
+                        {formatJalaliDateTime(notification.created_at)}
+                      </time>
                       {canManageMessages && notification.can_manage ? (
                         <>
                           <button

@@ -199,9 +199,6 @@ export function PaymentsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">پرداخت‌ها</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            مدیریت پرداخت‌های مشتریان و تأیید آن‌ها
-          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -305,7 +302,15 @@ export function PaymentsPage() {
         onAction={(payment, action) => void handleAction(payment, action)}
       />
 
-      {<Pagination page={page} lastPage={lastPage} isLoading={isLoading} total={total} onPageChange={setPage} />}
-</section>
+      {
+        <Pagination
+          page={page}
+          lastPage={lastPage}
+          isLoading={isLoading}
+          total={total}
+          onPageChange={setPage}
+        />
+      }
+    </section>
   );
 }

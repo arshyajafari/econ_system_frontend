@@ -21,7 +21,11 @@ import { OrderReturnTable } from "../components/OrderReturnTable";
 export function OrderReturnsPage() {
   const { user } = useAuth();
   const roles = user?.roles ?? [];
-  const canCreateReturn = roles.includes("admin") || roles.includes("accountant") || roles.includes("sales visitor") || roles.includes("delivery operator");
+  const canCreateReturn =
+    roles.includes("admin") ||
+    roles.includes("accountant") ||
+    roles.includes("sales visitor") ||
+    roles.includes("delivery operator");
 
   const [orderReturns, setOrderReturns] = useState<OrderReturn[]>([]);
 
@@ -103,19 +107,15 @@ export function OrderReturnsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">مرجوعی سفارش‌ها</h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            مدیریت درخواست‌های مرجوعی، تخصیص انبار و تکمیل مرجوعی
-          </p>
         </div>
 
         {canCreateReturn ? (
-        <Link
-          to="/order-returns/new"
-          className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-        >
-          ثبت مرجوعی جدید
-        </Link>
+          <Link
+            to="/order-returns/new"
+            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            ثبت مرجوعی جدید
+          </Link>
         ) : null}
       </div>
 
@@ -193,9 +193,23 @@ export function OrderReturnsPage() {
         <span>{new Intl.NumberFormat("fa-IR").format(total)} مرجوعی</span>
       </div>
 
-      <OrderReturnTable orderReturns={orderReturns} isLoading={isLoading} onUpdated={(updated) => setOrderReturns((current) => current.map((item) => item.id === updated.id ? updated : item))} />
+      <OrderReturnTable
+        orderReturns={orderReturns}
+        isLoading={isLoading}
+        onUpdated={(updated) =>
+          setOrderReturns((current) =>
+            current.map((item) => (item.id === updated.id ? updated : item)),
+          )
+        }
+      />
 
-      <Pagination page={page} lastPage={lastPage} isLoading={isLoading} total={total} onPageChange={setPage} />
+      <Pagination
+        page={page}
+        lastPage={lastPage}
+        isLoading={isLoading}
+        total={total}
+        onPageChange={setPage}
+      />
     </section>
   );
 }

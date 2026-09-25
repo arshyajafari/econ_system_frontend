@@ -234,7 +234,7 @@ export function OrderItemsEditor({
                     placeholder="اختیاری"
                   />
                 </Field>
-                <div className="rounded-xl border border-gray-200 bg-white p-3">
+                <div className="rounded-xl border border-gray-200 bg-white p-3 lg:col-span-2">
                   <div className="text-[11px] font-medium text-gray-500">
                     مبلغ نهایی
                   </div>

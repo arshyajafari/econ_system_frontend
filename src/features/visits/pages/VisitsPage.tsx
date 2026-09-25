@@ -7,21 +7,169 @@ import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
 import type { Doctor } from "../../doctors/types/doctor";
 import { VisitForm } from "../components/VisitForm";
-import { cancelVisit, completeVisit, createVisit, deleteVisit, getVisitDoctors, getVisits, updateVisit } from "../services/visitsApi";
+import {
+  cancelVisit,
+  completeVisit,
+  createVisit,
+  deleteVisit,
+  getVisitDoctors,
+  getVisits,
+  updateVisit,
+} from "../services/visitsApi";
 import { getVisitStatusLabel, VISIT_STATUS_OPTIONS } from "../types/visit";
-import type { Visit, VisitFormData, VisitListParams, VisitStatus } from "../types/visit";
+import type {
+  Visit,
+  VisitFormData,
+  VisitListParams,
+  VisitStatus,
+} from "../types/visit";
 
 export function VisitsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
-  const [visits,setVisits]=useState<Visit[]>([]),[doctors,setDoctors]=useState<Doctor[]>([]),[doctorId,setDoctorId]=useState(""),[status,setStatus]=useState<VisitStatus|"">(""),[from,setFrom]=useState(""),[to,setTo]=useState(""),[search,setSearch]=useState(""),[page,setPage]=useState(1),[lastPage,setLastPage]=useState(1),[total,setTotal]=useState(0),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[actionId,setActionId]=useState<string|null>(null),[error,setError]=useState<string|null>(null),[formError,setFormError]=useState<string|null>(null),[formOpen,setFormOpen]=useState(false),[editing,setEditing]=useState<Visit|null>(null),[actionTarget,setActionTarget]=useState<{visit:Visit;action:"complete"|"cancel"}|null>(null),[deleteTarget,setDeleteTarget]=useState<Visit|null>(null);
-  const load=useCallback(async(p?:Partial<VisitListParams>)=>{setLoading(true);setError(null);try{const r=await getVisits({search:search.trim()||undefined,doctor_id:doctorId||undefined,status:status||undefined,visit_from:from||undefined,visit_to:to||undefined,sort:"-visit_date",page:p?.page??page,per_page:20});setVisits(r.data);setLastPage(r.meta.last_page);setTotal(r.meta.total)}catch(e:unknown){setError(e instanceof ApiError?e.message:"خطا در دریافت بازدیدها.")}finally{setLoading(false)}},[doctorId,from,page,search,status,to]);
-  useEffect(()=>{let cancelled=false;const run=async()=>{setLoading(true);setError(null);try{const r=await getVisits({search:search.trim()||undefined,doctor_id:doctorId||undefined,status:status||undefined,visit_from:from||undefined,visit_to:to||undefined,sort:"-visit_date",page,per_page:20});if(!cancelled){setVisits(r.data);setLastPage(r.meta.last_page);setTotal(r.meta.total)}}catch(e:unknown){if(!cancelled)setError(e instanceof ApiError?e.message:"خطا در دریافت بازدیدها")}finally{if(!cancelled)setLoading(false)}};void run();return()=>{cancelled=true}},[doctorId,from,page,search,status,to]);
-  useEffect(()=>{getVisitDoctors().then(setDoctors).catch(()=>setDoctors([]))},[]);
-  const reset=()=>{setSearch("");setDoctorId("");setStatus("");setFrom("");setTo("");setPage(1)};
-  async function submit(d:VisitFormData){setSaving(true);setFormError(null);try{const saved=editing?await updateVisit(editing.id,d):await createVisit(d);setVisits(x=>editing?x.map(v=>v.id===saved.id?saved:v):[saved,...x].slice(0,20));if(!editing)setTotal(x=>x+1);setFormOpen(false);setEditing(null)}catch(e:unknown){setFormError(e instanceof ApiError?e.message:"خطا در ذخیره بازدید.")}finally{setSaving(false)}}
-  async function removeVisit(v:Visit){if(actionId)return;setActionId(v.id);try{await deleteVisit(v.id);setVisits(x=>x.filter(i=>i.id!==v.id));setTotal(x=>Math.max(0,x-1));}catch(e:unknown){setError(e instanceof ApiError?e.message:"خطا در حذف بازدید")}finally{setActionId(null)}}
-  async function action(v:Visit,a:"complete"|"cancel"){if(actionId)return;setActionId(v.id);try{const u=a==="complete"?await completeVisit(v.id):await cancelVisit(v.id);setVisits(x=>x.map(i=>i.id===u.id?u:i))}catch(e:unknown){setError(e instanceof ApiError?e.message:"خطا در تغییر وضعیت بازدید")}finally{setActionId(null)}}
+  const [visits, setVisits] = useState<Visit[]>([]),
+    [doctors, setDoctors] = useState<Doctor[]>([]),
+    [doctorId, setDoctorId] = useState(""),
+    [status, setStatus] = useState<VisitStatus | "">(""),
+    [from, setFrom] = useState(""),
+    [to, setTo] = useState(""),
+    [search, setSearch] = useState(""),
+    [page, setPage] = useState(1),
+    [lastPage, setLastPage] = useState(1),
+    [total, setTotal] = useState(0),
+    [loading, setLoading] = useState(true),
+    [saving, setSaving] = useState(false),
+    [actionId, setActionId] = useState<string | null>(null),
+    [error, setError] = useState<string | null>(null),
+    [formError, setFormError] = useState<string | null>(null),
+    [formOpen, setFormOpen] = useState(false),
+    [editing, setEditing] = useState<Visit | null>(null),
+    [actionTarget, setActionTarget] = useState<{
+      visit: Visit;
+      action: "complete" | "cancel";
+    } | null>(null),
+    [deleteTarget, setDeleteTarget] = useState<Visit | null>(null);
+  const load = useCallback(
+    async (p?: Partial<VisitListParams>) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const r = await getVisits({
+          search: search.trim() || undefined,
+          doctor_id: doctorId || undefined,
+          status: status || undefined,
+          visit_from: from || undefined,
+          visit_to: to || undefined,
+          sort: "-visit_date",
+          page: p?.page ?? page,
+          per_page: 20,
+        });
+        setVisits(r.data);
+        setLastPage(r.meta.last_page);
+        setTotal(r.meta.total);
+      } catch (e: unknown) {
+        setError(e instanceof ApiError ? e.message : "خطا در دریافت بازدیدها.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [doctorId, from, page, search, status, to],
+  );
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const r = await getVisits({
+          search: search.trim() || undefined,
+          doctor_id: doctorId || undefined,
+          status: status || undefined,
+          visit_from: from || undefined,
+          visit_to: to || undefined,
+          sort: "-visit_date",
+          page,
+          per_page: 20,
+        });
+        if (!cancelled) {
+          setVisits(r.data);
+          setLastPage(r.meta.last_page);
+          setTotal(r.meta.total);
+        }
+      } catch (e: unknown) {
+        if (!cancelled)
+          setError(
+            e instanceof ApiError ? e.message : "خطا در دریافت بازدیدها",
+          );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [doctorId, from, page, search, status, to]);
+  useEffect(() => {
+    getVisitDoctors()
+      .then(setDoctors)
+      .catch(() => setDoctors([]));
+  }, []);
+  const reset = () => {
+    setSearch("");
+    setDoctorId("");
+    setStatus("");
+    setFrom("");
+    setTo("");
+    setPage(1);
+  };
+  async function submit(d: VisitFormData) {
+    setSaving(true);
+    setFormError(null);
+    try {
+      const saved = editing
+        ? await updateVisit(editing.id, d)
+        : await createVisit(d);
+      setVisits((x) =>
+        editing
+          ? x.map((v) => (v.id === saved.id ? saved : v))
+          : [saved, ...x].slice(0, 20),
+      );
+      if (!editing) setTotal((x) => x + 1);
+      setFormOpen(false);
+      setEditing(null);
+    } catch (e: unknown) {
+      setFormError(e instanceof ApiError ? e.message : "خطا در ذخیره بازدید.");
+    } finally {
+      setSaving(false);
+    }
+  }
+  async function removeVisit(v: Visit) {
+    if (actionId) return;
+    setActionId(v.id);
+    try {
+      await deleteVisit(v.id);
+      setVisits((x) => x.filter((i) => i.id !== v.id));
+      setTotal((x) => Math.max(0, x - 1));
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در حذف بازدید");
+    } finally {
+      setActionId(null);
+    }
+  }
+  async function action(v: Visit, a: "complete" | "cancel") {
+    if (actionId) return;
+    setActionId(v.id);
+    try {
+      const u =
+        a === "complete" ? await completeVisit(v.id) : await cancelVisit(v.id);
+      setVisits((x) => x.map((i) => (i.id === u.id ? u : i)));
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در تغییر وضعیت بازدید");
+    } finally {
+      setActionId(null);
+    }
+  }
   return (
     <>
       <ConfirmModal
@@ -33,24 +181,32 @@ export function VisitsPage() {
         isLoading={actionId !== null}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
-          if (deleteTarget) void removeVisit(deleteTarget).finally(() => setDeleteTarget(null));
+          if (deleteTarget)
+            void removeVisit(deleteTarget).finally(() => setDeleteTarget(null));
         }}
       />
 
       <ConfirmModal
         open={actionTarget !== null}
-        title={actionTarget?.action === "cancel" ? "لغو بازدید" : "تکمیل بازدید"}
+        title={
+          actionTarget?.action === "cancel" ? "لغو بازدید" : "تکمیل بازدید"
+        }
         description={
           actionTarget
             ? `آیا از ${actionTarget.action === "cancel" ? "لغو" : "تکمیل"} بازدید این پزشک مطمئن هستید؟`
             : ""
         }
-        confirmLabel={actionTarget?.action === "cancel" ? "لغو بازدید" : "تکمیل بازدید"}
+        confirmLabel={
+          actionTarget?.action === "cancel" ? "لغو بازدید" : "تکمیل بازدید"
+        }
         variant={actionTarget?.action === "cancel" ? "danger" : "primary"}
         isLoading={actionId !== null}
         onCancel={() => setActionTarget(null)}
         onConfirm={() => {
-          if (actionTarget) void action(actionTarget.visit, actionTarget.action).finally(() => setActionTarget(null));
+          if (actionTarget)
+            void action(actionTarget.visit, actionTarget.action).finally(() =>
+              setActionTarget(null),
+            );
         }}
       />
 
@@ -58,10 +214,14 @@ export function VisitsPage() {
         <header className="flex flex-col gap-3 md:flex-row md:justify-between">
           <div>
             <h1 className="text-2xl font-bold">بازدیدها</h1>
-            <p className="text-sm text-gray-500">ثبت و پیگیری بازدیدهای پزشکان</p>
           </div>
           <div className="flex gap-2">
-            <button type="button" onClick={() => void load()} disabled={loading} className="rounded-lg border px-4 py-2">
+            <button
+              type="button"
+              onClick={() => void load()}
+              disabled={loading}
+              className="rounded-lg border px-4 py-2"
+            >
               بروزرسانی
             </button>
             <button
@@ -78,7 +238,14 @@ export function VisitsPage() {
           </div>
         </header>
 
-        {error && <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+        {error && (
+          <div
+            role="alert"
+            className="rounded-lg bg-red-50 p-3 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
 
         {formOpen && (
           <VisitForm
@@ -116,7 +283,9 @@ export function VisitsPage() {
           >
             <option value="">همه پزشکان</option>
             {doctors.map((d) => (
-              <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>
+              <option key={d.id} value={d.id}>
+                {d.first_name} {d.last_name}
+              </option>
             ))}
           </select>
           <select
@@ -129,45 +298,93 @@ export function VisitsPage() {
           >
             <option value="">همه وضعیت‌ها</option>
             {VISIT_STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
             ))}
           </select>
-          <JalaliDateInput value={from} onChange={(value) => { setFrom(value); setPage(1); }} className="rounded-lg border px-3 py-2" placeholder="از تاریخ (۱۴۰۵/۰۶/۰۱)" />
-          <JalaliDateInput value={to} onChange={(value) => { setTo(value); setPage(1); }} className="rounded-lg border px-3 py-2" placeholder="تا تاریخ (۱۴۰۵/۰۶/۳۱)" />
+          <JalaliDateInput
+            value={from}
+            onChange={(value) => {
+              setFrom(value);
+              setPage(1);
+            }}
+            className="rounded-lg border px-3 py-2"
+          />
+          <JalaliDateInput
+            value={to}
+            onChange={(value) => {
+              setTo(value);
+              setPage(1);
+            }}
+            className="rounded-lg border px-3 py-2"
+          />
         </div>
 
         <div className="flex justify-between text-sm text-gray-500">
           <span>{new Intl.NumberFormat("fa-IR").format(total)} بازدید</span>
-          <button type="button" onClick={reset}>پاک کردن فیلترها</button>
+          <button type="button" onClick={reset}>
+            پاک کردن فیلترها
+          </button>
         </div>
 
         <div className="overflow-x-auto rounded-xl border bg-white">
           <table className="min-w-full text-right text-sm">
             <thead className="bg-gray-50">
               <tr>
-                {["تاریخ", "پزشک", "محصول/نمونه", "هدف", "کارمند", "وضعیت", "عملیات"].map((x) => (
-                  <th key={x} className="px-4 py-3">{x}</th>
+                {[
+                  "تاریخ",
+                  "پزشک",
+                  "محصول/نمونه",
+                  "هدف",
+                  "کارمند",
+                  "وضعیت",
+                  "عملیات",
+                ].map((x) => (
+                  <th key={x} className="px-4 py-3">
+                    {x}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y">
               {loading && !visits.length ? (
-                <tr><td colSpan={7} className="p-10 text-center">در حال دریافت…</td></tr>
+                <tr>
+                  <td colSpan={7} className="p-10 text-center">
+                    در حال دریافت…
+                  </td>
+                </tr>
               ) : !visits.length ? (
-                <tr><td colSpan={7} className="p-10 text-center">بازدیدی پیدا نشد.</td></tr>
+                <tr>
+                  <td colSpan={7} className="p-10 text-center">
+                    بازدیدی پیدا نشد.
+                  </td>
+                </tr>
               ) : (
                 visits.map((v) => (
                   <tr key={v.id}>
-                    <td className="whitespace-nowrap px-4 py-3">{formatJalaliDateTime(v.visit_date)}</td>
-                    <td className="px-4 py-3 font-medium">{v.doctor_name ?? v.doctor?.name ?? "—"}</td>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      {formatJalaliDateTime(v.visit_date)}
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      {v.doctor_name ?? v.doctor?.name ?? "—"}
+                    </td>
                     <td className="px-4 py-3">
                       {v.samples?.length
-                        ? v.samples.map((sample) => sample.product_name ?? sample.product?.title).filter(Boolean).join("، ")
+                        ? v.samples
+                            .map(
+                              (sample) =>
+                                sample.product_name ?? sample.product?.title,
+                            )
+                            .filter(Boolean)
+                            .join("، ")
                         : "—"}
                     </td>
                     <td className="px-4 py-3">{v.purpose || "—"}</td>
                     <td className="px-4 py-3">{v.employee?.name ?? "—"}</td>
-                    <td className="px-4 py-3">{getVisitStatusLabel(v.status)}</td>
+                    <td className="px-4 py-3">
+                      {getVisitStatusLabel(v.status)}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         {v.status === "draft" && (
@@ -186,7 +403,12 @@ export function VisitsPage() {
                             <button
                               type="button"
                               disabled={actionId === v.id}
-                              onClick={() => setActionTarget({ visit: v, action: "complete" })}
+                              onClick={() =>
+                                setActionTarget({
+                                  visit: v,
+                                  action: "complete",
+                                })
+                              }
                               className="rounded border px-2 py-1 text-xs"
                             >
                               تکمیل
@@ -194,7 +416,9 @@ export function VisitsPage() {
                             <button
                               type="button"
                               disabled={actionId === v.id}
-                              onClick={() => setActionTarget({ visit: v, action: "cancel" })}
+                              onClick={() =>
+                                setActionTarget({ visit: v, action: "cancel" })
+                              }
                               className="rounded border px-2 py-1 text-xs"
                             >
                               لغو
@@ -220,8 +444,16 @@ export function VisitsPage() {
           </table>
         </div>
 
-        {<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
-</section>
+        {
+          <Pagination
+            page={page}
+            lastPage={lastPage}
+            isLoading={loading}
+            total={total}
+            onPageChange={setPage}
+          />
+        }
+      </section>
     </>
   );
 }

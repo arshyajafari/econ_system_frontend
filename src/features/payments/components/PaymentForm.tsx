@@ -20,7 +20,13 @@ type PaymentFormProps = {
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
-export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }: PaymentFormProps) {
+export function PaymentForm({
+  payment,
+  isSubmitting,
+  error,
+  onSubmit,
+  onCancel,
+}: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
@@ -28,10 +34,18 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
   const [customerBalance, setCustomerBalance] = useState<number | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
-  const [method, setMethod] = useState<PaymentMethod>(payment?.method ?? "cash");
-  const [settlementDiscountAmount, setSettlementDiscountAmount] = useState(payment ? String(payment.settlement_discount_amount ?? 0) : "0");
-  const [referenceNumber, setReferenceNumber] = useState(payment?.reference_number ?? "");
-  const [paymentDate, setPaymentDate] = useState(payment?.payment_date ?? new Date().toISOString().slice(0, 10));
+  const [method, setMethod] = useState<PaymentMethod>(
+    payment?.method ?? "cash",
+  );
+  const [settlementDiscountAmount, setSettlementDiscountAmount] = useState(
+    payment ? String(payment.settlement_discount_amount ?? 0) : "0",
+  );
+  const [referenceNumber, setReferenceNumber] = useState(
+    payment?.reference_number ?? "",
+  );
+  const [paymentDate, setPaymentDate] = useState(
+    payment?.payment_date ?? new Date().toISOString().slice(0, 10),
+  );
   const [description, setDescription] = useState(payment?.description ?? "");
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
   const [receiptError, setReceiptError] = useState<string | null>(null);
@@ -45,27 +59,44 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
         const response = await getCustomers({ per_page: 100 });
         if (!cancelled) {
           const currentCustomer = payment?.customer;
-          const current = currentCustomer && !response.data.some((item) => item.id === currentCustomer.id)
-            ? [{ id: currentCustomer.id, code: currentCustomer.code, customer_name: currentCustomer.name } as Customer]
-            : [];
+          const current =
+            currentCustomer &&
+            !response.data.some((item) => item.id === currentCustomer.id)
+              ? [
+                  {
+                    id: currentCustomer.id,
+                    code: currentCustomer.code,
+                    customer_name: currentCustomer.name,
+                  } as Customer,
+                ]
+              : [];
           setCustomers([...current, ...response.data]);
         }
       } catch (requestError: unknown) {
-        if (!cancelled) setBalanceError(requestError instanceof ApiError && requestError.message ? requestError.message : "خطا در دریافت مشتریان.");
+        if (!cancelled)
+          setBalanceError(
+            requestError instanceof ApiError && requestError.message
+              ? requestError.message
+              : "خطا در دریافت مشتریان.",
+          );
       } finally {
         if (!cancelled) setIsLoadingCustomers(false);
       }
     }
 
     void loadCustomers();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [payment]);
 
   useEffect(() => {
     let cancelled = false;
 
     if (!customerId) {
-      return () => { cancelled = true; };
+      return () => {
+        cancelled = true;
+      };
     }
 
     async function loadBalance() {
@@ -79,15 +110,10 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
 
         setCustomerBalance(balance);
 
-        // For a new payment the server is the single source of truth.
-        // Always replace the initial/stale amount with the freshly fetched
-        // customer balance. The user can then reduce it for a partial payment.
         if (!payment) {
           setAmount(balance > 0 ? String(balance) : "");
           setSettlementDiscountAmount("0");
         } else {
-          // When editing, preserve the existing amount unless it is now above
-          // the customer's current payable balance.
           setAmount((current) => {
             const currentAmount = Number(current || 0);
             return currentAmount > balance ? String(balance) : current;
@@ -137,9 +163,12 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
       numericAmount <= 0 ||
       !Number.isFinite(numericDiscount) ||
       numericDiscount < 0 ||
-      (customerBalance !== null && (numericAmount + numericDiscount > customerBalance || numericDiscount > customerBalance)) ||
+      (customerBalance !== null &&
+        (numericAmount + numericDiscount > customerBalance ||
+          numericDiscount > customerBalance)) ||
       receiptError
-    ) return;
+    )
+      return;
 
     onSubmit({
       customer_id: customerId,
@@ -154,20 +183,38 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-white p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-xl border border-gray-200 bg-white p-5"
+    >
       <div className="mb-5">
-        <h2 className="text-lg font-semibold text-gray-900">{payment ? "ویرایش پرداخت" : "پرداخت جدید"}</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          در ثبت پرداخت، فقط مشتری انتخاب می‌شود و مبلغ پیش‌فرض از مانده قابل پرداخت حساب او محاسبه می‌شود.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900">
+          {payment ? "ویرایش پرداخت" : "پرداخت جدید"}
+        </h2>
       </div>
 
-      {error ? <div role="alert" className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
-      {balanceError ? <div role="alert" className="mb-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-700">{balanceError}</div> : null}
+      {error ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {error}
+        </div>
+      ) : null}
+      {balanceError ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-lg bg-yellow-50 px-4 py-3 text-sm text-yellow-700"
+        >
+          {balanceError}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">مشتری</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            مشتری
+          </label>
           <select
             required
             disabled={isSubmitting || Boolean(payment) || isLoadingCustomers}
@@ -175,7 +222,9 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
             onChange={(event) => handleCustomerChange(event.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"
           >
-            <option value="">{isLoadingCustomers ? "در حال دریافت مشتریان..." : "انتخاب مشتری"}</option>
+            <option value="">
+              {isLoadingCustomers ? "در حال دریافت مشتریان..." : "انتخاب مشتری"}
+            </option>
             {customers.map((customer) => (
               <option key={customer.id} value={customer.id}>
                 {customer.code} — {customer.customer_name}
@@ -185,7 +234,9 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            مبلغ
+          </label>
           <FormattedNumberInput
             required
             min="0.01"
@@ -212,22 +263,43 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
             </div>
           ) : null}
           {customerId && customerBalance === 0 && !isLoadingBalance ? (
-            <div className="mt-1 text-xs font-medium text-green-600">این مشتری در حال حاضر مانده قابل پرداخت ندارد.</div>
+            <div className="mt-1 text-xs font-medium text-green-600">
+              این مشتری در حال حاضر مانده قابل پرداخت ندارد.
+            </div>
           ) : null}
-          {customerId && !isLoadingBalance && Number(amount || 0) < (customerBalance ?? 0) ? (
-            <div className="mt-1 text-xs text-blue-600">پرداخت جزئی مجاز است؛ مبلغ باقی‌مانده پس از تأیید پرداخت حفظ می‌شود.</div>
+          {customerId &&
+          !isLoadingBalance &&
+          Number(amount || 0) < (customerBalance ?? 0) ? (
+            <div className="mt-1 text-xs text-blue-600">
+              پرداخت جزئی مجاز است؛ مبلغ باقی‌مانده پس از تأیید پرداخت حفظ
+              می‌شود.
+            </div>
           ) : null}
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">روش پرداخت</label>
-          <select required disabled={isSubmitting} value={method} onChange={(event) => setMethod(event.target.value as PaymentMethod)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-            {PAYMENT_METHOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            روش پرداخت
+          </label>
+          <select
+            required
+            disabled={isSubmitting}
+            value={method}
+            onChange={(event) => setMethod(event.target.value as PaymentMethod)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          >
+            {PAYMENT_METHOD_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">تخفیف تسویه</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            تخفیف تسویه
+          </label>
           <FormattedNumberInput
             min="0"
             step="0.01"
@@ -238,38 +310,85 @@ export function PaymentForm({ payment, isSubmitting, error, onSubmit, onCancel }
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
             placeholder="مثلاً 100,000"
           />
-          {customerId ? <div className="mt-2 text-xs text-gray-500">تخفیف تسویه فقط تا سقف مانده قابل پرداخت مشتری مجاز است.</div> : null}
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ پرداخت</label>
-          <JalaliDateInput required disabled={isSubmitting} value={paymentDate} onChange={setPaymentDate} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            تاریخ پرداخت
+          </label>
+          <JalaliDateInput
+            required
+            disabled={isSubmitting}
+            value={paymentDate}
+            onChange={setPaymentDate}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">شماره مرجع</label>
-          <input type="text" maxLength={100} disabled={isSubmitting} value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="شماره پیگیری، چک و..." />
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">توضیحات</label>
-          <input type="text" disabled={isSubmitting} value={description} onChange={(event) => setDescription(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            شماره مرجع
+          </label>
+          <input
+            type="text"
+            maxLength={100}
+            disabled={isSubmitting}
+            value={referenceNumber}
+            onChange={(event) => setReferenceNumber(event.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            placeholder="شماره پیگیری، چک و..."
+          />
         </div>
 
         <div className="md:col-span-2">
-          <ImageUploadField label="" file={receiptImage} value={payment?.receipt_image_url} disabled={isSubmitting} maxSizeMB={3} hint="JPG، PNG یا WEBP · حداکثر ۳ مگابایت" onFileChange={setReceiptImage} onError={setReceiptError} />
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            توضیحات
+          </label>
+          <input
+            type="text"
+            disabled={isSubmitting}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <ImageUploadField
+            label=""
+            file={receiptImage}
+            value={payment?.receipt_image_url}
+            disabled={isSubmitting}
+            maxSizeMB={3}
+            hint="JPG، PNG یا WEBP · حداکثر ۳ مگابایت"
+            onFileChange={setReceiptImage}
+            onError={setReceiptError}
+          />
         </div>
       </div>
 
       <div className="mt-5 flex gap-2">
         <button
           type="submit"
-          disabled={isSubmitting || !customerId || Boolean(receiptError) || (!payment && (isLoadingBalance || customerBalance === null || customerBalance <= 0))}
+          disabled={
+            isSubmitting ||
+            !customerId ||
+            Boolean(receiptError) ||
+            (!payment &&
+              (isLoadingBalance ||
+                customerBalance === null ||
+                customerBalance <= 0))
+          }
           className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "در حال ذخیره..." : "ذخیره پرداخت"}
         </button>
-        <button type="button" disabled={isSubmitting} onClick={onCancel} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">
+        <button
+          type="button"
+          disabled={isSubmitting}
+          onClick={onCancel}
+          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+        >
           انصراف
         </button>
       </div>

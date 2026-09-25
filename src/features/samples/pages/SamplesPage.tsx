@@ -7,23 +7,371 @@ import { formatJalaliDateTime } from "../../../utils/date";
 import type { Product } from "../../products/types/product";
 import type { Visit } from "../../visits/types/visit";
 import { SampleForm } from "../components/SampleForm";
-import { createSample, deleteSample, getSampleProducts, getSampleVisits, getSamples, updateSample } from "../services/samplesApi";
+import {
+  createSample,
+  deleteSample,
+  getSampleProducts,
+  getSampleVisits,
+  getSamples,
+  updateSample,
+} from "../services/samplesApi";
 import type { Sample, SampleFormData } from "../types/sample";
 
-const statusLabel: Record<"draft" | "completed" | "cancelled", string> = { draft: "پیش‌نویس", completed: "تکمیل‌شده", cancelled: "لغوشده" };
+const statusLabel: Record<"draft" | "completed" | "cancelled", string> = {
+  draft: "پیش‌نویس",
+  completed: "تکمیل‌شده",
+  cancelled: "لغوشده",
+};
 
-export function SamplesPage(){const { user } = useAuth(); const isScientificVisitor = user?.roles.includes("scientific visitor") ?? false; const[samples,setSamples]=useState<Sample[]>([]),[visits,setVisits]=useState<Visit[]>([]),[products,setProducts]=useState<Product[]>([]),[search,setSearch]=useState(""),[productId,setProductId]=useState(""),[page,setPage]=useState(1),[lastPage,setLastPage]=useState(1),[total,setTotal]=useState(0),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[deletingId,setDeletingId]=useState<string|null>(null),[error,setError]=useState<string|null>(null),[formError,setFormError]=useState<string|null>(null),[formOpen,setFormOpen]=useState(false),[editing,setEditing]=useState<Sample|null>(null),[deleteTarget,setDeleteTarget]=useState<Sample|null>(null);
- const load=useCallback(async()=>{setLoading(true);setError(null);try{const response=await getSamples({search:search.trim()||undefined,product_id:productId||undefined,sort:"-created_at",page,per_page:20});setSamples(response.data);setLastPage(response.meta.last_page);setTotal(response.meta.total)}catch(err:unknown){setError(err instanceof ApiError?err.message:"خطا در دریافت نمونه‌ها.")}finally{setLoading(false)}},[page,productId,search]);
- useEffect(()=>{let cancelled=false;const run=async()=>{setLoading(true);setError(null);try{const response=await getSamples({search:search.trim()||undefined,product_id:productId||undefined,sort:"-created_at",page,per_page:20});if(!cancelled){setSamples(response.data);setLastPage(response.meta.last_page);setTotal(response.meta.total)}}catch(err:unknown){if(!cancelled)setError(err instanceof ApiError?err.message:"خطا در دریافت نمونه‌ها")}finally{if(!cancelled)setLoading(false)}};void run();return()=>{cancelled=true}},[page,productId,search]);
- useEffect(()=>{let cancelled=false;const loadOptions=async()=>{try{const [visitResult, productResult] = await Promise.allSettled([getSampleVisits(), getSampleProducts(isScientificVisitor)]);
-      if (!cancelled) {
-        setVisits(visitResult.status === "fulfilled" ? visitResult.value : []);
-        setProducts(productResult.status === "fulfilled" ? productResult.value : []);
-        if (visitResult.status === "rejected" && productResult.status === "rejected") {
-          throw visitResult.reason;
+export function SamplesPage() {
+  const { user } = useAuth();
+  const isScientificVisitor =
+    user?.roles.includes("scientific visitor") ?? false;
+  const [samples, setSamples] = useState<Sample[]>([]),
+    [visits, setVisits] = useState<Visit[]>([]),
+    [products, setProducts] = useState<Product[]>([]),
+    [search, setSearch] = useState(""),
+    [productId, setProductId] = useState(""),
+    [page, setPage] = useState(1),
+    [lastPage, setLastPage] = useState(1),
+    [total, setTotal] = useState(0),
+    [loading, setLoading] = useState(true),
+    [saving, setSaving] = useState(false),
+    [deletingId, setDeletingId] = useState<string | null>(null),
+    [error, setError] = useState<string | null>(null),
+    [formError, setFormError] = useState<string | null>(null),
+    [formOpen, setFormOpen] = useState(false),
+    [editing, setEditing] = useState<Sample | null>(null),
+    [deleteTarget, setDeleteTarget] = useState<Sample | null>(null);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getSamples({
+        search: search.trim() || undefined,
+        product_id: productId || undefined,
+        sort: "-created_at",
+        page,
+        per_page: 20,
+      });
+      setSamples(response.data);
+      setLastPage(response.meta.last_page);
+      setTotal(response.meta.total);
+    } catch (err: unknown) {
+      setError(
+        err instanceof ApiError ? err.message : "خطا در دریافت نمونه‌ها.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [page, productId, search]);
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getSamples({
+          search: search.trim() || undefined,
+          product_id: productId || undefined,
+          sort: "-created_at",
+          page,
+          per_page: 20,
+        });
+        if (!cancelled) {
+          setSamples(response.data);
+          setLastPage(response.meta.last_page);
+          setTotal(response.meta.total);
         }
-      }}catch(err){if(!cancelled){setError(err instanceof ApiError?err.message:"خطا در دریافت اطلاعات فرم نمونه.")}}};void loadOptions();return()=>{cancelled=true}},[isScientificVisitor]);
- async function submit(data:SampleFormData){setSaving(true);setFormError(null);try{const saved=editing?await updateSample(editing.id,data):await createSample(data);if(editing)setSamples(items=>items.map(item=>item.id===saved.id?saved:item));else{setSamples(items=>[saved,...items].slice(0,20));setTotal(value=>value+1)}setFormOpen(false);setEditing(null)}catch(err:unknown){setFormError(err instanceof ApiError?err.message:"خطا در ذخیره نمونه.")}finally{setSaving(false)}}
- function requestDelete(sample:Sample){if(deletingId)return;setDeleteTarget(sample)} async function remove(sample:Sample){setDeletingId(sample.id);setError(null);try{await deleteSample(sample.id);setSamples(items=>items.filter(item=>item.id!==sample.id));setTotal(value=>Math.max(0,value-1))}catch(err:unknown){setError(err instanceof ApiError?err.message:"خطا در حذف نمونه.")}finally{setDeletingId(null)}}
- return <><ConfirmModal open={deleteTarget!==null} title="حذف نمونه" description="آیا از حذف این نمونه مطمئن هستید؟ این عملیات قابل بازگشت نیست." confirmLabel="حذف نمونه" variant="danger" isLoading={deletingId!==null} onCancel={()=>setDeleteTarget(null)} onConfirm={()=>{if(deleteTarget)void remove(deleteTarget).finally(()=>setDeleteTarget(null));}} /> <section className="space-y-5 p-4 md:p-6"><header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div><h1 className="text-2xl font-bold">نمونه‌ها</h1><p className="text-sm text-gray-500">ثبت و پیگیری نمونه‌های تحویلی در بازدیدها</p></div><div className="flex gap-2"><button type="button" onClick={()=>void load()} disabled={loading} className="rounded-lg border px-4 py-2">بروزرسانی</button><button type="button" onClick={()=>{setEditing(null);setFormError(null);setFormOpen(true)}} className="rounded-lg bg-gray-900 px-4 py-2 text-white">نمونه جدید</button></div></header>{error&&<div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}{formOpen&&<SampleForm visits={visits} products={products} sample={editing} isSubmitting={saving} error={formError} onSubmit={submit} onCancel={()=>{if(!saving){setFormOpen(false);setEditing(null)}}}/>}<div className="grid gap-3 md:grid-cols-3"><input value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="جستجوی توضیحات" className="rounded-lg border px-3 py-2"/><select value={productId} onChange={e=>{setProductId(e.target.value);setPage(1)}} className="rounded-lg border px-3 py-2"><option value="">همه محصولات</option>{products.map(product=><option key={product.id} value={product.id}>{product.title}</option>)}</select><div className="flex items-center justify-end text-sm text-gray-500">{new Intl.NumberFormat("fa-IR").format(total)} نمونه</div></div><div className="overflow-x-auto rounded-xl border bg-white"><table className="min-w-full text-right text-sm"><thead className="bg-gray-50"><tr>{["تاریخ بازدید","پزشک","محصول","تعداد","وضعیت بازدید","کارمند","توضیحات","عملیات"].map(title=><th key={title} className="px-4 py-3">{title}</th>)}</tr></thead><tbody className="divide-y">{loading&&!samples.length?<tr><td colSpan={8} className="p-10 text-center">در حال دریافت…</td></tr>:!samples.length?<tr><td colSpan={8} className="p-10 text-center">نمونه‌ای پیدا نشد.</td></tr>:samples.map(sample=><tr key={sample.id}><td className="whitespace-nowrap px-4 py-3">{formatJalaliDateTime(sample.visit?.visit_date??sample.created_at??null)}</td><td className="px-4 py-3 font-medium">{sample.doctor_name??sample.doctor?.name??"—"}</td><td className="px-4 py-3">{sample.product_name??sample.product?.title??"—"}<div className="text-xs text-gray-500">{sample.product?.code??""}</div></td><td className="px-4 py-3">{new Intl.NumberFormat("fa-IR").format(sample.quantity)}</td><td className="px-4 py-3">{sample.visit?.status?statusLabel[sample.visit.status]:"—"}</td><td className="px-4 py-3">{sample.employee?.name??"—"}</td><td className="max-w-xs px-4 py-3">{sample.description||"—"}</td><td className="px-4 py-3"><div className="flex gap-2"><button type="button" onClick={()=>{setEditing(sample);setFormError(null);setFormOpen(true)}} className="rounded border px-2 py-1 text-xs">ویرایش</button>{!isScientificVisitor?<button type="button" disabled={deletingId===sample.id} onClick={()=>requestDelete(sample)} className="rounded border px-2 py-1 text-xs">حذف</button>:null}</div></td></tr>)}</tbody></table></div>{<Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />}
-</section></>}
+      } catch (err: unknown) {
+        if (!cancelled)
+          setError(
+            err instanceof ApiError ? err.message : "خطا در دریافت نمونه‌ها",
+          );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, productId, search]);
+  useEffect(() => {
+    let cancelled = false;
+    const loadOptions = async () => {
+      try {
+        const [visitResult, productResult] = await Promise.allSettled([
+          getSampleVisits(),
+          getSampleProducts(isScientificVisitor),
+        ]);
+        if (!cancelled) {
+          setVisits(
+            visitResult.status === "fulfilled" ? visitResult.value : [],
+          );
+          setProducts(
+            productResult.status === "fulfilled" ? productResult.value : [],
+          );
+          if (
+            visitResult.status === "rejected" &&
+            productResult.status === "rejected"
+          ) {
+            throw visitResult.reason;
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof ApiError
+              ? err.message
+              : "خطا در دریافت اطلاعات فرم نمونه.",
+          );
+        }
+      }
+    };
+    void loadOptions();
+    return () => {
+      cancelled = true;
+    };
+  }, [isScientificVisitor]);
+  async function submit(data: SampleFormData) {
+    setSaving(true);
+    setFormError(null);
+    try {
+      const saved = editing
+        ? await updateSample(editing.id, data)
+        : await createSample(data);
+      if (editing)
+        setSamples((items) =>
+          items.map((item) => (item.id === saved.id ? saved : item)),
+        );
+      else {
+        setSamples((items) => [saved, ...items].slice(0, 20));
+        setTotal((value) => value + 1);
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch (err: unknown) {
+      setFormError(
+        err instanceof ApiError ? err.message : "خطا در ذخیره نمونه.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+  function requestDelete(sample: Sample) {
+    if (deletingId) return;
+    setDeleteTarget(sample);
+  }
+  async function remove(sample: Sample) {
+    setDeletingId(sample.id);
+    setError(null);
+    try {
+      await deleteSample(sample.id);
+      setSamples((items) => items.filter((item) => item.id !== sample.id));
+      setTotal((value) => Math.max(0, value - 1));
+    } catch (err: unknown) {
+      setError(err instanceof ApiError ? err.message : "خطا در حذف نمونه.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+  return (
+    <>
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="حذف نمونه"
+        description="آیا از حذف این نمونه مطمئن هستید؟ این عملیات قابل بازگشت نیست."
+        confirmLabel="حذف نمونه"
+        variant="danger"
+        isLoading={deletingId !== null}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget)
+            void remove(deleteTarget).finally(() => setDeleteTarget(null));
+        }}
+      />{" "}
+      <section className="space-y-5 p-4 md:p-6">
+        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">نمونه‌ها</h1>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => void load()}
+              disabled={loading}
+              className="rounded-lg border px-4 py-2"
+            >
+              بروزرسانی
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(null);
+                setFormError(null);
+                setFormOpen(true);
+              }}
+              className="rounded-lg bg-gray-900 px-4 py-2 text-white"
+            >
+              نمونه جدید
+            </button>
+          </div>
+        </header>
+        {error && (
+          <div
+            role="alert"
+            className="rounded-lg bg-red-50 p-3 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
+        {formOpen && (
+          <SampleForm
+            visits={visits}
+            products={products}
+            sample={editing}
+            isSubmitting={saving}
+            error={formError}
+            onSubmit={submit}
+            onCancel={() => {
+              if (!saving) {
+                setFormOpen(false);
+                setEditing(null);
+              }
+            }}
+          />
+        )}
+        <div className="grid gap-3 md:grid-cols-3">
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="جستجوی توضیحات"
+            className="rounded-lg border px-3 py-2"
+          />
+          <select
+            value={productId}
+            onChange={(e) => {
+              setProductId(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border px-3 py-2"
+          >
+            <option value="">همه محصولات</option>
+            {products.map((product) => (
+              <option key={product.id} value={product.id}>
+                {product.title}
+              </option>
+            ))}
+          </select>
+          <div className="flex items-center justify-end text-sm text-gray-500">
+            {new Intl.NumberFormat("fa-IR").format(total)} نمونه
+          </div>
+        </div>
+        <div className="overflow-x-auto rounded-xl border bg-white">
+          <table className="min-w-full text-right text-sm">
+            <thead className="bg-gray-50">
+              <tr>
+                {[
+                  "تاریخ بازدید",
+                  "پزشک",
+                  "محصول",
+                  "تعداد",
+                  "وضعیت بازدید",
+                  "کارمند",
+                  "عملیات",
+                ].map((title) => (
+                  <th key={title} className="px-4 py-3">
+                    {title}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {loading && !samples.length ? (
+                <tr>
+                  <td colSpan={8} className="p-10 text-center">
+                    در حال دریافت…
+                  </td>
+                </tr>
+              ) : !samples.length ? (
+                <tr>
+                  <td colSpan={8} className="p-10 text-center">
+                    نمونه‌ای پیدا نشد.
+                  </td>
+                </tr>
+              ) : (
+                samples.map((sample) => (
+                  <tr key={sample.id}>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      {formatJalaliDateTime(
+                        sample.visit?.visit_date ?? sample.created_at ?? null,
+                      )}
+                    </td>
+                    <td className="px-4 py-3 font-medium">
+                      {sample.doctor_name ?? sample.doctor?.name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {sample.product_name ?? sample.product?.title ?? "—"}
+                      <div className="text-xs text-gray-500">
+                        {sample.product?.code ?? ""}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {new Intl.NumberFormat("fa-IR").format(sample.quantity)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {sample.visit?.status
+                        ? statusLabel[sample.visit.status]
+                        : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {sample.employee?.name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditing(sample);
+                            setFormError(null);
+                            setFormOpen(true);
+                          }}
+                          className="rounded border px-2 py-1 text-xs"
+                        >
+                          ویرایش
+                        </button>
+                        {!isScientificVisitor ? (
+                          <button
+                            type="button"
+                            disabled={deletingId === sample.id}
+                            onClick={() => requestDelete(sample)}
+                            className="rounded border px-2 py-1 text-xs"
+                          >
+                            حذف
+                          </button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        {
+          <Pagination
+            page={page}
+            lastPage={lastPage}
+            isLoading={loading}
+            total={total}
+            onPageChange={setPage}
+          />
+        }
+      </section>
+    </>
+  );
+}

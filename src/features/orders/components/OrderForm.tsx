@@ -345,7 +345,7 @@ export function OrderForm({
               </div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="mt-4 grid grid-cols-1 gap-4">
             <Field label="عنوان آفر">
               <input
                 value={form.offer_title}
