@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { useAuth } from "../../auth";
 import { IranAddressFields } from "../../../components/IranAddressFields";
@@ -517,29 +518,7 @@ export function DeliveriesPage() {
           </tbody>
         </table>
       </div>
-      {last > 1 && (
-        <div className="flex justify-center gap-3">
-          <button
-            type="button"
-            disabled={page <= 1 || loading}
-            onClick={() => setPage((x) => x - 1)}
-            className="rounded border px-4 py-2"
-          >
-            قبلی
-          </button>
-          <span className="py-2">
-            {page} / {last}
-          </span>
-          <button
-            type="button"
-            disabled={page >= last || loading}
-            onClick={() => setPage((x) => x + 1)}
-            className="rounded border px-4 py-2"
-          >
-            بعدی
-          </button>
-        </div>
-      )}
+      {<Pagination page={page} lastPage={last} isLoading={loading} total={total} onPageChange={setPage} />}
       {selectedDelivery ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="delivery-details-title">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
