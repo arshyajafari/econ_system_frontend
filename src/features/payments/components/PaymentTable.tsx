@@ -106,7 +106,7 @@ export function PaymentTable({
                       type="button"
                       disabled={pendingPaymentId === payment.id}
                       onClick={() => onView(payment)}
-                      className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                      className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                     >
                       مشاهده
                     </button>
@@ -115,7 +115,7 @@ export function PaymentTable({
                         type="button"
                         disabled={pendingPaymentId === payment.id}
                         onClick={() => onEdit(payment)}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                        className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                       >
                         ویرایش
                       </button>
