@@ -3,6 +3,7 @@ import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableProductSelect } from "../../../components/SearchableProductSelect";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { formatJalaliDate } from "../../../utils/date";
@@ -182,22 +183,15 @@ export function InventoryPage() {
             className="space-y-3 rounded-xl border bg-white p-4"
           >
             <div className="grid gap-3 md:grid-cols-3">
-              <select
-                required
-                disabled={saving}
+              <SearchableProductSelect
                 value={form.product_id}
-                onChange={(event) =>
-                  setForm({ ...form, product_id: event.target.value })
+                products={products}
+                disabled={saving}
+                onChange={(productId) =>
+                  setForm({ ...form, product_id: productId })
                 }
-                className="rounded-lg border px-3 py-2"
-              >
-                <option value="">انتخاب محصول</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.code} — {product.title}
-                  </option>
-                ))}
-              </select>
+                placeholder="جستجوی محصول..."
+              />
               <input
                 disabled={saving}
                 value={form.batch_number}
