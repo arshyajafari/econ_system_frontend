@@ -1,4 +1,5 @@
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableProductSelect } from "../../../components/SearchableProductSelect";
 import type { OrderItemFormData, OrderProductOption } from "../types/order";
 
 type Props = {
@@ -147,23 +148,13 @@ export function OrderItemsEditor({
               <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-6">
                 <div className="lg:col-span-2">
                   <Field label="محصول" required>
-                    <select
+                    <SearchableProductSelect
                       value={item.product_id}
-                      onChange={(e) => selectProduct(index, e.target.value)}
+                      products={products}
+                      usedProductIds={used}
                       disabled={disabled}
-                      className={inputClass}
-                    >
-                      <option value="">انتخاب محصول</option>
-                      {products.map((p) => (
-                        <option
-                          key={p.id}
-                          value={p.id}
-                          disabled={used.includes(p.id)}
-                        >
-                          {p.title} — {p.code}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(productId) => selectProduct(index, productId)}
+                    />
                   </Field>
                 </div>
                 <Field label="تعداد خرید" required>
