@@ -374,6 +374,11 @@ main
   margin-inline-start: 8px;
 }
 
+.ui-input-direction {
+  text-align: left !important;
+  direction: ltr !important;
+}
+
 /* Checkbox/radio rows: aligned control, label and spacing. */
 main section[class*="space-y-"] label:has(input[type="checkbox"]),
 main section[class*="space-y-"] label:has(input[type="radio"]),
@@ -581,7 +586,6 @@ select:focus-visible {
     flex: 1 1 auto;
   }
 }
-
 
 /* Delivery status badges */
 .ui-status-pill {

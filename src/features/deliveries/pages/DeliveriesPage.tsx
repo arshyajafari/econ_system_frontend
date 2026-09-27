@@ -193,7 +193,9 @@ export function DeliveriesPage() {
     setError(null);
     try {
       await deleteDelivery(deleteTarget.id);
-      setItems((current) => current.filter((item) => item.id !== deleteTarget.id));
+      setItems((current) =>
+        current.filter((item) => item.id !== deleteTarget.id),
+      );
       setTotal((current) => Math.max(0, current - 1));
       setDeleteTarget(null);
     } catch (e: unknown) {
@@ -304,8 +306,8 @@ export function DeliveriesPage() {
               className="rounded-lg border px-3 py-2"
             />
             <IranAddressFields
-              province={form.province}
-              city={form.city}
+              province={form.province ?? ""}
+              city={form.city ?? ""}
               onProvinceChange={(province) =>
                 setForm((current) => ({ ...current, province, city: "" }))
               }
@@ -443,7 +445,9 @@ export function DeliveriesPage() {
                   </td>
                   <td className="px-4 py-3">{d.employee?.name ?? "—"}</td>
                   <td className="px-4 py-3">
-                    <span className={`ui-status-pill ${getStatusClass(d.status)}`}>
+                    <span
+                      className={`ui-status-pill ${getStatusClass(d.status)}`}
+                    >
                       {getDeliveryStatusLabel(d.status)}
                     </span>
                   </td>
@@ -550,21 +554,22 @@ export function DeliveriesPage() {
                               </button>
                             </>
                           )}
-                          {d.status === "shipped" && (isDeliveryOperator || isAdmin) && (
-                            <button
-                              type="button"
-                              disabled={actionId === d.id}
-                              onClick={() =>
-                                setActionTarget({
-                                  delivery: d,
-                                  action: "complete",
-                                })
-                              }
-                              className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                            >
-                              تکمیل شد
-                            </button>
-                          )}
+                          {d.status === "shipped" &&
+                            (isDeliveryOperator || isAdmin) && (
+                              <button
+                                type="button"
+                                disabled={actionId === d.id}
+                                onClick={() =>
+                                  setActionTarget({
+                                    delivery: d,
+                                    action: "complete",
+                                  })
+                                }
+                                className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
+                              >
+                                تکمیل شد
+                              </button>
+                            )}
                         </>
                       ) : (
                         <span className="text-xs text-gray-400">

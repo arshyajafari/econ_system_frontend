@@ -258,10 +258,8 @@ export function EmployeeForm({
           </Field>
           <Field label="شماره کارت">
             <input
-              dir="ltr"
               inputMode="numeric"
               maxLength={19}
-              placeholder="0000 0000 0000 0000"
               value={form.card_number
                 .replace(/\D/g, "")
                 .replace(/(.{4})/g, "$1 ")
@@ -273,7 +271,7 @@ export function EmployeeForm({
                 )
               }
               disabled={isSubmitting}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
+              className="ui-input-direction w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
             />
           </Field>
           <Field label="شماره شبا">
@@ -285,7 +283,6 @@ export function EmployeeForm({
                 dir="ltr"
                 inputMode="numeric"
                 maxLength={29}
-                placeholder="59-0300-1234-5678-9012-3456-78"
                 value={form.iban_number
                   .replace(/\D/g, "")
                   .replace(/(.{4})/g, "$1-")
@@ -297,7 +294,7 @@ export function EmployeeForm({
                   )
                 }
                 disabled={isSubmitting}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pl-10 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
+                className="ui-input-direction w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 pl-10 text-sm outline-none focus:border-gray-900 disabled:bg-gray-100"
               />
             </div>
           </Field>
@@ -384,7 +381,6 @@ export function EmployeeForm({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Field label="نام کاربری" required={accountRequired}>
             <input
-              dir="ltr"
               autoComplete="username"
               value={form.login}
               onChange={(e) => update("login", e.target.value)}
@@ -397,7 +393,6 @@ export function EmployeeForm({
             required={accountRequired}
           >
             <input
-              dir="ltr"
               type="password"
               autoComplete="new-password"
               value={form.password}
@@ -411,7 +406,6 @@ export function EmployeeForm({
             required={accountRequired || Boolean(form.password)}
           >
             <input
-              dir="ltr"
               type="password"
               autoComplete="new-password"
               value={form.password_confirmation}
@@ -425,7 +419,7 @@ export function EmployeeForm({
           <div className="mb-4">
             <h3 className="text-sm font-semibold">نقش و نوع فعالیت</h3>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {EMPLOYEE_ACTIVITY_OPTIONS.map((option) => {
               const checked = form.activities.includes(option.value);
               return (
@@ -470,15 +464,14 @@ export function EmployeeForm({
           <h3 className="mb-4 text-sm font-semibold">آدرس</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <IranAddressFields
-              province={form.address.province}
-              city={form.address.city}
+              province={form.address.province ?? ""}
+              city={form.address.city ?? ""}
               onProvinceChange={(value) => updateAddress("province", value)}
               onCityChange={(value) => updateAddress("city", value)}
               disabled={isSubmitting}
             />
             <Field label="کد پستی">
               <input
-                dir="ltr"
                 value={form.address.postal_code}
                 onChange={(e) => updateAddress("postal_code", e.target.value)}
                 disabled={isSubmitting}

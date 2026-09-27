@@ -175,8 +175,8 @@ export function DoctorForm({
           <h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <IranAddressFields
-              province={form.address.province}
-              city={form.address.city}
+              province={form.address.province ?? ""}
+              city={form.address.city ?? ""}
               onProvinceChange={(value) => updateAddress("province", value)}
               onCityChange={(value) => updateAddress("city", value)}
               disabled={isSubmitting}

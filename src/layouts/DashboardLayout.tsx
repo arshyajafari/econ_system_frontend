@@ -455,7 +455,12 @@ export function DashboardLayout() {
             </NavLink>
           </div>
         </nav>
-        {isScientificVisitor ? <EmployeeLocationShare /> : null}
+        {isSalesVisitor ||
+        isScientificVisitor ||
+        isDeliveryOperator ||
+        isSettlementOperator ? (
+          <EmployeeLocationShare />
+        ) : null}
         <div className="border-t border-slate-100 p-3">
           <div
             className={`flex items-center gap-3 rounded-xl bg-slate-50 p-3 ${isCollapsed ? "justify-center" : ""}`}

@@ -8,7 +8,7 @@ type CustomerTableProps = {
   isAdmin: boolean;
   canEdit: boolean;
   canChangeStatus: boolean;
-onEdit: (customer: Customer) => void;
+  onEdit: (customer: Customer) => void;
   onDelete: (customer: Customer) => void;
   onStatusChange: (customer: Customer, status: CustomerStatus) => void;
   onViewLedger: (customer: Customer) => void;
@@ -37,7 +37,7 @@ export function CustomerTable({
   isAdmin,
   canEdit,
   canChangeStatus,
-onEdit,
+  onEdit,
   onDelete,
   onStatusChange,
   onViewLedger,
@@ -168,14 +168,16 @@ onEdit,
                         </button>
                       ) : null}
 
-                      {isAdmin ? (<button
-                        type="button"
-                        onClick={() => onDelete(customer)}
-                        disabled={isPending}
-                        className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {isDeletePending ? "در حال حذف..." : "حذف"}
-                      </button>) : null}
+                      {isAdmin ? (
+                        <button
+                          type="button"
+                          onClick={() => onDelete(customer)}
+                          disabled={isPending}
+                          className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isDeletePending ? "در حال حذف..." : "حذف"}
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>
