@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { searchCustomers } from "../../customers/services/customersApi";
 import { useAuth } from "../../auth";
 import { OrderItemsEditor } from "./OrderItemsEditor";
@@ -262,10 +263,13 @@ export function OrderForm({
           <Field label="مشتری" required>
             <SearchableCustomerSelect
               value={form.customer_id}
-              selectedCustomer={order?.customer ?? null}
+              selectedCustomer={selectedCustomer}
               disabled={isSubmitting}
               searchCustomers={searchCustomers}
-              onChange={(customer) => update("customer_id", customer?.id ?? "")}
+              onChange={(customer) => {
+                setSelectedCustomer(customer);
+                update("customer_id", customer?.id ?? "");
+              }}
               placeholder="نام، کد، کد ملی یا شماره مشتری..."
             />
           </Field>
