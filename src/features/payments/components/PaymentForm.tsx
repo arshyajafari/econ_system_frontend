@@ -3,7 +3,6 @@ import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
-import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { searchCustomers } from "../../customers/services/customersApi";
