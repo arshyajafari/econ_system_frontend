@@ -29,7 +29,6 @@ export function PaymentForm({
   onCancel,
 }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
-  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(() => payment?.customer ? { id: payment.customer.id, code: payment.customer.code, customer_name: payment.customer.name } : null);
   const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
   const [customerBalance, setCustomerBalance] = useState<number | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
