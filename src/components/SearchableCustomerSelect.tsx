@@ -45,21 +45,9 @@ export function SearchableCustomerSelect({
   const requestRef = useRef(0);
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState<SearchableCustomer[]>([]);
-  const [selected, setSelected] = useState<SearchableCustomer | null>(selectedCustomer);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    setSelected(selectedCustomer ?? null);
-  }, [selectedCustomer?.id, selectedCustomer?.code, selectedCustomer?.customer_name]);
-
-  useEffect(() => {
-    if (!value) {
-      setSelected(null);
-      setQuery("");
-    }
-  }, [value]);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -77,8 +65,8 @@ export function SearchableCustomerSelect({
       try {
         const result = await searchCustomers(query.trim());
         if (requestId === requestRef.current) {
-          const merged = selected && !result.some((item) => item.id === selected.id)
-            ? [selected, ...result]
+          const merged = selectedCustomer && !result.some((item) => item.id === selectedCustomer.id)
+            ? [selectedCustomer, ...result]
             : result;
           setOptions(merged);
           setActiveIndex(0);
@@ -88,10 +76,9 @@ export function SearchableCustomerSelect({
       }
     }, query.trim() ? 250 : 0);
     return () => window.clearTimeout(timer);
-  }, [isOpen, query, searchCustomers, selected?.id]);
+  }, [isOpen, query, searchCustomers, selectedCustomer?.id]);
 
   function selectCustomer(customer: SearchableCustomer) {
-    setSelected(customer);
     setQuery("");
     setIsOpen(false);
     onChange(customer);
@@ -99,7 +86,6 @@ export function SearchableCustomerSelect({
   }
 
   function clear() {
-    setSelected(null);
     setQuery("");
     setOptions([]);
     setIsOpen(false);
@@ -131,7 +117,7 @@ export function SearchableCustomerSelect({
     }
   }
 
-  const displayValue = query || (selected ? `${selected.code} — ${selected.customer_name}` : "");
+  const displayValue = query || (selectedCustomer ? `${selectedCustomer.code} — ${selectedCustomer.customer_name}` : "");
 
   return (
     <div ref={rootRef} className="relative">
@@ -157,7 +143,7 @@ export function SearchableCustomerSelect({
           onKeyDown={handleKeyDown}
           className="min-w-0 flex-1 border-0 bg-transparent px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:ring-0"
         />
-        {selected ? (
+        {selectedCustomer ? (
           <button type="button" tabIndex={-1} disabled={disabled} onMouseDown={(event) => event.preventDefault()} onClick={clear} aria-label="پاک کردن مشتری" className="px-2 text-gray-400 hover:text-gray-700 disabled:opacity-40">
             ×
           </button>
