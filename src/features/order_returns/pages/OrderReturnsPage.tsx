@@ -36,7 +36,8 @@ export function OrderReturnsPage() {
 
   const [search, setSearch] = useState("");
   const [customerId, setCustomerId] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<SearchableCustomer | null>(null);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -128,7 +129,7 @@ export function OrderReturnsPage() {
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-4">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <div className="md:col-span-2">
             <label
               htmlFor="order-return-search"
@@ -174,6 +175,7 @@ export function OrderReturnsPage() {
                 </option>
               ))}
             </select>
+          </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
               مشتری
@@ -188,8 +190,6 @@ export function OrderReturnsPage() {
               }}
               placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
             />
-          </div>
-
           </div>
         </div>
       </div>
