@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
 import { ConfirmModal } from "../../../components/ConfirmModal";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { useAuth } from "../../auth";
 
 import { OrderFilters } from "../components/OrderFilters";
@@ -47,6 +48,7 @@ export function OrdersPage() {
   const [status, setStatus] = useState<OrderStatus | "">("");
 
   const [customerId, setCustomerId] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
 
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
@@ -171,6 +173,7 @@ export function OrdersPage() {
     setSearch("");
     setStatus("");
     setCustomerId("");
+    setSelectedCustomer(null);
     setSalesEmployeeId("");
     setPage(1);
   }
