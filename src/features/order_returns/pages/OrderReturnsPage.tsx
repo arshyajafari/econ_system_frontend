@@ -6,6 +6,7 @@ import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { Pagination } from "../../../components/Pagination";
 import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { searchCustomers } from "../../customers/services/customersApi";
 
 import { getOrderReturns } from "../services/orderReturnsApi";
@@ -35,6 +36,7 @@ export function OrderReturnsPage() {
 
   const [search, setSearch] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -180,6 +182,7 @@ export function OrderReturnsPage() {
               value={customerId}
               searchCustomers={searchCustomers}
               onChange={(customer) => {
+                setSelectedCustomer(customer);
                 setCustomerId(customer?.id ?? "");
                 setPage(1);
               }}
