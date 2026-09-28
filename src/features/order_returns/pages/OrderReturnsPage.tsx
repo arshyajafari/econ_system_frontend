@@ -182,7 +182,8 @@ export function OrderReturnsPage() {
             </label>
             <SearchableCustomerSelect
               value={customerId}
-              searchCustomers={searchCustomers}
+                            selectedCustomer={selectedCustomer}
+searchCustomers={searchCustomers}
               onChange={(customer) => {
                 setSelectedCustomer(customer);
                 setCustomerId(customer?.id ?? "");
