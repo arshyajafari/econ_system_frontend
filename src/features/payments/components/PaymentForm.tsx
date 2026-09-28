@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { searchCustomers } from "../../customers/services/customersApi";
@@ -28,6 +29,7 @@ export function PaymentForm({
   onCancel,
 }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(() => payment?.customer ? { id: payment.customer.id, code: payment.customer.code, customer_name: payment.customer.name } : null);
   const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
   const [customerBalance, setCustomerBalance] = useState<number | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -182,7 +184,10 @@ export function PaymentForm({
             } : null}
             disabled={isSubmitting || Boolean(payment)}
             searchCustomers={searchCustomers}
-            onChange={(customer) => handleCustomerChange(customer?.id ?? "")}
+            onChange={(customer) => {
+              setSelectedCustomer(customer);
+              handleCustomerChange(customer?.id ?? "");
+            }}
             placeholder="نام، کد، کد ملی یا شماره مشتری..."
           />
         </div>
