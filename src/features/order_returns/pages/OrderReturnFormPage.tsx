@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ApiError } from "../../../api/client";
 import { BackButton } from "../../../components/BackButton";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableOrderSelect } from "../../../components/SearchableOrderSelect";
 import {
   createOrderReturn,
   getOrderReturn,
@@ -25,7 +26,6 @@ export function OrderReturnFormPage() {
   const orderId = searchParams.get("order_id");
   const returnId = searchParams.get("return_id");
   const [order, setOrder] = useState<Order | null>(null);
-  const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState(orderId ?? "");
   const [existingReturn, setExistingReturn] = useState<OrderReturn | null>(
     null,
@@ -95,15 +95,6 @@ export function OrderReturnFormPage() {
             setSelectedOrderId(loadedOrder.id);
             if (loadedOrder.status !== "completed")
               setError("فقط سفارش تکمیل‌شده قابل مرجوعی است.");
-          }
-        } else {
-          const response = await getReturnableOrders();
-          if (!cancelled) {
-            setAvailableOrders(response);
-            if (!response.length)
-              setError(
-                "هیچ سفارش تکمیل‌شده و دارای کالای قابل مرجوعی وجود ندارد.",
-              );
           }
         }
       } catch (error: unknown) {
@@ -220,36 +211,28 @@ export function OrderReturnFormPage() {
           {error}
         </div>
       ) : null}
-      {!existingReturn && !orderId && !order && availableOrders.length > 0 ? (
+      {!existingReturn && !orderId && !order ? (
         <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <label
-            htmlFor="return-order"
-            className="mb-2 block text-sm font-medium text-gray-700"
-          >
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             سفارش تکمیل‌شده
           </label>
-          <select
-            id="return-order"
+          <SearchableOrderSelect
             value={selectedOrderId}
-            onChange={(event) => {
-              const id = event.target.value;
-              setSelectedOrderId(id);
-              if (id) void loadOrder(id);
-            }}
+            searchOrders={getReturnableOrders}
             disabled={isLoadingOrder || isSaving}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-500"
-          >
-            <option value="">انتخاب سفارش برای مرجوعی</option>
-            {availableOrders.map((availableOrder) => (
-              <option key={availableOrder.id} value={availableOrder.id}>
-                {availableOrder.code} —{" "}
-                {availableOrder.customer?.customer_name ?? "مشتری نامشخص"}
-              </option>
-            ))}
-          </select>
+            onChange={(selected) => {
+              if (!selected) {
+                setOrder(null);
+                setSelectedOrderId("");
+                return;
+              }
+              setOrder(selected);
+              setSelectedOrderId(selected.id);
+            }}
+            placeholder="کد سفارش، نام مشتری، کد مشتری یا شماره تماس..."
+          />
           <p className="mt-2 text-xs text-gray-500">
-            فقط سفارش‌های تکمیل‌شده‌ای که هنوز مقداری از اقلامشان قابل مرجوعی
-            است نمایش داده می‌شوند.
+            فقط سفارش‌های تکمیل‌شده و دارای کالای قابل مرجوعی جستجو می‌شوند.
           </p>
         </div>
       ) : null}
