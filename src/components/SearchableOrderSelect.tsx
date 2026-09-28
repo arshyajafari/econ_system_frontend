@@ -44,7 +44,7 @@ export function SearchableOrderSelect({
       try {
         const result = await searchOrders(query.trim());
         if (requestId === requestRef.current) {
-          setOptions(selected && !result.some((item) => item.id === selected.id) ? [selected, ...result] : result);
+          setOptions(selectedOrder && !result.some((item) => item.id === selectedOrder.id) ? [selectedOrder, ...result] : result);
           setActiveIndex(0);
         }
       } finally {
