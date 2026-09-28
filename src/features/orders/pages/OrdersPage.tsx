@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
 import { ConfirmModal } from "../../../components/ConfirmModal";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { useAuth } from "../../auth";
 
 import { OrderFilters } from "../components/OrderFilters";
@@ -13,7 +14,6 @@ import { OrderTable } from "../components/OrderTable";
 
 import {
   createOrder,
-  getOrderCustomers,
   getOrderEmployees,
   getOrderProducts,
   getOrders,
@@ -23,7 +23,6 @@ import {
 
 import type {
   Order,
-  OrderCustomerOption,
   OrderEmployeeOption,
   OrderFormData,
   OrderProductOption,
@@ -39,7 +38,6 @@ export function OrdersPage() {
 
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const [customers, setCustomers] = useState<OrderCustomerOption[]>([]);
 
   const [employees, setEmployees] = useState<OrderEmployeeOption[]>([]);
 
@@ -50,6 +48,7 @@ export function OrdersPage() {
   const [status, setStatus] = useState<OrderStatus | "">("");
 
   const [customerId, setCustomerId] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
 
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
@@ -86,12 +85,7 @@ export function OrdersPage() {
     setIsLoadingLookups(true);
 
     try {
-      const [customersResponse, productsResponse] = await Promise.all([
-        getOrderCustomers(),
-        getOrderProducts(),
-      ]);
-
-      setCustomers(customersResponse);
+      const productsResponse = await getOrderProducts();
       setProducts(productsResponse);
       if (isAdmin || isAccountant) setEmployees(await getOrderEmployees());
       else setEmployees([]);
@@ -179,6 +173,7 @@ export function OrdersPage() {
     setSearch("");
     setStatus("");
     setCustomerId("");
+    setSelectedCustomer(null);
     setSalesEmployeeId("");
     setPage(1);
   }
@@ -305,8 +300,7 @@ export function OrdersPage() {
     void executeAction(order, action);
   }
 
-  const canCreate =
-    !isLoadingLookups && customers.length > 0 && products.length > 0;
+  const canCreate = !isLoadingLookups && products.length > 0;
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -362,7 +356,6 @@ export function OrdersPage() {
         <OrderForm
           key={editingOrder?.id ?? "new"}
           order={editingOrder}
-          customers={customers}
           employees={employees}
           products={products}
           isSubmitting={isSubmitting}
@@ -379,7 +372,6 @@ export function OrdersPage() {
         status={status}
         customerId={customerId}
         salesEmployeeId={salesEmployeeId}
-        customers={customers}
         employees={employees}
         onSearchChange={(value) => {
           setSearch(value);

@@ -5,6 +5,9 @@ import { useAuth } from "../../auth";
 
 import { ApiError } from "../../../api/client";
 import { Pagination } from "../../../components/Pagination";
+import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
+import { searchCustomers } from "../../customers/services/customersApi";
 
 import { getOrderReturns } from "../services/orderReturnsApi";
 
@@ -32,6 +35,8 @@ export function OrderReturnsPage() {
   const [status, setStatus] = useState<OrderReturnStatus | "">("");
 
   const [search, setSearch] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -64,6 +69,9 @@ export function OrderReturnsPage() {
     if (status) {
       params.status = status;
     }
+    if (customerId) {
+      params.customer_id = customerId;
+    }
 
     try {
       const response = await getOrderReturns(params);
@@ -90,7 +98,7 @@ export function OrderReturnsPage() {
         setIsLoading(false);
       }
     }
-  }, [page, search, status]);
+  }, [customerId, page, search, status]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -166,6 +174,22 @@ export function OrderReturnsPage() {
                 </option>
               ))}
             </select>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              مشتری
+            </label>
+            <SearchableCustomerSelect
+              value={customerId}
+              searchCustomers={searchCustomers}
+              onChange={(customer) => {
+                setSelectedCustomer(customer);
+                setCustomerId(customer?.id ?? "");
+                setPage(1);
+              }}
+              placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
+            />
+          </div>
+
           </div>
         </div>
       </div>

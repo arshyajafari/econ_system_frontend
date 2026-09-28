@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
+import { searchCustomers } from "../../customers/services/customersApi";
 import { useAuth } from "../../auth";
 import { OrderItemsEditor } from "./OrderItemsEditor";
 import type {
   Order,
-  OrderCustomerOption,
   OrderDiscountType,
   OrderFormData,
   OrderProductOption,
@@ -12,7 +14,6 @@ import type {
 
 type OrderFormProps = {
   order?: Order | null;
-  customers: OrderCustomerOption[];
   employees?: {
     id: string;
     code: string;
@@ -82,7 +83,6 @@ function getDiscountAmount(form: OrderFormData): number {
 
 export function OrderForm({
   order,
-  customers,
   products,
   isSubmitting,
   error,
@@ -261,19 +261,17 @@ export function OrderForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="مشتری" required>
-            <select
+            <SearchableCustomerSelect
               value={form.customer_id}
-              onChange={(event) => update("customer_id", event.target.value)}
+              selectedCustomer={selectedCustomer}
               disabled={isSubmitting}
-              className={inputClass}
-            >
-              <option value="">انتخاب مشتری</option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.customer_name} — {customer.code}
-                </option>
-              ))}
-            </select>
+              searchCustomers={searchCustomers}
+              onChange={(customer) => {
+                setSelectedCustomer(customer);
+                update("customer_id", customer?.id ?? "");
+              }}
+              placeholder="نام، کد، کد ملی یا شماره مشتری..."
+            />
           </Field>
           <Field label="کارشناس فروش" required>
             <div className={`${inputClass} flex items-center justify-between`}>

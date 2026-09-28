@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { getCustomers } from "../../customers/services/customersApi";
-import type { Customer } from "../../customers/types/customer";
+import { searchCustomers } from "../../customers/services/customersApi";
 import { getCustomerPayableBalance } from "../services/paymentsApi";
 import { PAYMENT_METHOD_OPTIONS } from "../types/payment";
 import type { Payment, PaymentFormData, PaymentMethod } from "../types/payment";
@@ -28,8 +29,7 @@ export function PaymentForm({
   onCancel,
 }: PaymentFormProps) {
   const [customerId, setCustomerId] = useState(payment?.customer?.id ?? "");
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(() => payment?.customer ? { id: payment.customer.id, code: payment.customer.code, customer_name: payment.customer.name } : null);
   const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
   const [customerBalance, setCustomerBalance] = useState<number | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -49,46 +49,6 @@ export function PaymentForm({
   const [description, setDescription] = useState(payment?.description ?? "");
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
   const [receiptError, setReceiptError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadCustomers() {
-      setIsLoadingCustomers(true);
-      try {
-        const response = await getCustomers({ per_page: 100 });
-        if (!cancelled) {
-          const currentCustomer = payment?.customer;
-          const current =
-            currentCustomer &&
-            !response.data.some((item) => item.id === currentCustomer.id)
-              ? [
-                  {
-                    id: currentCustomer.id,
-                    code: currentCustomer.code,
-                    customer_name: currentCustomer.name,
-                  } as Customer,
-                ]
-              : [];
-          setCustomers([...current, ...response.data]);
-        }
-      } catch (requestError: unknown) {
-        if (!cancelled)
-          setBalanceError(
-            requestError instanceof ApiError && requestError.message
-              ? requestError.message
-              : "خطا در دریافت مشتریان.",
-          );
-      } finally {
-        if (!cancelled) setIsLoadingCustomers(false);
-      }
-    }
-
-    void loadCustomers();
-    return () => {
-      cancelled = true;
-    };
-  }, [payment]);
 
   useEffect(() => {
     let cancelled = false;
@@ -215,22 +175,21 @@ export function PaymentForm({
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
             مشتری
           </label>
-          <select
-            required
-            disabled={isSubmitting || Boolean(payment) || isLoadingCustomers}
+          <SearchableCustomerSelect
             value={customerId}
-            onChange={(event) => handleCustomerChange(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-100"
-          >
-            <option value="">
-              {isLoadingCustomers ? "در حال دریافت مشتریان..." : "انتخاب مشتری"}
-            </option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.code} — {customer.customer_name}
-              </option>
-            ))}
-          </select>
+            selectedCustomer={payment?.customer ? {
+              id: payment.customer.id,
+              code: payment.customer.code,
+              customer_name: payment.customer.name,
+            } : null}
+            disabled={isSubmitting || Boolean(payment)}
+            searchCustomers={searchCustomers}
+            onChange={(customer) => {
+              setSelectedCustomer(customer);
+              handleCustomerChange(customer?.id ?? "");
+            }}
+            placeholder="نام، کد، کد ملی یا شماره مشتری..."
+          />
         </div>
 
         <div>

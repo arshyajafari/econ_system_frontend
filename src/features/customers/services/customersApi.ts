@@ -22,6 +22,20 @@ export async function getCustomers(
   return response.data;
 }
 
+export async function searchCustomers(query: string): Promise<Customer[]> {
+  const response = await apiClient.get<CustomerListResponse>("/customers", {
+    params: {
+      search: query.trim() || undefined,
+      status: "active",
+      sort: "customer_name",
+      per_page: 20,
+      page: 1,
+    },
+  });
+
+  return response.data.data;
+}
+
 export async function getCustomer(id: string): Promise<Customer> {
   const response = await apiClient.get<Customer>(`/customers/${id}`);
 

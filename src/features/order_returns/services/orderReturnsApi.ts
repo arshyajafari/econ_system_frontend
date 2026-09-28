@@ -149,8 +149,10 @@ export async function getReturnableOrder(id: string): Promise<Order> {
   return response.data;
 }
 
-export async function getReturnableOrders(): Promise<Order[]> {
-  const r = await apiClient.get<{ data: Order[] } | Order[]>("/order-returns/returnable-orders");
+export async function getReturnableOrders(search = ""): Promise<Order[]> {
+  const r = await apiClient.get<{ data: Order[] } | Order[]>("/order-returns/returnable-orders", {
+    params: { search: search.trim() || undefined },
+  });
   return Array.isArray(r.data) ? r.data : r.data.data ?? [];
 }
 

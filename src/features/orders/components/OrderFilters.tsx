@@ -1,8 +1,7 @@
-import type {
-  OrderCustomerOption,
-  OrderEmployeeOption,
-  OrderStatus,
-} from "../types/order";
+import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
+import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
+import { searchCustomers } from "../../customers/services/customersApi";
+import type { OrderEmployeeOption, OrderStatus } from "../types/order";
 import { ORDER_STATUS_OPTIONS } from "../types/order";
 
 type OrderFiltersProps = {
@@ -10,7 +9,6 @@ type OrderFiltersProps = {
   status: OrderStatus | "";
   customerId: string;
   salesEmployeeId: string;
-  customers: OrderCustomerOption[];
   employees: OrderEmployeeOption[];
   onSearchChange: (value: string) => void;
   onStatusChange: (value: OrderStatus | "") => void;
@@ -24,7 +22,6 @@ export function OrderFilters({
   status,
   customerId,
   salesEmployeeId,
-  customers,
   employees,
   onSearchChange,
   onStatusChange,
@@ -83,27 +80,15 @@ export function OrderFilters({
         </div>
 
         <div>
-          <label
-            htmlFor="order-customer"
-            className="mb-2 block text-sm font-medium text-gray-700"
-          >
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             مشتری
           </label>
-
-          <select
-            id="order-customer"
+          <SearchableCustomerSelect
             value={customerId}
-            onChange={(event) => onCustomerChange(event.target.value)}
-            className={inputClass}
-          >
-            <option value="">همه مشتریان</option>
-
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.customer_name}
-              </option>
-            ))}
-          </select>
+            searchCustomers={searchCustomers}
+            onChange={(customer) => onCustomerChange(customer?.id ?? "")}
+            placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
+          />
         </div>
 
         <div>
