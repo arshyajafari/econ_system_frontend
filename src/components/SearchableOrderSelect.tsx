@@ -24,21 +24,9 @@ export function SearchableOrderSelect({
   const requestRef = useRef(0);
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState<Order[]>([]);
-  const [selected, setSelected] = useState<Order | null>(selectedOrder);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    setSelected(selectedOrder ?? null);
-  }, [selectedOrder?.id, selectedOrder?.code]);
-
-  useEffect(() => {
-    if (!value) {
-      setSelected(null);
-      setQuery("");
-    }
-  }, [value]);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -64,10 +52,9 @@ export function SearchableOrderSelect({
       }
     }, query.trim() ? 250 : 0);
     return () => window.clearTimeout(timer);
-  }, [isOpen, query, searchOrders, selected?.id]);
+  }, [isOpen, query, searchOrders, selectedOrder]);
 
   function choose(order: Order) {
-    setSelected(order);
     setQuery("");
     setIsOpen(false);
     onChange(order);
@@ -75,7 +62,6 @@ export function SearchableOrderSelect({
   }
 
   function clear() {
-    setSelected(null);
     setQuery("");
     setOptions([]);
     setIsOpen(false);
@@ -104,7 +90,7 @@ export function SearchableOrderSelect({
     }
   }
 
-  const displayValue = query || (selected ? `${selected.code} — ${selected.customer?.customer_name ?? "مشتری نامشخص"}` : "");
+  const displayValue = query || (selectedOrder ? `${selectedOrder.code} — ${selectedOrder.customer?.customer_name ?? "مشتری نامشخص"}` : "");
 
   return (
     <div ref={rootRef} className="relative">
@@ -123,14 +109,13 @@ export function SearchableOrderSelect({
           onFocus={() => setIsOpen(true)}
           onChange={(event) => {
             setQuery(event.target.value);
-            setSelected(null);
             setActiveIndex(0);
             setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
           className="min-w-0 flex-1 border-0 bg-transparent px-3.5 py-2.5 text-sm outline-none focus:ring-0"
         />
-        {selected ? (
+        {selectedOrder ? (
           <button type="button" tabIndex={-1} disabled={disabled} onMouseDown={(event) => event.preventDefault()} onClick={clear} className="px-2 text-gray-400 hover:text-gray-700" aria-label="پاک کردن سفارش">×</button>
         ) : null}
         <button type="button" tabIndex={-1} disabled={disabled} onMouseDown={(event) => event.preventDefault()} onClick={() => { inputRef.current?.focus(); setIsOpen(true); }} className="px-3 text-gray-400 hover:text-gray-700" aria-label="باز کردن فهرست سفارش‌ها">⌄</button>
