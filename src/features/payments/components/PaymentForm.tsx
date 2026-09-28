@@ -175,7 +175,11 @@ export function PaymentForm({
           </label>
           <SearchableCustomerSelect
             value={customerId}
-            selectedCustomer={payment?.customer ?? null}
+            selectedCustomer={payment?.customer ? {
+              id: payment.customer.id,
+              code: payment.customer.code,
+              customer_name: payment.customer.name,
+            } : null}
             disabled={isSubmitting || Boolean(payment)}
             searchCustomers={searchCustomers}
             onChange={(customer) => handleCustomerChange(customer?.id ?? "")}
