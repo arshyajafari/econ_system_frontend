@@ -1,5 +1,4 @@
 import { SearchableCustomerSelect } from "../../../components/SearchableCustomerSelect";
-import type { SearchableCustomer } from "../../../components/SearchableCustomerSelect";
 import { searchCustomers } from "../../customers/services/customersApi";
 import type { OrderEmployeeOption, OrderStatus } from "../types/order";
 import { ORDER_STATUS_OPTIONS } from "../types/order";
