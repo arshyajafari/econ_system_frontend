@@ -119,6 +119,16 @@ export function OrderForm({
         },
   );
 
+  const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(() =>
+    order?.customer
+      ? {
+          id: order.customer.id,
+          code: order.customer.code,
+          customer_name: order.customer.customer_name,
+        }
+      : null,
+  );
+
   function update<K extends keyof OrderFormData>(
     key: K,
     value: OrderFormData[K],
