@@ -37,28 +37,6 @@ export function OrderReturnFormPage() {
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  async function loadOrder(id: string) {
-    setIsLoadingOrder(true);
-    setError(null);
-    try {
-      const loadedOrder = await getReturnableOrder(id);
-      setOrder(loadedOrder);
-      setSelectedOrderId(loadedOrder.id);
-      if (loadedOrder.status !== "completed")
-        setError(
-          "فقط سفارش تکمیل‌شده و دارای کالای قابل مرجوعی قابل ثبت مرجوعی است.",
-        );
-    } catch (error: unknown) {
-      setOrder(null);
-      setError(
-        error instanceof ApiError && error.message
-          ? error.message
-          : "سفارش برای ثبت مرجوعی پیدا نشد یا دیگر قابل مرجوعی نیست.",
-      );
-    } finally {
-      setIsLoadingOrder(false);
-    }
-  }
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -219,7 +197,7 @@ export function OrderReturnFormPage() {
           <SearchableOrderSelect
             value={selectedOrderId}
             searchOrders={getReturnableOrders}
-            disabled={isLoadingOrder || isSaving}
+            disabled={isSaving}
             onChange={(selected) => {
               if (!selected) {
                 setOrder(null);
