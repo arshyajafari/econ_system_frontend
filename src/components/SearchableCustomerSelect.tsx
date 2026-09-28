@@ -21,15 +21,6 @@ type SearchableCustomerSelectProps = {
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
-function normalize(value: string): string {
-  return value
-    .trim()
-    .toLocaleLowerCase("fa-IR")
-    .replace(/[يى]/g, "ی")
-    .replace(/ك/g, "ک")
-    .replace(/ۀ/g, "ه");
-}
-
 export function SearchableCustomerSelect({
   value,
   selectedCustomer = null,
@@ -136,7 +127,6 @@ export function SearchableCustomerSelect({
           onFocus={() => setIsOpen(true)}
           onChange={(event) => {
             setQuery(event.target.value);
-            setSelected(null);
             setActiveIndex(0);
             setIsOpen(true);
           }}
