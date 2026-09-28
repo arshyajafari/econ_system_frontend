@@ -185,7 +185,6 @@ export function PaymentForm({
             disabled={isSubmitting || Boolean(payment)}
             searchCustomers={searchCustomers}
             onChange={(customer) => {
-              setSelectedCustomer(customer);
               handleCustomerChange(customer?.id ?? "");
             }}
             placeholder="نام، کد، کد ملی یا شماره مشتری..."
