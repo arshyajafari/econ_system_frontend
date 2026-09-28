@@ -67,7 +67,7 @@ export function SearchableCustomerSelect({
       }
     }, query.trim() ? 250 : 0);
     return () => window.clearTimeout(timer);
-  }, [isOpen, query, searchCustomers, selectedCustomer?.id]);
+  }, [isOpen, query, searchCustomers, selectedCustomer]);
 
   function selectCustomer(customer: SearchableCustomer) {
     setQuery("");
