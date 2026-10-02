@@ -24,12 +24,6 @@ function formatAmount(value: number | string): string {
   return numberFormatter.format(amount);
 }
 
-const statusLabel: Record<CustomerLedgerBalanceStatus, string> = {
-  payable: "بدهکار",
-  customer_credit: "بستانکار",
-  settled: "تسویه",
-};
-
 export function CustomerLedgerSummary({
   openingBalance,
   totalDebit,
