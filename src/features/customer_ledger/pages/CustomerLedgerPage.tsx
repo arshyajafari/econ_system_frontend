@@ -135,6 +135,9 @@ export function CustomerLedgerPage() {
             totalDebit={ledger.total_debit}
             totalCredit={ledger.total_credit}
             closingBalance={ledger.closing_balance}
+            closingPayable={ledger.closing_payable}
+            closingCustomerCredit={ledger.closing_customer_credit}
+            balanceStatus={ledger.balance_status}
             averageDueDate={ledger.average_due_date}
           />
           <div className="space-y-3">
