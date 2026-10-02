@@ -10,7 +10,6 @@ import { ConfirmModal } from "../../../components/ConfirmModal";
 import { CustomerFilters } from "../components/CustomerFilters";
 import { CustomerForm } from "../components/CustomerForm";
 import { CustomerTable } from "../components/CustomerTable";
-import { CustomerOpeningBalanceImport } from "../components/CustomerOpeningBalanceImport";
 import {
   changeCustomerStatus,
   createCustomer,
@@ -54,7 +53,6 @@ export function CustomersPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isOpeningBalanceImportOpen, setIsOpeningBalanceImportOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
@@ -273,16 +271,6 @@ export function CustomersPage() {
           {canCreateCustomer ? (
             <button
               type="button"
-              onClick={() => setIsOpeningBalanceImportOpen((current) => !current)}
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              ورود مانده از Excel
-            </button>
-          ) : null}
-
-          {canCreateCustomer ? (
-            <button
-              type="button"
               onClick={openCreateForm}
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
             >
@@ -310,15 +298,6 @@ export function CustomersPage() {
             تلاش مجدد
           </button>
         </div>
-      ) : null}
-
-      {isOpeningBalanceImportOpen && canCreateCustomer ? (
-        <CustomerOpeningBalanceImport
-          onCompleted={() => {
-            setIsOpeningBalanceImportOpen(false);
-            void loadCustomers();
-          }}
-        />
       ) : null}
 
       {isFormOpen ? (
