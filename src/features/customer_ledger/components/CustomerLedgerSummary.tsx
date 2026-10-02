@@ -1,10 +1,14 @@
 import { formatJalaliDate } from "../../../utils/date";
+import type { CustomerLedgerBalanceStatus } from "../types/customerLedger";
 
 type CustomerLedgerSummaryProps = {
   openingBalance: number | string;
   totalDebit: number | string;
   totalCredit: number | string;
   closingBalance: number | string;
+  closingPayable: number | string;
+  closingCustomerCredit: number | string;
+  balanceStatus: CustomerLedgerBalanceStatus;
   averageDueDate: string | null;
 };
 
@@ -20,11 +24,20 @@ function formatAmount(value: number | string): string {
   return numberFormatter.format(amount);
 }
 
+const statusLabel: Record<CustomerLedgerBalanceStatus, string> = {
+  payable: "بدهکار",
+  customer_credit: "بستانکار",
+  settled: "تسویه",
+};
+
 export function CustomerLedgerSummary({
   openingBalance,
   totalDebit,
   totalCredit,
   closingBalance,
+  closingPayable,
+  closingCustomerCredit,
+  balanceStatus,
   averageDueDate,
 }: CustomerLedgerSummaryProps) {
   const items = [
@@ -43,23 +56,39 @@ export function CustomerLedgerSummary({
       value: formatAmount(totalCredit),
       valueClass: "text-green-700",
     },
+    {
+      title: "میانگین سررسید مانده",
+      value: averageDueDate ? formatJalaliDate(averageDueDate) : "—",
+      valueClass: "text-blue-700",
+    },
   ];
 
-  const averageDueDateItem = {
-    title: "میانگین سررسید فاکتورها",
-    value: averageDueDate ? formatJalaliDate(averageDueDate) : "—",
-    valueClass: "text-blue-700",
-  };
+  const closingLabel =
+    balanceStatus === "payable"
+      ? "مانده قابل پرداخت مشتری"
+      : balanceStatus === "customer_credit"
+        ? "اعتبار مشتری"
+        : "مانده نهایی";
 
-  const closingBalanceItem = {
-    title: "مانده نهایی",
-    value: formatAmount(closingBalance),
-    valueClass: "text-gray-900",
-  };
+  const closingValue =
+    balanceStatus === "payable"
+      ? closingPayable
+      : balanceStatus === "customer_credit"
+        ? closingCustomerCredit
+        : closingBalance;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-      {[...items, averageDueDateItem, closingBalanceItem].map((item) => (
+      {[...items, {
+        title: closingLabel,
+        value: formatAmount(closingValue),
+        valueClass:
+          balanceStatus === "payable"
+            ? "text-red-700"
+            : balanceStatus === "customer_credit"
+              ? "text-green-700"
+              : "text-gray-900",
+      }].map((item) => (
         <div
           key={item.title}
           className="rounded-xl border border-gray-200 bg-white p-5"
