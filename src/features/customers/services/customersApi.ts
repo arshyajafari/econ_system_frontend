@@ -128,46 +128,6 @@ export type CustomerLedgerResponse = {
   closing_balance: number;
 };
 
-export type CustomerOpeningBalanceImportResult = {
-  statistics: {
-    processed: number;
-    imported: number;
-    skipped_empty: number;
-    skipped_duplicate: number;
-    failed: number;
-  };
-  errors: Array<{
-    row: number;
-    reason: string;
-    customer_id?: string | null;
-    balance?: string | null;
-    message?: string;
-  }>;
-};
-
-export async function importCustomerOpeningBalances(
-  file: File,
-  openingDate: string,
-  mode: "preview" | "commit",
-): Promise<CustomerOpeningBalanceImportResult> {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("opening_date", openingDate);
-  formData.append("mode", mode);
-
-  const response = await apiClient.post<CustomerOpeningBalanceImportResult>(
-    "/customers/opening-balances/import",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-
-  return response.data;
-}
-
 export async function getCustomerBalance(id: string): Promise<number> {
   const response = await apiClient.get<CustomerLedgerResponse | { data: CustomerLedgerResponse }>(
     `/customers/${id}/ledger`,
