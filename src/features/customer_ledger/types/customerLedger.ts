@@ -1,4 +1,7 @@
-export type CustomerLedgerSourceType = "invoice" | "payment" | "order_return";
+export type CustomerLedgerSourceType =
+  | "invoice"
+  | "payment"
+  | "order_return";
 
 export type CustomerLedgerSource = {
   type: CustomerLedgerSourceType;
@@ -19,6 +22,11 @@ export type CustomerLedgerTransaction = {
   source: CustomerLedgerSource | null;
 };
 
+export type CustomerLedgerBalanceStatus =
+  | "payable"
+  | "customer_credit"
+  | "settled";
+
 export type CustomerLedger = {
   customer: {
     id: string;
@@ -28,6 +36,9 @@ export type CustomerLedger = {
   total_debit: number | string;
   total_credit: number | string;
   closing_balance: number | string;
+  closing_payable: number | string;
+  closing_customer_credit: number | string;
+  balance_status: CustomerLedgerBalanceStatus;
   average_due_date: string | null;
   transactions: CustomerLedgerTransaction[];
 };
