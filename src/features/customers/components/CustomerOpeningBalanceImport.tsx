@@ -15,6 +15,7 @@ const reasonLabels: Record<string, string> = {
   duplicate_customer_in_excel: "مشتری در فایل تکراری است.",
   customer_not_found: "مشتری در سیستم پیدا نشد.",
   database_error: "خطای پایگاه داده.",
+  missing_required_columns: "ستون‌های customer_id و balance در فایل پیدا نشد.",
 };
 
 export function CustomerOpeningBalanceImport({ onCompleted }: Props) {
