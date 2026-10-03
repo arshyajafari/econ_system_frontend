@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { SearchableDoctorSelect } from "../../../components/SearchableDoctorSelect";
+import { SearchableDoctorSelect, type SearchableDoctor } from "../../../components/SearchableDoctorSelect";
 import type { Visit, VisitFormData } from "../types/visit";
 
 export function VisitForm({
@@ -12,7 +12,7 @@ export function VisitForm({
   onSubmit,
   onCancel,
 }: {
-  searchDoctors: (query: string) => Promise<import("../../doctors/types/doctor").Doctor[]>;
+  searchDoctors: (query: string) => Promise<SearchableDoctor[]>;
   visit: Visit | null;
   isSubmitting: boolean;
   error: string | null;
@@ -44,7 +44,7 @@ export function VisitForm({
       <div className="grid gap-3 md:grid-cols-2">
         <SearchableDoctorSelect
           value={doctorId}
-          selectedDoctor={visit?.doctor ?? null}
+          selectedDoctor={visit?.doctor ? { id: visit.doctor.id, first_name: visit.doctor.name, last_name: "", specialty: visit.doctor.specialty, clinic_name: visit.doctor.clinic_name } : null}
           disabled={Boolean(visit) || isSubmitting}
           searchDoctors={searchDoctors}
           onChange={(doctor) => setDoctorId(doctor?.id ?? "")}
