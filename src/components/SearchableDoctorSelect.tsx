@@ -69,7 +69,7 @@ export function SearchableDoctorSelect({
     return () => window.clearTimeout(timer);
   }, [isOpen, query, searchDoctors, selectedDoctor]);
 
-  function selectDoctor(doctor: Doctor) {
+  function selectDoctor(doctor: SearchableDoctor) {
     setQuery("");
     setIsOpen(false);
     onChange(doctor);
