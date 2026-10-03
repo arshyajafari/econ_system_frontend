@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
+import { SearchableDoctorSelect, type SearchableDoctor } from "../../../components/SearchableDoctorSelect";
 import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
-import type { Doctor } from "../../doctors/types/doctor";
 import { VisitForm } from "../components/VisitForm";
 import {
   cancelVisit,
@@ -28,8 +28,8 @@ export function VisitsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
   const [visits, setVisits] = useState<Visit[]>([]),
-    [doctors, setDoctors] = useState<Doctor[]>([]),
     [doctorId, setDoctorId] = useState(""),
+    [selectedDoctor, setSelectedDoctor] = useState<SearchableDoctor | null>(null),
     [status, setStatus] = useState<VisitStatus | "">(""),
     [from, setFrom] = useState(""),
     [to, setTo] = useState(""),
@@ -110,14 +110,10 @@ export function VisitsPage() {
       cancelled = true;
     };
   }, [doctorId, from, page, search, status, to]);
-  useEffect(() => {
-    getVisitDoctors()
-      .then(setDoctors)
-      .catch(() => setDoctors([]));
-  }, []);
   const reset = () => {
     setSearch("");
     setDoctorId("");
+    setSelectedDoctor(null);
     setStatus("");
     setFrom("");
     setTo("");
@@ -249,7 +245,7 @@ export function VisitsPage() {
 
         {formOpen && (
           <VisitForm
-            doctors={doctors}
+            searchDoctors={getVisitDoctors}
             visit={editing}
             isSubmitting={saving}
             error={formError}
@@ -273,21 +269,18 @@ export function VisitsPage() {
             placeholder="جستجو"
             className="rounded-lg border px-3 py-2 lg:col-span-2"
           />
-          <select
+          <SearchableDoctorSelect
             value={doctorId}
-            onChange={(e) => {
-              setDoctorId(e.target.value);
+            selectedDoctor={selectedDoctor}
+            searchDoctors={getVisitDoctors}
+            onChange={(doctor) => {
+              setSelectedDoctor(doctor);
+              setDoctorId(doctor?.id ?? "");
               setPage(1);
             }}
-            className="rounded-lg border px-3 py-2"
-          >
-            <option value="">همه پزشکان</option>
-            {doctors.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.first_name} {d.last_name}
-              </option>
-            ))}
-          </select>
+            placeholder="فیلتر پزشک..."
+            emptyLabel="پزشکی پیدا نشد"
+          />
           <select
             value={status}
             onChange={(e) => {
