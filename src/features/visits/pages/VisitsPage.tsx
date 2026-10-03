@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { SearchableDoctorSelect } from "../../../components/SearchableDoctorSelect";
+import { SearchableDoctorSelect, type SearchableDoctor } from "../../../components/SearchableDoctorSelect";
 import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
@@ -29,7 +29,7 @@ export function VisitsPage() {
   const isAdmin = user?.roles.includes("admin") ?? false;
   const [visits, setVisits] = useState<Visit[]>([]),
     [doctorId, setDoctorId] = useState(""),
-    [selectedDoctor, setSelectedDoctor] = useState<import("../../doctors/types/doctor").Doctor | null>(null),
+    [selectedDoctor, setSelectedDoctor] = useState<SearchableDoctor | null>(null),
     [status, setStatus] = useState<VisitStatus | "">(""),
     [from, setFrom] = useState(""),
     [to, setTo] = useState(""),
