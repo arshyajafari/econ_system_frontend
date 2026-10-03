@@ -1,12 +1,19 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { Doctor } from "../features/doctors/types/doctor";
 
+export type SearchableDoctor = Pick<Doctor, "id" | "first_name" | "last_name"> & {
+  code?: string | null;
+  phone_number?: string | null;
+  clinic_name?: string | null;
+  specialty?: string | null;
+};
+
 type SearchableDoctorSelectProps = {
   value: string;
-  selectedDoctor?: Doctor | null;
+  selectedDoctor?: SearchableDoctor | null;
   disabled?: boolean;
-  onChange: (doctor: Doctor | null) => void;
-  searchDoctors: (query: string) => Promise<Doctor[]>;
+  onChange: (doctor: SearchableDoctor | null) => void;
+  searchDoctors: (query: string) => Promise<SearchableDoctor[]>;
   placeholder?: string;
   emptyLabel?: string;
 };
@@ -27,7 +34,7 @@ export function SearchableDoctorSelect({
   const listboxId = `doctor-options-${useId().replace(/:/g, "")}`;
   const requestRef = useRef(0);
   const [query, setQuery] = useState("");
-  const [options, setOptions] = useState<Doctor[]>([]);
+  const [options, setOptions] = useState<SearchableDoctor[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -102,7 +109,7 @@ export function SearchableDoctorSelect({
   }
 
   const displayValue = query || (selectedDoctor
-    ? `${selectedDoctor.code} — ${selectedDoctor.first_name} ${selectedDoctor.last_name}`
+    ? `${selectedDoctor.code ? `${selectedDoctor.code} — ` : ""}${selectedDoctor.first_name} ${selectedDoctor.last_name}`
     : "");
 
   return (
