@@ -1,18 +1,18 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import type { Doctor } from "../../doctors/types/doctor";
+import { SearchableDoctorSelect } from "../../../components/SearchableDoctorSelect";
 import type { Visit, VisitFormData } from "../types/visit";
 
 export function VisitForm({
-  doctors,
+  searchDoctors,
   visit,
   isSubmitting,
   error,
   onSubmit,
   onCancel,
 }: {
-  doctors: Doctor[];
+  searchDoctors: (query: string) => Promise<import("../../doctors/types/doctor").Doctor[]>;
   visit: Visit | null;
   isSubmitting: boolean;
   error: string | null;
@@ -42,20 +42,15 @@ export function VisitForm({
       className="space-y-4 rounded-xl border bg-white p-4"
     >
       <div className="grid gap-3 md:grid-cols-2">
-        <select
-          required
-          disabled={Boolean(visit) || isSubmitting}
+        <SearchableDoctorSelect
           value={doctorId}
-          onChange={(e) => setDoctorId(e.target.value)}
-          className="rounded-lg border px-3 py-2.5"
-        >
-          <option value="">انتخاب پزشک</option>
-          {doctors.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.first_name} {d.last_name}
-            </option>
-          ))}
-        </select>
+          selectedDoctor={visit?.doctor ?? null}
+          disabled={Boolean(visit) || isSubmitting}
+          searchDoctors={searchDoctors}
+          onChange={(doctor) => setDoctorId(doctor?.id ?? "")}
+          placeholder="جستجوی پزشک..."
+          emptyLabel="پزشکی پیدا نشد"
+        />
         <div className="grid grid-cols-2 gap-2">
           <JalaliDateInput
             value={date}
