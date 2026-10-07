@@ -12,12 +12,11 @@ type DoctorFormProps = {
 };
 
 const specialties: Array<{ value: DoctorSpecialty; label: string }> = [
-  { value: "متخصص پوست، مو و زیبایی", label: "متخصص پوست، مو و زیبایی" },
-  { value: "پزشک عمومی", label: "پزشک عمومی" },
-  { value: "متخصص پوست اطفال و کودکان", label: "متخصص پوست اطفال و کودکان" },
-  { value: "متخصص آلرژی و ایمنی‌شناسی", label: "متخصص آلرژی و ایمنی‌شناسی" },
-  { value: "متخصص ورید و عروق", label: "متخصص ورید و عروق" },
-  { value: "متخصص غدد و متابولیسم", label: "متخصص غدد و متابولیسم" },
+  { value: "متخصص پوست، مو و زیبایی (درماتولوژی)", label: "متخصص پوست، مو و زیبایی (درماتولوژی)" },
+  { value: "متخصص اطفال (پدیاتریک)", label: "متخصص اطفال (پدیاتریک)" },
+  { value: "متخصص زنان و زایمان", label: "متخصص زنان و زایمان" },
+  { value: "متخصص ایمونولوژی و آلرژی", label: "متخصص ایمونولوژی و آلرژی" },
+  { value: "متخصص غدد (اندوکرینولوژی)", label: "متخصص غدد (اندوکرینولوژی)" },
   { value: "متخصص تغذیه", label: "متخصص تغذیه" },
 ];
 
@@ -26,7 +25,7 @@ const emptyForm: DoctorFormData = {
   last_name: "",
   phone_number: "",
   clinic_name: "",
-  specialty: "پزشک عمومی",
+  specialty: "متخصص پوست، مو و زیبایی (درماتولوژی)",
   status: "active",
   address: {
     province: "",
@@ -108,63 +107,31 @@ export function DoctorForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Field label="نام" required>
-            <input
-              value={form.first_name}
-              onChange={(e) => update("first_name", e.target.value)}
-              disabled={isSubmitting}
-              className={inputClass}
-            />
+            <input value={form.first_name} onChange={(e) => update("first_name", e.target.value)} disabled={isSubmitting} className={inputClass} />
           </Field>
           <Field label="نام خانوادگی" required>
-            <input
-              value={form.last_name}
-              onChange={(e) => update("last_name", e.target.value)}
-              disabled={isSubmitting}
-              className={inputClass}
-            />
+            <input value={form.last_name} onChange={(e) => update("last_name", e.target.value)} disabled={isSubmitting} className={inputClass} />
           </Field>
           <Field label="شماره موبایل">
-            <input
-              dir="ltr"
-              value={form.phone_number}
-              onChange={(e) => update("phone_number", e.target.value)}
-              disabled={isSubmitting}
-              className={`${inputClass} text-right`}
-            />
+            <input dir="ltr" value={form.phone_number} onChange={(e) => update("phone_number", e.target.value)} disabled={isSubmitting} className={`${inputClass} text-right`} />
           </Field>
           <Field label="نام کلینیک">
-            <input
-              value={form.clinic_name}
-              onChange={(e) => update("clinic_name", e.target.value)}
-              disabled={isSubmitting}
-              className={inputClass}
-            />
+            <input value={form.clinic_name} onChange={(e) => update("clinic_name", e.target.value)} disabled={isSubmitting} className={inputClass} />
           </Field>
           <Field label="تخصص" required>
             <select
               value={form.specialty}
-              onChange={(e) =>
-                update("specialty", e.target.value as DoctorSpecialty)
-              }
+              onChange={(e) => update("specialty", e.target.value as DoctorSpecialty)}
               disabled={isSubmitting}
               className={inputClass}
             >
               {specialties.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
+                <option key={item.value} value={item.value}>{item.label}</option>
               ))}
             </select>
           </Field>
           <Field label="وضعیت" required>
-            <select
-              value={form.status}
-              onChange={(e) =>
-                update("status", e.target.value as DoctorFormData["status"])
-              }
-              disabled={isSubmitting}
-              className={inputClass}
-            >
+            <select value={form.status} onChange={(e) => update("status", e.target.value as DoctorFormData["status"])} disabled={isSubmitting} className={inputClass}>
               <option value="active">فعال</option>
               <option value="inactive">غیرفعال</option>
               <option value="suspended">تعلیق‌شده</option>
@@ -174,65 +141,24 @@ export function DoctorForm({
         <div className="border-t border-gray-100 pt-6">
           <h3 className="mb-2 text-sm font-semibold text-gray-900">آدرس</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <IranAddressFields
-              province={form.address.province ?? ""}
-              city={form.address.city ?? ""}
-              onProvinceChange={(value) => updateAddress("province", value)}
-              onCityChange={(value) => updateAddress("city", value)}
-              disabled={isSubmitting}
-            />
+            <IranAddressFields province={form.address.province ?? ""} city={form.address.city ?? ""} onProvinceChange={(value) => updateAddress("province", value)} onCityChange={(value) => updateAddress("city", value)} disabled={isSubmitting} />
             <Field label="کد پستی">
-              <input
-                dir="ltr"
-                value={form.address.postal_code}
-                onChange={(e) => updateAddress("postal_code", e.target.value)}
-                disabled={isSubmitting}
-                className={inputClass}
-              />
+              <input dir="ltr" value={form.address.postal_code} onChange={(e) => updateAddress("postal_code", e.target.value)} disabled={isSubmitting} className={inputClass} />
             </Field>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 pt-2">
             <Field label="آدرس">
-              <textarea
-                value={form.address.address}
-                onChange={(e) => updateAddress("address", e.target.value)}
-                disabled={isSubmitting}
-                rows={1}
-                className={inputClass}
-              />
+              <textarea value={form.address.address} onChange={(e) => updateAddress("address", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} />
             </Field>
             <Field label="توضیحات">
-              <textarea
-                value={form.description}
-                onChange={(e) => update("description", e.target.value)}
-                disabled={isSubmitting}
-                rows={1}
-                className={inputClass}
-              />
+              <textarea value={form.description} onChange={(e) => update("description", e.target.value)} disabled={isSubmitting} rows={1} className={inputClass} />
             </Field>
           </div>
         </div>
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-          >
-            انصراف
-          </button>
-          <button
-            type="submit"
-            disabled={
-              isSubmitting || !form.first_name.trim() || !form.last_name.trim()
-            }
-            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting
-              ? "در حال ذخیره..."
-              : doctor
-                ? "ذخیره تغییرات"
-                : "ثبت پزشک"}
+          <button type="button" onClick={onCancel} disabled={isSubmitting} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60">انصراف</button>
+          <button type="submit" disabled={isSubmitting || !form.first_name.trim() || !form.last_name.trim()} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">
+            {isSubmitting ? "در حال ذخیره..." : doctor ? "ذخیره تغییرات" : "ثبت پزشک"}
           </button>
         </div>
       </form>
@@ -240,20 +166,11 @@ export function DoctorForm({
   );
 }
 
-function Field({
-  label,
-  required = false,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  children: ReactNode;
-}) {
+function Field({ label, required = false, children }: { label: string; required?: boolean; children: ReactNode }) {
   return (
     <div>
       <label className="mb-2 block text-sm font-medium text-gray-700">
-        {label}
-        {required ? <span className="mr-1 text-red-600">*</span> : null}
+        {label}{required ? <span className="mr-1 text-red-600">*</span> : null}
       </label>
       {children}
     </div>
