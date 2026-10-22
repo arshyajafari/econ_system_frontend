@@ -2,17 +2,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { sendMyLocation } from "../api/employeeLocations";
 
+const MIN_SEND_INTERVAL_MS = 30_000;
+
+function formatTime(timestamp: number | null): string {
+  if (!timestamp) return "هنوز ثبت نشده";
+  return new Date(timestamp).toLocaleTimeString("fa-IR");
+}
+
 export function EmployeeLocationShare() {
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [lastSentAt, setLastSentAt] = useState<number | null>(null);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
+  const [hasFix, setHasFix] = useState(false);
   const watchId = useRef<number | null>(null);
-  const lastSentAt = useRef(0);
+  const lastSentAtRef = useRef(0);
   const sending = useRef(false);
+  const active = useRef(false);
 
   const sendPosition = useCallback(async (position: GeolocationPosition) => {
-    const now = Date.now();
-    if (now - lastSentAt.current < 30000 || sending.current) return;
+    setHasFix(true);
+    setAccuracy(position.coords.accuracy);
+    if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS || sending.current) return;
     sending.current = true;
     try {
       await sendMyLocation({
@@ -21,54 +33,69 @@ export function EmployeeLocationShare() {
         accuracy: position.coords.accuracy,
         source: "browser",
       });
-      lastSentAt.current = Date.now();
+      const sentAt = Date.now();
+      lastSentAtRef.current = sentAt;
+      setLastSentAt(sentAt);
       setMessage("موقعیت با موفقیت ثبت شد و برای مدیر قابل مشاهده است.");
     } catch (error: unknown) {
-      setMessage(error instanceof ApiError ? error.message : "ارسال موقعیت انجام نشد.");
+      setMessage(error instanceof ApiError ? error.message : "ارسال موقعیت انجام نشد؛ با برقراری اتصال دوباره تلاش می‌شود.");
     } finally {
       sending.current = false;
     }
   }, []);
 
-  const stop = useCallback(() => {
-    if (watchId.current !== null) {
+  const stop = useCallback((notice = "اشتراک‌گذاری موقعیت متوقف شد.") => {
+    active.current = false;
+    if (watchId.current !== null && "geolocation" in navigator) {
       navigator.geolocation.clearWatch(watchId.current);
       watchId.current = null;
     }
     setEnabled(false);
     setBusy(false);
-    setMessage("اشتراک‌گذاری موقعیت متوقف شد.");
+    setHasFix(false);
+    setMessage(notice);
   }, []);
 
   const start = useCallback(() => {
-    if (!navigator.geolocation) {
+    if (active.current || busy) return;
+    if (!("geolocation" in navigator)) {
       setMessage("مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند.");
       return;
     }
+    if (!window.isSecureContext) {
+      setMessage("برای استفاده از موقعیت مکانی، صفحه باید از طریق HTTPS یا localhost باز شود.");
+      return;
+    }
+
+    active.current = true;
     setBusy(true);
-    setMessage("در حال دریافت اجازه موقعیت مکانی...");
+    setHasFix(false);
+    setMessage("در انتظار دریافت موقعیت GPS از دستگاه...");
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
+        if (!active.current) return;
         setBusy(false);
         void sendPosition(position);
       },
       (error) => {
+        if (!active.current) return;
         setBusy(false);
-        stop();
-        setEnabled(false);
-        setMessage(
-          error.code === error.PERMISSION_DENIED
-            ? "اجازه دسترسی به موقعیت مکانی داده نشد."
-            : "دریافت موقعیت مکانی با خطا مواجه شد.",
-        );
+        if (error.code === error.PERMISSION_DENIED) {
+          stop("اجازه دسترسی به موقعیت مکانی داده نشد؛ مجوز مکان‌یابی مرورگر را بررسی کنید.");
+        } else if (error.code === error.TIMEOUT) {
+          setMessage("دریافت موقعیت طول کشید؛ در حال انتظار برای تلاش بعدی GPS هستیم.");
+        } else {
+          setMessage("موقعیت GPS فعلاً در دسترس نیست؛ GPS و تنظیمات مکان‌یابی دستگاه را بررسی کنید.");
+        }
       },
-      { enableHighAccuracy: true, maximumAge: 60000, timeout: 15000 },
+      { enableHighAccuracy: true, maximumAge: 15_000, timeout: 20_000 },
     );
     setEnabled(true);
-  }, [sendPosition, stop]);
+  }, [busy, sendPosition, stop]);
 
   useEffect(() => () => {
-    if (watchId.current !== null) {
+    active.current = false;
+    if (watchId.current !== null && "geolocation" in navigator) {
       navigator.geolocation.clearWatch(watchId.current);
       watchId.current = null;
     }
@@ -78,21 +105,26 @@ export function EmployeeLocationShare() {
     <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-slate-800">موقعیت مکانی</div>
-          <div className="mt-1 text-xs text-slate-500">
-            {enabled ? "موقعیت شما برای مدیر در حال بروزرسانی است." : "برای ثبت موقعیت، اشتراک‌گذاری را فعال کنید."}
+          <div className="flex items-center gap-2">
+            <span aria-hidden="true" className={`h-2 w-2 rounded-full ${enabled ? hasFix ? "bg-emerald-500" : "animate-pulse bg-amber-500" : "bg-gray-400"}`} />
+            <div className="text-sm font-semibold text-slate-800">موقعیت مکانی</div>
+          </div>
+          <div className="mt-1 text-xs leading-5 text-slate-500">
+            {enabled ? hasFix ? "مکان‌یابی فعال است؛ موقعیت طبق بازه زمانی ارسال می‌شود." : "اشتراک‌گذاری فعال است؛ منتظر دریافت مختصات GPS..." : "اشتراک‌گذاری فقط با فعال‌کردن شما آغاز می‌شود."}
           </div>
         </div>
         <button
           type="button"
-          onClick={enabled ? stop : start}
-          disabled={busy}
-          className="shrink-0 rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+          onClick={() => enabled ? stop() : start()}
+          disabled={busy && !enabled}
+          className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 ${enabled ? "bg-slate-600 hover:bg-slate-700" : "bg-blue-600 hover:bg-blue-700"}`}
         >
-          {busy ? "در حال دریافت..." : enabled ? "توقف" : "اشتراک موقعیت"}
+          {busy ? "در انتظار GPS..." : enabled ? "توقف" : "اشتراک موقعیت"}
         </button>
       </div>
-      {message ? <p className="mt-2 text-xs text-slate-600">{message}</p> : null}
+      {accuracy !== null && hasFix ? <div className="mt-2 text-xs text-slate-600">دقت تقریبی GPS: {Math.round(accuracy).toLocaleString("fa-IR")} متر</div> : null}
+      {lastSentAt ? <div className="mt-1 text-xs text-slate-500">آخرین ارسال موفق: {formatTime(lastSentAt)}</div> : null}
+      {message ? <p role="status" className="mt-2 text-xs leading-5 text-slate-600">{message}</p> : null}
     </div>
   );
 }
