@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
 import { getEmployeeLocations, type EmployeeLocation } from '../api/employeeLocations';
+import { EmployeeLocationHistory } from '../components/EmployeeLocationHistory';
 
 const REFRESH_INTERVAL_MS = 30_000;
 const STALE_AFTER_MS = 5 * 60_000;
@@ -317,6 +318,8 @@ export function EmployeeLocationsPage() {
                     </div>
                 </div>
             </div>
+
+            {selectedLocation ? <EmployeeLocationHistory key={selectedLocation.employee_id} employeeId={selectedLocation.employee_id} employeeName={selectedLocation.employee_name} /> : null}
         </section>
     );
 }
