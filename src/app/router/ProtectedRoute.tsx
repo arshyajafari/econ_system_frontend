@@ -4,12 +4,14 @@ import { useAuth } from "../../features/auth";
 
 function getHomePath(roles: string[]): string {
   if (roles.includes("admin")) return "/dashboard";
+  if (roles.includes("accountant")) return "/orders";
+
+  // Prefer the combined operational landing page when an employee has both roles.
+  if (roles.includes("delivery operator") && roles.includes("settlement operator")) return "/customers";
   if (roles.includes("scientific visitor")) return "/scientific-inventory";
   if (roles.includes("sales visitor")) return "/products";
-  if (roles.includes("delivery operator") && roles.includes("settlement operator")) return "/customers";
   if (roles.includes("delivery operator")) return "/deliveries";
   if (roles.includes("settlement operator")) return "/customers";
-  if (roles.includes("accountant")) return "/orders";
   return "/customers";
 }
 
@@ -18,36 +20,49 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   const isAccountant = roles.includes("accountant");
   const isSalesVisitor = roles.includes("sales visitor");
   const isScientificVisitor = roles.includes("scientific visitor");
-  const can = (permission: string) => isAdmin || permissions.includes(permission);
-
-  // Notifications are an authenticated system feature and must remain reachable for every role,
-  // including scientific visitors. Keep this check before the role-specific home restriction.
-  if (pathname === "/notifications" || pathname.startsWith("/notifications/")) return true;
-
   const isDeliveryOperator = roles.includes("delivery operator");
   const isSettlementOperator = roles.includes("settlement operator");
-  // A person may have multiple operational activities. When delivery and settlement
-  // are both assigned, allow the union of both restricted route sets rather than
-  // returning after the first role check.
-  if (isDeliveryOperator && isSettlementOperator && !isAdmin && !isAccountant) {
-    return pathname === "/customers" || pathname.startsWith("/customers/")
-      || pathname === "/deliveries" || pathname.startsWith("/deliveries/")
-      || pathname === "/order-returns" || pathname.startsWith("/order-returns/")
-      || pathname === "/payments" || pathname.startsWith("/payments/");
-  }
-  if (isDeliveryOperator && !isAdmin && !isAccountant) {
-    return pathname === "/deliveries" || pathname.startsWith("/deliveries/")
-      || pathname === "/order-returns" || pathname.startsWith("/order-returns/");
-  }
-  if (isSettlementOperator && !isAdmin && !isAccountant) {
-    return pathname === "/customers" || pathname.startsWith("/customers/")
-      || pathname === "/deliveries" || pathname.startsWith("/deliveries/")
-      || pathname === "/order-returns" || pathname.startsWith("/order-returns/")
-      || pathname === "/payments" || pathname.startsWith("/payments/");
-  }
+  const hasRestrictedOperationalRole =
+    isSalesVisitor || isScientificVisitor || isDeliveryOperator || isSettlementOperator;
+  const can = (permission: string) => isAdmin || permissions.includes(permission);
 
-  if (isScientificVisitor && !isAdmin && !isAccountant) {
-    return pathname === "/visits" || pathname.startsWith("/visits/") || pathname === "/samples" || pathname.startsWith("/samples/") || pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/");
+  // Notifications are available to every authenticated role.
+  if (pathname === "/notifications" || pathname.startsWith("/notifications/")) return true;
+
+  // Admin/accountant rules below retain their broader access model.
+  if (hasRestrictedOperationalRole && !isAdmin && !isAccountant) {
+    const allowedByAssignedRole =
+      (isSalesVisitor && (
+        pathname === "/products" || pathname.startsWith("/products/") ||
+        pathname === "/inventory" || pathname.startsWith("/inventory/") ||
+        pathname === "/orders" || pathname.startsWith("/orders/")
+      )) ||
+      (isScientificVisitor && (
+        pathname === "/visits" || pathname.startsWith("/visits/") ||
+        pathname === "/samples" || pathname.startsWith("/samples/") ||
+        pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/")
+      )) ||
+      (isDeliveryOperator && (
+        pathname === "/deliveries" || pathname.startsWith("/deliveries/") ||
+        pathname === "/order-returns" || pathname.startsWith("/order-returns/")
+      )) ||
+      (isSettlementOperator && (
+        pathname === "/customers" || pathname.startsWith("/customers/") ||
+        pathname === "/deliveries" || pathname.startsWith("/deliveries/") ||
+        pathname === "/order-returns" || pathname.startsWith("/order-returns/") ||
+        pathname === "/payments" || pathname.startsWith("/payments/")
+      ));
+
+    if (allowedByAssignedRole) return true;
+
+    // Preserve permission-based access for non-role-specific pages where explicitly granted.
+    if (pathname === "/doctors" || pathname.startsWith("/doctors/")) return can("doctors.view");
+    if (pathname === "/employees" || pathname.startsWith("/employees/")) return can("employees.view");
+    if (pathname === "/employee-banking" || pathname.startsWith("/employee-banking/")) return can("employees.view");
+    if (pathname === "/invoices" || pathname.startsWith("/invoices/")) return can("invoices.view");
+    if (pathname === "/reports" || pathname.startsWith("/reports/")) return can("reports.view");
+    if (pathname === "/expenses" || pathname.startsWith("/expenses/")) return can("expenses.view");
+    return false;
   }
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin || isAccountant;
