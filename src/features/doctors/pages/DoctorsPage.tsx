@@ -42,6 +42,9 @@ const statusLabels: Record<DoctorStatus, string> = {
 export function DoctorsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const canCreateDoctor = user?.permissions.includes("doctors.create") ?? false;
+  const canUpdateDoctor = user?.permissions.includes("doctors.update") ?? false;
+  const canChangeDoctorStatus = user?.permissions.includes("doctors.change_status") ?? false;
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<DoctorStatus | "">("");
@@ -223,13 +226,15 @@ export function DoctorsPage() {
           >
             بروزرسانی
           </button>
-          <button
-            type="button"
-            onClick={openCreateForm}
-            className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            پزشک جدید
-          </button>
+          {canCreateDoctor ? (
+            <button
+              type="button"
+              onClick={openCreateForm}
+              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+            >
+              پزشک جدید
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -384,6 +389,7 @@ export function DoctorsPage() {
                     <select
                       value={doctor.status}
                       disabled={
+                        !canChangeDoctorStatus ||
                         pendingStatusId === doctor.id ||
                         pendingDeleteId === doctor.id
                       }
@@ -404,14 +410,16 @@ export function DoctorsPage() {
                   </td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => openEditForm(doctor)}
-                        disabled={Boolean(pendingDeleteId)}
-                        className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                      >
-                        ویرایش
-                      </button>
+                      {canUpdateDoctor ? (
+                        <button
+                          type="button"
+                          onClick={() => openEditForm(doctor)}
+                          disabled={Boolean(pendingDeleteId)}
+                          className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                        >
+                          ویرایش
+                        </button>
+                      ) : null}
                       {isAdmin && (
                         <button
                           type="button"
