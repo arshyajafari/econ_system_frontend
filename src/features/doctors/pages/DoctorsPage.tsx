@@ -42,9 +42,15 @@ const statusLabels: Record<DoctorStatus, string> = {
 export function DoctorsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
-  const canCreateDoctor = user?.permissions.includes("doctors.create") ?? false;
-  const canUpdateDoctor = user?.permissions.includes("doctors.update") ?? false;
-  const canChangeDoctorStatus = user?.permissions.includes("doctors.change_status") ?? false;
+  const hasScientificVisitorActivity =
+    user?.employee.activities?.includes("scientific_visitor") === true ||
+    user?.employee.activity_type === "scientific_visitor";
+  const canCreateDoctor =
+    hasScientificVisitorActivity || (user?.permissions.includes("doctors.create") ?? false);
+  const canUpdateDoctor =
+    hasScientificVisitorActivity || (user?.permissions.includes("doctors.update") ?? false);
+  const canChangeDoctorStatus =
+    hasScientificVisitorActivity || (user?.permissions.includes("doctors.change_status") ?? false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<DoctorStatus | "">("");
