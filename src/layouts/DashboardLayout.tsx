@@ -372,7 +372,7 @@ export function DashboardLayout() {
     // sections instead of allowing one role to hide the others.
     if (!isAdmin && !isAccountant && (isSalesVisitor || isScientificVisitor || isRestrictedDeliveryOperator || isRestrictedSettlementOperator)) {
       return (
-        (isSalesVisitor && ["/products", "/inventory", "/orders"].includes(item.to)) ||
+        (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
         (isScientificVisitor && ["/visits", "/samples", "/scientific-inventory"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
@@ -383,8 +383,8 @@ export function DashboardLayout() {
     if (item.to === "/catalog") return isAdmin || isAccountant;
     if (item.to === "/scientific-inventory")
       return isAdmin || isAccountant || isScientificVisitor;
-    if (item.to === "/products" || item.to === "/inventory")
-      return isAdmin || isAccountant || isSalesVisitor;
+    if (item.to === "/inventory") return isAdmin || isAccountant;
+    if (item.to === "/products") return isAdmin || isAccountant || isSalesVisitor;
     if (item.to === "/orders") return isAdmin || isAccountant || isSalesVisitor;
     if (item.to === "/invoices") return isAdmin || isAccountant;
     if (item.to === "/expenses") return isAdmin || isAccountant;
