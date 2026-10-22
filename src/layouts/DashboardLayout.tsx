@@ -368,16 +368,16 @@ export function DashboardLayout() {
   const can = (permission: string) =>
     isAdmin || permissions.includes(permission);
   const canSeeNav = (item: NavConfig) => {
-    if (isScientificVisitor && !isAdmin && !isAccountant)
-      return ["/visits", "/samples", "/scientific-inventory"].includes(item.to);
-    // Employees can hold multiple activities/roles. Combine the restricted
-    // navigation sets instead of letting the first matching role hide the rest.
-    if (isRestrictedDeliveryOperator && isRestrictedSettlementOperator)
-      return ["/deliveries", "/order-returns", "/customers", "/payments"].includes(item.to);
-    if (isRestrictedDeliveryOperator)
-      return ["/deliveries", "/order-returns"].includes(item.to);
-    if (isRestrictedSettlementOperator)
-      return ["/customers", "/payments"].includes(item.to);
+    // For employees with multiple restricted roles, show the union of their navigation
+    // sections instead of allowing one role to hide the others.
+    if (!isAdmin && !isAccountant && (isSalesVisitor || isScientificVisitor || isRestrictedDeliveryOperator || isRestrictedSettlementOperator)) {
+      return (
+        (isSalesVisitor && ["/products", "/inventory", "/orders"].includes(item.to)) ||
+        (isScientificVisitor && ["/visits", "/samples", "/scientific-inventory"].includes(item.to)) ||
+        (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
+        (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
+      );
+    }
     if (item.to === "/dashboard") return isAdmin || isAccountant;
     if (item.adminOnly) return isAdmin;
     if (item.to === "/catalog") return isAdmin || isAccountant;
@@ -389,9 +389,7 @@ export function DashboardLayout() {
     if (item.to === "/invoices") return isAdmin || isAccountant;
     if (item.to === "/expenses") return isAdmin || isAccountant;
     if (item.to === "/deliveries")
-      return (
-        isAdmin || isAccountant || isDeliveryOperator || isSettlementOperator
-      );
+      return isAdmin || isAccountant || isDeliveryOperator || isSettlementOperator;
     return !item.requiredPermission || can(item.requiredPermission);
   };
   return (
