@@ -361,6 +361,9 @@ export function DashboardLayout() {
   const isSettlementOperator = roles.includes("settlement operator");
   const isSalesVisitor = roles.includes("sales visitor");
   const isScientificVisitor = roles.includes("scientific visitor");
+  const hasScientificVisitorActivity =
+    user?.employee.activities?.includes("scientific_visitor") === true ||
+    user?.employee.activity_type === "scientific_visitor";
   const isRestrictedDeliveryOperator =
     isDeliveryOperator && !isAdmin && !isAccountant;
   const isRestrictedSettlementOperator =
@@ -373,6 +376,7 @@ export function DashboardLayout() {
     if (!isAdmin && !isAccountant && (isSalesVisitor || isScientificVisitor || isRestrictedDeliveryOperator || isRestrictedSettlementOperator)) {
       return (
         (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
+        ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
         (isScientificVisitor && ["/visits", "/samples", "/scientific-inventory"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
@@ -383,6 +387,8 @@ export function DashboardLayout() {
     if (item.to === "/catalog") return isAdmin || isAccountant;
     if (item.to === "/scientific-inventory")
       return isAdmin || isAccountant || isScientificVisitor;
+    if (item.to === "/doctors")
+      return isAdmin || isAccountant || can("doctors.view") || hasScientificVisitorActivity;
     if (item.to === "/inventory") return isAdmin || isAccountant;
     if (item.to === "/products") return isAdmin || isAccountant || isSalesVisitor;
     if (item.to === "/orders") return isAdmin || isAccountant || isSalesVisitor;
@@ -459,6 +465,7 @@ export function DashboardLayout() {
         </nav>
         {isSalesVisitor ||
         isScientificVisitor ||
+        hasScientificVisitorActivity ||
         isDeliveryOperator ||
         isSettlementOperator ? (
           <EmployeeLocationShare />

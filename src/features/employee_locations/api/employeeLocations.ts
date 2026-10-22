@@ -16,7 +16,7 @@ export async function sendMyLocation(payload: { latitude: number; longitude: num
   return response.data;
 }
 
-export async function getEmployeeLocations(): Promise<{ data: EmployeeLocation[] }> {
-  const response = await apiClient.get<{ data: EmployeeLocation[] }>("/employees/locations");
+export async function getEmployeeLocations(): Promise<EmployeeLocation[]> {
+  const response = await apiClient.get<EmployeeLocation[]>("/employees/locations");
   return response.data;
 }

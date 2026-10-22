@@ -15,7 +15,7 @@ function getHomePath(roles: string[]): string {
   return "/customers";
 }
 
-function canAccessPath(pathname: string, roles: string[], permissions: string[]): boolean {
+function canAccessPath(pathname: string, roles: string[], permissions: string[], hasScientificVisitorActivity: boolean): boolean {
   const isAdmin = roles.includes("admin");
   const isAccountant = roles.includes("accountant");
   const isSalesVisitor = roles.includes("sales visitor");
@@ -55,7 +55,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
     if (allowedByAssignedRole) return true;
 
     // Preserve permission-based access for non-role-specific pages where explicitly granted.
-    if (pathname === "/doctors" || pathname.startsWith("/doctors/")) return can("doctors.view");
+    if (pathname === "/doctors" || pathname.startsWith("/doctors/")) return can("doctors.view") || hasScientificVisitorActivity;
     if (pathname === "/employees" || pathname.startsWith("/employees/")) return can("employees.view");
     if (pathname === "/employee-banking" || pathname.startsWith("/employee-banking/")) return can("employees.view");
     if (pathname === "/invoices" || pathname.startsWith("/invoices/")) return can("invoices.view");
@@ -94,6 +94,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
 
   const rule = permissionRules.find(([prefix]) => pathname === prefix || pathname.startsWith(prefix + "/"));
   if (rule) {
+    if (rule[0] === "/doctors" && hasScientificVisitorActivity) return true;
     if (isScientificVisitor && (rule[0] === "/visits" || rule[0] === "/samples")) return true;
     return can(rule[1]);
   }
@@ -110,8 +111,11 @@ export function ProtectedRoute() {
 
   const roles = user?.roles ?? [];
   const permissions = user?.permissions ?? [];
+  const hasScientificVisitorActivity =
+    user?.employee.activities?.includes("scientific_visitor") === true ||
+    user?.employee.activity_type === "scientific_visitor";
 
-  if (!canAccessPath(location.pathname, roles, permissions)) {
+  if (!canAccessPath(location.pathname, roles, permissions, hasScientificVisitorActivity)) {
     return <Navigate to={getHomePath(roles)} replace />;
   }
 

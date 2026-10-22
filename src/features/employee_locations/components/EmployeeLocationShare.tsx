@@ -8,11 +8,12 @@ export function EmployeeLocationShare() {
   const [message, setMessage] = useState<string | null>(null);
   const watchId = useRef<number | null>(null);
   const lastSentAt = useRef(0);
+  const sending = useRef(false);
 
   const sendPosition = useCallback(async (position: GeolocationPosition) => {
     const now = Date.now();
-    if (now - lastSentAt.current < 30000) return;
-    lastSentAt.current = now;
+    if (now - lastSentAt.current < 30000 || sending.current) return;
+    sending.current = true;
     try {
       await sendMyLocation({
         latitude: position.coords.latitude,
@@ -20,9 +21,12 @@ export function EmployeeLocationShare() {
         accuracy: position.coords.accuracy,
         source: "browser",
       });
-      setMessage("موقعیت با موفقیت برای مدیر ارسال شد.");
+      lastSentAt.current = Date.now();
+      setMessage("موقعیت با موفقیت ثبت شد و برای مدیر قابل مشاهده است.");
     } catch (error: unknown) {
       setMessage(error instanceof ApiError ? error.message : "ارسال موقعیت انجام نشد.");
+    } finally {
+      sending.current = false;
     }
   }, []);
 
@@ -31,6 +35,9 @@ export function EmployeeLocationShare() {
       navigator.geolocation.clearWatch(watchId.current);
       watchId.current = null;
     }
+    setEnabled(false);
+    setBusy(false);
+    setMessage("اشتراک‌گذاری موقعیت متوقف شد.");
   }, []);
 
   const start = useCallback(() => {
@@ -60,7 +67,12 @@ export function EmployeeLocationShare() {
     setEnabled(true);
   }, [sendPosition, stop]);
 
-  useEffect(() => () => stop(), [stop]);
+  useEffect(() => () => {
+    if (watchId.current !== null) {
+      navigator.geolocation.clearWatch(watchId.current);
+      watchId.current = null;
+    }
+  }, []);
 
   return (
     <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">

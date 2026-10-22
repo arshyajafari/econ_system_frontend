@@ -21,7 +21,7 @@ export function EmployeeLocationsPage() {
         try {
           const response = await getEmployeeLocations();
           if (cancelled) return;
-          setLocations(Array.isArray(response?.data) ? response.data : []);
+          setLocations(Array.isArray(response) ? response : []);
         } catch (e: unknown) {
           if (cancelled) return;
           setLocations([]);
