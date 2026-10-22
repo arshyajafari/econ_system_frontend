@@ -25,15 +25,16 @@ type Stop = {
 };
 
 function localDateValue(): string {
+    const now = new Date();
     const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Asia/Tehran',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
-    }).formatToParts(new Date());
-    const year = parts.find((part) => part.type === 'year')?.value ?? '2026';
-    const month = parts.find((part) => part.type === 'month')?.value ?? '01';
-    const day = parts.find((part) => part.type === 'day')?.value ?? '01';
+    }).formatToParts(now);
+    const year = parts.find((part) => part.type === 'year')?.value ?? String(now.getFullYear());
+    const month = parts.find((part) => part.type === 'month')?.value ?? String(now.getMonth() + 1).padStart(2, '0');
+    const day = parts.find((part) => part.type === 'day')?.value ?? String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
