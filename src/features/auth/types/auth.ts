@@ -3,7 +3,7 @@ export type AuthUser = {
   login: string;
   roles: string[];
   permissions: string[];
-  employee: { id: string; full_name: string; phone_number: string; };
+  employee: { id: string; full_name: string; phone_number: string; activity_type?: string | null; activities?: string[]; };
 };
 
 export type LoginRequest = { login: string; password: string; device_id: string; platform: string; platform_version?: string; app_version?: string; push_token?: string; };
