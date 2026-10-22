@@ -25,17 +25,22 @@ type Stop = {
 };
 
 function localDateValue(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(new Date());
+    const year = parts.find((part) => part.type === 'year')?.value ?? '2026';
+    const month = parts.find((part) => part.type === 'month')?.value ?? '01';
+    const day = parts.find((part) => part.type === 'day')?.value ?? '01';
     return `${year}-${month}-${day}`;
 }
 
 function formatTime(value: string | null): string {
     if (!value) return 'زمان نامشخص';
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? 'زمان نامشخص' : date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    return Number.isNaN(date.getTime()) ? 'زمان نامشخص' : date.toLocaleTimeString('fa-IR', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDuration(milliseconds: number): string {
