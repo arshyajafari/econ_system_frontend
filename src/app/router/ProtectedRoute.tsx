@@ -6,6 +6,7 @@ function getHomePath(roles: string[]): string {
   if (roles.includes("admin")) return "/dashboard";
   if (roles.includes("scientific visitor")) return "/scientific-inventory";
   if (roles.includes("sales visitor")) return "/products";
+  if (roles.includes("delivery operator") && roles.includes("settlement operator")) return "/customers";
   if (roles.includes("delivery operator")) return "/deliveries";
   if (roles.includes("settlement operator")) return "/customers";
   if (roles.includes("accountant")) return "/orders";
@@ -25,6 +26,15 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
 
   const isDeliveryOperator = roles.includes("delivery operator");
   const isSettlementOperator = roles.includes("settlement operator");
+  // A person may have multiple operational activities. When delivery and settlement
+  // are both assigned, allow the union of both restricted route sets rather than
+  // returning after the first role check.
+  if (isDeliveryOperator && isSettlementOperator && !isAdmin && !isAccountant) {
+    return pathname === "/customers" || pathname.startsWith("/customers/")
+      || pathname === "/deliveries" || pathname.startsWith("/deliveries/")
+      || pathname === "/order-returns" || pathname.startsWith("/order-returns/")
+      || pathname === "/payments" || pathname.startsWith("/payments/");
+  }
   if (isDeliveryOperator && !isAdmin && !isAccountant) {
     return pathname === "/deliveries" || pathname.startsWith("/deliveries/")
       || pathname === "/order-returns" || pathname.startsWith("/order-returns/");
