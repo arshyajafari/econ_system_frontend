@@ -20,3 +20,9 @@ export async function getEmployeeLocations(): Promise<EmployeeLocation[]> {
   const response = await apiClient.get<EmployeeLocation[]>("/employees/locations");
   return response.data;
 }
+
+export async function getEmployeeLocationHistory(employeeId: string, date: string): Promise<EmployeeLocation[]> {
+  const params = new URLSearchParams({ employee_id: employeeId, date });
+  const response = await apiClient.get<EmployeeLocation[]>(`/employees/locations/history?${params.toString()}`);
+  return response.data;
+}
