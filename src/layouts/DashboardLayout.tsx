@@ -370,6 +370,10 @@ export function DashboardLayout() {
   const canSeeNav = (item: NavConfig) => {
     if (isScientificVisitor && !isAdmin && !isAccountant)
       return ["/visits", "/samples", "/scientific-inventory"].includes(item.to);
+    // Employees can hold multiple activities/roles. Combine the restricted
+    // navigation sets instead of letting the first matching role hide the rest.
+    if (isRestrictedDeliveryOperator && isRestrictedSettlementOperator)
+      return ["/deliveries", "/order-returns", "/customers", "/payments"].includes(item.to);
     if (isRestrictedDeliveryOperator)
       return ["/deliveries", "/order-returns"].includes(item.to);
     if (isRestrictedSettlementOperator)
