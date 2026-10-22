@@ -15,16 +15,13 @@ function getHomePath(roles: string[]): string {
   return "/customers";
 }
 
-function canAccessPath(pathname: string, roles: string[], permissions: string[]): boolean {
+function canAccessPath(pathname: string, roles: string[], permissions: string[], hasScientificVisitorActivity: boolean): boolean {
   const isAdmin = roles.includes("admin");
   const isAccountant = roles.includes("accountant");
   const isSalesVisitor = roles.includes("sales visitor");
   const isScientificVisitor = roles.includes("scientific visitor");
   const isDeliveryOperator = roles.includes("delivery operator");
   const isSettlementOperator = roles.includes("settlement operator");
-  const hasScientificVisitorActivity =
-    user?.employee.activities?.includes("scientific_visitor") === true ||
-    user?.employee.activity_type === "scientific_visitor";
   const hasRestrictedOperationalRole =
     isSalesVisitor || isScientificVisitor || isDeliveryOperator || isSettlementOperator;
   const can = (permission: string) => isAdmin || permissions.includes(permission);
@@ -114,8 +111,11 @@ export function ProtectedRoute() {
 
   const roles = user?.roles ?? [];
   const permissions = user?.permissions ?? [];
+  const hasScientificVisitorActivity =
+    user?.employee.activities?.includes("scientific_visitor") === true ||
+    user?.employee.activity_type === "scientific_visitor";
 
-  if (!canAccessPath(location.pathname, roles, permissions)) {
+  if (!canAccessPath(location.pathname, roles, permissions, hasScientificVisitorActivity)) {
     return <Navigate to={getHomePath(roles)} replace />;
   }
 
