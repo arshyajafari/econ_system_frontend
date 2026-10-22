@@ -231,7 +231,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                 <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(); }}>
                     <label className="block">
                         <span className="mb-1 block text-xs text-gray-600">تاریخ</span>
-                        <input type="date" value={date} max={localDateValue()} onChange={(event) => setDate(event.target.value)} required className="rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-lg border border-gray-200 px-3 py-2 text-sm" />
                     </label>
                     <button type="submit" disabled={loading || !date} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
                 </form>
