@@ -148,7 +148,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
             if (index > 0) {
                 const gap = timestamp(points[index]) - timestamp(points[index - 1]);
                 const distance = distanceMeters(points[index - 1], points[index]);
-                const speed = gap > 0 ? distance / gap * 3_600_000 : Number.POSITIVE_INFINITY;
+                const speed = gap > 0 ? distance / gap * 3_600 : Number.POSITIVE_INFINITY;
                 if (gap > MAX_GAP_MS || gap <= 0 || speed > MAX_SPEED_KMH) {
                     if (segment.length) segments.push(segment);
                     segment = [];
@@ -209,7 +209,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
         for (let index = 1; index < points.length; index += 1) {
             const gap = timestamp(points[index]) - timestamp(points[index - 1]);
             const distance = distanceMeters(points[index - 1], points[index]);
-            const speed = gap > 0 ? distance / gap * 3_600_000 : Number.POSITIVE_INFINITY;
+            const speed = gap > 0 ? distance / gap * 3_600 : Number.POSITIVE_INFINITY;
             if (gap > MAX_GAP_MS || gap <= 0 || speed > MAX_SPEED_KMH) {
                 gaps += 1;
                 continue;
