@@ -72,10 +72,11 @@ export function EmployeeLocationsPage() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    void refreshLocations(true);
+    const initialTimer = window.setTimeout(() => void refreshLocations(true), 0);
     const refreshTimer = window.setInterval(() => void refreshLocations(), REFRESH_INTERVAL_MS);
     const clockTimer = window.setInterval(() => setClock(Date.now()), 15_000);
     return () => {
+      window.clearTimeout(initialTimer);
       window.clearInterval(refreshTimer);
       window.clearInterval(clockTimer);
     };
