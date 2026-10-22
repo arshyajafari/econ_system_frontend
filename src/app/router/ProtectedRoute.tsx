@@ -34,7 +34,6 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
     const allowedByAssignedRole =
       (isSalesVisitor && (
         pathname === "/products" || pathname.startsWith("/products/") ||
-        pathname === "/inventory" || pathname.startsWith("/inventory/") ||
         pathname === "/orders" || pathname.startsWith("/orders/")
       )) ||
       (isScientificVisitor && (
@@ -71,7 +70,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[])
   if (pathname === "/employee-locations" || pathname.startsWith("/employee-locations/")) return isAdmin;
   if (pathname === "/catalog" || pathname.startsWith("/catalog/")) return isAdmin || isAccountant;
   if (pathname === "/products" || pathname.startsWith("/products/")) return isAdmin || isAccountant || isSalesVisitor;
-  if (pathname === "/inventory" || pathname.startsWith("/inventory/")) return isAdmin || isSalesVisitor || isAccountant;
+  if (pathname === "/inventory" || pathname.startsWith("/inventory/")) return isAdmin || isAccountant;
   if (pathname === "/scientific-inventory" || pathname.startsWith("/scientific-inventory/")) {
     return isAdmin || isAccountant || isScientificVisitor;
   }
