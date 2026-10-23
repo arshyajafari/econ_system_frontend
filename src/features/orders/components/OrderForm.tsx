@@ -129,6 +129,29 @@ export function OrderForm({
       : null,
   );
 
+  // Reflect unsaved order quantities immediately in the stock shown by this form.
+  const productsWithDraftAvailability = products.map((product) => {
+    const draftFulfillment = order
+      ? 0
+      : form.items
+          .filter((item) => item.product_id === product.id)
+          .reduce(
+            (total, item) =>
+              total +
+              Math.max(0, Math.trunc(Number(item.quantity) || 0)) +
+              Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)),
+            0,
+          );
+
+    return {
+      ...product,
+      available_quantity:
+        product.available_quantity == null
+          ? product.available_quantity
+          : Math.max(0, product.available_quantity - draftFulfillment),
+    };
+  });
+
   function update<K extends keyof OrderFormData>(
     key: K,
     value: OrderFormData[K],
@@ -295,7 +318,7 @@ export function OrderForm({
 
         <OrderItemsEditor
           items={form.items}
-          products={products}
+          products={productsWithDraftAvailability}
           disabled={isSubmitting}
           onChange={(items) => update("items", items)}
         />
