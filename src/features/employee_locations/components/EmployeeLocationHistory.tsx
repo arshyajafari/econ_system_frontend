@@ -146,7 +146,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
     const map = useMemo(() => {
         if (!points.length) return null;
         let zoom = 16;
-        let projected: { x: number; y: number }[];
+        const projected: { x: number; y: number }[];
         for (let candidate = 16; candidate >= 3; candidate -= 1) {
             const values = points.map((point) =>
                 project(point.latitude, point.longitude, candidate)
