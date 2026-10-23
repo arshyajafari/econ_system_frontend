@@ -44,12 +44,6 @@ function formatDateLabel(value: string): string {
     return date.toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function formatTime(value: string | null): string {
-    if (!value) return 'زمان نامشخص';
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? 'زمان نامشخص' : date.toLocaleTimeString('fa-IR', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit' });
-}
-
 function formatDuration(milliseconds: number): string {
     const minutes = Math.round(milliseconds / 60_000);
     if (minutes < 60) return `${minutes.toLocaleString('fa-IR')} دقیقه`;
