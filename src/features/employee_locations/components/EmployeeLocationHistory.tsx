@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiError } from '../../../api/client';
-import { getEmployeeLocationHistory, type EmployeeLocation } from '../api/employeeLocations';
+import { getEmployeeLocationDailySummary, getEmployeeLocationHistory, type EmployeeLocation, type EmployeeLocationDailySummary } from '../api/employeeLocations';
 
 const MAX_GAP_MS = 5 * 60_000;
 const STOP_GAP_MS = 3 * 60_000;
@@ -38,10 +38,10 @@ function localDateValue(): string {
     return `${year}-${month}-${day}`;
 }
 
-function formatTime(value: string | null): string {
-    if (!value) return 'زمان نامشخص';
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? 'زمان نامشخص' : date.toLocaleTimeString('fa-IR', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit' });
+function formatDateLabel(value: string): string {
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day, 12));
+    return date.toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function formatDuration(milliseconds: number): string {
@@ -188,16 +188,37 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
 export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
     const [date, setDate] = useState(localDateValue);
     const [points, setPoints] = useState<EmployeeLocation[]>([]);
+    const [dailySummaries, setDailySummaries] = useState<EmployeeLocationDailySummary[]>([]);
+    const [summaryLoading, setSummaryLoading] = useState(true);
+    const [summaryError, setSummaryError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadHistory = useCallback(async () => {
+    useEffect(() => {
+        let cancelled = false;
+        getEmployeeLocationDailySummary(employeeId)
+            .then((result) => {
+                if (!cancelled) setDailySummaries(Array.isArray(result) ? result : []);
+            })
+            .catch((e: unknown) => {
+                if (!cancelled) {
+                    setSummaryError(e instanceof ApiError ? e.message : 'دریافت گزارش ۳۰ روز اخیر ناموفق بود.');
+                    setDailySummaries([]);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setSummaryLoading(false);
+            });
+        return () => { cancelled = true; };
+    }, [employeeId]);
+
+    const loadHistory = useCallback(async (requestedDate = date) => {
         setLoading(true);
         setError(null);
         setHasSearched(true);
         try {
-            const result = await getEmployeeLocationHistory(employeeId, date);
+            const result = await getEmployeeLocationHistory(employeeId, requestedDate);
             const valid = Array.isArray(result) ? result.filter(validPoint).sort((a, b) => timestamp(a) - timestamp(b)) : [];
             setPoints(valid);
         } catch (e: unknown) {
@@ -224,22 +245,23 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
             connectedSegments += 1;
         }
         const duration = points.length > 1 ? Math.max(0, timestamp(points[points.length - 1]) - timestamp(points[0])) : 0;
-        return { meters, connectedSegments, gaps, duration, stops: findStops(points) };
+        const stops = findStops(points);
+        return { meters, connectedSegments, gaps, duration, stops, stopDurationMs: stops.reduce((total, stop) => total + stop.durationMs, 0) };
     }, [points]);
 
     return (
-        <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-4 md:p-5">
+        <section className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50/40 p-3 md:p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 className="font-semibold text-gray-900">مسیر و تاریخچه روزانه</h2>
+                    <h2 className="font-semibold tracking-tight text-gray-900">مسیر و تاریخچه روزانه</h2>
                     <p className="mt-1 text-xs text-gray-500">کارمند: {employeeName} · توقف‌ها و مسافت به‌صورت تقریبی محاسبه می‌شوند.</p>
                 </div>
-                <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(); }}>
+                <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(date); }}>
                     <label className="block">
                         <span className="mb-1 block text-xs text-gray-600">تاریخ</span>
-                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
                     </label>
-                    <button type="submit" disabled={loading || !date} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
+                    <button type="submit" disabled={loading || !date} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
                 </form>
             </div>
 
@@ -249,30 +271,64 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
 
             {points.length > 0 ? (
                 <>
+                    <div className="grid grid-cols-2 gap-2 bg-gray-50/70 p-3 sm:grid-cols-3 lg:grid-cols-5">
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مسافت تخمینی</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{(summary.meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} <span className="text-xs font-normal">کیلومتر</span></div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مجموع زمان توقف</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{formatDuration(summary.stopDurationMs)}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">نقاط ثبت‌شده</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{points.length.toLocaleString('fa-IR')}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مدت ثبت مسیر</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{formatDuration(summary.duration)}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">توقف‌های احتمالی</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{summary.stops.length.toLocaleString('fa-IR')}</div></div>
+                    </div>
                     <RouteMap points={points} />
-                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">مسافت تخمینی</div><div className="mt-1 text-lg font-semibold text-gray-900">{(summary.meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} کیلومتر</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">نقاط ثبت‌شده</div><div className="mt-1 text-lg font-semibold text-gray-900">{points.length.toLocaleString('fa-IR')}</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">مدت بین اولین و آخرین ثبت</div><div className="mt-1 text-lg font-semibold text-gray-900">{formatDuration(summary.duration)}</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">توقف‌های احتمالی</div><div className="mt-1 text-lg font-semibold text-gray-900">{summary.stops.length.toLocaleString('fa-IR')}</div></div>
-                    </div>
                     {summary.gaps > 0 ? <p className="text-xs leading-5 text-amber-700">بین برخی نقاط فاصله زمانی زیاد یا پرش غیرواقعی وجود داشته است؛ این بخش‌ها برای جلوگیری از برآورد گمراه‌کننده از مسافت و خط مسیر کنار گذاشته شده‌اند ({summary.gaps.toLocaleString('fa-IR')} بخش).</p> : null}
-                    <div>
-                        <h3 className="mb-2 text-sm font-semibold text-gray-800">توقف‌های احتمالی (حداقل ۵ دقیقه در شعاع ۵۰ متری)</h3>
-                        {summary.stops.length ? (
-                            <div className="divide-y divide-gray-100 rounded-lg border border-gray-100">
-                                {summary.stops.map((stop, index) => (
-                                    <div key={`${stop.start}-${index}`} className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-sm">
-                                        <div><span className="font-medium text-gray-800">{formatTime(stop.start)} تا {formatTime(stop.end)}</span><div className="mt-1 text-xs text-gray-500">مختصات: {stop.latitude.toFixed(5)}, {stop.longitude.toFixed(5)}</div></div>
-                                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">حدود {formatDuration(stop.durationMs)}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-500">توقف قابل تشخیصی با این معیارها ثبت نشده است.</p>}
-                    </div>
+                    <p className="text-xs leading-5 text-gray-500">توقف احتمالی بر اساس ماندن حداقل ۵ دقیقه در شعاع ۵۰ متری تخمین زده می‌شود؛ این معیار جایگزین ثبت رسمی ورود و خروج نیست.</p>
                     <p className="text-xs leading-5 text-gray-500">خطوط بین نقاط با فاصله زمانی حداکثر ۵ دقیقه رسم می‌شوند. مسافت فقط از بخش‌های دارای فاصله زمانی قابل قبول و سرعت محاسباتی کمتر از ۱۸۰ کیلومتر بر ساعت محاسبه می‌شود. این گزارش تخمینی است و در صورت قطع GPS یا اینترنت کامل نیست.</p>
                 </>
             ) : null}
+
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-4 py-3">
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-900">گزارش روزانه · ۳۰ روز اخیر</h3>
+                        <p className="mt-1 text-xs text-gray-500">برای نمایش مسیر، ردیف همان روز را انتخاب کنید.</p>
+                    </div>
+                    <span className="text-xs text-gray-500">{dailySummaries.length.toLocaleString('fa-IR')} روز دارای اطلاعات</span>
+                </div>
+                {summaryError ? <p role="alert" className="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{summaryError}</p> : null}
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[520px] text-right text-sm">
+                        <thead className="bg-gray-50 text-xs text-gray-500">
+                            <tr>
+                                <th scope="col" className="px-4 py-3 font-medium">تاریخ</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مسافت تقریبی</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مجموع زمان توقف</th>
+                                <th scope="col" className="px-4 py-3 font-medium">نقاط</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مسیر</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {dailySummaries.slice().reverse().map((item) => (
+                                <tr key={item.date} className={item.date === date && hasSearched ? 'bg-blue-50/70' : 'hover:bg-gray-50'}>
+                                    <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800">{formatDateLabel(item.date)}</td>
+                                    <td className="whitespace-nowrap px-4 py-3 text-gray-700">{(item.distance_meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} کیلومتر</td>
+                                    <td className="whitespace-nowrap px-4 py-3 text-gray-700">{formatDuration(item.stop_duration_seconds * 1000)}</td>
+                                    <td className="px-4 py-3 text-gray-600">{item.points_count.toLocaleString('fa-IR')}</td>
+                                    <td className="px-4 py-3">
+                                        <button type="button" onClick={() => { setDate(item.date); void loadHistory(item.date); }} disabled={loading} className="rounded-lg px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-50 disabled:opacity-50">نمایش مسیر</button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {!summaryLoading && !summaryError && dailySummaries.length === 0 ? (
+                                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">در ۳۰ روز اخیر گزارشی برای این کارمند ثبت نشده است.</td></tr>
+                            ) : null}
+                            {summaryLoading ? (
+                                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">در حال دریافت گزارش روزانه...</td></tr>
+                            ) : null}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="border-t border-gray-100 px-4 py-3 text-xs leading-5 text-gray-500">سوابق مکانی قدیمی‌تر از ۳۰ روز طبق پاک‌سازی خودکار سرور حذف می‌شوند. مسافت و توقف‌ها تخمینی هستند.</div>
+            </div>
+
         </section>
     );
 }
