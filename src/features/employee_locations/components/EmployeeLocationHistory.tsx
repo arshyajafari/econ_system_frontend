@@ -267,9 +267,9 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                 <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(date); }}>
                     <label className="block">
                         <span className="mb-1 block text-xs text-gray-600">تاریخ</span>
-                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-lg border border-gray-200 px-3 py-2 text-sm" />
+                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
                     </label>
-                    <button type="submit" disabled={loading || !date} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
+                    <button type="submit" disabled={loading || !date} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
                 </form>
             </div>
 
@@ -279,13 +279,14 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
 
             {points.length > 0 ? (
                 <>
-                    <RouteMap points={points} />
-                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">مسافت تخمینی</div><div className="mt-1 text-lg font-semibold text-gray-900">{(summary.meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} کیلومتر</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">نقاط ثبت‌شده</div><div className="mt-1 text-lg font-semibold text-gray-900">{points.length.toLocaleString('fa-IR')}</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">مدت بین اولین و آخرین ثبت</div><div className="mt-1 text-lg font-semibold text-gray-900">{formatDuration(summary.duration)}</div></div>
-                        <div className="rounded-lg border border-gray-100 p-3"><div className="text-xs text-gray-500">توقف‌های احتمالی</div><div className="mt-1 text-lg font-semibold text-gray-900">{summary.stops.length.toLocaleString('fa-IR')}</div></div>
+                    <div className="grid grid-cols-2 gap-2 bg-gray-50/70 p-3 sm:grid-cols-3 lg:grid-cols-5">
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مسافت تخمینی</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{(summary.meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} <span className="text-xs font-normal">کیلومتر</span></div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مجموع زمان توقف</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{formatDuration(summary.stopDurationMs)}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">نقاط ثبت‌شده</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{points.length.toLocaleString('fa-IR')}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مدت ثبت مسیر</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{formatDuration(summary.duration)}</div></div>
+                        <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">توقف‌های احتمالی</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{summary.stops.length.toLocaleString('fa-IR')}</div></div>
                     </div>
+                    <RouteMap points={points} />
                     {summary.gaps > 0 ? <p className="text-xs leading-5 text-amber-700">بین برخی نقاط فاصله زمانی زیاد یا پرش غیرواقعی وجود داشته است؛ این بخش‌ها برای جلوگیری از برآورد گمراه‌کننده از مسافت و خط مسیر کنار گذاشته شده‌اند ({summary.gaps.toLocaleString('fa-IR')} بخش).</p> : null}
                     <div>
                         <h3 className="mb-2 text-sm font-semibold text-gray-800">توقف‌های احتمالی (حداقل ۵ دقیقه در شعاع ۵۰ متری)</h3>
