@@ -26,3 +26,18 @@ export async function getEmployeeLocationHistory(employeeId: string, date: strin
   const response = await apiClient.get<EmployeeLocation[]>(`/employees/locations/history?${params.toString()}`);
   return response.data;
 }
+
+export type EmployeeLocationDailySummary = {
+  date: string;
+  points_count: number;
+  distance_meters: number;
+  stop_duration_seconds: number;
+  stops_count: number;
+  gaps_count: number;
+};
+
+export async function getEmployeeLocationDailySummary(employeeId: string): Promise<EmployeeLocationDailySummary[]> {
+  const params = new URLSearchParams({ employee_id: employeeId });
+  const response = await apiClient.get<EmployeeLocationDailySummary[]>(`/employees/locations/history/daily-summary?${params.toString()}`);
+  return response.data;
+}
