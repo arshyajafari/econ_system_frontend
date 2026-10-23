@@ -288,19 +288,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                     </div>
                     <RouteMap points={points} />
                     {summary.gaps > 0 ? <p className="text-xs leading-5 text-amber-700">بین برخی نقاط فاصله زمانی زیاد یا پرش غیرواقعی وجود داشته است؛ این بخش‌ها برای جلوگیری از برآورد گمراه‌کننده از مسافت و خط مسیر کنار گذاشته شده‌اند ({summary.gaps.toLocaleString('fa-IR')} بخش).</p> : null}
-                    <div>
-                        <h3 className="mb-2 text-sm font-semibold text-gray-800">توقف‌های احتمالی (حداقل ۵ دقیقه در شعاع ۵۰ متری)</h3>
-                        {summary.stops.length ? (
-                            <div className="divide-y divide-gray-100 rounded-lg border border-gray-100">
-                                {summary.stops.map((stop, index) => (
-                                    <div key={`${stop.start}-${index}`} className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-sm">
-                                        <div><span className="font-medium text-gray-800">{formatTime(stop.start)} تا {formatTime(stop.end)}</span><div className="mt-1 text-xs text-gray-500">مختصات: {stop.latitude.toFixed(5)}, {stop.longitude.toFixed(5)}</div></div>
-                                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">حدود {formatDuration(stop.durationMs)}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-500">توقف قابل تشخیصی با این معیارها ثبت نشده است.</p>}
-                    </div>
+                    <p className="text-xs leading-5 text-gray-500">توقف احتمالی بر اساس ماندن حداقل ۵ دقیقه در شعاع ۵۰ متری تخمین زده می‌شود؛ این معیار جایگزین ثبت رسمی ورود و خروج نیست.</p>
                     <p className="text-xs leading-5 text-gray-500">خطوط بین نقاط با فاصله زمانی حداکثر ۵ دقیقه رسم می‌شوند. مسافت فقط از بخش‌های دارای فاصله زمانی قابل قبول و سرعت محاسباتی کمتر از ۱۸۰ کیلومتر بر ساعت محاسبه می‌شود. این گزارش تخمینی است و در صورت قطع GPS یا اینترنت کامل نیست.</p>
                 </>
             ) : null}
@@ -337,7 +325,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                                     </td>
                                 </tr>
                             ))}
-                            {!summaryLoading && dailySummaries.length === 0 ? (
+                            {!summaryLoading && !summaryError && dailySummaries.length === 0 ? (
                                 <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">در ۳۰ روز اخیر گزارشی برای این کارمند ثبت نشده است.</td></tr>
                             ) : null}
                             {summaryLoading ? (
