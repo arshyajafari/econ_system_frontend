@@ -201,12 +201,32 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadHistory = useCallback(async () => {
+    useEffect(() => {
+        let cancelled = false;
+        setSummaryLoading(true);
+        setSummaryError(null);
+        getEmployeeLocationDailySummary(employeeId)
+            .then((result) => {
+                if (!cancelled) setDailySummaries(Array.isArray(result) ? result : []);
+            })
+            .catch((e: unknown) => {
+                if (!cancelled) {
+                    setSummaryError(e instanceof ApiError ? e.message : 'دریافت گزارش ۳۰ روز اخیر ناموفق بود.');
+                    setDailySummaries([]);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setSummaryLoading(false);
+            });
+        return () => { cancelled = true; };
+    }, [employeeId]);
+
+    const loadHistory = useCallback(async (requestedDate = date) => {
         setLoading(true);
         setError(null);
         setHasSearched(true);
         try {
-            const result = await getEmployeeLocationHistory(employeeId, date);
+            const result = await getEmployeeLocationHistory(employeeId, requestedDate);
             const valid = Array.isArray(result) ? result.filter(validPoint).sort((a, b) => timestamp(a) - timestamp(b)) : [];
             setPoints(valid);
         } catch (e: unknown) {
@@ -233,7 +253,8 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
             connectedSegments += 1;
         }
         const duration = points.length > 1 ? Math.max(0, timestamp(points[points.length - 1]) - timestamp(points[0])) : 0;
-        return { meters, connectedSegments, gaps, duration, stops: findStops(points) };
+        const stops = findStops(points);
+        return { meters, connectedSegments, gaps, duration, stops, stopDurationMs: stops.reduce((total, stop) => total + stop.durationMs, 0) };
     }, [points]);
 
     return (
@@ -243,7 +264,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                     <h2 className="font-semibold text-gray-900">مسیر و تاریخچه روزانه</h2>
                     <p className="mt-1 text-xs text-gray-500">کارمند: {employeeName} · توقف‌ها و مسافت به‌صورت تقریبی محاسبه می‌شوند.</p>
                 </div>
-                <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(); }}>
+                <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(date); }}>
                     <label className="block">
                         <span className="mb-1 block text-xs text-gray-600">تاریخ</span>
                         <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-lg border border-gray-200 px-3 py-2 text-sm" />
