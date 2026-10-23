@@ -258,10 +258,10 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
     }, [points]);
 
     return (
-        <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-4 md:p-5">
+        <section className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50/40 p-3 md:p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 className="font-semibold text-gray-900">مسیر و تاریخچه روزانه</h2>
+                    <h2 className="font-semibold tracking-tight text-gray-900">مسیر و تاریخچه روزانه</h2>
                     <p className="mt-1 text-xs text-gray-500">کارمند: {employeeName} · توقف‌ها و مسافت به‌صورت تقریبی محاسبه می‌شوند.</p>
                 </div>
                 <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(date); }}>
@@ -303,6 +303,51 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                     <p className="text-xs leading-5 text-gray-500">خطوط بین نقاط با فاصله زمانی حداکثر ۵ دقیقه رسم می‌شوند. مسافت فقط از بخش‌های دارای فاصله زمانی قابل قبول و سرعت محاسباتی کمتر از ۱۸۰ کیلومتر بر ساعت محاسبه می‌شود. این گزارش تخمینی است و در صورت قطع GPS یا اینترنت کامل نیست.</p>
                 </>
             ) : null}
+
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-4 py-3">
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-900">گزارش روزانه · ۳۰ روز اخیر</h3>
+                        <p className="mt-1 text-xs text-gray-500">برای نمایش مسیر، ردیف همان روز را انتخاب کنید.</p>
+                    </div>
+                    <span className="text-xs text-gray-500">{dailySummaries.length.toLocaleString('fa-IR')} روز دارای اطلاعات</span>
+                </div>
+                {summaryError ? <p role="alert" className="m-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{summaryError}</p> : null}
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[520px] text-right text-sm">
+                        <thead className="bg-gray-50 text-xs text-gray-500">
+                            <tr>
+                                <th scope="col" className="px-4 py-3 font-medium">تاریخ</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مسافت تقریبی</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مجموع زمان توقف</th>
+                                <th scope="col" className="px-4 py-3 font-medium">نقاط</th>
+                                <th scope="col" className="px-4 py-3 font-medium">مسیر</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {dailySummaries.slice().reverse().map((item) => (
+                                <tr key={item.date} className={item.date === date && hasSearched ? 'bg-blue-50/70' : 'hover:bg-gray-50'}>
+                                    <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-800">{formatDateLabel(item.date)}</td>
+                                    <td className="whitespace-nowrap px-4 py-3 text-gray-700">{(item.distance_meters / 1000).toLocaleString('fa-IR', { maximumFractionDigits: 2 })} کیلومتر</td>
+                                    <td className="whitespace-nowrap px-4 py-3 text-gray-700">{formatDuration(item.stop_duration_seconds * 1000)}</td>
+                                    <td className="px-4 py-3 text-gray-600">{item.points_count.toLocaleString('fa-IR')}</td>
+                                    <td className="px-4 py-3">
+                                        <button type="button" onClick={() => { setDate(item.date); void loadHistory(item.date); }} disabled={loading} className="rounded-lg px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-50 disabled:opacity-50">نمایش مسیر</button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {!summaryLoading && dailySummaries.length === 0 ? (
+                                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">در ۳۰ روز اخیر گزارشی برای این کارمند ثبت نشده است.</td></tr>
+                            ) : null}
+                            {summaryLoading ? (
+                                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">در حال دریافت گزارش روزانه...</td></tr>
+                            ) : null}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="border-t border-gray-100 px-4 py-3 text-xs leading-5 text-gray-500">سوابق مکانی قدیمی‌تر از ۳۰ روز طبق پاک‌سازی خودکار سرور حذف می‌شوند. مسافت و توقف‌ها تخمینی هستند.</div>
+            </div>
+
         </section>
     );
 }
