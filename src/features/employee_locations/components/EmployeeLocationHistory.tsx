@@ -197,8 +197,6 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
 
     useEffect(() => {
         let cancelled = false;
-        setSummaryLoading(true);
-        setSummaryError(null);
         getEmployeeLocationDailySummary(employeeId)
             .then((result) => {
                 if (!cancelled) setDailySummaries(Array.isArray(result) ? result : []);
