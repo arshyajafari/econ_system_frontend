@@ -210,7 +210,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
     if (!map) return null;
     return (
         <div
-            className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden bg-slate-100"
+            className="relative mx-auto aspect-[4/3] w-full max-w-[1024px] overflow-hidden bg-slate-100"
             role="img"
             aria-label="نقشه مسیر ثبت‌شده"
         >
@@ -500,6 +500,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                                                 type="button"
                                                 onClick={() => {
                                                     setDate(item.date);
+                                                    setMapVisible(true);
                                                     void loadHistory(item.date);
                                                 }}
                                                 disabled={loading}
