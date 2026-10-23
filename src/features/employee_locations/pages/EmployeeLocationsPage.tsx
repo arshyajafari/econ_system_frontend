@@ -123,10 +123,10 @@ export function EmployeeLocationsPage() {
     }
 
     return (
-        <section className="space-y-5 p-4 md:p-6">
+        <section className="space-y-4 bg-gray-50/40 p-3 md:space-y-5 md:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">موقعیت کارکنان</h1>
+                    <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">موقعیت کارکنان</h1>
                     <p className="mt-1 text-sm text-gray-500">
                         آخرین موقعیت ثبت‌شده کارکنان؛ اطلاعات هر ۳۰ ثانیه بررسی می‌شود.
                     </p>
@@ -135,7 +135,7 @@ export function EmployeeLocationsPage() {
                     type="button"
                     onClick={() => void refreshLocations()}
                     disabled={loading || refreshing}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <span aria-hidden="true" className={refreshing ? 'animate-spin' : ''}>
                         ↻
@@ -149,19 +149,19 @@ export function EmployeeLocationsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-xl border border-gray-200 bg-white p-4">
+                <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
                     <div className="text-xs text-gray-500">کارکنان دارای موقعیت</div>
                     <div className="mt-1 text-2xl font-bold text-gray-900">
                         {locations.length.toLocaleString('fa-IR')}
                     </div>
                 </div>
-                <div className="rounded-xl border border-emerald-100 bg-white p-4">
+                <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
                     <div className="text-xs text-gray-500">موقعیت تازه (کمتر از ۵ دقیقه)</div>
                     <div className="mt-1 text-2xl font-bold text-emerald-700">
                         {freshCount.toLocaleString('fa-IR')}
                     </div>
                 </div>
-                <div className="rounded-xl border border-amber-100 bg-white p-4">
+                <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
                     <div className="text-xs text-gray-500">موقعیت قدیمی یا نامشخص</div>
                     <div className="mt-1 text-2xl font-bold text-amber-700">
                         {staleCount.toLocaleString('fa-IR')}
@@ -185,7 +185,7 @@ export function EmployeeLocationsPage() {
             ) : null}
 
             <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)]">
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
                     <div className="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 className="font-semibold text-gray-900">نقشه موقعیت</h2>
