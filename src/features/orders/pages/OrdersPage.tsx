@@ -221,8 +221,14 @@ export function OrdersPage() {
         setOrders((current) =>
           current.map((order) => (order.id === updated.id ? updated : order)),
         );
+        // Order edits can change reserved stock, so refresh product availability.
+        await loadLookups();
       } else {
         await createOrder(data);
+
+        // A successful order can reserve stock immediately. Refresh the product
+        // lookup before closing the form so the next order starts with fresh stock.
+        await loadLookups();
 
         if (page !== 1) {
           setPage(1);
@@ -259,6 +265,8 @@ export function OrdersPage() {
 
     try {
       const updated = await performOrderStatusAction(order.id, action);
+      // Confirming or cancelling an order may change available stock.
+      await loadLookups();
 
       if (status && updated.status !== status) {
         setOrders((current) =>
