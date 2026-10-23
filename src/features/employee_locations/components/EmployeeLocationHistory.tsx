@@ -168,7 +168,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
 
     if (!map) return null;
     return (
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100" role="img" aria-label="نقشه مسیر ثبت‌شده">
+        <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden bg-slate-100" role="img" aria-label="نقشه مسیر ثبت‌شده">
             {map.tiles.map((tile) => (
                 <img key={tile.key} src={tile.url} alt="" draggable={false} className="absolute h-64 w-64 max-w-none" style={{ left: tile.left, top: tile.top }} loading="lazy" />
             ))}
@@ -193,6 +193,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
     const [summaryError, setSummaryError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [mapVisible, setMapVisible] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -251,22 +252,12 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
 
     return (
         <section className="space-y-4 rounded-2xl border border-gray-200 bg-gray-50/40 p-3 md:p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h2 className="font-semibold tracking-tight text-gray-900">مسیر و تاریخچه روزانه</h2>
-                    <p className="mt-1 text-xs text-gray-500">کارمند: {employeeName} · توقف‌ها و مسافت به‌صورت تقریبی محاسبه می‌شوند.</p>
-                </div>
-                <form className="flex flex-wrap items-end gap-2" onSubmit={(event) => { event.preventDefault(); void loadHistory(date); }}>
-                    <label className="block">
-                        <span className="mb-1 block text-xs text-gray-600">تاریخ</span>
-                        <input type="date" value={date} max={localDateValue()} onChange={(event) => { setDate(event.target.value); setHasSearched(false); setPoints([]); }} disabled={loading} required className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
-                    </label>
-                    <button type="submit" disabled={loading || !date} className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-60">{loading ? 'در حال دریافت...' : 'نمایش مسیر'}</button>
-                </form>
+            <div>
+                <h2 className="font-semibold tracking-tight text-gray-900">مسیر و تاریخچه روزانه</h2>
+                <p className="mt-1 text-xs text-gray-500">کارمند: {employeeName} · مسیر را از جدول روزانه انتخاب کنید؛ توقف‌ها و مسافت تقریبی هستند.</p>
             </div>
 
             {error ? <div role="alert" className="rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
-            {!hasSearched ? <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-600">تاریخ را انتخاب کنید و «نمایش مسیر» را بزنید تا مسیر و توقف‌های ثبت‌شده نمایش داده شود.</p> : null}
             {hasSearched && !loading && !error && points.length === 0 ? <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-600">برای این کارمند در تاریخ انتخاب‌شده نقطه‌ای ثبت نشده است.</p> : null}
 
             {points.length > 0 ? (
@@ -278,7 +269,13 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                         <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">مدت ثبت مسیر</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{formatDuration(summary.duration)}</div></div>
                         <div className="rounded-xl border border-gray-100 bg-white p-3"><div className="text-xs text-gray-500">توقف‌های احتمالی</div><div className="mt-1 text-lg font-semibold tracking-tight text-gray-900">{summary.stops.length.toLocaleString('fa-IR')}</div></div>
                     </div>
-                    <RouteMap points={points} />
+                    <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2">
+                        <span className="text-xs text-gray-600">نقشه مسیر روز انتخاب‌شده</span>
+                        <button type="button" onClick={() => setMapVisible((visible) => !visible)} aria-expanded={mapVisible} className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+                            {mapVisible ? 'بستن نقشه' : 'نمایش نقشه'}
+                        </button>
+                    </div>
+                    {mapVisible ? <RouteMap points={points} /> : null}
                     {summary.gaps > 0 ? <p className="text-xs leading-5 text-amber-700">بین برخی نقاط فاصله زمانی زیاد یا پرش غیرواقعی وجود داشته است؛ این بخش‌ها برای جلوگیری از برآورد گمراه‌کننده از مسافت و خط مسیر کنار گذاشته شده‌اند ({summary.gaps.toLocaleString('fa-IR')} بخش).</p> : null}
                     <p className="text-xs leading-5 text-gray-500">توقف احتمالی بر اساس ماندن حداقل ۵ دقیقه در شعاع ۵۰ متری تخمین زده می‌شود؛ این معیار جایگزین ثبت رسمی ورود و خروج نیست.</p>
                     <p className="text-xs leading-5 text-gray-500">خطوط بین نقاط با فاصله زمانی حداکثر ۵ دقیقه رسم می‌شوند. مسافت فقط از بخش‌های دارای فاصله زمانی قابل قبول و سرعت محاسباتی کمتر از ۱۸۰ کیلومتر بر ساعت محاسبه می‌شود. این گزارش تخمینی است و در صورت قطع GPS یا اینترنت کامل نیست.</p>
