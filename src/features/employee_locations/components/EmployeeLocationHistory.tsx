@@ -220,8 +220,13 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                     src={tile.url}
                     alt=""
                     draggable={false}
-                    className="absolute h-64 w-64 max-w-none"
-                    style={{ left: tile.left, top: tile.top }}
+                    className="absolute max-w-none"
+                    style={{
+                        left: `${(tile.left / MAP_WIDTH) * 100}%`,
+                        top: `${(tile.top / MAP_HEIGHT) * 100}%`,
+                        width: `${(TILE_SIZE / MAP_WIDTH) * 100}%`,
+                        height: `${(TILE_SIZE / MAP_HEIGHT) * 100}%`,
+                    }}
                     loading="lazy"
                 />
             ))}
