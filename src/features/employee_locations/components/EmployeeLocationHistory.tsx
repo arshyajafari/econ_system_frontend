@@ -141,6 +141,9 @@ function project(latitude: number, longitude: number, zoom: number): { x: number
 }
 
 function RouteMap({ points }: { points: EmployeeLocation[] }) {
+    const [zoomOffset, setZoomOffset] = useState(0);
+    useEffect(() => setZoomOffset(0), [points]);
+
     const map = useMemo(() => {
         if (!points.length) return null;
         let zoom = 16;
@@ -157,6 +160,8 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
             projected = values;
             if (width <= 2.45 && height <= 1.45) break;
         }
+        zoom = Math.max(3, Math.min(19, zoom + zoomOffset));
+        projected = points.map((point) => project(point.latitude, point.longitude, zoom));
         const centerX =
             (Math.min(...projected.map((point) => point.x)) +
                 Math.max(...projected.map((point) => point.x))) /
@@ -205,13 +210,12 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
         }
         if (segment.length) segments.push(segment);
         return { zoom, tiles, coordinates, segments };
-    }, [points]);
+    }, [points, zoomOffset]);
 
     if (!map) return null;
     return (
         <div
-            className="relative mx-auto aspect-[4/3] w-full max-w-[1024px] overflow-hidden bg-slate-100"
-            role="img"
+            className="relative mx-auto aspect-[4/3] w-full overflow-hidden bg-slate-100"
             aria-label="نقشه مسیر ثبت‌شده"
         >
             {map.tiles.map((tile) => (
@@ -264,6 +268,40 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                     />
                 ))}
             </svg>
+            <div className="absolute right-2 top-2 z-10 flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow" aria-label="کنترل بزرگ‌نمایی نقشه">
+                <button
+                    type="button"
+                    onClick={() => setZoomOffset((value) => Math.min(4, value + 1))}
+                    disabled={zoomOffset >= 4 || map.zoom >= 19}
+                    className="flex h-9 w-9 items-center justify-center text-lg font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                    aria-label="بزرگ‌نمایی نقشه"
+                    title="بزرگ‌نمایی"
+                >
+                    +
+                </button>
+                <div className="h-px bg-gray-200" />
+                <button
+                    type="button"
+                    onClick={() => setZoomOffset((value) => Math.max(-4, value - 1))}
+                    disabled={zoomOffset <= -4 || map.zoom <= 3}
+                    className="flex h-9 w-9 items-center justify-center text-lg font-semibold text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                    aria-label="کوچک‌نمایی نقشه"
+                    title="کوچک‌نمایی"
+                >
+                    −
+                </button>
+                <div className="h-px bg-gray-200" />
+                <button
+                    type="button"
+                    onClick={() => setZoomOffset(0)}
+                    disabled={zoomOffset === 0}
+                    className="px-1 py-1 text-[10px] text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                    aria-label="بازنشانی بزرگ‌نمایی"
+                    title="بازنشانی"
+                >
+                    بازنشانی
+                </button>
+            </div>
             <div className="absolute bottom-2 left-2 rounded bg-white/95 px-2 py-1 text-[10px] text-gray-600 shadow">
                 © OpenStreetMap · بزرگ‌نمایی {map.zoom}
             </div>
