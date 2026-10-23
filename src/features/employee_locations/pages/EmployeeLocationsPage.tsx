@@ -126,10 +126,9 @@ export function EmployeeLocationsPage() {
         <section className="space-y-4 bg-gray-50/40 p-3 md:space-y-5 md:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">موقعیت کارکنان</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                        آخرین موقعیت ثبت‌شده کارکنان؛ اطلاعات هر ۳۰ ثانیه بررسی می‌شود.
-                    </p>
+                    <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">
+                        موقعیت کارکنان
+                    </h1>
                 </div>
                 <button
                     type="button"
@@ -202,7 +201,7 @@ export function EmployeeLocationsPage() {
                                 rel="noreferrer"
                                 href={`https://www.openstreetmap.org/?mlat=${selectedLocation.latitude}&mlon=${selectedLocation.longitude}#map=16/${selectedLocation.latitude}/${selectedLocation.longitude}`}
                             >
-                                بازکردن نقشه در صفحه جدا
+                                بازکردن نقشه
                             </a>
                         ) : null}
                     </div>
@@ -242,9 +241,6 @@ export function EmployeeLocationsPage() {
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                     <div className="border-b border-gray-100 p-4">
                         <h2 className="font-semibold text-gray-900">فهرست کارکنان</h2>
-                        <p className="mt-1 text-xs text-gray-500">
-                            برای دیدن موقعیت هر فرد، ردیف او را انتخاب کنید.
-                        </p>
                         <label className="mt-3 block">
                             <span className="sr-only">جست‌وجوی کارمند</span>
                             <input
@@ -319,7 +315,13 @@ export function EmployeeLocationsPage() {
                 </div>
             </div>
 
-            {selectedLocation ? <EmployeeLocationHistory key={selectedLocation.employee_id} employeeId={selectedLocation.employee_id} employeeName={selectedLocation.employee_name} /> : null}
+            {selectedLocation ? (
+                <EmployeeLocationHistory
+                    key={selectedLocation.employee_id}
+                    employeeId={selectedLocation.employee_id}
+                    employeeName={selectedLocation.employee_name}
+                />
+            ) : null}
         </section>
     );
 }
