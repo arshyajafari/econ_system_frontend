@@ -142,12 +142,10 @@ function project(latitude: number, longitude: number, zoom: number): { x: number
 
 function RouteMap({ points }: { points: EmployeeLocation[] }) {
     const [zoomOffset, setZoomOffset] = useState(0);
-    useEffect(() => setZoomOffset(0), [points]);
 
     const map = useMemo(() => {
         if (!points.length) return null;
         let zoom = 16;
-        let projected = points.map((point) => project(point.latitude, point.longitude, zoom));
         for (let candidate = 16; candidate >= 3; candidate -= 1) {
             const values = points.map((point) =>
                 project(point.latitude, point.longitude, candidate)
@@ -157,11 +155,10 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
             const width = Math.max(...xs) - Math.min(...xs);
             const height = Math.max(...ys) - Math.min(...ys);
             zoom = candidate;
-            projected = values;
             if (width <= 2.45 && height <= 1.45) break;
         }
         zoom = Math.max(3, Math.min(19, zoom + zoomOffset));
-        projected = points.map((point) => project(point.latitude, point.longitude, zoom));
+        const projected = points.map((point) => project(point.latitude, point.longitude, zoom));
         const centerX =
             (Math.min(...projected.map((point) => point.x)) +
                 Math.max(...projected.map((point) => point.x))) /
@@ -466,7 +463,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                             {mapVisible ? 'بستن نقشه' : 'نمایش نقشه'}
                         </button>
                     </div>
-                    {mapVisible ? <RouteMap points={points} /> : null}
+                    {mapVisible ? <RouteMap key={points.map(timestamp).join(',')} points={points} /> : null}
                 </>
             ) : null}
 

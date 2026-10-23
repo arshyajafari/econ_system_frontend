@@ -50,7 +50,7 @@ function orderToForm(order: Order): OrderFormData {
       discount_value: String(item.discount_value ?? 0),
       offer_type: item.free_quantity > 0 ? "buy_x_get_y" : "none",
       offer_buy_quantity: item.free_quantity > 0 ? String(item.quantity) : "0",
-      offer_free_quantity: String(Math.max(0, item.free_quantity ?? 0)),
+      offer_free_quantity: String(Math.max(0, item.offer_free_quantity ?? 0)),
       offer_title: item.offer_title ?? "",
     })),
   };
