@@ -91,28 +91,6 @@ export function OrderForm({
 }: OrderFormProps) {
   const { user } = useAuth();
   const currentEmployee = user?.employee ?? null;
-  // Reflect unsaved order quantities immediately in the stock shown by this form.
-  const productsWithDraftAvailability = products.map((product) => {
-    const draftFulfillment = order
-      ? 0
-      : form.items
-          .filter((item) => item.product_id === product.id)
-          .reduce(
-            (total, item) =>
-              total +
-              Math.max(0, Math.trunc(Number(item.quantity) || 0)) +
-              Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)),
-            0,
-          );
-
-    return {
-      ...product,
-      available_quantity:
-        product.available_quantity == null
-          ? product.available_quantity
-          : Math.max(0, product.available_quantity - draftFulfillment),
-    };
-  });
   const [form, setForm] = useState<OrderFormData>(() =>
     order
       ? orderToForm(order)
@@ -150,6 +128,29 @@ export function OrderForm({
         }
       : null,
   );
+
+  // Reflect unsaved order quantities immediately in the stock shown by this form.
+  const productsWithDraftAvailability = products.map((product) => {
+    const draftFulfillment = order
+      ? 0
+      : form.items
+          .filter((item) => item.product_id === product.id)
+          .reduce(
+            (total, item) =>
+              total +
+              Math.max(0, Math.trunc(Number(item.quantity) || 0)) +
+              Math.max(0, Math.trunc(Number(item.offer_free_quantity) || 0)),
+            0,
+          );
+
+    return {
+      ...product,
+      available_quantity:
+        product.available_quantity == null
+          ? product.available_quantity
+          : Math.max(0, product.available_quantity - draftFulfillment),
+    };
+  });
 
   function update<K extends keyof OrderFormData>(
     key: K,
