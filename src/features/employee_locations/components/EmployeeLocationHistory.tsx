@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiError } from '../../../api/client';
-import { getEmployeeLocationHistory, type EmployeeLocation } from '../api/employeeLocations';
+import { getEmployeeLocationDailySummary, getEmployeeLocationHistory, type EmployeeLocation, type EmployeeLocationDailySummary } from '../api/employeeLocations';
 
 const MAX_GAP_MS = 5 * 60_000;
 const STOP_GAP_MS = 3 * 60_000;
@@ -36,6 +36,12 @@ function localDateValue(): string {
     const month = parts.find((part) => part.type === 'month')?.value ?? String(now.getMonth() + 1).padStart(2, '0');
     const day = parts.find((part) => part.type === 'day')?.value ?? String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+function formatDateLabel(value: string): string {
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day, 12));
+    return date.toLocaleDateString('fa-IR', { timeZone: 'UTC', year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function formatTime(value: string | null): string {
@@ -188,6 +194,9 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
 export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
     const [date, setDate] = useState(localDateValue);
     const [points, setPoints] = useState<EmployeeLocation[]>([]);
+    const [dailySummaries, setDailySummaries] = useState<EmployeeLocationDailySummary[]>([]);
+    const [summaryLoading, setSummaryLoading] = useState(true);
+    const [summaryError, setSummaryError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [error, setError] = useState<string | null>(null);
