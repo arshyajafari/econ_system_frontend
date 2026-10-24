@@ -51,11 +51,28 @@ export function CustomerLedgerSummary({
     valueClass: "text-blue-700",
   };
 
-  const closingBalanceItem = {
-    title: "مانده نهایی",
-    value: formatAmount(closingBalance),
-    valueClass: "text-gray-900",
-  };
+  const signedClosingBalance = Number(closingBalance);
+  const closingBalanceItem = !Number.isFinite(signedClosingBalance)
+    ? {
+        title: "مانده نهایی",
+        value: formatAmount(closingBalance),
+        valueClass: "text-gray-900",
+      }
+    : {
+        title:
+          signedClosingBalance > 0
+            ? "مانده قابل پرداخت مشتری"
+            : signedClosingBalance < 0
+              ? "اعتبار مشتری"
+              : "وضعیت حساب",
+        value: formatAmount(Math.abs(signedClosingBalance)),
+        valueClass:
+          signedClosingBalance > 0
+            ? "text-red-700"
+            : signedClosingBalance < 0
+              ? "text-green-700"
+              : "text-gray-900",
+      };
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
