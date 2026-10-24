@@ -46,7 +46,7 @@ export function CustomerLedgerSummary({
   ];
 
   const averageDueDateItem = {
-    title: "میانگین سررسید فاکتورها",
+    title: "میانگین سررسید مانده",
     value: averageDueDate ? formatJalaliDate(averageDueDate) : "—",
     valueClass: "text-blue-700",
   };
