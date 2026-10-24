@@ -41,7 +41,7 @@ export function normalizeApiError(error: unknown): ApiError {
       data?.message?.toLowerCase() === "the given data was invalid.";
 
     const message = isGenericValidationMessage
-      ? validationMessage ?? data.message
+      ? validationMessage ?? data?.message ?? "داده‌های ارسالی معتبر نیستند."
       : data?.message ??
         validationMessage ??
         (status
