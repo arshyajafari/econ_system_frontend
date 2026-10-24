@@ -37,8 +37,6 @@ export function ScientificVisitorInventoryPage() {
     useState<ScientificInventoryItem | null>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<ScientificInventoryItem | null>(null);
-  const [editQuantity, setEditQuantity] = useState(0);
-  const [editBatchId, setEditBatchId] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -120,32 +118,16 @@ export function ScientificVisitorInventoryPage() {
     [batches, batchId],
   );
 
-  const editingDelta = editingItem
-    ? editQuantity - editingItem.received_quantity
-    : 0;
-  const editNeedsBatch = editingDelta !== 0;
-  const editProductBatches = useMemo(
-    () =>
-      editingItem
-        ? batches.filter(
-            (batch) => batch.product?.id === editingItem.product?.id,
-          )
-        : [],
-    [batches, editingItem],
-  );
 
   function openEdit(item: ScientificInventoryItem) {
     setEditingItem(item);
-    setEditQuantity(item.received_quantity);
     setEditDescription(item.description ?? "");
-    setEditBatchId("");
     setError(null);
   }
 
   function closeEdit() {
     if (saving) return;
     setEditingItem(null);
-    setEditBatchId("");
     setEditDescription("");
   }
 
@@ -205,19 +187,13 @@ export function ScientificVisitorInventoryPage() {
 
   async function submitEdit(event: FormEvent) {
     event.preventDefault();
-    if (
-      !editingItem ||
-      editQuantity < editingItem.used_quantity ||
-      (editNeedsBatch && !editBatchId)
-    )
-      return;
+    if (!editingItem) return;
 
     setSaving(true);
     setError(null);
     try {
       await updateScientificInventory(editingItem.id, {
-        quantity: editQuantity,
-        inventory_batch_id: editNeedsBatch ? editBatchId : undefined,
+        quantity: editingItem.received_quantity,
         description: editDescription,
       });
       closeEdit();
@@ -422,7 +398,8 @@ export function ScientificVisitorInventoryPage() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(item)}
-                          disabled={saving}
+                          disabled={saving || item.received_quantity !== 0 || item.used_quantity !== 0}
+                          title={item.received_quantity !== 0 || item.used_quantity !== 0 ? "رکورد دارای سابقه تحویل یا مصرف قابل حذف نیست" : "حذف رکورد خالی"}
                           className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                         >
                           حذف
@@ -485,63 +462,9 @@ export function ScientificVisitorInventoryPage() {
               </div>
             </div>
 
-            <label className="block space-y-1">
-              <span className="text-sm font-medium">دریافتی جدید</span>
-              <input
-                required
-                min={editingItem.used_quantity}
-                type="number"
-                disabled={saving}
-                value={editQuantity}
-                onChange={(event) =>
-                  setEditQuantity(
-                    Math.max(
-                      editingItem.used_quantity,
-                      Number(event.target.value),
-                    ),
-                  )
-                }
-                className="w-full rounded-lg border px-3 py-2"
-              />
-            </label>
-
-            {editNeedsBatch ? (
-              <label className="block space-y-1">
-                <span className="text-sm font-medium">
-                  {editingDelta < 0
-                    ? "بچ بازگشت نمونه"
-                    : "بچ تأمین افزایش نمونه"}
-                </span>
-                <select
-                  required
-                  disabled={saving}
-                  value={editBatchId}
-                  onChange={(event) => setEditBatchId(event.target.value)}
-                  className="w-full rounded-lg border px-3 py-2"
-                >
-                  <option value="">انتخاب بچ</option>
-                  {editProductBatches.map((batch) => (
-                    <option
-                      key={batch.id}
-                      value={batch.id}
-                      disabled={
-                        editingDelta > 0 && batch.available_quantity <= 0
-                      }
-                    >
-                      {batch.batch_number
-                        ? "بچ " + batch.batch_number + " — "
-                        : ""}
-                      موجودی {numberFormat.format(batch.available_quantity)}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500">
-                  {editingDelta < 0
-                    ? "با کاهش دریافتی، این تعداد به موجودی بچ انتخاب‌شده برمی‌گردد."
-                    : "با افزایش دریافتی، این تعداد از موجودی بچ انتخاب‌شده کم می‌شود."}
-                </p>
-              </label>
-            ) : null}
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              مقادیر دریافتی و مصرف‌شده در این فرم فقط‌خواندنی هستند. تا زمانی که منبع بچ هر تحویل به‌طور دقیق ثبت نشود، تغییر عددی از این فرم مجاز نیست. برای تحویل جدید از فرم بالای صفحه استفاده کنید.
+            </div>
 
             <label className="block space-y-1">
               <span className="text-sm font-medium">توضیحات</span>
@@ -552,12 +475,6 @@ export function ScientificVisitorInventoryPage() {
                 className="w-full rounded-lg border px-3 py-2"
               />
             </label>
-
-            {editingItem && editQuantity < editingItem.used_quantity ? (
-              <p className="text-sm text-red-600">
-                دریافتی جدید نمی‌تواند کمتر از مصرف‌شده باشد.
-              </p>
-            ) : null}
 
             <div className="flex justify-end gap-2">
               <button
@@ -570,11 +487,7 @@ export function ScientificVisitorInventoryPage() {
               </button>
               <button
                 type="submit"
-                disabled={
-                  saving ||
-                  editQuantity < editingItem.used_quantity ||
-                  (editNeedsBatch && !editBatchId)
-                }
+                disabled={saving}
                 className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
               >
                 {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
