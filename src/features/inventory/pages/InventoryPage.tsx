@@ -17,6 +17,7 @@ import {
   updateInventoryBatch,
 } from "../services/inventoryApi";
 import type { InventoryBatch, ReceiveInventoryData } from "../types/inventory";
+import { InventoryAdjustmentModal } from "../components/InventoryAdjustmentModal";
 const empty: ReceiveInventoryData = {
   product_id: "",
   batch_number: "",
@@ -47,7 +48,8 @@ export function InventoryPage() {
     [form, setForm] = useState(empty),
     [saving, setSaving] = useState(false),
     [selected, setSelected] = useState<InventoryBatch | null>(null),
-    [editing, setEditing] = useState<InventoryBatch | null>(null);
+    [editing, setEditing] = useState<InventoryBatch | null>(null),
+    [adjustmentTarget, setAdjustmentTarget] = useState<InventoryBatch | null>(null);
   useEffect(() => {
     let dead = false;
     const run = async () => {
@@ -105,7 +107,6 @@ export function InventoryPage() {
       const updated = await updateInventoryBatch(editing.id, {
         batch_number: editing.batch_number ?? "",
         expire_date: editing.expire_date ?? "",
-        quantity: editing.quantity,
         description: editing.description ?? "",
       });
       setItems((current) =>
@@ -412,6 +413,15 @@ export function InventoryPage() {
                         {isAdmin ? (
                           <button
                             type="button"
+                            onClick={() => setAdjustmentTarget(item)}
+                            className="rounded-lg border border-amber-300 px-2.5 py-1.5 text-xs font-medium text-amber-800"
+                          >
+                            اصلاح موجودی
+                          </button>
+                        ) : null}
+                        {isAdmin ? (
+                          <button
+                            type="button"
                             onClick={() => setDeleteTarget(item.id)}
                             className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           >
@@ -486,6 +496,16 @@ export function InventoryPage() {
             </div>
           </div>
         )}
+        {adjustmentTarget && (
+          <InventoryAdjustmentModal
+            batch={adjustmentTarget}
+            onClose={() => setAdjustmentTarget(null)}
+            onSaved={() => {
+              setAdjustmentTarget(null);
+              setRefreshKey((current) => current + 1);
+            }}
+          />
+        )}
         {editing && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
             <form
@@ -506,29 +526,9 @@ export function InventoryPage() {
                 {editing.product?.title ?? "—"} — موجودی فعلی:{" "}
                 {editing.quantity}
               </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  تعداد
-                </label>
-                <input
-                  type="number"
-                  min={editing.reserved_quantity}
-                  value={editing.quantity}
-                  onChange={(e) =>
-                    setEditing({
-                      ...editing,
-                      quantity: Math.max(
-                        editing.reserved_quantity,
-                        Number(e.target.value) || editing.reserved_quantity,
-                      ),
-                    })
-                  }
-                  className="w-full rounded-lg border px-3 py-2"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  حداقل تعداد مجاز: {editing.reserved_quantity} (تعداد رزروشده)
-                </p>
-              </div>
+              <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                تعداد موجودی از این فرم قابل ویرایش نیست؛ برای حفظ سوابق انبار از گزینه «اصلاح موجودی» استفاده کنید.
+              </p>
               <input
                 value={editing.batch_number ?? ""}
                 onChange={(e) =>
