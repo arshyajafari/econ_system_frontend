@@ -299,7 +299,7 @@ export function InventoryPage() {
               setSearch(event.target.value);
               setPage(1);
             }}
-            placeholder="جستجوی شماره بچ"
+            placeholder="جستجوی نام کالا یا شماره بچ"
             className="rounded-lg border px-3 py-2"
           />
           <select
