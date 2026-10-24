@@ -46,7 +46,7 @@ export function OrderReturnFormPage() {
       setSelectedOrderId(loadedOrder.id);
       if (loadedOrder.status !== "completed")
         setError(
-          "فقط سفارش تکمیل‌شده، دارای فاکتور و دارای کالای قابل مرجوعی قابل ثبت مرجوعی است.",
+          "مرجوعی فقط برای سفارش دارای فاکتور و تحویل تأییدشده، دارای فاکتور صادرشده و تحویل تأییدشده امکان‌پذیر است.",
         );
     } catch (error: unknown) {
       setOrder(null);
@@ -94,7 +94,7 @@ export function OrderReturnFormPage() {
             setOrder(loadedOrder);
             setSelectedOrderId(loadedOrder.id);
             if (loadedOrder.status !== "completed")
-              setError("فقط سفارش تکمیل‌شده و دارای فاکتور قابل مرجوعی است.");
+              setError("مرجوعی فقط برای سفارش دارای فاکتور صادرشده و تحویل تأییدشده امکان‌پذیر است.");
           }
         } else {
           const response = await getReturnableOrders();
@@ -102,7 +102,7 @@ export function OrderReturnFormPage() {
             setAvailableOrders(response);
             if (!response.length)
               setError(
-                "هیچ سفارش تکمیل‌شده و دارای فاکتور و کالای قابل مرجوعی وجود ندارد.",
+                "هیچ سفارش دارای فاکتور صادرشده، تحویل تأییدشده و کالای قابل مرجوعی وجود ندارد.",
               );
           }
         }
@@ -248,8 +248,7 @@ export function OrderReturnFormPage() {
             ))}
           </select>
           <p className="mt-2 text-xs text-gray-500">
-            فقط سفارش‌های تکمیل‌شده‌ای که هنوز مقداری از اقلامشان قابل مرجوعی
-            است نمایش داده می‌شوند.
+            فقط سفارش‌های دارای فاکتور صادرشده و تحویل تأییدشده که هنوز کالای قابل مرجوعی دارند نمایش داده می‌شوند.
           </p>
         </div>
       ) : null}
