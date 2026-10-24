@@ -94,7 +94,11 @@ export function ScientificVisitorInventoryPage() {
       .then(([employeeResponse, inventoryResponse]) => {
         if (cancelled) return;
         setEmployees(employeeResponse.data);
-        setBatches(inventoryResponse.data.filter((batch) => !batch.is_expired));
+        setBatches(
+          inventoryResponse.data.filter(
+            (batch) => batch.available_quantity > 0 && !batch.is_expired,
+          ),
+        );
       })
       .catch((err: unknown) => {
         if (!cancelled) {
