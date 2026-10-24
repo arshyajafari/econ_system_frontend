@@ -46,7 +46,7 @@ export function OrderReturnFormPage() {
       setSelectedOrderId(loadedOrder.id);
       if (loadedOrder.status !== "completed")
         setError(
-          "فقط سفارش تکمیل‌شده و دارای کالای قابل مرجوعی قابل ثبت مرجوعی است.",
+          "فقط سفارش تکمیل‌شده، دارای فاکتور و دارای کالای قابل مرجوعی قابل ثبت مرجوعی است.",
         );
     } catch (error: unknown) {
       setOrder(null);
@@ -94,7 +94,7 @@ export function OrderReturnFormPage() {
             setOrder(loadedOrder);
             setSelectedOrderId(loadedOrder.id);
             if (loadedOrder.status !== "completed")
-              setError("فقط سفارش تکمیل‌شده قابل مرجوعی است.");
+              setError("فقط سفارش تکمیل‌شده و دارای فاکتور قابل مرجوعی است.");
           }
         } else {
           const response = await getReturnableOrders();
@@ -102,7 +102,7 @@ export function OrderReturnFormPage() {
             setAvailableOrders(response);
             if (!response.length)
               setError(
-                "هیچ سفارش تکمیل‌شده و دارای کالای قابل مرجوعی وجود ندارد.",
+                "هیچ سفارش تکمیل‌شده و دارای فاکتور و کالای قابل مرجوعی وجود ندارد.",
               );
           }
         }
