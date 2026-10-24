@@ -46,7 +46,7 @@ export function OrderReturnFormPage() {
       setSelectedOrderId(loadedOrder.id);
       if (loadedOrder.status !== "completed")
         setError(
-          "مرجوعی فقط برای سفارش دارای فاکتور و تحویل تأییدشده، دارای فاکتور صادرشده و تحویل تأییدشده امکان‌پذیر است.",
+          "مرجوعی فقط برای سفارش دارای فاکتور صادرشده و تحویل تأییدشده امکان‌پذیر است.",
         );
     } catch (error: unknown) {
       setOrder(null);
@@ -226,7 +226,7 @@ export function OrderReturnFormPage() {
             htmlFor="return-order"
             className="mb-2 block text-sm font-medium text-gray-700"
           >
-            سفارش تکمیل‌شده
+            سفارش دارای فاکتور صادرشده و تحویل تأییدشده
           </label>
           <select
             id="return-order"
