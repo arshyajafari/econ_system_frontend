@@ -59,14 +59,6 @@ export function VisitsPage() {
       action: "complete" | "cancel";
     } | null>(null),
     [deleteTarget, setDeleteTarget] = useState<Visit | null>(null);
-  useEffect(() => {
-    let active = true;
-    void getSampleProducts(isScientificVisitor)
-      .then((items) => { if (active) setSampleProducts(items); })
-      .catch((e: unknown) => { if (active) setError(e instanceof ApiError ? e.message : "خطا در دریافت محصولات نمونه."); });
-    return () => { active = false; };
-  }, [isScientificVisitor]);
-
   const load = useCallback(
     async (p?: Partial<VisitListParams>) => {
       setLoading(true);
@@ -163,6 +155,13 @@ export function VisitsPage() {
     setFormError(null);
     try {
       const sample = await getSample(sampleId);
+      try {
+        setSampleProducts(await getSampleProducts(isScientificVisitor));
+      } catch {
+        // Editing an existing sample does not require product selection; keep the form usable
+        // even if the current user cannot load the global product catalogue.
+        setSampleProducts([]);
+      }
       setFormOpen(false);
       setEditing(null);
       setEditingSample(sample);
