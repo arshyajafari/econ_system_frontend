@@ -719,6 +719,24 @@ select:focus-visible {
 }
 
 /* Keep semantic visit badges independent from the filter styles. */
+/* Visit status chips use the same semantic colors everywhere. */
+.ui-status-visit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.ui-status-visit-draft { border-color: #fcd34d; background: #fffbeb; color: #a16207; }
+.ui-status-visit-completed { border-color: #86efac; background: #f0fdf4; color: #15803d; }
+.ui-status-visit-cancelled { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+
 @media (max-width: 639px) {
   main section[class*="space-y-"] > .grid:has(> input, > select),
   main section[class*="space-y-"] > .grid:has(> label, > input, > select, > div > input, > div > select),
