@@ -9,9 +9,8 @@ import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { VisitForm } from "../components/VisitForm";
 import { SampleForm } from "../../samples/components/SampleForm";
-import { getSample, getSampleProducts, updateSample } from "../../samples/services/samplesApi";
+import { getSample, updateSample } from "../../samples/services/samplesApi";
 import type { Sample, SampleFormData } from "../../samples/types/sample";
-import type { Product } from "../../products/types/product";
 import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
 import {
   cancelVisit,
@@ -53,7 +52,6 @@ export function VisitsPage() {
     [editing, setEditing] = useState<Visit | null>(null),
     [sampleFormOpen, setSampleFormOpen] = useState(false),
     [editingSample, setEditingSample] = useState<Sample | null>(null),
-    [sampleProducts, setSampleProducts] = useState<Product[]>([]),
     [actionTarget, setActionTarget] = useState<{
       visit: Visit;
       action: "complete" | "cancel";
@@ -155,13 +153,6 @@ export function VisitsPage() {
     setFormError(null);
     try {
       const sample = await getSample(sampleId);
-      try {
-        setSampleProducts(await getSampleProducts(isScientificVisitor));
-      } catch {
-        // Editing an existing sample does not require product selection; keep the form usable
-        // even if the current user cannot load the global product catalogue.
-        setSampleProducts([]);
-      }
       setFormOpen(false);
       setEditing(null);
       setEditingSample(sample);
@@ -298,7 +289,7 @@ export function VisitsPage() {
         {sampleFormOpen && editingSample ? (
           <SampleForm
             visits={visits}
-            products={sampleProducts}
+            products={[]}
             sample={editingSample}
             isSubmitting={saving}
             error={formError}
