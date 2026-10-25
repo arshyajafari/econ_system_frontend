@@ -56,6 +56,14 @@ export function InvoicesPage() {
         };
     }, []);
 
+    const resetFilters = () => {
+        setSearch('');
+        setStatus('');
+        setSettled('');
+        setCustomerId('');
+        setPage(1);
+    };
+
     const load = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -152,6 +160,11 @@ export function InvoicesPage() {
                             <option value="">همه وضعیت‌ها</option><option value="false">تسویه نشده</option><option value="true">تسویه شده</option>
                         </select>
                     </label>
+                </div>
+                <div className="ui-filter-actions">
+                    <button type="button" onClick={resetFilters} className="ui-filter-clear">
+                        پاک کردن فیلترها
+                    </button>
                 </div>
             </div>
 
