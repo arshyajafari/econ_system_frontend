@@ -11,7 +11,7 @@ import { createSample, getSampleProducts } from "../../samples/services/samplesA
 import { createVisit, getVisitDoctors } from "../services/visitsApi";
 import type { Visit, VisitFormData } from "../types/visit";
 
-type DraftSample = { key: string; product_id: string; quantity: string; description: string; saved: boolean };
+type DraftSample = { key: string; product_id: string; product_title: string; quantity: string; description: string; saved: boolean };
 type Props = {
   isScientificVisitor: boolean;
   onSaved: (visit: Visit) => void;
@@ -51,7 +51,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
   }, [isScientificVisitor]);
 
   function addSample() {
-    setSamples((current) => [...current, { key: crypto.randomUUID(), product_id: "", quantity: "1", description: "", saved: false }]);
+    setSamples((current) => [...current, { key: crypto.randomUUID(), product_id: "", product_title: "", quantity: "1", description: "", saved: false }]);
   }
   function updateSample(key: string, patch: Partial<DraftSample>) {
     setSamples((current) => current.map((sample) => sample.key === key ? { ...sample, ...patch } : sample));
@@ -89,6 +89,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     if (!doctor) { setError("ابتدا پزشک را انتخاب کنید یا پزشک جدید ثبت کنید."); return; }
     if (!date || !time || !purpose.trim()) { setError("تاریخ، ساعت و هدف ویزیت الزامی است."); return; }
     if (samples.some((sample) => {
+      if (sample.saved) return false;
       const quantity = Number(sample.quantity);
       const product = products.find((item) => item.id === sample.product_id);
       return !product || !sample.product_id || !Number.isInteger(quantity) || quantity < 1 ||
@@ -119,6 +120,13 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         };
         await createSample(data);
         updateSample(sample.key, { saved: true });
+        if (isScientificVisitor) {
+          setProducts((current) => current
+            .map((product) => product.id === sample.product_id && product.available_quantity !== undefined
+              ? { ...product, available_quantity: Math.max(0, product.available_quantity - Number(sample.quantity)) }
+              : product)
+            .filter((product) => product.available_quantity === undefined || product.available_quantity > 0));
+        }
       }
       onSaved(visit);
     } catch (e: unknown) {
@@ -176,7 +184,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             <div className="space-y-3">
               {samples.map((sample, index) => (
                 <div key={sample.key} className="grid gap-3 rounded-xl border p-3 md:grid-cols-[minmax(0,2fr)_100px_minmax(0,1fr)_auto] md:items-end">
-                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved || products.length === 0} onChange={(product_id) => updateSample(sample.key, { product_id, quantity: "1" })} placeholder={products.length ? "جستجوی محصول..." : "محصولی در موجودی نیست"} /></label>
+                  <div className="space-y-1 text-sm"><span className="block">محصول {index + 1} *</span>{sample.saved ? <div className="rounded-lg border bg-gray-50 px-3 py-2.5">{sample.product_title || "محصول ثبت‌شده"}</div> : <SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || products.length === 0} onChange={(product_id) => updateSample(sample.key, { product_id, product_title: products.find((product) => product.id === product_id)?.title ?? "", quantity: "1" })} placeholder={products.length ? "جستجوی محصول..." : "محصولی در موجودی نیست"} />}</div>
                   <label className="space-y-1 text-sm"><span>تعداد *{products.find((product) => product.id === sample.product_id)?.available_quantity !== undefined ? ` (موجودی: ${products.find((product) => product.id === sample.product_id)?.available_quantity})` : ""}</span><input type="number" min={1} max={products.find((product) => product.id === sample.product_id)?.available_quantity} step={1} required value={sample.quantity} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
                   <label className="space-y-1 text-sm"><span>توضیحات</span><input value={sample.description} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { description: e.target.value })} className={inputClass} /></label>
                   <div className="flex items-center gap-2">
