@@ -8,3 +8,6 @@ export type VisitListParams = { search?: string; doctor_id?: string; status?: Vi
 export type VisitListResponse = { data: Visit[]; meta: { current_page: number; last_page: number; total: number; per_page: number }; links?: Record<string, string | null> };
 export const VISIT_STATUS_OPTIONS: { value: VisitStatus; label: string }[] = [{ value: "draft", label: "پیش‌نویس" }, { value: "completed", label: "تکمیل‌شده" }, { value: "cancelled", label: "لغوشده" }];
 export function getVisitStatusLabel(status: VisitStatus) { return VISIT_STATUS_OPTIONS.find((x) => x.value === status)?.label ?? status; }
+
+export type VisitSampleProduct = { id: string; code?: string | null; title: string; available_quantity?: number };
+export type VisitSampleFormData = { visit_id: string; product_id: string; quantity: number; description: string };
