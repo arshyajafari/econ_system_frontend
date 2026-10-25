@@ -11,6 +11,7 @@ import { getSample, updateSample } from "../../samples/services/samplesApi";
 import type { Sample } from "../../samples/types/sample";
 import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
 import { UnifiedVisitEditForm } from "../components/UnifiedVisitEditForm";
+import { VisitDetailsModal } from "../components/VisitDetailsModal";
 import {
   cancelVisit,
   completeVisit,
@@ -49,6 +50,7 @@ export function VisitsPage() {
     [formOpen, setFormOpen] = useState(false),
     [editing, setEditing] = useState<Visit | null>(null),
     [editingSamples, setEditingSamples] = useState<Sample[] | null>(null),
+    [viewing, setViewing] = useState<Visit | null>(null),
     [actionTarget, setActionTarget] = useState<{
       visit: Visit;
       action: "complete" | "cancel";
@@ -157,7 +159,7 @@ export function VisitsPage() {
         setVisits((current) => current.map((visit) => ({
           ...visit,
           samples: visit.samples?.map((sample) => sample.id === savedSample.id
-            ? { ...sample, quantity: savedSample.quantity, product: savedSample.product ?? sample.product, product_name: savedSample.product_name ?? sample.product_name }
+            ? { ...sample, quantity: savedSample.quantity, description: savedSample.description ?? change.description, product: savedSample.product ?? sample.product, product_name: savedSample.product_name ?? sample.product_name }
             : sample),
         })));
       }
@@ -198,6 +200,8 @@ export function VisitsPage() {
   }
   return (
     <>
+      <VisitDetailsModal visit={viewing} onClose={() => setViewing(null)} />
+
       <ConfirmModal
         open={isAdmin && deleteTarget !== null}
         title="حذف بازدید"
@@ -306,7 +310,7 @@ export function VisitsPage() {
               setEditing(null);
             }}
           />
-        )}
+        ) : null}
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
           <input
@@ -417,6 +421,11 @@ export function VisitsPage() {
                     {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{getVisitStatusLabel(v.status)}</td> : null}
                     <td className="px-4 py-3 align-top">
                       <div className="flex flex-wrap gap-2">
+                        {index === 0 && (
+                          <button type="button" onClick={() => setViewing(v)} className="rounded border px-2 py-1 text-xs">
+                            مشاهده
+                          </button>
+                        )}
                         {index === 0 && v.status === "draft" && (
                           <>
                             <button
