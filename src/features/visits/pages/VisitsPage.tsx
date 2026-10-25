@@ -468,7 +468,7 @@ export function VisitsPage() {
                                                     rowSpan={visitSamples.length}
                                                     className="px-4 py-3 align-top"
                                                 >
-                                                    {getVisitStatusLabel(v.status)}
+                                                    <span className={"ui-status-visit ui-status-visit-" + v.status}>{getVisitStatusLabel(v.status)}</span>
                                                 </td>
                                             ) : null}
                                             <td className="px-4 py-3 align-top">
