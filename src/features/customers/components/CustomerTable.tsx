@@ -1,5 +1,5 @@
-import type { Customer, CustomerStatus } from "../types/customer";
 import { sortTableRecords } from "../../../utils/date";
+import type { Customer, CustomerStatus } from "../types/customer";
 
 type CustomerTableProps = {
   customers: Customer[];
