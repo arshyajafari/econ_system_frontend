@@ -18,6 +18,7 @@ import {
 } from "../services/inventoryApi";
 import type { InventoryBatch, ReceiveInventoryData } from "../types/inventory";
 import { InventoryAdjustmentModal } from "../components/InventoryAdjustmentModal";
+import { sortTableRecords } from "../../../utils/date";
 const empty: ReceiveInventoryData = {
   product_id: "",
   batch_number: "",
@@ -359,7 +360,7 @@ export function InventoryPage() {
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                sortTableRecords(items).map((item) => (
                   <tr key={item.id}>
                     <td className="px-4 py-3">
                       {item.product?.title ?? "—"}
