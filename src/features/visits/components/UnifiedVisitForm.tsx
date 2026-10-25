@@ -177,6 +177,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         try {
             if (isScientificVisitor) {
                 const sample = samples[0];
+                if (!sample) throw new Error('یک محصول از موجودی ویزیتور انتخاب کنید.');
                 const data: VisitFormData = {
                     doctor_id: doctor.id,
                     visit_date: `${date}T${time}`,
