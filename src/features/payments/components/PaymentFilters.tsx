@@ -23,7 +23,7 @@ export function PaymentFilters({
 }: PaymentFiltersProps) {
     return (
         <div className="ui-filter-panel">
-            <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
+            <div className="ui-filter-grid grid-cols-1 md:grid-cols-3">
                 <div className="ui-filter-field">
                     <label className="ui-filter-label">جستجو</label>
 
@@ -57,9 +57,7 @@ export function PaymentFilters({
                 </div>
 
                 <div className="ui-filter-field">
-                    <label className="ui-filter-label">
-                        روش پرداخت
-                    </label>
+                    <label className="ui-filter-label">روش پرداخت</label>
 
                     <select
                         value={method}
@@ -77,16 +75,11 @@ export function PaymentFilters({
                         ))}
                     </select>
                 </div>
-
-                <div className="ui-filter-actions">
-                    <button
-                        type="button"
-                        onClick={onClear}
-                        className="ui-filter-clear w-full"
-                    >
-                        پاک کردن فیلترها
-                    </button>
-                </div>
+            </div>
+            <div className="ui-filter-actions">
+                <button type="button" onClick={onClear} className="ui-filter-clear">
+                    پاک کردن فیلترها
+                </button>
             </div>
         </div>
     );
