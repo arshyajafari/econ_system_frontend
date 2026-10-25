@@ -201,7 +201,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             }
             for (const sample of samples) {
                 if (sample.saved) continue;
-                const data: SampleFormData = {
+                const data: VisitSampleFormData = {
                     visit_id: visit.id,
                     product_id: sample.product_id,
                     quantity: Number(sample.quantity),
