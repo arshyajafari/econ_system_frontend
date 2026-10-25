@@ -476,9 +476,9 @@ export function ExpensesPage() {
             <span className="ui-filter-label">تا تاریخ</span>
             <JalaliDateInput value={dateTo} onChange={(value) => { setDateTo(value); setPage(1); }} aria-label="تا تاریخ" />
           </label>
-          <div className="ui-filter-actions mt-0 border-0 p-0">
-            <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
-          </div>
+        </div>
+        <div className="ui-filter-actions">
+          <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
         </div>
       </div>
 
