@@ -11,7 +11,7 @@ import { createSample, getSampleProducts } from "../../samples/services/samplesA
 import { createVisit, getVisitDoctors } from "../services/visitsApi";
 import type { Visit, VisitFormData } from "../types/visit";
 
-type DraftSample = { key: string; product_id: string; quantity: string; description: string; saved: boolean };
+type DraftSample = { key: string; product_id: string; product_title: string; quantity: string; description: string; saved: boolean };
 type Props = {
   isScientificVisitor: boolean;
   onSaved: (visit: Visit) => void;
@@ -51,7 +51,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
   }, [isScientificVisitor]);
 
   function addSample() {
-    setSamples((current) => [...current, { key: crypto.randomUUID(), product_id: "", quantity: "1", description: "", saved: false }]);
+    setSamples((current) => [...current, { key: crypto.randomUUID(), product_id: "", product_title: "", quantity: "1", description: "", saved: false }]);
   }
   function updateSample(key: string, patch: Partial<DraftSample>) {
     setSamples((current) => current.map((sample) => sample.key === key ? { ...sample, ...patch } : sample));
@@ -88,8 +88,16 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     setNotice(null);
     if (!doctor) { setError("ابتدا پزشک را انتخاب کنید یا پزشک جدید ثبت کنید."); return; }
     if (!date || !time || !purpose.trim()) { setError("تاریخ، ساعت و هدف ویزیت الزامی است."); return; }
-    if (samples.some((sample) => !sample.product_id || !Number.isInteger(Number(sample.quantity)) || Number(sample.quantity) < 1)) {
-      setError("برای هر ردیف سمپل، محصول و تعداد صحیحِ بزرگ‌تر از صفر انتخاب کنید."); return;
+    if (samples.some((sample) => {
+      if (sample.saved) return false;
+      const quantity = Number(sample.quantity);
+      const product = products.find((item) => item.id === sample.product_id);
+      return !product || !sample.product_id || !Number.isInteger(quantity) || quantity < 1 ||
+        (product.available_quantity !== undefined && quantity > product.available_quantity);
+    })) {
+      setError(isScientificVisitor
+        ? "برای هر سمپل محصولی از موجودی قابل استفاده خودتان و تعداد صحیح در محدوده موجودی انتخاب کنید."
+        : "برای هر ردیف سمپل، محصول و تعداد صحیحِ بزرگ‌تر از صفر انتخاب کنید."); return;
     }
     if (new Set(samples.map((sample) => sample.product_id)).size !== samples.length) {
       setError("هر محصول را فقط یک بار در فهرست وارد کنید؛ برای همان محصول تعداد را در همان ردیف اصلاح کنید."); return;
@@ -112,6 +120,13 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         };
         await createSample(data);
         updateSample(sample.key, { saved: true });
+        if (isScientificVisitor) {
+          setProducts((current) => current
+            .map((product) => product.id === sample.product_id && product.available_quantity !== undefined
+              ? { ...product, available_quantity: Math.max(0, product.available_quantity - Number(sample.quantity)) }
+              : product)
+            .filter((product) => product.available_quantity === undefined || product.available_quantity > 0));
+        }
       }
       onSaved(visit);
     } catch (e: unknown) {
@@ -151,28 +166,26 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         </section>
 
         <section className="rounded-xl border bg-white p-4">
-          <h3 className="mb-4 font-semibold">۲. اطلاعات ویزیت</h3>
+          <h3 className="mb-4 font-semibold">۲. اطلاعات ویزیت و محصولات تحویلی</h3>
           <div className="grid gap-3 md:grid-cols-2">
             <label className="space-y-1 text-sm"><span>تاریخ ویزیت *</span><JalaliDateInput value={date} onChange={setDate} required disabled={saving || Boolean(savedVisit)} className={inputClass} /></label>
             <label className="space-y-1 text-sm"><span>ساعت *</span><input type="time" required value={time} onChange={(e) => setTime(e.target.value)} disabled={saving || Boolean(savedVisit)} className={inputClass} /></label>
             <label className="space-y-1 text-sm md:col-span-2"><span>هدف ویزیت *</span><input required maxLength={150} value={purpose} onChange={(e) => setPurpose(e.target.value)} disabled={saving || Boolean(savedVisit)} placeholder="مثلاً معرفی محصول یا پیگیری" className={inputClass} /></label>
             <label className="space-y-1 text-sm md:col-span-2"><span>توضیحات</span><textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} disabled={saving || Boolean(savedVisit)} className={inputClass} /></label>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <div><h3 className="font-semibold">۳. سمپل‌های تحویلی</h3><p className="mt-1 text-xs text-gray-500">افزودن سمپل اختیاری است. هر محصول را یک ردیف ثبت کنید.</p></div>
-            <button type="button" onClick={addSample} disabled={saving || productsLoading} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
-          </div>
-          {productsLoading ? <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p> : null}
-          {!productsLoading && products.length === 0 ? <p className="py-4 text-sm text-amber-700">فهرست محصولی برای انتخاب دریافت نشد. می‌توانید ویزیت را بدون سمپل ثبت کنید.</p> : null}
+          <div className="mt-6 border-t pt-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div><h4 className="font-semibold">محصولات / سمپل‌های تحویلی</h4><p className="mt-1 text-xs text-gray-500">افزودن سمپل اختیاری است. هر محصول را یک ردیف ثبت کنید.</p></div>
+              <button type="button" onClick={addSample} disabled={saving || productsLoading || products.length === 0} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
+            </div>
+            {productsLoading ? <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p> : null}
+            {!productsLoading && products.length === 0 ? <p className="py-4 text-sm text-amber-700">{isScientificVisitor ? "در حال حاضر موجودی قابل استفاده‌ای برای حساب شما ثبت نشده است؛ پس از تخصیص موجودی، محصولات در این فهرست نمایش داده می‌شوند." : "فهرست محصولی برای انتخاب دریافت نشد. می‌توانید ویزیت را بدون سمپل ثبت کنید."}</p> : null}
           {samples.length === 0 ? <div className="rounded-lg border border-dashed p-5 text-center text-sm text-gray-500">هنوز سمپلی اضافه نشده است.</div> : (
             <div className="space-y-3">
               {samples.map((sample, index) => (
                 <div key={sample.key} className="grid gap-3 rounded-xl border p-3 md:grid-cols-[minmax(0,2fr)_100px_minmax(0,1fr)_auto] md:items-end">
-                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved} onChange={(product_id) => updateSample(sample.key, { product_id })} placeholder="جستجوی محصول..." /></label>
-                  <label className="space-y-1 text-sm"><span>تعداد *</span><input type="number" min={1} step={1} required value={sample.quantity} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
+                  <div className="space-y-1 text-sm"><span className="block">محصول {index + 1} *</span>{sample.saved ? <div className="rounded-lg border bg-gray-50 px-3 py-2.5">{sample.product_title || "محصول ثبت‌شده"}</div> : <SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || products.length === 0} onChange={(product_id) => updateSample(sample.key, { product_id, product_title: products.find((product) => product.id === product_id)?.title ?? "", quantity: "1" })} placeholder={products.length ? "جستجوی محصول..." : "محصولی در موجودی نیست"} />}</div>
+                  <label className="space-y-1 text-sm"><span>تعداد *{products.find((product) => product.id === sample.product_id)?.available_quantity !== undefined ? ` (موجودی: ${products.find((product) => product.id === sample.product_id)?.available_quantity})` : ""}</span><input type="number" min={1} max={products.find((product) => product.id === sample.product_id)?.available_quantity} step={1} required value={sample.quantity} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
                   <label className="space-y-1 text-sm"><span>توضیحات</span><input value={sample.description} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { description: e.target.value })} className={inputClass} /></label>
                   <div className="flex items-center gap-2">
                     {sample.saved ? <span className="text-xs font-medium text-green-700">ثبت شد</span> : null}
@@ -181,7 +194,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                 </div>
               ))}
             </div>
-          )}
+            )}
+          </div>
         </section>
         {notice ? <div role="status" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{notice}</div> : null}
         {error ? <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}

@@ -48,23 +48,27 @@ export async function getSampleVisits(): Promise<Visit[]> {
 
 export async function getSampleProducts(isScientificVisitor = false): Promise<Product[]> {
   if (isScientificVisitor) {
+    // The backend scopes this endpoint to the authenticated scientific visitor and
+    // forces available_only=true for that role. Never fall back to the global product list.
     const response = await getScientificInventory({ available_only: true, per_page: 100, sort: "-last_received_at" });
-    return response.data.map((item) => ({
-      id: item.product?.id ?? "",
-      code: item.product?.code ?? "",
-      title: item.product?.title ?? "",
-      current_price: item.product?.sale_price ? { id: "", sale_price: item.product.sale_price, effective_from: null } : null,
-      image: null,
-      barcode: null,
-      status: "active",
-      sort_order: 0,
-      description: null,
-      brand: null,
-      category: null,
-      created_at: null,
-      updated_at: null,
-      available_quantity: item.available_quantity,
-    })) as Product[];
+    return response.data
+      .filter((item) => Boolean(item.product?.id) && item.available_quantity > 0)
+      .map((item) => ({
+        id: item.product!.id,
+        code: item.product!.code ?? "",
+        title: item.product!.title ?? "",
+        current_price: item.product!.sale_price ? { id: "", sale_price: item.product!.sale_price, effective_from: null } : null,
+        image: null,
+        barcode: null,
+        status: "active",
+        sort_order: 0,
+        description: null,
+        brand: null,
+        category: null,
+        created_at: null,
+        updated_at: null,
+        available_quantity: item.available_quantity,
+      })) as Product[];
   }
 
   const response = await apiClient.get<ProductListResponse>("/products", {
