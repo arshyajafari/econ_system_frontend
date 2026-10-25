@@ -25,7 +25,7 @@ export function PaymentFilters({
         <div className="ui-filter-panel">
             <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
                 <div>
-                    <label className="mb-1.5 block text-sm font-medium text-gray-700">جستجو</label>
+                    <label className="ui-filter-label">جستجو</label>
 
                     <input
                         type="search"
@@ -78,7 +78,7 @@ export function PaymentFilters({
                     </select>
                 </div>
 
-                <div className="ui-filter-field justify-end">
+                <div className="ui-filter-actions">
                     <button
                         type="button"
                         onClick={onClear}
