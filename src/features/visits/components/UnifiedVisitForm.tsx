@@ -11,7 +11,7 @@ import { createDoctor } from '../../doctors/services/doctorsApi';
 import type { DoctorFormData } from '../../doctors/types/doctor';
 import type { SampleProduct, SampleFormData } from '../../samples/types/sample';
 import { createSample, getSampleProducts } from '../../samples/services/samplesApi';
-import { createVisit, getVisitDoctors } from '../services/visitsApi';
+import { createVisit, createVisitWithSample, getVisitDoctors } from '../services/visitsApi';
 import type { Visit, VisitFormData } from '../types/visit';
 
 type DraftSample = {
@@ -51,12 +51,25 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     const [doctorSaving, setDoctorSaving] = useState(false);
     const [doctorError, setDoctorError] = useState<string | null>(null);
     const [savedVisit, setSavedVisit] = useState<Visit | null>(null);
+    const [clientOperationId] = useState(() => crypto.randomUUID());
 
     useEffect(() => {
         let active = true;
         void getSampleProducts(isScientificVisitor)
             .then((result) => {
-                if (active) setProducts(result as SampleProduct[]);
+                if (active) {
+                    setProducts(result as SampleProduct[]);
+                    if (isScientificVisitor && result.length > 0) {
+                        setSamples((current) => current.length ? current : [{
+                            key: crypto.randomUUID(),
+                            product_id: '',
+                            product_title: '',
+                            quantity: '1',
+                            description: '',
+                            saved: false,
+                        }]);
+                    }
+                }
             })
             .catch((e: unknown) => {
                 if (active)
@@ -73,17 +86,17 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     }, [isScientificVisitor]);
 
     function addSample() {
-        setSamples((current) => [
-            ...current,
-            {
+        setSamples((current) => {
+            if (isScientificVisitor && current.length > 0) return current;
+            return [...current, {
                 key: crypto.randomUUID(),
                 product_id: '',
                 product_title: '',
                 quantity: '1',
                 description: '',
                 saved: false,
-            },
-        ]);
+            }];
+        });
     }
     function updateSample(key: string, patch: Partial<DraftSample>) {
         setSamples((current) =>
@@ -128,6 +141,10 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             setError('تاریخ، ساعت و هدف ویزیت الزامی است.');
             return;
         }
+        if (isScientificVisitor && (samples.length !== 1 || !samples[0]?.product_id)) {
+            setError('برای ثبت ویزیت، یک محصول از موجودی قابل استفاده خود انتخاب کنید.');
+            return;
+        }
         if (
             samples.some((sample) => {
                 if (sample.saved) return false;
@@ -158,6 +175,24 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         }
         setSaving(true);
         try {
+            if (isScientificVisitor) {
+                const sample = samples[0];
+                if (!sample) throw new Error('یک محصول از موجودی ویزیتور انتخاب کنید.');
+                const data: VisitFormData = {
+                    doctor_id: doctor.id,
+                    visit_date: `${date}T${time}`,
+                    purpose: purpose.trim(),
+                    description: description.trim(),
+                };
+                const visit = await createVisitWithSample(data, {
+                    product_id: sample.product_id,
+                    quantity: Number(sample.quantity),
+                    description: sample.description,
+                }, clientOperationId);
+                onSaved(visit);
+                return;
+            }
+
             let visit = savedVisit;
             if (!visit) {
                 const data: VisitFormData = {
@@ -205,7 +240,9 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             onSaved(visit);
         } catch (e: unknown) {
             setError(e instanceof ApiError ? e.message : 'ذخیره اطلاعات کامل نشد.');
-            if (savedVisit || samples.some((sample) => sample.saved)) {
+            if (isScientificVisitor) {
+                setNotice('ثبت ویزیت و نمونه به‌صورت یکپارچه انجام می‌شود؛ در صورت خطای اعتبارسنجی، هیچ‌کدام ثبت نمی‌شوند. اگر پاسخ شبکه نامشخص بود، دوباره تلاش کنید؛ شناسه عملیات از ثبت تکراری جلوگیری می‌کند.');
+            } else if (savedVisit || samples.some((sample) => sample.saved)) {
                 setNotice(
                     'ویزیت ثبت شده است. ردیف‌های ذخیره‌شده حفظ شده‌اند؛ پس از رفع خطا دوباره ثبت را بزنید تا فقط ردیف‌های باقی‌مانده ارسال شوند.'
                 );
@@ -336,16 +373,19 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     <div className="mt-6 border-t border-gray-300 pt-4">
                         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                             <div>
-                                <h4 className="font-semibold">سمپل‌های تحویلی</h4>
+                                <h4 className="font-semibold">{isScientificVisitor ? 'محصول تحویلی و تعداد' : 'سمپل‌های تحویلی'}</h4>
+                                {isScientificVisitor ? <p className="mt-1 text-xs text-gray-500">در هر ویزیت یک محصول انتخاب می‌شود؛ برای محصول متفاوت، ویزیت جداگانه ثبت کنید.</p> : null}
                             </div>
-                            <button
-                                type="button"
-                                onClick={addSample}
-                                disabled={saving || productsLoading || products.length === 0}
-                                className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
-                            >
-                                + افزودن سمپل
-                            </button>
+                            {!isScientificVisitor ? (
+                                <button
+                                    type="button"
+                                    onClick={addSample}
+                                    disabled={saving || productsLoading || products.length === 0}
+                                    className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
+                                >
+                                    + افزودن سمپل
+                                </button>
+                            ) : null}
                         </div>
                         {productsLoading ? (
                             <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p>
@@ -374,6 +414,28 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 <div className="rounded-lg border bg-gray-50 px-3 py-2.5">
                                                     {sample.product_title || 'محصول ثبت‌شده'}
                                                 </div>
+                                            ) : isScientificVisitor ? (
+                                                <select
+                                                    required
+                                                    value={sample.product_id}
+                                                    disabled={saving || products.length === 0}
+                                                    onChange={(event) => {
+                                                        const product_id = event.target.value;
+                                                        updateSample(sample.key, {
+                                                            product_id,
+                                                            product_title: products.find((product) => product.id === product_id)?.title ?? '',
+                                                            quantity: '1',
+                                                        });
+                                                    }}
+                                                    className={inputClass}
+                                                >
+                                                    <option value="">انتخاب محصول از موجودی شما</option>
+                                                    {products.filter((product) => product.available_quantity === undefined || product.available_quantity > 0).map((product) => (
+                                                        <option key={product.id} value={product.id}>
+                                                            {product.title} {product.available_quantity !== undefined ? `(موجودی: ${product.available_quantity})` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             ) : (
                                                 <SearchableProductSelect
                                                     value={sample.product_id}
@@ -458,14 +520,16 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                     ثبت شد
                                                 </span>
                                             ) : null}
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSample(sample.key)}
-                                                disabled={saving || sample.saved}
-                                                className="rounded-lg border px-3 py-2 text-sm text-red-700 disabled:opacity-40"
-                                            >
-                                                حذف
-                                            </button>
+                                            {!isScientificVisitor ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeSample(sample.key)}
+                                                    disabled={saving || sample.saved}
+                                                    className="rounded-lg border px-3 py-2 text-sm text-red-700 disabled:opacity-40"
+                                                >
+                                                    حذف
+                                                </button>
+                                            ) : null}
                                         </div>
                                     </div>
                                 ))}
