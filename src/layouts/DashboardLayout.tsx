@@ -96,16 +96,10 @@ const navigation: NavConfig[] = [
     requiredPermission: "invoices.view",
   },
   {
-    label: "ویزیت‌ها",
+    label: "ویزیت و نمونه‌ها",
     to: "/visits",
     icon: "visits",
     requiredPermission: "visits.view",
-  },
-  {
-    label: "نمونه‌ها",
-    to: "/samples",
-    icon: "samples",
-    requiredPermission: "samples.view",
   },
   {
     label: "ارسال‌ها",
@@ -377,11 +371,12 @@ export function DashboardLayout() {
       return (
         (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
-        (isScientificVisitor && ["/visits", "/samples", "/scientific-inventory"].includes(item.to)) ||
+        (isScientificVisitor && ["/visits", "/scientific-inventory"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
     }
+    if (item.to === "/visits") return isAdmin || isAccountant || isScientificVisitor || can("visits.view") || can("samples.view");
     if (item.to === "/dashboard") return isAdmin || isAccountant;
     if (item.adminOnly) return isAdmin;
     if (item.to === "/catalog") return isAdmin || isAccountant;

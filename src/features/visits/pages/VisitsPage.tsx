@@ -8,6 +8,10 @@ import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { VisitForm } from "../components/VisitForm";
+import { SampleForm } from "../../samples/components/SampleForm";
+import { getSample, getSampleProducts, updateSample } from "../../samples/services/samplesApi";
+import type { Sample, SampleFormData } from "../../samples/types/sample";
+import type { Product } from "../../products/types/product";
 import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
 import {
   cancelVisit,
@@ -47,11 +51,22 @@ export function VisitsPage() {
     [formError, setFormError] = useState<string | null>(null),
     [formOpen, setFormOpen] = useState(false),
     [editing, setEditing] = useState<Visit | null>(null),
+    [sampleFormOpen, setSampleFormOpen] = useState(false),
+    [editingSample, setEditingSample] = useState<Sample | null>(null),
+    [sampleProducts, setSampleProducts] = useState<Product[]>([]),
     [actionTarget, setActionTarget] = useState<{
       visit: Visit;
       action: "complete" | "cancel";
     } | null>(null),
     [deleteTarget, setDeleteTarget] = useState<Visit | null>(null);
+  useEffect(() => {
+    let active = true;
+    void getSampleProducts(isScientificVisitor)
+      .then((items) => { if (active) setSampleProducts(items); })
+      .catch((e: unknown) => { if (active) setError(e instanceof ApiError ? e.message : "خطا در دریافت محصولات نمونه."); });
+    return () => { active = false; };
+  }, [isScientificVisitor]);
+
   const load = useCallback(
     async (p?: Partial<VisitListParams>) => {
       setLoading(true);
@@ -143,6 +158,39 @@ export function VisitsPage() {
       setSaving(false);
     }
   }
+  async function editSample(sampleId: string) {
+    setError(null);
+    setFormError(null);
+    try {
+      const sample = await getSample(sampleId);
+      setFormOpen(false);
+      setEditing(null);
+      setEditingSample(sample);
+      setSampleFormOpen(true);
+    } catch (e: unknown) {
+      setError(e instanceof ApiError ? e.message : "خطا در دریافت جزئیات نمونه.");
+    }
+  }
+  async function submitSample(data: SampleFormData) {
+    if (!editingSample) return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      const saved = await updateSample(editingSample.id, { quantity: data.quantity, description: data.description });
+      setVisits((current) => current.map((visit) => ({
+        ...visit,
+        samples: visit.samples?.map((sample) => sample.id === saved.id
+          ? { ...sample, quantity: saved.quantity, product: saved.product ?? sample.product, product_name: saved.product_name ?? sample.product_name }
+          : sample),
+      })));
+      setSampleFormOpen(false);
+      setEditingSample(null);
+    } catch (e: unknown) {
+      setFormError(e instanceof ApiError ? e.message : "خطا در ویرایش نمونه.");
+    } finally {
+      setSaving(false);
+    }
+  }
   async function removeVisit(v: Visit) {
     if (actionId) return;
     setActionId(v.id);
@@ -227,6 +275,8 @@ export function VisitsPage() {
               type="button"
               onClick={() => {
                 setEditing(null);
+                setSampleFormOpen(false);
+                setEditingSample(null);
                 setFormError(null);
                 setFormOpen(true);
               }}
@@ -245,6 +295,18 @@ export function VisitsPage() {
             {error}
           </div>
         )}
+
+        {sampleFormOpen && editingSample ? (
+          <SampleForm
+            visits={visits}
+            products={sampleProducts}
+            sample={editingSample}
+            isSubmitting={saving}
+            error={formError}
+            onSubmit={(data) => void submitSample(data)}
+            onCancel={() => { if (!saving) { setSampleFormOpen(false); setEditingSample(null); } }}
+          />
+        ) : null}
 
         {formOpen && (editing ? (
           <VisitForm
@@ -334,7 +396,7 @@ export function VisitsPage() {
         </div>
 
         <div className="flex justify-between text-sm text-gray-500">
-          <span>{new Intl.NumberFormat("fa-IR").format(total)} بازدید</span>
+          <span>{new Intl.NumberFormat("fa-IR").format(total)} ویزیت · {new Intl.NumberFormat("fa-IR").format(visits.reduce((sum, visit) => sum + (visit.samples?.length ?? 0), 0))} نمونه در این صفحه</span>
           <button type="button" onClick={reset}>
             پاک کردن فیلترها
           </button>
@@ -347,7 +409,8 @@ export function VisitsPage() {
                 {[
                   "تاریخ",
                   "پزشک",
-                  "محصول/نمونه",
+                  "محصول / نمونه",
+                  "تعداد",
                   "هدف",
                   "کارمند",
                   "وضعیت",
@@ -362,48 +425,38 @@ export function VisitsPage() {
             <tbody className="divide-y">
               {loading && !visits.length ? (
                 <tr>
-                  <td colSpan={7} className="p-10 text-center">
+                  <td colSpan={8} className="p-10 text-center">
                     در حال دریافت…
                   </td>
                 </tr>
               ) : !visits.length ? (
                 <tr>
-                  <td colSpan={7} className="p-10 text-center">
+                  <td colSpan={8} className="p-10 text-center">
                     بازدیدی پیدا نشد.
                   </td>
                 </tr>
               ) : (
-                sortTableRecords(visits).map((v) => (
-                  <tr key={v.id}>
-                    <td className="whitespace-nowrap px-4 py-3">
-                      {formatJalaliDateTime(v.visit_date)}
-                    </td>
-                    <td className="px-4 py-3 font-medium">
-                      {v.doctor_name ?? v.doctor?.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {v.samples?.length
-                        ? v.samples
-                            .map(
-                              (sample) =>
-                                `${sample.product_name ?? sample.product?.title ?? "سمپل"}${sample.quantity ? ` (${sample.quantity})` : ""}`,
-                            )
-                            .filter(Boolean)
-                            .join("، ")
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3">{v.purpose || "—"}</td>
-                    <td className="px-4 py-3">{v.employee?.name ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      {getVisitStatusLabel(v.status)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        {v.status === "draft" && (
+                sortTableRecords(visits).flatMap((v) => {
+                  const visitSamples = v.samples?.length ? v.samples : [null];
+                  return visitSamples.map((sample, index) => (
+                  <tr key={`${v.id}-${sample?.id ?? "no-sample"}`}>
+                    {index === 0 ? <td rowSpan={visitSamples.length} className="whitespace-nowrap px-4 py-3 align-top">{formatJalaliDateTime(v.visit_date)}</td> : null}
+                    {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 font-medium align-top">{v.doctor_name ?? v.doctor?.name ?? "—"}</td> : null}
+                    <td className="px-4 py-3 align-top">{sample ? (sample.product_name ?? sample.product?.title ?? "سمپل") : "—"}</td>
+                    <td className="px-4 py-3 align-top">{sample ? new Intl.NumberFormat("fa-IR").format(sample.quantity) : "—"}</td>
+                    {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{v.purpose || "—"}</td> : null}
+                    {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{v.employee?.name ?? "—"}</td> : null}
+                    {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{getVisitStatusLabel(v.status)}</td> : null}
+                    <td className="px-4 py-3 align-top">
+                      <div className="flex flex-wrap gap-2">
+                        {sample ? <button type="button" disabled={saving} onClick={() => void editSample(sample.id)} className="ui-btn-edit rounded border px-2 py-1 text-xs">ویرایش نمونه</button> : null}
+                        {index === 0 && v.status === "draft" && (
                           <>
                             <button
                               type="button"
                               onClick={() => {
+                                setSampleFormOpen(false);
+                                setEditingSample(null);
                                 setEditing(v);
                                 setFormError(null);
                                 setFormOpen(true);
@@ -437,20 +490,21 @@ export function VisitsPage() {
                             </button>
                           </>
                         )}
-                        {isAdmin && (
+                        {index === 0 && isAdmin && (
                           <button
                             type="button"
                             disabled={actionId === v.id}
                             onClick={() => setDeleteTarget(v)}
                             className="ui-btn-delete rounded border px-2 py-1 text-xs"
                           >
-                            حذف
+                            حذف ویزیت
                           </button>
                         )}
                       </div>
                     </td>
                   </tr>
-                ))
+                  ));
+                })
               )}
             </tbody>
           </table>
