@@ -13,6 +13,7 @@ import type {
   InvoiceStatus,
 } from "../types/invoice";
 import { invoiceStatusLabel } from "../types/invoice";
+import { sortTableRecords } from "../../../utils/date";
 
 const nf = new Intl.NumberFormat("fa-IR");
 const money = (v: number | string) => nf.format(Number(v || 0));
@@ -228,7 +229,7 @@ export function InvoicesPage() {
               </tr>
             ) : null}
             {!loading
-              ? invoices.map((invoice) => (
+              ? sortTableRecords(invoices).map((invoice) => (
                   <tr key={invoice.id} className="hover:bg-gray-50">
                     <td className="px-5 py-4 font-medium text-gray-900">
                       {invoice.code}
