@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
@@ -317,7 +318,7 @@ export function EmployeesPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item) => (
+              sortTableRecords(items).map((item) => (
                 <tr key={item.id}>
                   <td dir="ltr" className="px-4 py-3">
                     {item.code}

@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useNavigate } from "react-router-dom";
@@ -228,7 +229,7 @@ export function InvoicesPage() {
               </tr>
             ) : null}
             {!loading
-              ? invoices.map((invoice) => (
+              ? sortTableRecords(invoices).map((invoice) => (
                   <tr key={invoice.id} className="hover:bg-gray-50">
                     <td className="px-5 py-4 font-medium text-gray-900">
                       {invoice.code}

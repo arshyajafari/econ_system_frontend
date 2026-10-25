@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import type { Customer, CustomerStatus } from "../types/customer";
 
 type CustomerTableProps = {
@@ -91,7 +92,7 @@ export function CustomerTable({
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {customers.map((customer) => {
+            {sortTableRecords(customers).map((customer) => {
               const isStatusPending = pendingStatusId === customer.id;
 
               const isDeletePending = pendingDeleteId === customer.id;

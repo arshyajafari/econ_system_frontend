@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
@@ -304,7 +305,7 @@ export function SamplesPage() {
                   </td>
                 </tr>
               ) : (
-                samples.map((sample) => (
+                sortTableRecords(samples).map((sample) => (
                   <tr key={sample.id}>
                     <td className="whitespace-nowrap px-4 py-3">
                       {formatJalaliDateTime(

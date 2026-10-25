@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
@@ -372,7 +373,7 @@ export function VisitsPage() {
                   </td>
                 </tr>
               ) : (
-                visits.map((v) => (
+                sortTableRecords(visits).map((v) => (
                   <tr key={v.id}>
                     <td className="whitespace-nowrap px-4 py-3">
                       {formatJalaliDateTime(v.visit_date)}

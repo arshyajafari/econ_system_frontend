@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../../../api/client";
@@ -350,7 +351,7 @@ export function ScientificVisitorInventoryPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item) => (
+              sortTableRecords(items).map((item) => (
                 <tr key={item.id}>
                   {isManager ? (
                     <td className="px-4 py-3">

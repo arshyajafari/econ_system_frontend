@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 
@@ -363,7 +364,7 @@ export function DoctorsPage() {
                 </td>
               </tr>
             ) : (
-              doctors.map((doctor) => (
+              sortTableRecords(doctors).map((doctor) => (
                 <tr key={doctor.id} className="hover:bg-gray-50">
                   <td
                     dir="ltr"

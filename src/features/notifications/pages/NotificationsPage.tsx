@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { normalizeApiError } from "../../../api/client";
@@ -467,7 +468,7 @@ export function NotificationsPage() {
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {notifications.map((notification) => (
+              {sortTableRecords(notifications).map((notification) => (
                 <div
                   key={notification.id}
                   className={`block w-full p-5 text-right transition hover:bg-slate-50 ${notification.is_read ? "bg-white" : "bg-blue-50/40"}`}

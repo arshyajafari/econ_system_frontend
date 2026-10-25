@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { getEmployees } from "../services/employeesApi";
@@ -90,7 +91,7 @@ export function EmployeeBankingPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item) => {
+              sortTableRecords(items).map((item) => {
                 const bank = getIranianBankByCard(item.card_number);
                 return (
                   <tr key={item.id} className="hover:bg-gray-50/70">

@@ -43,6 +43,17 @@ export function PaymentTable({
   canConfirm = false,
   canCancel = false,
 }: PaymentTableProps) {
+  const sortedPayments = [...payments].sort((a, b) => {
+    const rank = (status: string) => status === "pending" ? 0 : status === "confirmed" ? 1 : 2;
+    const statusOrder = rank(a.status) - rank(b.status);
+    if (statusOrder !== 0) return statusOrder;
+    const dateValue = (item: Payment) => {
+      const row = item as Payment & { confirmed_at?: string | null; created_at?: string | null };
+      return Date.parse(row.confirmed_at || item.payment_date || row.created_at || "") || 0;
+    };
+    return dateValue(b) - dateValue(a);
+  });
+
   if (isLoading && payments.length === 0) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
@@ -75,7 +86,7 @@ export function PaymentTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {payments.map((payment) => (
+            {sortedPayments.map((payment) => (
               <tr key={payment.id}>
                 <td className="px-4 py-4 align-top">
                   <div className="font-medium text-gray-800">{payment.customer?.name ?? "—"}</div>

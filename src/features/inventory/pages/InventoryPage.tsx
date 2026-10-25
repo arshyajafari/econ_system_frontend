@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
@@ -359,7 +360,7 @@ export function InventoryPage() {
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
+                sortTableRecords(items).map((item) => (
                   <tr key={item.id}>
                     <td className="px-4 py-3">
                       {item.product?.title ?? "—"}
