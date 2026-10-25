@@ -195,80 +195,43 @@ export function EmployeesPage() {
                     }}
                 />
             ) : null}
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                <input
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPage(1);
-                    }}
-                    placeholder="جستجو بر اساس نام، کد، کد ملی یا موبایل"
-                    className="rounded-lg border bg-white px-3 py-2.5 text-sm lg:col-span-3"
-                />
-                <select
-                    value={activityType}
-                    onChange={(e) => {
-                        setActivityType(e.target.value as EmployeeActivityType | '');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-                >
-                    <option value="">همه فعالیت‌ها</option>
-                    {EMPLOYEE_ACTIVITY_OPTIONS.map((x) => (
-                        <option key={x.value} value={x.value}>
-                            {x.label}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    value={status}
-                    onChange={(e) => {
-                        setStatus(e.target.value as EmployeeStatus | '');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-                >
-                    <option value="">همه وضعیت‌ها</option>
-                    {EMPLOYEE_STATUS_OPTIONS.map((x) => (
-                        <option key={x.value} value={x.value}>
-                            {x.label}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    value={gender}
-                    onChange={(e) => {
-                        setGender(e.target.value as Gender | '');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-                >
-                    <option value="">همه جنسیت‌ها</option>
-                    <option value="male">آقا</option>
-                    <option value="female">خانم</option>
-                </select>
-                <select
-                    value={employmentType}
-                    onChange={(e) => {
-                        setEmploymentType(e.target.value as EmploymentType | '');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-                >
-                    <option value="">همه انواع استخدام</option>
-                    {EMPLOYMENT_TYPE_OPTIONS.map((x) => (
-                        <option key={x.value} value={x.value}>
-                            {x.label}
-                        </option>
-                    ))}
-                </select>
-                <button
-                    type="button"
-                    onClick={reset}
-                    className="rounded-lg border px-4 py-2.5 text-sm"
-                >
-                    پاک کردن
-                </button>
+            <div className="ui-filter-panel">
+                <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    <label className="ui-filter-field lg:col-span-1">
+                        <span className="ui-filter-label">جستجو</span>
+                        <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="نام، کد، کد ملی یا موبایل..." />
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">نوع فعالیت</span>
+                        <select value={activityType} onChange={(e) => { setActivityType(e.target.value as EmployeeActivityType | ''); setPage(1); }}>
+                            <option value="">همه فعالیت‌ها</option>
+                            {EMPLOYEE_ACTIVITY_OPTIONS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
+                        </select>
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">وضعیت</span>
+                        <select value={status} onChange={(e) => { setStatus(e.target.value as EmployeeStatus | ''); setPage(1); }}>
+                            <option value="">همه وضعیت‌ها</option>
+                            {EMPLOYEE_STATUS_OPTIONS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
+                        </select>
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">جنسیت</span>
+                        <select value={gender} onChange={(e) => { setGender(e.target.value as Gender | ''); setPage(1); }}>
+                            <option value="">همه جنسیت‌ها</option><option value="male">آقا</option><option value="female">خانم</option>
+                        </select>
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">نوع استخدام</span>
+                        <select value={employmentType} onChange={(e) => { setEmploymentType(e.target.value as EmploymentType | ''); setPage(1); }}>
+                            <option value="">همه انواع استخدام</option>
+                            {EMPLOYMENT_TYPE_OPTIONS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
+                        </select>
+                    </label>
+                    <div className="ui-filter-actions mt-0 border-0 p-0">
+                        <button type="button" onClick={reset} className="ui-filter-clear">پاک کردن فیلترها</button>
+                    </div>
+                </div>
             </div>
             <div className="text-sm text-gray-500">
                 {new Intl.NumberFormat('fa-IR').format(total)} کارمند

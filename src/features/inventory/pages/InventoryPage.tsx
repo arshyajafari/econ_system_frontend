@@ -294,36 +294,22 @@ export function InventoryPage() {
             </button>
           </form>
         ) : null}
-        <div className="w-full flex gap-3">
-          <input
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            placeholder="جستجوی نام کالا یا شماره بچ"
-            className="rounded-lg border px-3 py-2"
-          />
-          <select
-            value={expired}
-            onChange={(event) => {
-              setExpired(event.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border px-3 py-2"
-          >
-            <option value="">همه</option>
-            <option value="true">منقضی</option>
-            <option value="false">غیرمنقضی</option>
-          </select>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => setRefreshKey((current) => current + 1)}
-            className="rounded-lg border px-4 disabled:opacity-50"
-          >
-            بروزرسانی
-          </button>
+        <div className="ui-filter-panel">
+          <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr_auto]">
+            <label className="ui-filter-field">
+              <span className="ui-filter-label">جستجو</span>
+              <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="نام کالا یا شماره بچ..." />
+            </label>
+            <label className="ui-filter-field">
+              <span className="ui-filter-label">وضعیت انقضا</span>
+              <select value={expired} onChange={(event) => { setExpired(event.target.value); setPage(1); }}>
+                <option value="">همه</option><option value="true">منقضی</option><option value="false">غیرمنقضی</option>
+              </select>
+            </label>
+            <div className="ui-filter-actions mt-0 border-0 p-0">
+              <button type="button" disabled={loading} onClick={() => setRefreshKey((current) => current + 1)} className="ui-filter-clear disabled:opacity-50">بروزرسانی</button>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto rounded-xl border bg-white">
           <table className="min-w-full text-right text-sm">

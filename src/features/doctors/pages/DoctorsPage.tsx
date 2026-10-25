@@ -277,51 +277,29 @@ export function DoctorsPage() {
         />
       ) : null}
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr_1fr_auto]">
-        <input
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          placeholder="جستجو بر اساس نام، کد، موبایل یا کلینیک"
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900"
-        />
-        <select
-          value={specialty}
-          onChange={(e) => {
-            setSpecialty(e.target.value as DoctorSpecialty | "");
-            setPage(1);
-          }}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900"
-        >
-          <option value="">همه تخصص‌ها</option>
-          {specialties.map((item) => (
-            <option key={item} value={item}>
-              {specialtyLabels[item]}
-            </option>
-          ))}
-        </select>
-        <select
-          value={status}
-          onChange={(e) => {
-            setStatus(e.target.value as DoctorStatus | "");
-            setPage(1);
-          }}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-900"
-        >
-          <option value="">همه وضعیت‌ها</option>
-          <option value="active">فعال</option>
-          <option value="inactive">غیرفعال</option>
-          <option value="suspended">تعلیق‌شده</option>
-        </select>
-        <button
-          type="button"
-          onClick={resetFilters}
-          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          پاک کردن
-        </button>
+      <div className="ui-filter-panel">
+        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto]">
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">جستجو</span>
+            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="نام، کد، موبایل یا کلینیک..." />
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">تخصص</span>
+            <select value={specialty} onChange={(e) => { setSpecialty(e.target.value as DoctorSpecialty | ""); setPage(1); }}>
+              <option value="">همه تخصص‌ها</option>
+              {specialties.map((item) => <option key={item} value={item}>{specialtyLabels[item]}</option>)}
+            </select>
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">وضعیت</span>
+            <select value={status} onChange={(e) => { setStatus(e.target.value as DoctorStatus | ""); setPage(1); }}>
+              <option value="">همه وضعیت‌ها</option><option value="active">فعال</option><option value="inactive">غیرفعال</option><option value="suspended">تعلیق‌شده</option>
+            </select>
+          </label>
+          <div className="ui-filter-actions mt-0 border-0 p-0">
+            <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center justify-between text-sm text-gray-500">
