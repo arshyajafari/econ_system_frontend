@@ -35,6 +35,7 @@ export async function createVisitSample(data: VisitSampleFormData): Promise<Visi
     product_id: data.product_id,
     quantity: data.quantity,
     description: data.description.trim() || undefined,
+    client_operation_id: data.client_operation_id,
   });
   return r.data;
 }

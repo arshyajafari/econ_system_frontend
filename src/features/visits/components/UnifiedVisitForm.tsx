@@ -206,6 +206,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     product_id: sample.product_id,
                     quantity: Number(sample.quantity),
                     description: sample.description.trim(),
+                    client_operation_id: sample.key,
                 };
                 await createVisitSample(data);
                 updateSample(sample.key, { saved: true });
