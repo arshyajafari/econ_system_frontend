@@ -83,7 +83,7 @@ export function ReportsPage() {
             onChange={setFrom}
             className="w-full"
           />
-        </div>
+        </label>
         <label className="ui-filter-field">
           <span className="ui-filter-label">تا تاریخ</span>
           <JalaliDateInput
