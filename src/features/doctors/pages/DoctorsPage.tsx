@@ -278,7 +278,7 @@ export function DoctorsPage() {
       ) : null}
 
       <div className="ui-filter-panel">
-        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto]">
+        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <label className="ui-filter-field">
             <span className="ui-filter-label">جستجو</span>
             <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="نام، کد، موبایل یا کلینیک..." />
@@ -296,9 +296,9 @@ export function DoctorsPage() {
               <option value="">همه وضعیت‌ها</option><option value="active">فعال</option><option value="inactive">غیرفعال</option><option value="suspended">تعلیق‌شده</option>
             </select>
           </label>
-          <div className="ui-filter-actions mt-0 border-0 p-0">
-            <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
-          </div>
+        </div>
+        <div className="ui-filter-actions">
+          <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
         </div>
       </div>
 

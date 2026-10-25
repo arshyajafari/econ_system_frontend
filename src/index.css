@@ -719,15 +719,8 @@ select:focus-visible {
 }
 
 /* Keep semantic visit badges independent from the filter styles. */
-/* Filter action rows sit flush with controls when embedded in a grid. */
-.ui-filter-grid > .ui-filter-actions {
-  align-self: end;
-  justify-content: flex-start;
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
-}
-.ui-filter-grid > .ui-filter-actions button {
+/* Keep the separated action row consistent across every filter panel. */
+.ui-filter-actions button {
   white-space: nowrap;
 }
 

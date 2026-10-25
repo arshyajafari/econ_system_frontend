@@ -251,6 +251,16 @@ export function EmployeeLocationsPage() {
                                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                             />
                         </label>
+                        <div className="ui-filter-actions">
+                            <button
+                                type="button"
+                                onClick={() => setSearch('')}
+                                disabled={!search}
+                                className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                پاک کردن فیلترها
+                            </button>
+                        </div>
                     </div>
                     <div className="max-h-[430px] divide-y divide-gray-100 overflow-y-auto">
                         {sortTableRecords(filteredLocations).map((item) => {

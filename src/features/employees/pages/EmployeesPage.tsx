@@ -228,9 +228,9 @@ export function EmployeesPage() {
                             {EMPLOYMENT_TYPE_OPTIONS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
                         </select>
                     </label>
-                    <div className="ui-filter-actions mt-0 border-0 p-0">
-                        <button type="button" onClick={reset} className="ui-filter-clear">پاک کردن فیلترها</button>
-                    </div>
+                </div>
+                <div className="ui-filter-actions">
+                    <button type="button" onClick={reset} className="ui-filter-clear">پاک کردن فیلترها</button>
                 </div>
             </div>
             <div className="text-sm text-gray-500">

@@ -295,7 +295,7 @@ export function InventoryPage() {
           </form>
         ) : null}
         <div className="ui-filter-panel">
-          <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr_auto]">
+          <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr]">
             <label className="ui-filter-field">
               <span className="ui-filter-label">جستجو</span>
               <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="نام کالا یا شماره بچ..." />
@@ -306,9 +306,22 @@ export function InventoryPage() {
                 <option value="">همه</option><option value="true">منقضی</option><option value="false">غیرمنقضی</option>
               </select>
             </label>
-            <div className="ui-filter-actions mt-0 border-0 p-0">
-              <button type="button" disabled={loading} onClick={() => setRefreshKey((current) => current + 1)} className="ui-filter-clear disabled:opacity-50">بروزرسانی</button>
-            </div>
+          </div>
+          <div className="ui-filter-actions justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setExpired("");
+                setPage(1);
+              }}
+              className="ui-filter-clear"
+            >
+              پاک کردن فیلترها
+            </button>
+            <button type="button" disabled={loading} onClick={() => setRefreshKey((current) => current + 1)} className="ui-filter-clear disabled:opacity-50">
+              بروزرسانی
+            </button>
           </div>
         </div>
         <div className="overflow-x-auto rounded-xl border bg-white">

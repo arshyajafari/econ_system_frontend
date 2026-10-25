@@ -274,7 +274,18 @@ export function SamplesPage() {
               </select>
             </label>
           </div>
-          <div className="ui-filter-actions">
+          <div className="ui-filter-actions justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setProductId("");
+                setPage(1);
+              }}
+              className="ui-filter-clear"
+            >
+              پاک کردن فیلترها
+            </button>
             <span className="text-sm text-slate-500">
               {new Intl.NumberFormat("fa-IR").format(total)} نمونه
             </span>

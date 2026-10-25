@@ -74,8 +74,9 @@ export function ReportsPage() {
           if (from <= to) void loadReport(from, to);
           else setError("تاریخ شروع باید قبل از تاریخ پایان باشد.");
         }}
-        className="ui-filter-panel ui-filter-grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className="ui-filter-panel"
       >
+        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
         <label className="ui-filter-field">
           <span className="ui-filter-label">از تاریخ</span>
           <JalaliDateInput
@@ -92,12 +93,28 @@ export function ReportsPage() {
             className="w-full"
           />
         </label>
-        <button
-          disabled={loading || !from || !to}
-          className="w-full whitespace-nowrap rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50 md:w-auto"
-        >
-          {loading ? "در حال دریافت..." : "نمایش گزارش"}
-        </button>
+        </div>
+        <div className="ui-filter-actions justify-between">
+          <button
+            disabled={loading || !from || !to}
+            className="whitespace-nowrap rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+          >
+            {loading ? "در حال دریافت..." : "نمایش گزارش"}
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => {
+              setFrom(monthStart);
+              setTo(today);
+              setError(null);
+              void loadReport(monthStart, today);
+            }}
+            className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            پاک کردن فیلترها
+          </button>
+        </div>
       </form>
 
       {error ? (

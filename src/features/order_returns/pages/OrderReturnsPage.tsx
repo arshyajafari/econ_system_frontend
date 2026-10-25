@@ -49,6 +49,14 @@ export function OrderReturnsPage() {
 
   const requestIdRef = useRef(0);
 
+  const resetFilters = () => {
+    setSearch("");
+    setStatus("");
+    setCustomerId("");
+    setSelectedCustomer(null);
+    setPage(1);
+  };
+
   const loadOrderReturns = useCallback(async () => {
     const requestId = ++requestIdRef.current;
 
@@ -192,6 +200,11 @@ searchCustomers={searchCustomers}
               placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
             />
           </div>
+        </div>
+        <div className="ui-filter-actions">
+          <button type="button" onClick={resetFilters} className="ui-filter-clear">
+            پاک کردن فیلترها
+          </button>
         </div>
       </div>
 
