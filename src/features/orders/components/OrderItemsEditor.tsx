@@ -87,14 +87,6 @@ export function OrderItemsEditor({
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={addItem}
-            disabled={disabled}
-            className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50"
-          >
-            + افزودن محصول
-          </button>
         </div>
       </div>
 
@@ -278,6 +270,17 @@ export function OrderItemsEditor({
             </article>
           );
         })}
+
+        <div className="flex w-full justify-start">
+          <button
+            type="button"
+            onClick={addItem}
+            disabled={disabled}
+            className="w-full rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50 sm:w-auto"
+          >
+            + افزودن محصول
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Metric label="جمع ناخالص اقلام" value={orderGross} />
