@@ -5,6 +5,7 @@ import { ApiError } from "../../../api/client";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { receiveOrderReturn } from "../services/orderReturnsApi";
 import type { OrderReturn } from "../types/orderReturn";
+import { sortTableRecords } from "../../../utils/date";
 
 type Props = {
   orderReturns: OrderReturn[];
@@ -104,7 +105,7 @@ export function OrderReturnTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {sortedReturns.map((orderReturn) => (
+            {sortTableRecords(orderReturns).map( (
               <tr key={orderReturn.id} className="hover:bg-gray-50">
                 <td
                   className="px-5 py-4 font-medium text-gray-900 cursor-pointer"
