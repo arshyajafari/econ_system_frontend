@@ -196,7 +196,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     purpose: purpose.trim(),
                     description: description.trim(),
                 };
-                visit = await createVisit(data);
+                visit = await createVisit(data, clientOperationId);
                 setSavedVisit(visit);
             }
             for (const sample of samples) {
