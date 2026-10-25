@@ -1,3 +1,68 @@
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-type CustomerLedgerFiltersProps={from:string;to:string;isLoading:boolean;onFromChange:(value:string)=>void;onToChange:(value:string)=>void;onApply:()=>void;onReset:()=>void};
-export function CustomerLedgerFilters({from,to,isLoading,onFromChange,onToChange,onApply,onReset}:CustomerLedgerFiltersProps){return <div className="ui-filter-panel"><div className="ui-filter-grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto]"><div className="ui-filter-field"><label htmlFor="ledger-from" className="ui-filter-label">از تاریخ</label><JalaliDateInput id="ledger-from" value={from} onChange={onFromChange} disabled={isLoading} className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-200" placeholder="۱۴۰۵/۰۶/۰۱"/></div><div className="ui-filter-field"><label htmlFor="ledger-to" className="ui-filter-label">تا تاریخ</label><JalaliDateInput id="ledger-to" value={to} onChange={onToChange} disabled={isLoading} className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-200" placeholder="۱۴۰۵/۰۶/۳۱"/></div><div className="ui-filter-actions mt-0 border-0 p-0"><button type="button" onClick={onApply} disabled={isLoading} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60">{isLoading?"در حال دریافت...":"اعمال فیلتر"}</button><button type="button" onClick={onReset} disabled={isLoading&&!from&&!to} className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-60">حذف فیلتر</button></div></div></div>}
+
+type CustomerLedgerFiltersProps = {
+  from: string;
+  to: string;
+  isLoading: boolean;
+  onFromChange: (value: string) => void;
+  onToChange: (value: string) => void;
+  onApply: () => void;
+  onReset: () => void;
+};
+
+export function CustomerLedgerFilters({
+  from,
+  to,
+  isLoading,
+  onFromChange,
+  onToChange,
+  onApply,
+  onReset,
+}: CustomerLedgerFiltersProps) {
+  return (
+    <div className="ui-filter-panel">
+      <div className="ui-filter-grid grid-cols-1 lg:grid-cols-2">
+        <div className="ui-filter-field">
+          <label htmlFor="ledger-from" className="ui-filter-label">از تاریخ</label>
+          <JalaliDateInput
+            id="ledger-from"
+            value={from}
+            onChange={onFromChange}
+            disabled={isLoading}
+            className="w-full"
+            placeholder="۱۴۰۵/۰۶/۰۱"
+          />
+        </div>
+        <div className="ui-filter-field">
+          <label htmlFor="ledger-to" className="ui-filter-label">تا تاریخ</label>
+          <JalaliDateInput
+            id="ledger-to"
+            value={to}
+            onChange={onToChange}
+            disabled={isLoading}
+            className="w-full"
+            placeholder="۱۴۰۵/۰۶/۳۱"
+          />
+        </div>
+      </div>
+      <div className="ui-filter-actions">
+        <button
+          type="button"
+          onClick={onApply}
+          disabled={isLoading}
+          className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? "در حال دریافت..." : "اعمال فیلتر"}
+        </button>
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={isLoading}
+          className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          پاک کردن فیلترها
+        </button>
+      </div>
+    </div>
+  );
+}
