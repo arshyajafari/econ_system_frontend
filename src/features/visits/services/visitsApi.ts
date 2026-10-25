@@ -5,7 +5,7 @@ import { getScientificInventory } from "../../scientific_inventory/services/scie
 import type { Visit, VisitFormData, VisitListParams, VisitListResponse, VisitSample, VisitSampleFormData, VisitSampleProduct, VisitStatus } from "../types/visit";
 export async function getVisits(params: VisitListParams = {}) { const r = await apiClient.get<VisitListResponse>("/visits", { params }); return r.data; }
 export async function getVisitDoctors(search = ""): Promise<Doctor[]> { const r = await apiClient.get<{ data: Doctor[] }>("/doctors", { params: { status: "active", search: search.trim() || undefined, per_page: 20 } }); return r.data.data; }
-export async function createVisit(data: VisitFormData) { const r = await apiClient.post<Visit>("/visits", { doctor_id: data.doctor_id, visit_date: data.visit_date, purpose: data.purpose.trim(), description: data.description.trim() || undefined }); return r.data; }
+export async function createVisit(data: VisitFormData, clientOperationId?: string) { const r = await apiClient.post<Visit>("/visits", { doctor_id: data.doctor_id, visit_date: data.visit_date, purpose: data.purpose.trim(), description: data.description.trim() || undefined, client_operation_id: clientOperationId }); return r.data; }
 export async function createVisitWithSample(data: VisitFormData, sample: { product_id: string; quantity: number; description: string }, clientOperationId: string) {
   const r = await apiClient.post<Visit>("/visits/with-sample", {
     doctor_id: data.doctor_id,
