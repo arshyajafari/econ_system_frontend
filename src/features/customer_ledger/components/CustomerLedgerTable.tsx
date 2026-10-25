@@ -1,6 +1,6 @@
+import { sortTableRecords } from "../../../utils/date";
 import type { CustomerLedgerTransaction } from "../types/customerLedger";
 import { formatJalaliDateTime } from "../../../utils/date";
-import { sortTableRecords } from "../../../utils/date";
 type CustomerLedgerTableProps={transactions:CustomerLedgerTransaction[];isLoading:boolean};
 const numberFormatter=new Intl.NumberFormat("fa-IR");
 const sourceLabels={invoice:"فاکتور",payment:"پرداخت",order_return:"مرجوعی"} as const;
