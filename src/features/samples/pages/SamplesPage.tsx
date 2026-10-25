@@ -16,6 +16,7 @@ import {
   updateSample,
 } from "../services/samplesApi";
 import type { Sample, SampleFormData } from "../types/sample";
+import { sortTableRecords } from "../../../utils/date";
 
 const statusLabel: Record<"draft" | "completed" | "cancelled", string> = {
   draft: "پیش‌نویس",
@@ -304,7 +305,7 @@ export function SamplesPage() {
                   </td>
                 </tr>
               ) : (
-                samples.map((sample) => (
+                sortTableRecords(samples).map((sample) => (
                   <tr key={sample.id}>
                     <td className="whitespace-nowrap px-4 py-3">
                       {formatJalaliDateTime(
