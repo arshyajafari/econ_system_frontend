@@ -1,6 +1,6 @@
 import { apiClient } from "../../../api/client";
 import type { Doctor } from "../../doctors/types/doctor";
-import type { Visit, VisitFormData, VisitListParams, VisitListResponse, VisitSampleDetails, VisitStatus } from "../types/visit";
+import type { Visit, VisitFormData, VisitListParams, VisitListResponse, VisitSample, VisitStatus } from "../types/visit";
 export async function getVisits(params: VisitListParams = {}) { const r = await apiClient.get<VisitListResponse>("/visits", { params }); return r.data; }
 export async function getVisitDoctors(search = ""): Promise<Doctor[]> { const r = await apiClient.get<{ data: Doctor[] }>("/doctors", { params: { status: "active", search: search.trim() || undefined, per_page: 20 } }); return r.data.data; }
 export async function createVisit(data: VisitFormData) { const r = await apiClient.post<Visit>("/visits", { doctor_id: data.doctor_id, visit_date: data.visit_date, purpose: data.purpose.trim(), description: data.description.trim() || undefined }); return r.data; }
@@ -25,4 +25,4 @@ export async function completeVisit(id: string) { const r = await apiClient.post
 export async function cancelVisit(id: string) { const r = await apiClient.post<Visit>(`/visits/${id}/cancel`); return r.data; }
 export type { VisitStatus };
 
-export async function getVisitSample(id: string): Promise<VisitSampleDetails> { const r = await apiClient.get<VisitSampleDetails>(`/samples/${id}`); return r.data; }
+export async function getVisitSample(id: string): Promise<VisitSample> { const r = await apiClient.get<VisitSample>(`/samples/${id}`); return r.data; }
