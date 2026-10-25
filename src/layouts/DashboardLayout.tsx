@@ -102,12 +102,6 @@ const navigation: NavConfig[] = [
     requiredPermission: "visits.view",
   },
   {
-    label: "نمونه‌ها",
-    to: "/samples",
-    icon: "samples",
-    requiredPermission: "samples.view",
-  },
-  {
     label: "ارسال‌ها",
     to: "/deliveries",
     icon: "deliveries",
@@ -377,7 +371,7 @@ export function DashboardLayout() {
       return (
         (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
-        (isScientificVisitor && ["/visits", "/samples", "/scientific-inventory"].includes(item.to)) ||
+        (isScientificVisitor && ["/visits", "/scientific-inventory"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
