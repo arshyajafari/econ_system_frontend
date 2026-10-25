@@ -575,9 +575,8 @@ export function ScientificVisitorInventoryPage() {
                 حذف موجودی ویزیتور علمی
               </h2>
               <p className="mt-2 text-sm text-gray-600">
-                آیا از حذف موجودی «{deleteTarget.product?.title ?? "محصول"}» برای «
-                {deleteTarget.employee?.name ?? "ویزیتور علمی"}» مطمئن هستید؟
-                این عملیات قابل بازگشت نیست.
+                آیا می‌خواهید ردیف موجودی «{deleteTarget.product?.title ?? "محصول"}» برای «
+                {deleteTarget.employee?.name ?? "ویزیتور علمی"}» را حذف کنید؟ موجودی استفاده‌نشده به بچ‌های انبار اصلی برمی‌گردد؛ مقدار مصرف‌شده و سوابق نمونه برای گزارش و حسابرسی حفظ می‌شود.
               </p>
             </div>
             <div className="flex justify-end gap-2">
