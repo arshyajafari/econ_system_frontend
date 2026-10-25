@@ -49,6 +49,14 @@ export function OrderReturnsPage() {
 
   const requestIdRef = useRef(0);
 
+  const resetFilters = () => {
+    setSearch("");
+    setStatus("");
+    setCustomerId("");
+    setSelectedCustomer(null);
+    setPage(1);
+  };
+
   const loadOrderReturns = useCallback(async () => {
     const requestId = ++requestIdRef.current;
 
