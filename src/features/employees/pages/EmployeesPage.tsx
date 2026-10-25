@@ -12,6 +12,7 @@ import {
   updateEmployee,
 } from "../services/employeesApi";
 import {
+import { sortTableRecords } from "../../../utils/date";
   EMPLOYEE_ACTIVITY_OPTIONS,
   EMPLOYEE_STATUS_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
@@ -317,7 +318,7 @@ export function EmployeesPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item) => (
+              sortTableRecords(items).map((item) => (
                 <tr key={item.id}>
                   <td dir="ltr" className="px-4 py-3">
                     {item.code}
