@@ -9,10 +9,8 @@ import { SearchableProductSelect } from '../../../components/SearchableProductSe
 import { DoctorForm } from '../../doctors/components/DoctorForm';
 import { createDoctor } from '../../doctors/services/doctorsApi';
 import type { DoctorFormData } from '../../doctors/types/doctor';
-import type { SampleProduct, SampleFormData } from '../../samples/types/sample';
-import { createSample, getSampleProducts } from '../../samples/services/samplesApi';
-import { createVisit, createVisitWithSample, getVisitDoctors } from '../services/visitsApi';
-import type { Visit, VisitFormData } from '../types/visit';
+import { createVisit, createVisitSample, createVisitWithSample, getVisitDoctors, getVisitSampleProducts } from '../services/visitsApi';
+import type { Visit, VisitFormData, VisitSampleFormData, VisitSampleProduct } from '../types/visit';
 
 type DraftSample = {
     key: string;
@@ -41,7 +39,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     const [time, setTime] = useState(() => new Date().toTimeString().slice(0, 5));
     const [purpose, setPurpose] = useState('');
     const [description, setDescription] = useState('');
-    const [products, setProducts] = useState<SampleProduct[]>([]);
+    const [products, setProducts] = useState<VisitSampleProduct[]>([]);
     const [productsLoading, setProductsLoading] = useState(true);
     const [samples, setSamples] = useState<DraftSample[]>([]);
     const [saving, setSaving] = useState(false);
@@ -55,10 +53,10 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
 
     useEffect(() => {
         let active = true;
-        void getSampleProducts(isScientificVisitor)
+        void getVisitSampleProducts(isScientificVisitor)
             .then((result) => {
                 if (active) {
-                    setProducts(result as SampleProduct[]);
+                    setProducts(result as VisitSampleProduct[]);
                     if (isScientificVisitor && result.length > 0) {
                         setSamples((current) =>
                             current.length
@@ -203,13 +201,13 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             }
             for (const sample of samples) {
                 if (sample.saved) continue;
-                const data: SampleFormData = {
+                const data: VisitSampleFormData = {
                     visit_id: visit.id,
                     product_id: sample.product_id,
                     quantity: Number(sample.quantity),
                     description: sample.description.trim(),
                 };
-                await createSample(data);
+                await createVisitSample(data);
                 updateSample(sample.key, { saved: true });
                 if (isScientificVisitor) {
                     setProducts((current) =>

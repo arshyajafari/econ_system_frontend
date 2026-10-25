@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
-import type { Sample } from '../../samples/types/sample';
+import type { VisitSample } from '../types/visit';
 import type { Visit, VisitFormData } from '../types/visit';
 
 type SampleDraft = { id: string; productName: string; quantity: string; description: string };
 type Props = {
     visit: Visit;
-    samples: Sample[];
+    samples: VisitSample[];
     isSubmitting: boolean;
     error: string | null;
     onSubmit: (
