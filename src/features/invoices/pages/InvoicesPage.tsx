@@ -127,57 +127,32 @@ export function InvoicesPage() {
                 </div>
             ) : null}
 
-            <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-2">
-                <input
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPage(1);
-                    }}
-                    placeholder="جستجو بر اساس کد یا توضیحات"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
-                />
-                <select
-                    value={customerId}
-                    onChange={(e) => {
-                        setCustomerId(e.target.value);
-                        setPage(1);
-                    }}
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                >
-                    <option value="">همه مشتریان</option>
-                    {customers.map((customer) => (
-                        <option key={customer.id} value={customer.id}>
-                            {customer.customer_name}
-                            {customer.code ? ` — ${customer.code}` : ''}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    value={status}
-                    onChange={(e) => {
-                        setStatus(e.target.value as InvoiceStatus | '');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                >
-                    <option value="">همه وضعیت‌ها</option>
-                    <option value="draft">پیش‌نویس</option>
-                    <option value="issued">صادر شده</option>
-                    <option value="cancelled">لغو شده</option>
-                </select>
-                <select
-                    value={settled}
-                    onChange={(e) => {
-                        setSettled(e.target.value as '' | 'true' | 'false');
-                        setPage(1);
-                    }}
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                >
-                    <option value="">همه وضعیت تسویه</option>
-                    <option value="false">تسویه نشده</option>
-                    <option value="true">تسویه شده</option>
-                </select>
+            <div className="ui-filter-panel">
+                <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">جستجو</span>
+                        <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="کد یا توضیحات فاکتور..." />
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">مشتری</span>
+                        <select value={customerId} onChange={(e) => { setCustomerId(e.target.value); setPage(1); }}>
+                            <option value="">همه مشتریان</option>
+                            {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.customer_name}{customer.code ? ` — ${customer.code}` : ''}</option>)}
+                        </select>
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">وضعیت فاکتور</span>
+                        <select value={status} onChange={(e) => { setStatus(e.target.value as InvoiceStatus | ''); setPage(1); }}>
+                            <option value="">همه وضعیت‌ها</option><option value="draft">پیش‌نویس</option><option value="issued">صادر شده</option><option value="cancelled">لغو شده</option>
+                        </select>
+                    </label>
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">وضعیت تسویه</span>
+                        <select value={settled} onChange={(e) => { setSettled(e.target.value as '' | 'true' | 'false'); setPage(1); }}>
+                            <option value="">همه وضعیت‌ها</option><option value="false">تسویه نشده</option><option value="true">تسویه شده</option>
+                        </select>
+                    </label>
+                </div>
             </div>
 
             <div className="text-sm text-gray-500">{nf.format(total)} فاکتور</div>
