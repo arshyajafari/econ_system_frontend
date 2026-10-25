@@ -242,8 +242,8 @@ export function EmployeeLocationsPage() {
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                     <div className="border-b border-gray-100 p-4">
                         <h2 className="font-semibold text-gray-900">فهرست کارکنان</h2>
-                        <label className="mt-3 block">
-                            <span className="sr-only">جست‌وجوی کارمند</span>
+                        <label className="ui-filter-field mt-3">
+                            <span className="ui-filter-label">جست‌وجوی کارمند</span>
                             <input
                                 value={search}
                                 onChange={(event) => setSearch(event.target.value)}
