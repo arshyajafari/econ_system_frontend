@@ -11,7 +11,7 @@ import { createDoctor } from '../../doctors/services/doctorsApi';
 import type { DoctorFormData } from '../../doctors/types/doctor';
 import type { SampleProduct, SampleFormData } from '../../samples/types/sample';
 import { createSample, getSampleProducts } from '../../samples/services/samplesApi';
-import { createVisit, getVisitDoctors } from '../services/visitsApi';
+import { createVisit, createVisitWithSample, getVisitDoctors } from '../services/visitsApi';
 import type { Visit, VisitFormData } from '../types/visit';
 
 type DraftSample = {
@@ -51,6 +51,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     const [doctorSaving, setDoctorSaving] = useState(false);
     const [doctorError, setDoctorError] = useState<string | null>(null);
     const [savedVisit, setSavedVisit] = useState<Visit | null>(null);
+    const [clientOperationId] = useState(() => crypto.randomUUID());
 
     useEffect(() => {
         let active = true;
@@ -174,6 +175,23 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         }
         setSaving(true);
         try {
+            if (isScientificVisitor) {
+                const sample = samples[0];
+                const data: VisitFormData = {
+                    doctor_id: doctor.id,
+                    visit_date: `${date}T${time}`,
+                    purpose: purpose.trim(),
+                    description: description.trim(),
+                };
+                const visit = await createVisitWithSample(data, {
+                    product_id: sample.product_id,
+                    quantity: Number(sample.quantity),
+                    description: sample.description,
+                }, clientOperationId);
+                onSaved(visit);
+                return;
+            }
+
             let visit = savedVisit;
             if (!visit) {
                 const data: VisitFormData = {
@@ -221,7 +239,9 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             onSaved(visit);
         } catch (e: unknown) {
             setError(e instanceof ApiError ? e.message : 'ذخیره اطلاعات کامل نشد.');
-            if (savedVisit || samples.some((sample) => sample.saved)) {
+            if (isScientificVisitor) {
+                setNotice('ثبت ویزیت و نمونه به‌صورت یکپارچه انجام می‌شود؛ در صورت خطای اعتبارسنجی، هیچ‌کدام ثبت نمی‌شوند. اگر پاسخ شبکه نامشخص بود، دوباره تلاش کنید؛ شناسه عملیات از ثبت تکراری جلوگیری می‌کند.');
+            } else if (savedVisit || samples.some((sample) => sample.saved)) {
                 setNotice(
                     'ویزیت ثبت شده است. ردیف‌های ذخیره‌شده حفظ شده‌اند؛ پس از رفع خطا دوباره ثبت را بزنید تا فقط ردیف‌های باقی‌مانده ارسال شوند.'
                 );
