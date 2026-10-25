@@ -128,12 +128,12 @@ export function OrderReturnsPage() {
         ) : null}
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
-        <div className="grid gap-4 md:grid-cols-4">
-          <div className="md:col-span-2">
+      <div className="ui-filter-panel">
+        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          <div className="ui-filter-field md:col-span-2">
             <label
               htmlFor="order-return-search"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="ui-filter-label"
             >
               جستجو
             </label>
@@ -150,10 +150,10 @@ export function OrderReturnsPage() {
             />
           </div>
 
-          <div>
+          <div className="ui-filter-field">
             <label
               htmlFor="order-return-status"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="ui-filter-label"
             >
               وضعیت
             </label>
@@ -176,8 +176,8 @@ export function OrderReturnsPage() {
               ))}
             </select>
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+          <div className="ui-filter-field">
+            <label className="ui-filter-label">
               مشتری
             </label>
             <SearchableCustomerSelect
