@@ -13,7 +13,7 @@ export function jalaliStringToGregorian(value: string): string { const normalize
  * Stable, display-only sorting for operational tables.
  * Pending/draft records appear first; dates are descending within each status group.
  */
-export function sortTableRecords<T extends Record<string, unknown>>(records: readonly T[]): T[] {
+export function sortTableRecords<T extends object>(records: readonly T[]): T[] {
   const statusRank = (value: unknown): number => {
     const status = String(value ?? "").trim().toLowerCase().replace(/[ _-]+/g, "");
     if (["draft", "pending", "awaitingapproval", "submitted", "unconfirmed", "unapproved"].includes(status)) return 0;
@@ -25,7 +25,7 @@ export function sortTableRecords<T extends Record<string, unknown>>(records: rea
   const dateValue = (record: T): number => {
     const keys = ["completed_at", "confirmed_at", "approved_at", "delivered_at", "issued_at", "payment_date", "visit_date", "ordered_at", "expense_date", "date", "created_at", "updated_at"];
     for (const key of keys) {
-      const value = record[key];
+      const value = (record as Record<string, unknown>)[key];
       if (typeof value === "string" || value instanceof Date) {
         const time = Date.parse(String(value));
         if (Number.isFinite(time)) return time;
@@ -34,8 +34,8 @@ export function sortTableRecords<T extends Record<string, unknown>>(records: rea
     return 0;
   };
   return [...records].sort((a, b) => {
-    const statusA = a.status;
-    const statusB = b.status;
+    const statusA = (a as Record<string, unknown>).status;
+    const statusB = (b as Record<string, unknown>).status;
     if (statusA != null || statusB != null) {
       const rankDifference = statusRank(statusA) - statusRank(statusB);
       if (rankDifference !== 0) return rankDifference;
