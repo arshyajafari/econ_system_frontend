@@ -58,6 +58,16 @@ export function OrderReturnTable({
   const isAdmin = user?.roles.includes("admin") ?? false;
   const canReceiveReturn = isAdmin || isDeliveryOperator;
   const [receivingId, setReceivingId] = React.useState<string | null>(null);
+  const sortedReturns = [...orderReturns].sort((a, b) => {
+    const rank = (status: string) => status === "draft" || status === "pending" ? 0 : status === "confirmed" ? 1 : status === "completed" ? 2 : 3;
+    const statusOrder = rank(a.status) - rank(b.status);
+    if (statusOrder !== 0) return statusOrder;
+    const dateValue = (item: OrderReturn) => {
+      const row = item as OrderReturn & { completed_at?: string | null; confirmed_at?: string | null };
+      return Date.parse(row.completed_at || row.confirmed_at || item.created_at || "") || 0;
+    };
+    return dateValue(b) - dateValue(a);
+  });
   if (isLoading)
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
@@ -94,7 +104,7 @@ export function OrderReturnTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {orderReturns.map((orderReturn) => (
+            {sortedReturns.map((orderReturn) => (
               <tr key={orderReturn.id} className="hover:bg-gray-50">
                 <td
                   className="px-5 py-4 font-medium text-gray-900 cursor-pointer"
