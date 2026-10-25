@@ -243,33 +243,41 @@ export function SamplesPage() {
             }}
           />
         )}
-        <div className="grid gap-3 md:grid-cols-3">
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="جستجوی توضیحات"
-            className="rounded-lg border px-3 py-2"
-          />
-          <select
-            value={productId}
-            onChange={(e) => {
-              setProductId(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border px-3 py-2"
-          >
-            <option value="">همه محصولات</option>
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.title}
-              </option>
-            ))}
-          </select>
-          <div className="flex items-center justify-end text-sm text-gray-500">
-            {new Intl.NumberFormat("fa-IR").format(total)} نمونه
+        <div className="ui-filter-panel">
+          <div className="ui-filter-grid grid-cols-1 md:grid-cols-3">
+            <label className="ui-filter-field md:col-span-2">
+              <span className="ui-filter-label">جستجو در توضیحات</span>
+              <input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="عبارت موردنظر را وارد کنید..."
+              />
+            </label>
+            <label className="ui-filter-field">
+              <span className="ui-filter-label">محصول</span>
+              <select
+                value={productId}
+                onChange={(e) => {
+                  setProductId(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">همه محصولات</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="ui-filter-actions">
+            <span className="text-sm text-slate-500">
+              {new Intl.NumberFormat("fa-IR").format(total)} نمونه
+            </span>
           </div>
         </div>
         <div className="overflow-x-auto rounded-xl border bg-white">

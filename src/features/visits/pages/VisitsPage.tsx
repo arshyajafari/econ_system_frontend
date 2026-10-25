@@ -311,72 +311,84 @@ export function VisitsPage() {
                     />
                 ) : null}
 
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                    <input
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setPage(1);
-                        }}
-                        placeholder="جستجو"
-                        className="rounded-lg border px-3 py-2 md:col-span-2"
-                    />
-                    <SearchableDoctorSelect
-                        value={doctorId}
-                        selectedDoctor={selectedDoctor}
-                        searchDoctors={getVisitDoctors}
-                        onChange={(doctor) => {
-                            setSelectedDoctor(doctor);
-                            setDoctorId(doctor?.id ?? '');
-                            setPage(1);
-                        }}
-                        placeholder="فیلتر پزشک..."
-                        emptyLabel="پزشکی پیدا نشد"
-                    />
-                    <select
-                        value={status}
-                        onChange={(e) => {
-                            setStatus(e.target.value as VisitStatus | '');
-                            setPage(1);
-                        }}
-                        className="rounded-lg border px-3 py-2"
-                    >
-                        <option value="">همه وضعیت‌ها</option>
-                        {VISIT_STATUS_OPTIONS.map((s) => (
-                            <option key={s.value} value={s.value}>
-                                {s.label}
-                            </option>
-                        ))}
-                    </select>
-                    <JalaliDateInput
-                        value={from}
-                        onChange={(value) => {
-                            setFrom(value);
-                            setPage(1);
-                        }}
-                        className="rounded-lg border px-3 py-2"
-                    />
-                    <JalaliDateInput
-                        value={to}
-                        onChange={(value) => {
-                            setTo(value);
-                            setPage(1);
-                        }}
-                        className="rounded-lg border px-3 py-2"
-                    />
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-500">
-                    <span>
-                        {new Intl.NumberFormat('fa-IR').format(total)} ویزیت ·{' '}
-                        {new Intl.NumberFormat('fa-IR').format(
-                            visits.reduce((sum, visit) => sum + (visit.samples?.length ?? 0), 0)
-                        )}{' '}
-                        نمونه در این صفحه
-                    </span>
-                    <button type="button" onClick={reset}>
-                        پاک کردن فیلترها
-                    </button>
+                <div className="ui-filter-panel">
+                    <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                        <label className="ui-filter-field md:col-span-2">
+                            <span className="ui-filter-label">جستجو</span>
+                            <input
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setPage(1);
+                                }}
+                                placeholder="نام پزشک، هدف یا توضیحات..."
+                            />
+                        </label>
+                        <div className="ui-filter-field">
+                            <span className="ui-filter-label">پزشک</span>
+                            <SearchableDoctorSelect
+                                value={doctorId}
+                                selectedDoctor={selectedDoctor}
+                                searchDoctors={getVisitDoctors}
+                                onChange={(doctor) => {
+                                    setSelectedDoctor(doctor);
+                                    setDoctorId(doctor?.id ?? '');
+                                    setPage(1);
+                                }}
+                                placeholder="همه پزشکان؛ برای جستجو تایپ کنید..."
+                                emptyLabel="پزشکی پیدا نشد"
+                            />
+                        </div>
+                        <label className="ui-filter-field">
+                            <span className="ui-filter-label">وضعیت ویزیت</span>
+                            <select
+                                value={status}
+                                onChange={(e) => {
+                                    setStatus(e.target.value as VisitStatus | '');
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">همه وضعیت‌ها</option>
+                                {VISIT_STATUS_OPTIONS.map((s) => (
+                                    <option key={s.value} value={s.value}>
+                                        {s.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="ui-filter-field">
+                            <span className="ui-filter-label">از تاریخ</span>
+                            <JalaliDateInput
+                                value={from}
+                                onChange={(value) => {
+                                    setFrom(value);
+                                    setPage(1);
+                                }}
+                            />
+                        </label>
+                        <label className="ui-filter-field">
+                            <span className="ui-filter-label">تا تاریخ</span>
+                            <JalaliDateInput
+                                value={to}
+                                onChange={(value) => {
+                                    setTo(value);
+                                    setPage(1);
+                                }}
+                            />
+                        </label>
+                    </div>
+                    <div className="ui-filter-actions">
+                        <span className="ml-auto text-sm text-slate-500">
+                            {new Intl.NumberFormat('fa-IR').format(total)} ویزیت ·{' '}
+                            {new Intl.NumberFormat('fa-IR').format(
+                                visits.reduce((sum, visit) => sum + (visit.samples?.length ?? 0), 0)
+                            )}{' '}
+                            نمونه در این صفحه
+                        </span>
+                        <button type="button" className="ui-filter-clear" onClick={reset}>
+                            پاک کردن فیلترها
+                        </button>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto rounded-xl border bg-white">
