@@ -20,6 +20,7 @@ import {
 import { DELIVERY_STATUS_OPTIONS, getDeliveryStatusLabel } from '../types/delivery';
 import type { Delivery, DeliveryFormData, DeliveryStatus } from '../types/delivery';
 import type { DeliveryOrderSource } from '../services/deliveriesApi';
+import { sortTableRecords } from "../../../utils/date";
 
 const empty: DeliveryFormData = {
     order_id: '',
@@ -390,7 +391,7 @@ export function DeliveriesPage() {
                                 </td>
                             </tr>
                         ) : (
-                            items.map((d) => (
+                            sortTableRecords(items).map((d) => (
                                 <tr key={d.id}>
                                     <td className="px-4 py-3">
                                         {d.order?.code ?? '—'}
