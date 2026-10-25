@@ -417,7 +417,6 @@ export function VisitsPage() {
                     {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{getVisitStatusLabel(v.status)}</td> : null}
                     <td className="px-4 py-3 align-top">
                       <div className="flex flex-wrap gap-2">
-                        
                         {index === 0 && v.status === "draft" && (
                           <>
                             <button
@@ -427,7 +426,7 @@ export function VisitsPage() {
                               }}
                               className="ui-btn-edit rounded border px-2 py-1 text-xs"
                             >
-                              ویرایش
+                              ویرایش کلی
                             </button>
                             <button
                               type="button"
