@@ -23,7 +23,7 @@ export function sortTableRecords<T extends object>(records: readonly T[]): T[] {
     return 1;
   };
   const dateValue = (record: T): number => {
-    const keys = ["completed_at", "confirmed_at", "approved_at", "delivered_at", "issued_at", "payment_date", "visit_date", "ordered_at", "expense_date", "date", "created_at", "updated_at"];
+    const keys = ["completed_at", "confirmed_at", "approved_at", "delivered_at", "received_at", "issued_at", "payment_date", "transaction_at", "visit_date", "ordered_at", "expense_date", "record_date", "date", "created_at", "updated_at"];
     for (const key of keys) {
       const value = (record as Record<string, unknown>)[key];
       if (typeof value === "string" || value instanceof Date) {
