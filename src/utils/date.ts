@@ -25,7 +25,7 @@ export function sortTableRecords<T extends object>(records: readonly T[]): T[] {
   const dateValue = (record: T): number => {
     const keys = ["completed_at", "confirmed_at", "approved_at", "delivered_at", "received_at", "issued_at", "payment_date", "transaction_at", "captured_at", "visit_date", "ordered_at", "expense_date", "record_date", "date", "created_at", "updated_at"];
     for (const key of keys) {
-      const value = (record as Record<string, unknown>)[key];
+      const value = (record as unknown as Record<string, unknown>)[key];
       if (typeof value === "string" || value instanceof Date) {
         const time = Date.parse(String(value));
         if (Number.isFinite(time)) return time;
@@ -34,8 +34,8 @@ export function sortTableRecords<T extends object>(records: readonly T[]): T[] {
     return 0;
   };
   return [...records].sort((a, b) => {
-    const statusA = (a as Record<string, unknown>).status;
-    const statusB = (b as Record<string, unknown>).status;
+    const statusA = (a as unknown as Record<string, unknown>).status;
+    const statusB = (b as unknown as Record<string, unknown>).status;
     if (statusA != null || statusB != null) {
       const rankDifference = statusRank(statusA) - statusRank(statusB);
       if (rankDifference !== 0) return rankDifference;
