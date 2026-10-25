@@ -23,6 +23,7 @@ import {
   getExpenseCategoryLabel,
 } from "../types/expense";
 import type { Expense, ExpenseFormData } from "../types/expense";
+import { sortTableRecords } from "../../../utils/date";
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 const dateFormatter = new Intl.DateTimeFormat("fa-IR");
@@ -558,7 +559,7 @@ export function ExpensesPage() {
               </tr>
             ) : null}
             {!loading
-              ? expenses.map((expense) => (
+              ? sortTableRecords(expenses).map((expense) => (
                   <tr key={expense.id} className="hover:bg-gray-50">
                     <td className="px-5 py-4">
                       <div className="font-medium text-gray-900">
