@@ -626,70 +626,99 @@ select:focus-visible {
 }
 
 
-/* Shared filter-panel design: consistent spacing, controls and responsive grids. */
-main section[class*="space-y-"] > .grid:has(> input, > select),
-main section[class*="space-y-"] > .grid:has(> label, > input, > select, > div > input, > div > select) {
+/* Minimal, consistent filter panels. All filters use visible labels and the same control rhythm. */
+.ui-filter-panel {
+  padding: 18px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  background: #f8fafc !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.025) !important;
+}
+
+.ui-filter-grid {
+  display: grid;
   gap: 14px;
-  padding: 18px;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-card-radius);
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow-sm);
+  align-items: end;
 }
 
-main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)),
-main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) {
-  padding: 18px;
-  border-color: var(--ui-border) !important;
-  border-radius: var(--ui-card-radius) !important;
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow-sm);
+.ui-filter-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
 }
 
-main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)) > .grid,
-main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) > .grid {
-  gap: 14px;
-}
-
-main section[class*="space-y-"] .rounded-xl.border.bg-white:has(label):has(input) label,
-main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(label):has(input) label {
+.ui-filter-label {
   display: block;
-  margin-bottom: 7px;
-  color: var(--ui-text-soft);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)) > div.mt-4,
-main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) > div.mt-4 {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid #eef2f7;
-}
-
-main section[class*="space-y-"] .rounded-xl.border.bg-white:has(#ledger-from) > div.flex {
-  gap: 14px;
-}
-
-/* Visit status chips use the same semantic colors everywhere. */
-.ui-status-visit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 28px;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  margin: 0 !important;
+  color: #475569 !important;
+  font-size: 0.75rem !important;
+  font-weight: 650 !important;
   line-height: 1.4;
-  white-space: nowrap;
 }
-.ui-status-visit-draft { border-color: #fcd34d; background: #fffbeb; color: #a16207; }
-.ui-status-visit-completed { border-color: #86efac; background: #f0fdf4; color: #15803d; }
-.ui-status-visit-cancelled { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
 
+.ui-filter-panel input:not([type="checkbox"]):not([type="radio"]),
+.ui-filter-panel select,
+.ui-filter-panel textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #dbe3ee !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #0f172a;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  box-shadow: none !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.ui-filter-panel input:hover,
+.ui-filter-panel select:hover {
+  border-color: #b8c6d8 !important;
+}
+
+.ui-filter-panel input:focus,
+.ui-filter-panel select:focus {
+  border-color: #93b4f5 !important;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.09) !important;
+  outline: none;
+}
+
+.ui-filter-panel input::placeholder {
+  color: #94a3b8;
+}
+
+.ui-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e8edf4;
+}
+
+.ui-filter-clear {
+  min-height: 36px !important;
+  padding: 7px 12px !important;
+  border: 1px solid #dbe3ee !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: #64748b !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.ui-filter-clear:hover {
+  border-color: #cbd5e1 !important;
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+}
+
+/* Keep semantic visit badges independent from the filter styles. */
 @media (max-width: 639px) {
   main section[class*="space-y-"] > .grid:has(> input, > select),
   main section[class*="space-y-"] > .grid:has(> label, > input, > select, > div > input, > div > select),
