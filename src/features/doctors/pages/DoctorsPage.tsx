@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 
@@ -13,7 +14,6 @@ import {
   updateDoctor,
 } from "../services/doctorsApi";
 import type {
-import { sortTableRecords } from "../../../utils/date";
   Doctor,
   DoctorFormData,
   DoctorSpecialty,
