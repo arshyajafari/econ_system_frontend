@@ -29,12 +29,12 @@ export function ProductFilters({
     onClear,
 }: ProductFiltersProps) {
     return (
-        <section className="rounded-xl border border-gray-200 bg-white p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="md:col-span-3">
+        <section className="ui-filter-panel">
+            <div className="ui-filter-grid grid-cols-1 md:grid-cols-3">
+                <div className="ui-filter-field md:col-span-3">
                     <label
                         htmlFor="product-search"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         جستجو
                     </label>
@@ -124,11 +124,11 @@ export function ProductFilters({
                 </div>
             </div>
 
-            <div className="mt-4 flex justify-end">
+            <div className="ui-filter-actions">
                 <button
                     type="button"
                     onClick={onClear}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    className="ui-filter-clear"
                 >
                     پاک کردن فیلترها
                 </button>
