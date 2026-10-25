@@ -74,24 +74,24 @@ export function ReportsPage() {
           if (from <= to) void loadReport(from, to);
           else setError("تاریخ شروع باید قبل از تاریخ پایان باشد.");
         }}
-        className="grid items-end gap-4 rounded-xl border border-slate-200 bg-white p-4 md:grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className="ui-filter-panel ui-filter-grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
-        <div>
-          <label className="!mb-2 !block text-sm">از تاریخ</label>
+        <label className="ui-filter-field">
+          <span className="ui-filter-label">از تاریخ</span>
           <JalaliDateInput
             value={from}
             onChange={setFrom}
             className="w-full"
           />
         </div>
-        <div>
-          <label className="!mb-2 !block text-sm">تا تاریخ</label>
+        <label className="ui-filter-field">
+          <span className="ui-filter-label">تا تاریخ</span>
           <JalaliDateInput
             value={to}
             onChange={setTo}
             className="w-full"
           />
-        </div>
+        </label>
         <button
           disabled={loading || !from || !to}
           className="w-full whitespace-nowrap rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50 md:w-auto"
