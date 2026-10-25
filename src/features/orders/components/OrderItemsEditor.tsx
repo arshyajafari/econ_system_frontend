@@ -271,12 +271,12 @@ export function OrderItemsEditor({
           );
         })}
 
-        <div className="flex justify-start">
+        <div className="flex w-full justify-start">
           <button
             type="button"
             onClick={addItem}
             disabled={disabled}
-            className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50"
+            className="w-full rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50 sm:w-auto"
           >
             + افزودن محصول
           </button>
