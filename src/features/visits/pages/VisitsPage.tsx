@@ -10,8 +10,6 @@ import {
 import { useAuth } from '../../auth';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { formatJalaliDateTime } from '../../../utils/date';
-import { getSample } from '../../samples/services/samplesApi';
-import type { Sample } from '../../samples/types/sample';
 import { UnifiedVisitForm } from '../components/UnifiedVisitForm';
 import { UnifiedVisitEditForm } from '../components/UnifiedVisitEditForm';
 import { VisitDetailsModal } from '../components/VisitDetailsModal';
