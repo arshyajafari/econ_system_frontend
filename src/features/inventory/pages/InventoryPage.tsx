@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
@@ -18,7 +19,6 @@ import {
 } from "../services/inventoryApi";
 import type { InventoryBatch, ReceiveInventoryData } from "../types/inventory";
 import { InventoryAdjustmentModal } from "../components/InventoryAdjustmentModal";
-import { sortTableRecords } from "../../../utils/date";
 const empty: ReceiveInventoryData = {
   product_id: "",
   batch_number: "",
