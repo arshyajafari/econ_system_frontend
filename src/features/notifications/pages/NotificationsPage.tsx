@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { normalizeApiError } from "../../../api/client";
@@ -5,7 +6,6 @@ import { formatJalaliDateTime } from "../../../utils/date";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useAuth } from "../../auth";
 import {
-import { sortTableRecords } from "../../../utils/date";
   deleteSystemMessage,
   getNotificationRecipients,
   getNotifications,
