@@ -14,7 +14,6 @@ import { UnifiedVisitEditForm } from "../components/UnifiedVisitEditForm";
 import {
   cancelVisit,
   completeVisit,
-  createVisit,
   deleteVisit,
   getVisitDoctors,
   getVisits,
@@ -125,27 +124,6 @@ export function VisitsPage() {
     setTo("");
     setPage(1);
   };
-  async function submit(d: VisitFormData) {
-    setSaving(true);
-    setFormError(null);
-    try {
-      const saved = editing
-        ? await updateVisit(editing.id, d)
-        : await createVisit(d);
-      setVisits((x) =>
-        editing
-          ? x.map((v) => (v.id === saved.id ? saved : v))
-          : [saved, ...x].slice(0, 20),
-      );
-      if (!editing) setTotal((x) => x + 1);
-      setFormOpen(false);
-      setEditing(null);
-    } catch (e: unknown) {
-      setFormError(e instanceof ApiError ? e.message : "خطا در ذخیره بازدید.");
-    } finally {
-      setSaving(false);
-    }
-  }
   async function editVisit(v: Visit) {
     setError(null);
     setFormError(null);
@@ -328,7 +306,7 @@ export function VisitsPage() {
               setEditing(null);
             }}
           />
-        ))}
+        )}
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
           <input
