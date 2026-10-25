@@ -1,7 +1,7 @@
 export type VisitStatus = "draft" | "completed" | "cancelled";
 export type VisitDoctor = { id: string; name: string; specialty?: string | null; clinic_name: string | null };
 export type VisitEmployee = { id: string; name: string };
-export type VisitSample = { id: string; product?: { id: string; code?: string | null; title: string } | null; product_name?: string | null; quantity: number };
+export type VisitSample = { id: string; product?: { id: string; code?: string | null; title: string } | null; product_name?: string | null; quantity: number; description?: string | null };
 export type Visit = { id: string; doctor: VisitDoctor | null; doctor_name?: string | null; employee: VisitEmployee | null; visit_date: string | null; purpose: string | null; description: string | null; status: VisitStatus; samples?: VisitSample[]; created_at: string | null; updated_at: string | null };
 export type VisitFormData = { doctor_id: string; visit_date: string; purpose: string; description: string };
 export type VisitListParams = { search?: string; doctor_id?: string; status?: VisitStatus; visit_from?: string; visit_to?: string; sort?: string; page?: number; per_page?: number };

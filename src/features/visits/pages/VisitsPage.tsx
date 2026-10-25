@@ -7,15 +7,14 @@ import { SearchableDoctorSelect, type SearchableDoctor } from "../../../componen
 import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
-import { VisitForm } from "../components/VisitForm";
-import { SampleForm } from "../../samples/components/SampleForm";
 import { getSample, updateSample } from "../../samples/services/samplesApi";
-import type { Sample, SampleFormData } from "../../samples/types/sample";
+import type { Sample } from "../../samples/types/sample";
 import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
+import { UnifiedVisitEditForm } from "../components/UnifiedVisitEditForm";
+import { VisitDetailsModal } from "../components/VisitDetailsModal";
 import {
   cancelVisit,
   completeVisit,
-  createVisit,
   deleteVisit,
   getVisitDoctors,
   getVisits,
@@ -50,8 +49,8 @@ export function VisitsPage() {
     [formError, setFormError] = useState<string | null>(null),
     [formOpen, setFormOpen] = useState(false),
     [editing, setEditing] = useState<Visit | null>(null),
-    [sampleFormOpen, setSampleFormOpen] = useState(false),
-    [editingSample, setEditingSample] = useState<Sample | null>(null),
+    [editingSamples, setEditingSamples] = useState<Sample[] | null>(null),
+    [viewing, setViewing] = useState<Visit | null>(null),
     [actionTarget, setActionTarget] = useState<{
       visit: Visit;
       action: "complete" | "cancel";
@@ -127,56 +126,48 @@ export function VisitsPage() {
     setTo("");
     setPage(1);
   };
-  async function submit(d: VisitFormData) {
-    setSaving(true);
-    setFormError(null);
-    try {
-      const saved = editing
-        ? await updateVisit(editing.id, d)
-        : await createVisit(d);
-      setVisits((x) =>
-        editing
-          ? x.map((v) => (v.id === saved.id ? saved : v))
-          : [saved, ...x].slice(0, 20),
-      );
-      if (!editing) setTotal((x) => x + 1);
-      setFormOpen(false);
-      setEditing(null);
-    } catch (e: unknown) {
-      setFormError(e instanceof ApiError ? e.message : "خطا در ذخیره بازدید.");
-    } finally {
-      setSaving(false);
-    }
-  }
-  async function editSample(sampleId: string) {
+  async function editVisit(v: Visit) {
     setError(null);
     setFormError(null);
     try {
-      const sample = await getSample(sampleId);
-      setFormOpen(false);
-      setEditing(null);
-      setEditingSample(sample);
-      setSampleFormOpen(true);
+      const samples = await Promise.all((v.samples ?? []).map((sample) => getSample(sample.id)));
+      setEditing(v);
+      setEditingSamples(samples);
+      setFormOpen(true);
     } catch (e: unknown) {
-      setError(e instanceof ApiError ? e.message : "خطا در دریافت جزئیات نمونه.");
+      setError(e instanceof ApiError ? e.message : "خطا در دریافت اطلاعات ویزیت و نمونه‌ها.");
     }
   }
-  async function submitSample(data: SampleFormData) {
-    if (!editingSample) return;
+  async function submitUnifiedEdit(data: VisitFormData, sampleChanges: { id: string; quantity: number; description: string }[]) {
+    if (!editing) return;
     setSaving(true);
     setFormError(null);
     try {
-      const saved = await updateSample(editingSample.id, { quantity: data.quantity, description: data.description });
-      setVisits((current) => current.map((visit) => ({
-        ...visit,
-        samples: visit.samples?.map((sample) => sample.id === saved.id
-          ? { ...sample, quantity: saved.quantity, product: saved.product ?? sample.product, product_name: saved.product_name ?? sample.product_name }
-          : sample),
-      })));
-      setSampleFormOpen(false);
-      setEditingSample(null);
+      const savedVisit = await updateVisit(editing.id, {
+        visit_date: data.visit_date,
+        purpose: data.purpose,
+        description: data.description,
+      });
+      setVisits((current) => current.map((visit) => visit.id === savedVisit.id
+        ? { ...visit, ...savedVisit, samples: visit.samples }
+        : visit));
+      for (const change of sampleChanges) {
+        const savedSample = await updateSample(change.id, {
+          quantity: change.quantity,
+          description: change.description,
+        });
+        setVisits((current) => current.map((visit) => ({
+          ...visit,
+          samples: visit.samples?.map((sample) => sample.id === savedSample.id
+            ? { ...sample, quantity: savedSample.quantity, description: savedSample.description ?? change.description, product: savedSample.product ?? sample.product, product_name: savedSample.product_name ?? sample.product_name }
+            : sample),
+        })));
+      }
+      setFormOpen(false);
+      setEditing(null);
+      setEditingSamples(null);
     } catch (e: unknown) {
-      setFormError(e instanceof ApiError ? e.message : "خطا در ویرایش نمونه.");
+      setFormError(e instanceof ApiError ? e.message : "ذخیره کامل تغییرات انجام نشد. فرم را بررسی کرده و دوباره تلاش کنید.");
     } finally {
       setSaving(false);
     }
@@ -209,6 +200,8 @@ export function VisitsPage() {
   }
   return (
     <>
+      <VisitDetailsModal visit={viewing} onClose={() => setViewing(null)} />
+
       <ConfirmModal
         open={isAdmin && deleteTarget !== null}
         title="حذف بازدید"
@@ -265,8 +258,7 @@ export function VisitsPage() {
               type="button"
               onClick={() => {
                 setEditing(null);
-                setSampleFormOpen(false);
-                setEditingSample(null);
+                setEditingSamples(null);
                 setFormError(null);
                 setFormOpen(true);
               }}
@@ -286,33 +278,23 @@ export function VisitsPage() {
           </div>
         )}
 
-        {sampleFormOpen && editingSample ? (
-          <SampleForm
-            visits={visits}
-            products={[]}
-            sample={editingSample}
-            isSubmitting={saving}
-            error={formError}
-            onSubmit={(data) => void submitSample(data)}
-            onCancel={() => { if (!saving) { setSampleFormOpen(false); setEditingSample(null); } }}
-          />
-        ) : null}
-
-        {formOpen && (editing ? (
-          <VisitForm
-            searchDoctors={getVisitDoctors}
+        {formOpen && editing && editingSamples ? (
+          <UnifiedVisitEditForm
+            key={editing.id}
             visit={editing}
+            samples={editingSamples}
             isSubmitting={saving}
             error={formError}
-            onSubmit={submit}
+            onSubmit={(data, sampleChanges) => void submitUnifiedEdit(data, sampleChanges)}
             onCancel={() => {
               if (!saving) {
                 setFormOpen(false);
                 setEditing(null);
+                setEditingSamples(null);
               }
             }}
           />
-        ) : (
+        ) : formOpen && !editing ? (
           <UnifiedVisitForm
             isScientificVisitor={isScientificVisitor}
             onSaved={(saved) => {
@@ -328,7 +310,7 @@ export function VisitsPage() {
               setEditing(null);
             }}
           />
-        ))}
+        ) : null}
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
           <input
@@ -402,7 +384,7 @@ export function VisitsPage() {
                   "محصول / نمونه",
                   "تعداد",
                   "هدف",
-                  "کارمند",
+                  "ویزیتور",
                   "وضعیت",
                   "عملیات",
                 ].map((x) => (
@@ -439,21 +421,21 @@ export function VisitsPage() {
                     {index === 0 ? <td rowSpan={visitSamples.length} className="px-4 py-3 align-top">{getVisitStatusLabel(v.status)}</td> : null}
                     <td className="px-4 py-3 align-top">
                       <div className="flex flex-wrap gap-2">
-                        {sample ? <button type="button" disabled={saving} onClick={() => void editSample(sample.id)} className="ui-btn-edit rounded border px-2 py-1 text-xs">ویرایش نمونه</button> : null}
+                        {index === 0 && (
+                          <button type="button" onClick={() => setViewing(v)} className="rounded border px-2 py-1 text-xs">
+                            مشاهده
+                          </button>
+                        )}
                         {index === 0 && v.status === "draft" && (
                           <>
                             <button
                               type="button"
                               onClick={() => {
-                                setSampleFormOpen(false);
-                                setEditingSample(null);
-                                setEditing(v);
-                                setFormError(null);
-                                setFormOpen(true);
+                                void editVisit(v);
                               }}
                               className="ui-btn-edit rounded border px-2 py-1 text-xs"
                             >
-                              ویرایش
+                              ویرایش کلی
                             </button>
                             <button
                               type="button"
