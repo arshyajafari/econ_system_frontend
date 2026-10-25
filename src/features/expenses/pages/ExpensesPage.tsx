@@ -448,75 +448,37 @@ export function ExpensesPage() {
         </form>
       ) : null}
 
-      <div className="grid gap-3 rounded-xl border border-gray-200 bg-white p-4">
-        <div className="grid gap-3 md:grid-cols-2">
-          <input
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            placeholder="جستجوی عنوان یا توضیحات"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-          />
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-          >
-            <option value="">همه دسته‌بندی‌ها</option>
-            {EXPENSE_CATEGORY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="grid gap-3 md:grid-cols-3">
-          <select
-            value={employeeId}
-            onChange={(event) => {
-              setEmployeeId(event.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-          >
-            <option value="">همه مسئولان</option>
-            {employees.map((employee) => (
-              <option
-                key={employee.id}
-                value={employee.id}
-              >{`${employee.first_name} ${employee.last_name}`}</option>
-            ))}
-          </select>
-          <JalaliDateInput
-            value={dateFrom}
-            onChange={(value) => {
-              setDateFrom(value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            aria-label="از تاریخ"
-          />
-          <JalaliDateInput
-            value={dateTo}
-            onChange={(value) => {
-              setDateTo(value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            aria-label="تا تاریخ"
-          />
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 lg:w-fit"
-          >
-            پاک کردن فیلترها
-          </button>
+      <div className="ui-filter-panel">
+        <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <label className="ui-filter-field lg:col-span-2">
+            <span className="ui-filter-label">جستجو</span>
+            <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="عنوان یا توضیحات هزینه..." />
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">دسته‌بندی</span>
+            <select value={category} onChange={(event) => { setCategory(event.target.value); setPage(1); }}>
+              <option value="">همه دسته‌بندی‌ها</option>
+              {EXPENSE_CATEGORY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">مسئول هزینه</span>
+            <select value={employeeId} onChange={(event) => { setEmployeeId(event.target.value); setPage(1); }}>
+              <option value="">همه مسئولان</option>
+              {employees.map((employee) => <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>)}
+            </select>
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">از تاریخ</span>
+            <JalaliDateInput value={dateFrom} onChange={(value) => { setDateFrom(value); setPage(1); }} aria-label="از تاریخ" />
+          </label>
+          <label className="ui-filter-field">
+            <span className="ui-filter-label">تا تاریخ</span>
+            <JalaliDateInput value={dateTo} onChange={(value) => { setDateTo(value); setPage(1); }} aria-label="تا تاریخ" />
+          </label>
+          <div className="ui-filter-actions mt-0 border-0 p-0">
+            <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
+          </div>
         </div>
       </div>
 
