@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +14,6 @@ import type {
   InvoiceStatus,
 } from "../types/invoice";
 import { invoiceStatusLabel } from "../types/invoice";
-import { sortTableRecords } from "../../../utils/date";
 
 const nf = new Intl.NumberFormat("fa-IR");
 const money = (v: number | string) => nf.format(Number(v || 0));
