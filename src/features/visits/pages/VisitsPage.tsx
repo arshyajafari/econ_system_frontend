@@ -19,6 +19,7 @@ import {
 } from "../services/visitsApi";
 import { getVisitStatusLabel, VISIT_STATUS_OPTIONS } from "../types/visit";
 import type {
+import { sortTableRecords } from "../../../utils/date";
   Visit,
   VisitFormData,
   VisitListParams,
@@ -372,7 +373,7 @@ export function VisitsPage() {
                   </td>
                 </tr>
               ) : (
-                visits.map((v) => (
+                sortTableRecords(visits).map((v) => (
                   <tr key={v.id}>
                     <td className="whitespace-nowrap px-4 py-3">
                       {formatJalaliDateTime(v.visit_date)}
