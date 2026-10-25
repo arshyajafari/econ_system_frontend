@@ -13,6 +13,7 @@ import {
   updateDoctor,
 } from "../services/doctorsApi";
 import type {
+import { sortTableRecords } from "../../../utils/date";
   Doctor,
   DoctorFormData,
   DoctorSpecialty,
@@ -363,7 +364,7 @@ export function DoctorsPage() {
                 </td>
               </tr>
             ) : (
-              doctors.map((doctor) => (
+              sortTableRecords(doctors).map((doctor) => (
                 <tr key={doctor.id} className="hover:bg-gray-50">
                   <td
                     dir="ltr"
