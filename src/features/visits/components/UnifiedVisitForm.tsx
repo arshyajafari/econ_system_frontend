@@ -60,14 +60,20 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                 if (active) {
                     setProducts(result as SampleProduct[]);
                     if (isScientificVisitor && result.length > 0) {
-                        setSamples((current) => current.length ? current : [{
-                            key: crypto.randomUUID(),
-                            product_id: '',
-                            product_title: '',
-                            quantity: '1',
-                            description: '',
-                            saved: false,
-                        }]);
+                        setSamples((current) =>
+                            current.length
+                                ? current
+                                : [
+                                      {
+                                          key: crypto.randomUUID(),
+                                          product_id: '',
+                                          product_title: '',
+                                          quantity: '1',
+                                          description: '',
+                                          saved: false,
+                                      },
+                                  ]
+                        );
                     }
                 }
             })
@@ -85,19 +91,6 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         };
     }, [isScientificVisitor]);
 
-    function addSample() {
-        setSamples((current) => {
-            if (isScientificVisitor && current.length > 0) return current;
-            return [...current, {
-                key: crypto.randomUUID(),
-                product_id: '',
-                product_title: '',
-                quantity: '1',
-                description: '',
-                saved: false,
-            }];
-        });
-    }
     function updateSample(key: string, patch: Partial<DraftSample>) {
         setSamples((current) =>
             current.map((sample) => (sample.key === key ? { ...sample, ...patch } : sample))
@@ -184,11 +177,15 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     purpose: purpose.trim(),
                     description: description.trim(),
                 };
-                const visit = await createVisitWithSample(data, {
-                    product_id: sample.product_id,
-                    quantity: Number(sample.quantity),
-                    description: sample.description,
-                }, clientOperationId);
+                const visit = await createVisitWithSample(
+                    data,
+                    {
+                        product_id: sample.product_id,
+                        quantity: Number(sample.quantity),
+                        description: sample.description,
+                    },
+                    clientOperationId
+                );
                 onSaved(visit);
                 return;
             }
@@ -241,7 +238,9 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         } catch (e: unknown) {
             setError(e instanceof ApiError ? e.message : 'ذخیره اطلاعات کامل نشد.');
             if (isScientificVisitor) {
-                setNotice('ثبت ویزیت و نمونه به‌صورت یکپارچه انجام می‌شود؛ در صورت خطای اعتبارسنجی، هیچ‌کدام ثبت نمی‌شوند. اگر پاسخ شبکه نامشخص بود، دوباره تلاش کنید؛ شناسه عملیات از ثبت تکراری جلوگیری می‌کند.');
+                setNotice(
+                    'ثبت ویزیت و نمونه به‌صورت یکپارچه انجام می‌شود؛ در صورت خطای اعتبارسنجی، هیچ‌کدام ثبت نمی‌شوند. اگر پاسخ شبکه نامشخص بود، دوباره تلاش کنید؛ شناسه عملیات از ثبت تکراری جلوگیری می‌کند.'
+                );
             } else if (savedVisit || samples.some((sample) => sample.saved)) {
                 setNotice(
                     'ویزیت ثبت شده است. ردیف‌های ذخیره‌شده حفظ شده‌اند؛ پس از رفع خطا دوباره ثبت را بزنید تا فقط ردیف‌های باقی‌مانده ارسال شوند.'
@@ -373,19 +372,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     <div className="mt-6 border-t border-gray-300 pt-4">
                         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                             <div>
-                                <h4 className="font-semibold">{isScientificVisitor ? 'محصول تحویلی و تعداد' : 'سمپل‌های تحویلی'}</h4>
-                                {isScientificVisitor ? <p className="mt-1 text-xs text-gray-500">در هر ویزیت یک محصول انتخاب می‌شود؛ برای محصول متفاوت، ویزیت جداگانه ثبت کنید.</p> : null}
+                                <h4 className="font-semibold">محصولات تحویلی</h4>
                             </div>
-                            {!isScientificVisitor ? (
-                                <button
-                                    type="button"
-                                    onClick={addSample}
-                                    disabled={saving || productsLoading || products.length === 0}
-                                    className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50"
-                                >
-                                    + افزودن سمپل
-                                </button>
-                            ) : null}
                         </div>
                         {productsLoading ? (
                             <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p>
@@ -403,13 +391,13 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {samples.map((sample, index) => (
+                                {samples.map((sample) => (
                                     <div
                                         key={sample.key}
-                                        className="grid gap-3 rounded-xl border p-3 md:grid-cols-[minmax(0,2fr)_100px_minmax(0,1fr)_auto] md:items-end"
+                                        className="grid gap-3 rounded-xl p-3 md:grid-cols-3 md:items-end"
                                     >
                                         <div className="space-y-1 text-sm">
-                                            <span className="block">محصول {index + 1} *</span>
+                                            <span className="block">نام محصول *</span>
                                             {sample.saved ? (
                                                 <div className="rounded-lg border bg-gray-50 px-3 py-2.5">
                                                     {sample.product_title || 'محصول ثبت‌شده'}
@@ -423,18 +411,38 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                         const product_id = event.target.value;
                                                         updateSample(sample.key, {
                                                             product_id,
-                                                            product_title: products.find((product) => product.id === product_id)?.title ?? '',
+                                                            product_title:
+                                                                products.find(
+                                                                    (product) =>
+                                                                        product.id === product_id
+                                                                )?.title ?? '',
                                                             quantity: '1',
                                                         });
                                                     }}
                                                     className={inputClass}
                                                 >
-                                                    <option value="">انتخاب محصول از موجودی شما</option>
-                                                    {products.filter((product) => product.available_quantity === undefined || product.available_quantity > 0).map((product) => (
-                                                        <option key={product.id} value={product.id}>
-                                                            {product.title} {product.available_quantity !== undefined ? `(موجودی: ${product.available_quantity})` : ''}
-                                                        </option>
-                                                    ))}
+                                                    <option value="">
+                                                        انتخاب محصول از موجودی شما
+                                                    </option>
+                                                    {products
+                                                        .filter(
+                                                            (product) =>
+                                                                product.available_quantity ===
+                                                                    undefined ||
+                                                                product.available_quantity > 0
+                                                        )
+                                                        .map((product) => (
+                                                            <option
+                                                                key={product.id}
+                                                                value={product.id}
+                                                            >
+                                                                {product.title}{' '}
+                                                                {product.available_quantity !==
+                                                                undefined
+                                                                    ? `(موجودی: ${product.available_quantity})`
+                                                                    : ''}
+                                                            </option>
+                                                        ))}
                                                 </select>
                                             ) : (
                                                 <SearchableProductSelect
@@ -466,7 +474,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 />
                                             )}
                                         </div>
-                                        <label className="space-y-1 text-sm">
+                                        <div className="space-y-1 text-sm">
                                             <span>
                                                 تعداد *
                                                 {products.find(
@@ -500,8 +508,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 }
                                                 className={inputClass}
                                             />
-                                        </label>
-                                        <label className="space-y-1 text-sm">
+                                        </div>
+                                        <div className="space-y-1 text-sm">
                                             <span>توضیحات</span>
                                             <input
                                                 value={sample.description}
@@ -513,7 +521,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 }
                                                 className={inputClass}
                                             />
-                                        </label>
+                                        </div>
                                         <div className="flex items-center gap-2">
                                             {sample.saved ? (
                                                 <span className="text-xs font-medium text-green-700">
