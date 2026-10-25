@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
@@ -12,7 +13,6 @@ import {
   updateEmployee,
 } from "../services/employeesApi";
 import {
-import { sortTableRecords } from "../../../utils/date";
   EMPLOYEE_ACTIVITY_OPTIONS,
   EMPLOYEE_STATUS_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
