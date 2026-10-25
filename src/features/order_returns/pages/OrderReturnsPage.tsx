@@ -201,6 +201,11 @@ searchCustomers={searchCustomers}
             />
           </div>
         </div>
+        <div className="ui-filter-actions">
+          <button type="button" onClick={resetFilters} className="ui-filter-clear">
+            پاک کردن فیلترها
+          </button>
+        </div>
       </div>
 
       {error ? (
