@@ -376,6 +376,7 @@ export function DashboardLayout() {
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
     }
+    if (item.to === "/visits") return isAdmin || isAccountant || isScientificVisitor || can("visits.view") || can("samples.view");
     if (item.to === "/dashboard") return isAdmin || isAccountant;
     if (item.adminOnly) return isAdmin;
     if (item.to === "/catalog") return isAdmin || isAccountant;
