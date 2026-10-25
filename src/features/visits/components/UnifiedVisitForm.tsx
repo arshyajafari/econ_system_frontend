@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { SearchableDoctorSelect, type SearchableDoctor } from "../../../components/SearchableDoctorSelect";
@@ -41,7 +41,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
   const [doctorError, setDoctorError] = useState<string | null>(null);
   const [savedVisit, setSavedVisit] = useState<Visit | null>(null);
 
-  useMemo(() => {
+  useEffect(() => {
     let active = true;
     void getSampleProducts(isScientificVisitor)
       .then((result) => { if (active) setProducts(result as SampleProduct[]); })
@@ -164,7 +164,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
         <section className="rounded-xl border bg-white p-4">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div><h3 className="font-semibold">۳. سمپل‌های تحویلی</h3><p className="mt-1 text-xs text-gray-500">افزودن سمپل اختیاری است. هر محصول را یک ردیف ثبت کنید.</p></div>
-            <button type="button" onClick={addSample} disabled={saving || productsLoading || Boolean(savedVisit)} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
+            <button type="button" onClick={addSample} disabled={saving || productsLoading} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
           </div>
           {productsLoading ? <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p> : null}
           {!productsLoading && products.length === 0 ? <p className="py-4 text-sm text-amber-700">فهرست محصولی برای انتخاب دریافت نشد. می‌توانید ویزیت را بدون سمپل ثبت کنید.</p> : null}
@@ -172,12 +172,12 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             <div className="space-y-3">
               {samples.map((sample, index) => (
                 <div key={sample.key} className="grid gap-3 rounded-xl border p-3 md:grid-cols-[minmax(0,2fr)_100px_minmax(0,1fr)_auto] md:items-end">
-                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved || Boolean(savedVisit)} onChange={(product_id) => updateSample(sample.key, { product_id })} placeholder="جستجوی محصول..." /></label>
-                  <label className="space-y-1 text-sm"><span>تعداد *</span><input type="number" min={1} step={1} required value={sample.quantity} disabled={saving || sample.saved || Boolean(savedVisit)} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
-                  <label className="space-y-1 text-sm"><span>توضیحات</span><input value={sample.description} disabled={saving || sample.saved || Boolean(savedVisit)} onChange={(e) => updateSample(sample.key, { description: e.target.value })} className={inputClass} /></label>
+                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved} onChange={(product_id) => updateSample(sample.key, { product_id })} placeholder="جستجوی محصول..." /></label>
+                  <label className="space-y-1 text-sm"><span>تعداد *</span><input type="number" min={1} step={1} required value={sample.quantity} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
+                  <label className="space-y-1 text-sm"><span>توضیحات</span><input value={sample.description} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { description: e.target.value })} className={inputClass} /></label>
                   <div className="flex items-center gap-2">
                     {sample.saved ? <span className="text-xs font-medium text-green-700">ثبت شد</span> : null}
-                    <button type="button" onClick={() => removeSample(sample.key)} disabled={saving || sample.saved || Boolean(savedVisit)} className="rounded-lg border px-3 py-2 text-sm text-red-700 disabled:opacity-40">حذف</button>
+                    <button type="button" onClick={() => removeSample(sample.key)} disabled={saving || sample.saved} className="rounded-lg border px-3 py-2 text-sm text-red-700 disabled:opacity-40">حذف</button>
                   </div>
                 </div>
               ))}
