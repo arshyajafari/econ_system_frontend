@@ -17,6 +17,7 @@ import { UnifiedVisitEditForm } from '../components/UnifiedVisitEditForm';
 import { VisitDetailsModal } from '../components/VisitDetailsModal';
 import {
     cancelVisit,
+    getVisitSample,
     completeVisit,
     deleteVisit,
     getVisitDoctors,
@@ -24,7 +25,7 @@ import {
     updateVisitWithSamples,
 } from '../services/visitsApi';
 import { getVisitStatusLabel, VISIT_STATUS_OPTIONS } from '../types/visit';
-import type { Visit, VisitFormData, VisitListParams, VisitStatus } from '../types/visit';
+import type { Visit, VisitFormData, VisitListParams, VisitSampleDetails, VisitStatus } from '../types/visit';
 
 export function VisitsPage() {
     const { user } = useAuth();
@@ -47,7 +48,7 @@ export function VisitsPage() {
         [formError, setFormError] = useState<string | null>(null),
         [formOpen, setFormOpen] = useState(false),
         [editing, setEditing] = useState<Visit | null>(null),
-        [editingSamples, setEditingSamples] = useState<Sample[] | null>(null),
+        [editingSamples, setEditingSamples] = useState<VisitSampleDetails[] | null>(null),
         [viewing, setViewing] = useState<Visit | null>(null),
         [actionTarget, setActionTarget] = useState<{
             visit: Visit;
@@ -127,7 +128,7 @@ export function VisitsPage() {
         setFormError(null);
         try {
             const samples = await Promise.all(
-                (v.samples ?? []).map((sample) => getSample(sample.id))
+                (v.samples ?? []).map((sample) => getVisitSample(sample.id))
             );
             setEditing(v);
             setEditingSamples(samples);
