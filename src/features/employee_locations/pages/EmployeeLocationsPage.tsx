@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
@@ -252,7 +253,7 @@ export function EmployeeLocationsPage() {
                         </label>
                     </div>
                     <div className="max-h-[430px] divide-y divide-gray-100 overflow-y-auto">
-                        {filteredLocations.map((item) => {
+                        {sortTableRecords(filteredLocations).map((item) => {
                             const fresh = isLocationFresh(item.captured_at, clock);
                             const selected = selectedLocation?.employee_id === item.employee_id;
                             return (
