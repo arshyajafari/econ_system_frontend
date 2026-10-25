@@ -24,7 +24,7 @@ export function PaymentFilters({
     return (
         <div className="ui-filter-panel">
             <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
-                <div>
+                <div className="ui-filter-field">
                     <label className="ui-filter-label">جستجو</label>
 
                     <input
@@ -36,8 +36,8 @@ export function PaymentFilters({
                     />
                 </div>
 
-                <div>
-                    <label className="mb-1.5 block text-sm font-medium text-gray-700">وضعیت</label>
+                <div className="ui-filter-field">
+                    <label className="ui-filter-label">وضعیت</label>
 
                     <select
                         value={status}
@@ -56,8 +56,8 @@ export function PaymentFilters({
                     </select>
                 </div>
 
-                <div>
-                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                <div className="ui-filter-field">
+                    <label className="ui-filter-label">
                         روش پرداخت
                     </label>
 
