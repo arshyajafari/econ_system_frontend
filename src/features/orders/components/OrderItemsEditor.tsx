@@ -75,11 +75,11 @@ export function OrderItemsEditor({
 
   return (
     <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-4 py-3">
+      <div className="border-b border-gray-100 bg-gradient-to-l from-gray-50 to-white px-5 py-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-xs font-bold text-white">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-bold text-white">
                 01
               </span>
               <div>
@@ -87,18 +87,10 @@ export function OrderItemsEditor({
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={addItem}
-            disabled={disabled}
-            className="rounded-lg bg-gray-900 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
-          >
-            + افزودن محصول
-          </button>
         </div>
       </div>
 
-      <div className="space-y-2.5 p-3 md:p-4">
+      <div className="space-y-3 p-4 md:p-5">
         {items.map((item, index) => {
           const used = items
             .filter((_, i) => i !== index)
@@ -117,11 +109,11 @@ export function OrderItemsEditor({
           return (
             <article
               key={index}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50/60"
+              className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50/60"
             >
-              <div className="flex items-center justify-between border-b border-gray-100 bg-white px-3 py-2">
+              <div className="flex items-center justify-between border-b border-gray-100 bg-white px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[11px] font-bold text-gray-700">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-700">
                     {numberFormatter.format(index + 1)}
                   </span>
                   <span className="truncate text-sm font-bold text-gray-800">
@@ -145,8 +137,8 @@ export function OrderItemsEditor({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 gap-2.5 p-3 sm:grid-cols-2 lg:grid-cols-8">
-                <div className="sm:col-span-2 lg:col-span-2">
+              <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-6">
+                <div className="lg:col-span-2">
                   <Field label="محصول" required>
                     <SearchableProductSelect
                       value={item.product_id}
@@ -234,7 +226,7 @@ export function OrderItemsEditor({
                     placeholder="اختیاری"
                   />
                 </Field>
-                <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 lg:col-span-2">
+                <div className="rounded-xl border border-gray-200 bg-white p-3 lg:col-span-2">
                   <div className="text-[11px] font-medium text-gray-500">
                     مبلغ نهایی
                   </div>
@@ -262,7 +254,7 @@ export function OrderItemsEditor({
                 </div>
               ) : null}
 
-              <div className="border-t border-gray-100 bg-white px-3 pb-3 pt-2">
+              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
                 <Field label="توضیحات آیتم">
                   <input
                     value={item.description}
@@ -278,6 +270,17 @@ export function OrderItemsEditor({
             </article>
           );
         })}
+
+        <div className="flex justify-start">
+          <button
+            type="button"
+            onClick={addItem}
+            disabled={disabled}
+            className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50"
+          >
+            + افزودن محصول
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Metric label="جمع ناخالص اقلام" value={orderGross} />
@@ -323,7 +326,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-[11px] font-semibold text-gray-600">
+      <label className="mb-2 block text-xs font-semibold text-gray-600">
         {label}
         {required ? <span className="mr-1 text-red-600">*</span> : null}
       </label>
