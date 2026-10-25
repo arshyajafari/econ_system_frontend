@@ -1,3 +1,4 @@
+import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
@@ -19,7 +20,6 @@ import {
 } from "../services/visitsApi";
 import { getVisitStatusLabel, VISIT_STATUS_OPTIONS } from "../types/visit";
 import type {
-import { sortTableRecords } from "../../../utils/date";
   Visit,
   VisitFormData,
   VisitListParams,
