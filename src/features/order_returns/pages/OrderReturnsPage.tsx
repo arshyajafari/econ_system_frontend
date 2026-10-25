@@ -150,10 +150,10 @@ export function OrderReturnsPage() {
             />
           </div>
 
-          <div>
+          <div className="ui-filter-field">
             <label
               htmlFor="order-return-status"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="ui-filter-label"
             >
               وضعیت
             </label>
@@ -176,8 +176,8 @@ export function OrderReturnsPage() {
               ))}
             </select>
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+          <div className="ui-filter-field">
+            <label className="ui-filter-label">
               مشتری
             </label>
             <SearchableCustomerSelect
