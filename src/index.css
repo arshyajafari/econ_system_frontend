@@ -624,3 +624,78 @@ select:focus-visible {
   background: #fef2f2;
   color: #b91c1c;
 }
+
+
+/* Shared filter-panel design: consistent spacing, controls and responsive grids. */
+main section[class*="space-y-"] > .grid:has(> input, > select),
+main section[class*="space-y-"] > .grid:has(> label, > input, > select, > div > input, > div > select) {
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-card-radius);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)),
+main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) {
+  padding: 18px;
+  border-color: var(--ui-border) !important;
+  border-radius: var(--ui-card-radius) !important;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)) > .grid,
+main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) > .grid {
+  gap: 14px;
+}
+
+main section[class*="space-y-"] .rounded-xl.border.bg-white:has(label):has(input) label,
+main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(label):has(input) label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ui-text-soft);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)) > div.mt-4,
+main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) > div.mt-4 {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #eef2f7;
+}
+
+main section[class*="space-y-"] .rounded-xl.border.bg-white:has(#ledger-from) > div.flex {
+  gap: 14px;
+}
+
+/* Visit status chips use the same semantic colors everywhere. */
+.ui-status-visit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.ui-status-visit-draft { border-color: #fcd34d; background: #fffbeb; color: #a16207; }
+.ui-status-visit-completed { border-color: #86efac; background: #f0fdf4; color: #15803d; }
+.ui-status-visit-cancelled { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+
+@media (max-width: 639px) {
+  main section[class*="space-y-"] > .grid:has(> input, > select),
+  main section[class*="space-y-"] > .grid:has(> label, > input, > select, > div > input, > div > select),
+  main section[class*="space-y-"] .rounded-xl.border.bg-white:has(> .grid:has(input, select)),
+  main section[class*="space-y-"] .rounded-xl.border.border-gray-200.bg-white:has(> .grid:has(input, select)) {
+    padding: 12px;
+    gap: 10px;
+  }
+}
