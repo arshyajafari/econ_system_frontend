@@ -11,6 +11,7 @@ import { VisitForm } from "../components/VisitForm";
 import { SampleForm } from "../../samples/components/SampleForm";
 import { getSample, getSampleProducts, updateSample } from "../../samples/services/samplesApi";
 import type { Sample, SampleFormData } from "../../samples/types/sample";
+import type { Product } from "../../products/types/product";
 import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
 import {
   cancelVisit,
@@ -52,7 +53,7 @@ export function VisitsPage() {
     [editing, setEditing] = useState<Visit | null>(null),
     [sampleFormOpen, setSampleFormOpen] = useState(false),
     [editingSample, setEditingSample] = useState<Sample | null>(null),
-    [sampleProducts, setSampleProducts] = useState<import("../../products/types/product").Product[]>([]),
+    [sampleProducts, setSampleProducts] = useState<Product[]>([]),
     [actionTarget, setActionTarget] = useState<{
       visit: Visit;
       action: "complete" | "cancel";
@@ -162,6 +163,8 @@ export function VisitsPage() {
     setFormError(null);
     try {
       const sample = await getSample(sampleId);
+      setFormOpen(false);
+      setEditing(null);
       setEditingSample(sample);
       setSampleFormOpen(true);
     } catch (e: unknown) {
@@ -272,6 +275,8 @@ export function VisitsPage() {
               type="button"
               onClick={() => {
                 setEditing(null);
+                setSampleFormOpen(false);
+                setEditingSample(null);
                 setFormError(null);
                 setFormOpen(true);
               }}
@@ -450,6 +455,8 @@ export function VisitsPage() {
                             <button
                               type="button"
                               onClick={() => {
+                                setSampleFormOpen(false);
+                                setEditingSample(null);
                                 setEditing(v);
                                 setFormError(null);
                                 setFormOpen(true);
