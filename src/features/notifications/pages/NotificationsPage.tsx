@@ -5,6 +5,7 @@ import { formatJalaliDateTime } from "../../../utils/date";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { useAuth } from "../../auth";
 import {
+import { sortTableRecords } from "../../../utils/date";
   deleteSystemMessage,
   getNotificationRecipients,
   getNotifications,
@@ -467,7 +468,7 @@ export function NotificationsPage() {
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {notifications.map((notification) => (
+              {sortTableRecords(notifications).map((notification) => (
                 <div
                   key={notification.id}
                   className={`block w-full p-5 text-right transition hover:bg-slate-50 ${notification.is_read ? "bg-white" : "bg-blue-50/40"}`}
