@@ -50,7 +50,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     return () => { active = false; };
   }, [isScientificVisitor]);
 
-  const usedProductIds = samples.filter((sample) => !sample.saved).map((sample) => sample.product_id).filter(Boolean);
+  const usedProductIds = samples.map((sample) => sample.product_id).filter(Boolean);
   function addSample() {
     setSamples((current) => [...current, { key: crypto.randomUUID(), product_id: "", quantity: "1", description: "", saved: false }]);
   }
