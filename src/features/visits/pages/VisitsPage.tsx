@@ -7,6 +7,7 @@ import { useAuth } from "../../auth";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { VisitForm } from "../components/VisitForm";
+import { UnifiedVisitForm } from "../components/UnifiedVisitForm";
 import {
   cancelVisit,
   completeVisit,
@@ -27,6 +28,7 @@ import type {
 export function VisitsPage() {
   const { user } = useAuth();
   const isAdmin = user?.roles.includes("admin") ?? false;
+  const isScientificVisitor = user?.roles.includes("scientific visitor") ?? false;
   const [visits, setVisits] = useState<Visit[]>([]),
     [doctorId, setDoctorId] = useState(""),
     [selectedDoctor, setSelectedDoctor] = useState<SearchableDoctor | null>(null),
@@ -243,7 +245,7 @@ export function VisitsPage() {
           </div>
         )}
 
-        {formOpen && (
+        {formOpen && (editing ? (
           <VisitForm
             searchDoctors={getVisitDoctors}
             visit={editing}
@@ -257,7 +259,23 @@ export function VisitsPage() {
               }
             }}
           />
-        )}
+        ) : (
+          <UnifiedVisitForm
+            isScientificVisitor={isScientificVisitor}
+            onSaved={(saved) => {
+              setVisits((current) => [saved, ...current.filter((item) => item.id !== saved.id)].slice(0, 20));
+              setTotal((current) => current + 1);
+              setFormOpen(false);
+              setEditing(null);
+              setPage(1);
+              void load({ page: 1 });
+            }}
+            onCancel={() => {
+              setFormOpen(false);
+              setEditing(null);
+            }}
+          />
+        ))}
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
           <input
@@ -367,7 +385,7 @@ export function VisitsPage() {
                         ? v.samples
                             .map(
                               (sample) =>
-                                sample.product_name ?? sample.product?.title,
+                                `${sample.product_name ?? sample.product?.title ?? "سمپل"}${sample.quantity ? ` (${sample.quantity})` : ""}`,
                             )
                             .filter(Boolean)
                             .join("، ")
