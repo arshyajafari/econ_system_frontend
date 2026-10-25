@@ -391,7 +391,7 @@ export function VisitsPage() {
         </div>
 
         <div className="flex justify-between text-sm text-gray-500">
-          <span>{new Intl.NumberFormat("fa-IR").format(total)} بازدید</span>
+          <span>{new Intl.NumberFormat("fa-IR").format(total)} ویزیت · {new Intl.NumberFormat("fa-IR").format(visits.reduce((sum, visit) => sum + (visit.samples?.length ?? 0), 0))} نمونه در این صفحه</span>
           <button type="button" onClick={reset}>
             پاک کردن فیلترها
           </button>
@@ -420,7 +420,7 @@ export function VisitsPage() {
             <tbody className="divide-y">
               {loading && !visits.length ? (
                 <tr>
-                  <td colSpan={7} className="p-10 text-center">
+                  <td colSpan={8} className="p-10 text-center">
                     در حال دریافت…
                   </td>
                 </tr>
