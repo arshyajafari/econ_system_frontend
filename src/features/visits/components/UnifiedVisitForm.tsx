@@ -168,7 +168,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
           <div className="mt-6 border-t pt-4">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div><h4 className="font-semibold">محصولات / سمپل‌های تحویلی</h4><p className="mt-1 text-xs text-gray-500">افزودن سمپل اختیاری است. هر محصول را یک ردیف ثبت کنید.</p></div>
-              <button type="button" onClick={addSample} disabled={saving || productsLoading || products.length === 0 || Boolean(savedVisit)} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
+              <button type="button" onClick={addSample} disabled={saving || productsLoading || products.length === 0} className="rounded-lg border px-3 py-2 text-sm disabled:opacity-50">+ افزودن سمپل</button>
             </div>
             {productsLoading ? <p className="py-4 text-sm text-gray-500">در حال دریافت محصولات...</p> : null}
             {!productsLoading && products.length === 0 ? <p className="py-4 text-sm text-amber-700">{isScientificVisitor ? "در حال حاضر موجودی قابل استفاده‌ای برای حساب شما ثبت نشده است؛ پس از تخصیص موجودی، محصولات در این فهرست نمایش داده می‌شوند." : "فهرست محصولی برای انتخاب دریافت نشد. می‌توانید ویزیت را بدون سمپل ثبت کنید."}</p> : null}
@@ -176,7 +176,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
             <div className="space-y-3">
               {samples.map((sample, index) => (
                 <div key={sample.key} className="grid gap-3 rounded-xl border p-3 md:grid-cols-[minmax(0,2fr)_100px_minmax(0,1fr)_auto] md:items-end">
-                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved || products.length === 0} onChange={(product_id) => updateSample(sample.key, { product_id })} placeholder={products.length ? "جستجوی محصول..." : "محصولی در موجودی نیست"} /></label>
+                  <label className="space-y-1 text-sm"><span>محصول {index + 1} *</span><SearchableProductSelect value={sample.product_id} products={products} usedProductIds={samples.filter((x) => x.key !== sample.key && x.product_id).map((x) => x.product_id)} disabled={saving || sample.saved || products.length === 0} onChange={(product_id) => updateSample(sample.key, { product_id, quantity: "1" })} placeholder={products.length ? "جستجوی محصول..." : "محصولی در موجودی نیست"} /></label>
                   <label className="space-y-1 text-sm"><span>تعداد *{products.find((product) => product.id === sample.product_id)?.available_quantity !== undefined ? ` (موجودی: ${products.find((product) => product.id === sample.product_id)?.available_quantity})` : ""}</span><input type="number" min={1} max={products.find((product) => product.id === sample.product_id)?.available_quantity} step={1} required value={sample.quantity} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { quantity: e.target.value })} className={inputClass} /></label>
                   <label className="space-y-1 text-sm"><span>توضیحات</span><input value={sample.description} disabled={saving || sample.saved} onChange={(e) => updateSample(sample.key, { description: e.target.value })} className={inputClass} /></label>
                   <div className="flex items-center gap-2">
