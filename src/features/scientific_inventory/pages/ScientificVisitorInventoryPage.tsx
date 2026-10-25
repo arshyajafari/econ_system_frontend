@@ -14,6 +14,7 @@ import {
   updateScientificInventory,
 } from "../services/scientificInventoryApi";
 import type { ScientificInventoryItem } from "../types/scientificInventory";
+import { sortTableRecords } from "../../../utils/date";
 
 const numberFormat = new Intl.NumberFormat("fa-IR");
 
@@ -350,7 +351,7 @@ export function ScientificVisitorInventoryPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item) => (
+              sortTableRecords(items).map((item) => (
                 <tr key={item.id}>
                   {isManager ? (
                     <td className="px-4 py-3">
