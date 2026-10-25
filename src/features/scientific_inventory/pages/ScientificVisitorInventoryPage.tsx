@@ -39,6 +39,8 @@ export function ScientificVisitorInventoryPage() {
   const [deleteTarget, setDeleteTarget] =
     useState<ScientificInventoryItem | null>(null);
   const [editDescription, setEditDescription] = useState("");
+  const [editQuantity, setEditQuantity] = useState(0);
+  const [editBatchId, setEditBatchId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -118,11 +120,17 @@ export function ScientificVisitorInventoryPage() {
     () => batches.find((batch) => batch.id === batchId) ?? null,
     [batches, batchId],
   );
+  const selectedEditBatch = useMemo(
+    () => batches.find((batch) => batch.id === editBatchId) ?? null,
+    [batches, editBatchId],
+  );
 
 
   function openEdit(item: ScientificInventoryItem) {
     setEditingItem(item);
     setEditDescription(item.description ?? "");
+    setEditQuantity(item.received_quantity);
+    setEditBatchId("");
     setError(null);
   }
 
@@ -130,6 +138,8 @@ export function ScientificVisitorInventoryPage() {
     if (saving) return;
     setEditingItem(null);
     setEditDescription("");
+    setEditQuantity(0);
+    setEditBatchId("");
   }
 
   async function submit(event: FormEvent) {
@@ -190,11 +200,24 @@ export function ScientificVisitorInventoryPage() {
     event.preventDefault();
     if (!editingItem) return;
 
+    if (!Number.isInteger(editQuantity) || editQuantity < editingItem.used_quantity) {
+      setError(`تعداد دریافتی نمی‌تواند کمتر از مصرف‌شده باشد (${editingItem.used_quantity} عدد).`);
+      return;
+    }
+    if (editQuantity > editingItem.received_quantity) {
+      const increase = editQuantity - editingItem.received_quantity;
+      if (!selectedEditBatch || selectedEditBatch.product?.id !== editingItem.product?.id || increase > selectedEditBatch.available_quantity) {
+        setError("برای افزایش تعداد، بچ معتبر همین محصول را انتخاب کنید و موجودی کافی داشته باشد.");
+        return;
+      }
+    }
+
     setSaving(true);
     setError(null);
     try {
       await updateScientificInventory(editingItem.id, {
-        quantity: editingItem.received_quantity,
+        quantity: editQuantity,
+        inventory_batch_id: editQuantity > editingItem.received_quantity ? editBatchId : undefined,
         description: editDescription,
       });
       closeEdit();
@@ -399,8 +422,8 @@ export function ScientificVisitorInventoryPage() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(item)}
-                          disabled={saving || item.received_quantity !== 0 || item.used_quantity !== 0}
-                          title={item.received_quantity !== 0 || item.used_quantity !== 0 ? "رکورد دارای سابقه تحویل یا مصرف قابل حذف نیست" : "حذف رکورد خالی"}
+                          disabled={saving}
+                          title="حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی"
                           className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                         >
                           حذف
@@ -463,9 +486,48 @@ export function ScientificVisitorInventoryPage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-              مقادیر دریافتی و مصرف‌شده در این فرم فقط‌خواندنی هستند. تا زمانی که منبع بچ هر تحویل به‌طور دقیق ثبت نشود، تغییر عددی از این فرم مجاز نیست. برای تحویل جدید از فرم بالای صفحه استفاده کنید.
-            </div>
+            <label className="block space-y-1">
+              <span className="text-sm font-medium">تعداد دریافتی جدید</span>
+              <input
+                required
+                type="number"
+                min={editingItem.used_quantity}
+                max={editQuantity > editingItem.received_quantity && selectedEditBatch
+                  ? editingItem.received_quantity + selectedEditBatch.available_quantity
+                  : undefined}
+                step={1}
+                disabled={saving}
+                value={editQuantity}
+                onChange={(event) => setEditQuantity(Number(event.target.value))}
+                className="w-full rounded-lg border px-3 py-2"
+              />
+              <span className="text-xs text-gray-500">
+                حداقل تعداد مجاز برابر با مصرف‌شده است. کاهش تعداد فقط از موجودی استفاده‌نشده برمی‌گردد.
+              </span>
+            </label>
+
+            {editQuantity > editingItem.received_quantity ? (
+              <label className="block space-y-1">
+                <span className="text-sm font-medium">بچ انبار اصلی برای افزایش موجودی</span>
+                <select
+                  required
+                  disabled={saving}
+                  value={editBatchId}
+                  onChange={(event) => setEditBatchId(event.target.value)}
+                  className="w-full rounded-lg border px-3 py-2"
+                >
+                  <option value="">انتخاب بچ محصول</option>
+                  {batches.filter((batch) => batch.product?.id === editingItem.product?.id).map((batch) => (
+                    <option key={batch.id} value={batch.id} disabled={batch.available_quantity <= 0}>
+                      {batch.batch_number ? `بچ ${batch.batch_number} — ` : ""}موجودی: {numberFormat.format(batch.available_quantity)}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-xs text-gray-500">
+                  افزایش تعداد به همان میزان از موجودی بچ انتخاب‌شده کم می‌کند.
+                </span>
+              </label>
+            ) : null}
 
             <label className="block space-y-1">
               <span className="text-sm font-medium">توضیحات</span>
