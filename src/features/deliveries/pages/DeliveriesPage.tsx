@@ -331,7 +331,7 @@ export function DeliveriesPage() {
                 </form>
             ) : null}
             <div className="ui-filter-panel">
-                <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr_auto]">
+                <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr]">
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">جستجو</span>
                         <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="گیرنده یا توضیحات ارسال..." />
@@ -343,9 +343,22 @@ export function DeliveriesPage() {
                             {DELIVERY_STATUS_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                         </select>
                     </label>
-                    <div className="ui-filter-actions mt-0 border-0 p-0">
-                        <button type="button" onClick={() => void load()} className="ui-filter-clear">بروزرسانی</button>
-                    </div>
+                </div>
+                <div className="ui-filter-actions justify-between">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setSearch('');
+                            setStatus('');
+                            setPage(1);
+                        }}
+                        className="ui-filter-clear"
+                    >
+                        پاک کردن فیلترها
+                    </button>
+                    <button type="button" onClick={() => void load()} className="ui-filter-clear">
+                        بروزرسانی
+                    </button>
                 </div>
             </div>
             <div className="text-sm text-gray-500">
