@@ -10,7 +10,7 @@ import { DoctorForm } from '../../doctors/components/DoctorForm';
 import { createDoctor } from '../../doctors/services/doctorsApi';
 import type { DoctorFormData } from '../../doctors/types/doctor';
 import { createVisit, createVisitSample, createVisitWithSample, getVisitDoctors, getVisitSampleProducts } from '../services/visitsApi';
-import type { Visit, VisitFormData, VisitVisitSampleFormData, VisitSampleProduct } from '../types/visit';
+import type { Visit, VisitFormData, VisitSampleFormData, VisitSampleProduct } from '../types/visit';
 
 type DraftSample = {
     key: string;
