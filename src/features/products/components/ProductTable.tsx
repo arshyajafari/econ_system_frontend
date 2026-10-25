@@ -1,6 +1,6 @@
+import { sortTableRecords } from "../../../utils/date";
 import type { Product, ProductStatus } from "../types/product";
 import { PRODUCT_STATUS_OPTIONS } from "../types/product";
-import { sortTableRecords } from "../../../utils/date";
 
 type ProductTableProps = {
   products: Product[];
