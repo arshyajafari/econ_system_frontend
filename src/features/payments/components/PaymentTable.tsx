@@ -2,6 +2,7 @@ import { PaymentStatusActions } from "./PaymentStatusActions";
 import type { Payment, PaymentStatusAction } from "../types/payment";
 import { getPaymentMethodLabel, getPaymentStatusLabel } from "../types/payment";
 import { formatJalaliDate } from "../../../utils/date";
+import { sortTableRecords } from "../../../utils/date";
 
 type PaymentTableProps = {
   payments: Payment[];
@@ -86,7 +87,7 @@ export function PaymentTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {sortedPayments.map((payment) => (
+            {sortTableRecords(payments).map( (
               <tr key={payment.id}>
                 <td className="px-4 py-4 align-top">
                   <div className="font-medium text-gray-800">{payment.customer?.name ?? "—"}</div>
