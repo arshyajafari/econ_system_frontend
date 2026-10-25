@@ -18,7 +18,7 @@ import {
   deleteVisit,
   getVisitDoctors,
   getVisits,
-  updateVisit,
+  updateVisitWithSamples,
 } from "../services/visitsApi";
 import { getVisitStatusLabel, VISIT_STATUS_OPTIONS } from "../types/visit";
 import type {
@@ -143,31 +143,18 @@ export function VisitsPage() {
     setSaving(true);
     setFormError(null);
     try {
-      const savedVisit = await updateVisit(editing.id, {
+      // The backend saves visit metadata and all sample changes in one DB transaction.
+      const savedVisit = await updateVisitWithSamples(editing.id, {
         visit_date: data.visit_date,
         purpose: data.purpose,
         description: data.description,
-      });
-      setVisits((current) => current.map((visit) => visit.id === savedVisit.id
-        ? { ...visit, ...savedVisit, samples: visit.samples }
-        : visit));
-      for (const change of sampleChanges) {
-        const savedSample = await updateSample(change.id, {
-          quantity: change.quantity,
-          description: change.description,
-        });
-        setVisits((current) => current.map((visit) => ({
-          ...visit,
-          samples: visit.samples?.map((sample) => sample.id === savedSample.id
-            ? { ...sample, quantity: savedSample.quantity, description: savedSample.description ?? change.description, product: savedSample.product ?? sample.product, product_name: savedSample.product_name ?? sample.product_name }
-            : sample),
-        })));
-      }
+      }, sampleChanges);
+      setVisits((current) => current.map((visit) => visit.id === savedVisit.id ? savedVisit : visit));
       setFormOpen(false);
       setEditing(null);
       setEditingSamples(null);
     } catch (e: unknown) {
-      setFormError(e instanceof ApiError ? e.message : "ذخیره کامل تغییرات انجام نشد. فرم را بررسی کرده و دوباره تلاش کنید.");
+      setFormError(e instanceof ApiError ? e.message : "ذخیره تغییرات انجام نشد؛ هیچ‌کدام از تغییرات ثبت نشدند. فرم را بررسی کرده و دوباره تلاش کنید.");
     } finally {
       setSaving(false);
     }
