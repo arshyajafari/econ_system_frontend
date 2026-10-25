@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
-import type { VisitSampleDetails } from '../types/visit';
+import type { VisitSample } from '../types/visit';
 import type { Visit, VisitFormData } from '../types/visit';
 
 type SampleDraft = { id: string; productName: string; quantity: string; description: string };
