@@ -96,7 +96,7 @@ const navigation: NavConfig[] = [
     requiredPermission: "invoices.view",
   },
   {
-    label: "ویزیت‌ها",
+    label: "ویزیت و نمونه‌ها",
     to: "/visits",
     icon: "visits",
     requiredPermission: "visits.view",
