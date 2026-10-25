@@ -426,7 +426,7 @@ export function VisitsPage() {
                 </tr>
               ) : !visits.length ? (
                 <tr>
-                  <td colSpan={7} className="p-10 text-center">
+                  <td colSpan={8} className="p-10 text-center">
                     بازدیدی پیدا نشد.
                   </td>
                 </tr>
