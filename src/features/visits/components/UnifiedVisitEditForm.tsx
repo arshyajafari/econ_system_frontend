@@ -6,7 +6,7 @@ import type { Visit, VisitFormData } from '../types/visit';
 type SampleDraft = { id: string; productName: string; quantity: string; description: string };
 type Props = {
     visit: Visit;
-    samples: VisitSampleDetails[];
+    samples: VisitSample[];
     isSubmitting: boolean;
     error: string | null;
     onSubmit: (
