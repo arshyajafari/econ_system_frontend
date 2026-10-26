@@ -1,7 +1,11 @@
 import { apiClient } from "../../../api/client";
 import type { Payment, PaymentFormData, PaymentListParams, PaymentListResponse, PaymentStatusAction } from "../types/payment";
 
-type PaymentCustomerBalanceResponse = { payable_balance: number; customer: { id: string; code: string; name: string } };
+export type PaymentCustomerBalance = {
+  payable_balance: number;
+  previous_balance: number;
+  customer: { id: string; code: string; name: string };
+};
 type PaymentApiPayload = { method: string; amount: number; settlement_discount_amount: number; reference_number?: string; payment_date: string; description?: string };
 
 export async function getPayments(params: PaymentListParams = {}): Promise<PaymentListResponse> {
@@ -10,9 +14,15 @@ export async function getPayments(params: PaymentListParams = {}): Promise<Payme
 export async function getPayment(id: string): Promise<Payment> {
   const response = await apiClient.get<Payment>(`/payments/${id}`); return response.data;
 }
-export async function getCustomerPayableBalance(customerId: string): Promise<number> {
-  const response = await apiClient.get<PaymentCustomerBalanceResponse>(`/payments/customer/${customerId}/payable-balance`);
-  return Number(response.data.payable_balance || 0);
+export async function getCustomerPayableBalance(customerId: string): Promise<{
+  payableBalance: number;
+  previousBalance: number;
+}> {
+  const response = await apiClient.get<PaymentCustomerBalance>(`/payments/customer/${customerId}/payable-balance`);
+  return {
+    payableBalance: Number(response.data.payable_balance || 0),
+    previousBalance: Number(response.data.previous_balance || 0),
+  };
 }
 export async function createPayment(payload: PaymentFormData): Promise<Payment> {
   const response = await apiClient.post<Payment>("/payments", toMultipart(payload), { headers: { "Content-Type": "multipart/form-data" } }); return response.data;
