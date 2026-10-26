@@ -32,6 +32,7 @@ export function PaymentForm({
   const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(() => payment?.customer ? { id: payment.customer.id, code: payment.customer.code, customer_name: payment.customer.name } : null);
   const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
   const [customerBalance, setCustomerBalance] = useState<number | null>(null);
+  const [previousBalance, setPreviousBalance] = useState<number | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [method, setMethod] = useState<PaymentMethod>(
@@ -68,21 +69,23 @@ export function PaymentForm({
 
         if (cancelled) return;
 
-        setCustomerBalance(balance);
+        setCustomerBalance(balance.payableBalance);
+        setPreviousBalance(balance.previousBalance);
 
         if (!payment) {
-          setAmount(balance > 0 ? String(balance) : "");
+          setAmount(balance.payableBalance > 0 ? String(balance.payableBalance) : "");
           setSettlementDiscountAmount("0");
         } else {
           setAmount((current) => {
             const currentAmount = Number(current || 0);
-            return currentAmount > balance ? String(balance) : current;
+            return currentAmount > balance.payableBalance ? String(balance.payableBalance) : current;
           });
         }
       } catch (requestError: unknown) {
         if (cancelled) return;
 
         setCustomerBalance(null);
+        setPreviousBalance(null);
         setAmount("");
         setBalanceError(
           requestError instanceof ApiError && requestError.message
@@ -105,6 +108,7 @@ export function PaymentForm({
     if (payment) return;
     setCustomerId(nextCustomerId);
     setCustomerBalance(null);
+    setPreviousBalance(null);
     setAmount("");
     setSettlementDiscountAmount("0");
     setBalanceError(null);
@@ -211,10 +215,31 @@ export function PaymentForm({
             placeholder="مثلاً 1,500,000"
           />
           {customerId ? (
-            <div className="mt-2 text-xs text-gray-500">
-              {isLoadingBalance
-                ? "در حال محاسبه مانده قابل پرداخت..."
-                : `مانده قابل پرداخت مشتری: ${numberFormatter.format(customerBalance ?? 0)}`}
+            <div className="mt-2 space-y-1.5 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600">
+              {isLoadingBalance ? (
+                <div>در حال محاسبه بدهی و مانده حساب مشتری...</div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>
+                      {(previousBalance ?? 0) > 0
+                        ? "بدهی قبلی مشتری"
+                        : (previousBalance ?? 0) < 0
+                          ? "بستانکاری قبلی مشتری"
+                          : "بدهی قبلی ثبت‌شده"}
+                    </span>
+                    <span className="font-medium tabular-nums" dir="ltr">
+                      {numberFormatter.format(Math.abs(previousBalance ?? 0))}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-1.5 font-semibold text-gray-900">
+                    <span>مانده قابل پرداخت نهایی</span>
+                    <span className="tabular-nums" dir="ltr">
+                      {numberFormatter.format(customerBalance ?? 0)}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           ) : null}
           {customerId && customerBalance === 0 && !isLoadingBalance ? (
