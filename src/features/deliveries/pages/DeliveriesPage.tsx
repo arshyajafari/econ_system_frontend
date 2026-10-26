@@ -1,4 +1,4 @@
-import { sortTableRecords } from "../../../utils/date";
+import { sortTableRecords } from '../../../utils/date';
 import { useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
@@ -255,21 +255,27 @@ export function DeliveriesPage() {
             )}
             {canManageForm ? (
                 <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
-                    <div className="grid gap-3 md:grid-cols-2">
-                        <select
-                            required
-                            disabled={Boolean(editing) || saving}
-                            value={form.order_id}
-                            onChange={(e) => setForm({ ...form, order_id: e.target.value })}
-                            className="rounded-lg border px-3 py-2"
-                        >
-                            <option value="">انتخاب فاکتور صادرشده</option>
-                            {availableOrders.map((order) => (
-                                <option key={order.id} value={order.id}>
-                                    {order.invoice_code ?? order.code} — {order.customer?.name ?? 'بدون مشتری'}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="grid gap-3 md:grid-cols-3">
+                        <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                                مشتری
+                            </label>
+                            <select
+                                required
+                                disabled={Boolean(editing) || saving}
+                                value={form.order_id}
+                                onChange={(e) => setForm({ ...form, order_id: e.target.value })}
+                                className="rounded-lg border px-3 py-2"
+                            >
+                                <option value="">انتخاب فاکتور صادرشده</option>
+                                {availableOrders.map((order) => (
+                                    <option key={order.id} value={order.id}>
+                                        {order.invoice_code ?? order.code} —{' '}
+                                        {order.customer?.name ?? 'بدون مشتری'}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <IranAddressFields
                             province={form.province ?? ''}
                             city={form.city ?? ''}
@@ -280,9 +286,6 @@ export function DeliveriesPage() {
                             disabled={saving}
                             className="md:col-span-1"
                         />
-                        <div className="md:col-span-2 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm leading-6 text-blue-900">
-                            نام گیرنده، آدرس نهایی و توضیحات تحویل در مرحله تحویل فیزیکی توسط مسئول تحویل ثبت می‌شود. در صورت خالی‌بودن شماره تماس یا آدرس، اطلاعات ثبت‌شده مشتری استفاده خواهد شد.
-                        </div>
                     </div>
                     <div className="flex gap-2">
                         <button
@@ -311,13 +314,30 @@ export function DeliveriesPage() {
                 <div className="ui-filter-grid grid-cols-1 md:grid-cols-[2fr_1fr]">
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">جستجو</span>
-                        <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="گیرنده یا توضیحات ارسال..." />
+                        <input
+                            value={search}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setPage(1);
+                            }}
+                            placeholder="گیرنده یا توضیحات ارسال..."
+                        />
                     </label>
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">وضعیت ارسال</span>
-                        <select value={status} onChange={(e) => { setStatus(e.target.value as DeliveryStatus | ''); setPage(1); }}>
+                        <select
+                            value={status}
+                            onChange={(e) => {
+                                setStatus(e.target.value as DeliveryStatus | '');
+                                setPage(1);
+                            }}
+                        >
                             <option value="">همه وضعیت‌ها</option>
-                            {DELIVERY_STATUS_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                            {DELIVERY_STATUS_OPTIONS.map((s) => (
+                                <option key={s.value} value={s.value}>
+                                    {s.label}
+                                </option>
+                            ))}
                         </select>
                     </label>
                 </div>
@@ -501,10 +521,20 @@ export function DeliveriesPage() {
                                                                 disabled={actionId === d.id}
                                                                 onClick={() => {
                                                                     setHandoffTarget(d);
-                                                                    setHandoffName(d.recipient_name ?? '');
-                                                                    setHandoffPhone(d.recipient_phone ?? d.customer?.phone ?? '');
-                                                                    setHandoffAddress(d.address ?? '');
-                                                                    setHandoffDescription(d.description ?? '');
+                                                                    setHandoffName(
+                                                                        d.recipient_name ?? ''
+                                                                    );
+                                                                    setHandoffPhone(
+                                                                        d.recipient_phone ??
+                                                                            d.customer?.phone ??
+                                                                            ''
+                                                                    );
+                                                                    setHandoffAddress(
+                                                                        d.address ?? ''
+                                                                    );
+                                                                    setHandoffDescription(
+                                                                        d.description ?? ''
+                                                                    );
                                                                 }}
                                                                 className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                             >
@@ -643,7 +673,12 @@ export function DeliveriesPage() {
             ) : null}
 
             {handoffTarget ? (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="handoff-title">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="handoff-title"
+                >
                     <form
                         className="w-full max-w-2xl space-y-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-2xl md:p-6"
                         onSubmit={(event) => {
@@ -656,46 +691,114 @@ export function DeliveriesPage() {
                                 recipient_phone: handoffPhone.trim() || undefined,
                                 address: handoffAddress.trim() || undefined,
                                 description: handoffDescription.trim() || undefined,
-                            }).then((updated) => {
-                                setItems((current) => current.map((item) => item.id === updated.id ? updated : item));
-                                setHandoffTarget(null);
-                            }).catch((e: unknown) => {
-                                setError(e instanceof ApiError ? e.message : 'خطا در ثبت تحویل بار.');
-                            }).finally(() => setActionId(null));
+                            })
+                                .then((updated) => {
+                                    setItems((current) =>
+                                        current.map((item) =>
+                                            item.id === updated.id ? updated : item
+                                        )
+                                    );
+                                    setHandoffTarget(null);
+                                })
+                                .catch((e: unknown) => {
+                                    setError(
+                                        e instanceof ApiError ? e.message : 'خطا در ثبت تحویل بار.'
+                                    );
+                                })
+                                .finally(() => setActionId(null));
                         }}
                     >
                         <div>
                             <div className="flex items-start gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-lg text-white" aria-hidden="true">✓</div>
+                                <div
+                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-lg text-white"
+                                    aria-hidden="true"
+                                >
+                                    ✓
+                                </div>
                                 <div>
-                                    <h2 id="handoff-title" className="text-lg font-bold text-gray-900">ثبت تحویل فیزیکی بار</h2>
-                                    <p className="mt-1 text-sm text-gray-500">فاکتور: {handoffTarget.order?.code ?? '—'} · {handoffTarget.customer?.name ?? 'بدون مشتری'}</p>
-                                    <p className="mt-2 text-xs leading-5 text-gray-500">این بخش توسط مسئول تحویل تکمیل می‌شود. شماره تماس و آدرس در صورت خالی‌بودن از اطلاعات مشتری برداشته می‌شود.</p>
+                                    <h2
+                                        id="handoff-title"
+                                        className="text-lg font-bold text-gray-900"
+                                    >
+                                        ثبت تحویل
+                                    </h2>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        فاکتور: {handoffTarget.order?.code ?? '—'} ·{' '}
+                                        {handoffTarget.customer?.name ?? 'بدون مشتری'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                         <div className="grid gap-4 md:grid-cols-2">
                             <label className="block text-sm font-medium text-gray-700">
                                 نام گیرنده <span className="text-red-600">*</span>
-                                <input required maxLength={150} disabled={actionId !== null} value={handoffName} onChange={(event) => setHandoffName(event.target.value)} placeholder="نام و نام خانوادگی گیرنده" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                                <input
+                                    required
+                                    maxLength={150}
+                                    disabled={actionId !== null}
+                                    value={handoffName}
+                                    onChange={(event) => setHandoffName(event.target.value)}
+                                    placeholder="نام و نام خانوادگی گیرنده"
+                                    className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100"
+                                />
                             </label>
                             <label className="block text-sm font-medium text-gray-700">
-                                شماره تماس گیرنده <span className="font-normal text-gray-400">(اختیاری)</span>
-                                <input maxLength={30} disabled={actionId !== null} value={handoffPhone} onChange={(event) => setHandoffPhone(event.target.value)} placeholder={handoffTarget.customer?.phone ?? 'شماره تماس'} dir="ltr" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-right outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
-                                <span className="mt-1 block text-xs font-normal text-gray-500">اگر خالی باشد، شماره مشتری استفاده می‌شود.</span>
+                                شماره تماس گیرنده{' '}
+                                <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <input
+                                    maxLength={30}
+                                    disabled={actionId !== null}
+                                    value={handoffPhone}
+                                    onChange={(event) => setHandoffPhone(event.target.value)}
+                                    placeholder={handoffTarget.customer?.phone ?? 'شماره تماس'}
+                                    dir="ltr"
+                                    className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-right outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100"
+                                />
                             </label>
                             <label className="block text-sm font-medium text-gray-700 md:col-span-2">
-                                آدرس تحویل <span className="font-normal text-gray-400">(اختیاری)</span>
-                                <textarea rows={2} maxLength={2000} disabled={actionId !== null} value={handoffAddress} onChange={(event) => setHandoffAddress(event.target.value)} placeholder="آدرس دقیق محل تحویل؛ در صورت خالی‌بودن از آدرس مشتری استفاده می‌شود" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                                آدرس تحویل{' '}
+                                <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <textarea
+                                    rows={2}
+                                    maxLength={2000}
+                                    disabled={actionId !== null}
+                                    value={handoffAddress}
+                                    onChange={(event) => setHandoffAddress(event.target.value)}
+                                    placeholder="آدرس دقیق محل تحویل؛ در صورت خالی‌بودن از آدرس مشتری استفاده می‌شود"
+                                    className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100"
+                                />
                             </label>
                             <label className="block text-sm font-medium text-gray-700 md:col-span-2">
-                                توضیحات تحویل <span className="font-normal text-gray-400">(اختیاری)</span>
-                                <textarea rows={3} maxLength={5000} disabled={actionId !== null} value={handoffDescription} onChange={(event) => setHandoffDescription(event.target.value)} placeholder="توضیحات یا نکات مربوط به تحویل بار" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                                توضیحات تحویل{' '}
+                                <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <textarea
+                                    rows={3}
+                                    maxLength={5000}
+                                    disabled={actionId !== null}
+                                    value={handoffDescription}
+                                    onChange={(event) => setHandoffDescription(event.target.value)}
+                                    placeholder="توضیحات یا نکات مربوط به تحویل بار"
+                                    className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100"
+                                />
                             </label>
                         </div>
                         <div className="flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-                            <button type="button" disabled={actionId !== null} onClick={() => setHandoffTarget(null)} className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">انصراف</button>
-                            <button type="submit" disabled={actionId !== null || !handoffName.trim()} className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50">{actionId ? 'در حال ثبت...' : 'تأیید تحویل'}</button>
+                            <button
+                                type="button"
+                                disabled={actionId !== null}
+                                onClick={() => setHandoffTarget(null)}
+                                className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={actionId !== null || !handoffName.trim()}
+                                className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {actionId ? 'در حال ثبت...' : 'تأیید تحویل'}
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -706,7 +809,11 @@ export function DeliveriesPage() {
                 title="حذف ارسال"
                 description={
                     deleteTarget
-                        ? `آیا از حذف ارسال مربوط به «${deleteTarget.recipient_name || deleteTarget.order?.code || 'بدون عنوان'}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+                        ? `آیا از حذف ارسال مربوط به «${
+                              deleteTarget.recipient_name ||
+                              deleteTarget.order?.code ||
+                              'بدون عنوان'
+                          }» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
                         : ''
                 }
                 confirmLabel="حذف ارسال"
