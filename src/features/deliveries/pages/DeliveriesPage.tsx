@@ -522,7 +522,7 @@ export function DeliveriesPage() {
                                                             </>
                                                         )}
                                                     {d.status === 'shipped' &&
-                                                        isDeliveryOperator && (
+                                                        (isDeliveryOperator || isAdmin) && (
                                                             <button
                                                                 type="button"
                                                                 disabled={actionId === d.id}
@@ -551,7 +551,7 @@ export function DeliveriesPage() {
                                                 </>
                                             ) : (
                                                 <span className="text-xs text-gray-400">
-                                                    فقط مسئول تحویل مجاز به ثبت تحویل نهایی است
+                                                    فقط ادمین یا مسئول تحویل مجاز به ثبت تحویل نهایی است
                                                 </span>
                                             )}
                                         </div>
