@@ -375,7 +375,7 @@ export function DeliveriesPage() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        {d.recipient_name}
+                                        {d.recipient_name || 'در انتظار ثبت گیرنده'}
                                         <div className="text-xs text-gray-500">
                                             {d.recipient_phone ?? '—'}
                                         </div>
@@ -706,7 +706,7 @@ export function DeliveriesPage() {
                 title="حذف ارسال"
                 description={
                     deleteTarget
-                        ? `آیا از حذف ارسال مربوط به «${deleteTarget.recipient_name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+                        ? `آیا از حذف ارسال مربوط به «${deleteTarget.recipient_name || deleteTarget.order?.code || 'بدون عنوان'}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
                         : ''
                 }
                 confirmLabel="حذف ارسال"
