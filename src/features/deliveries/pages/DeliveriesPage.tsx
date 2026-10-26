@@ -268,6 +268,13 @@ export function DeliveriesPage() {
                                 className="rounded-lg border px-3 py-2"
                             >
                                 <option value="">انتخاب فاکتور صادرشده</option>
+                                {editing?.order &&
+                                !availableOrders.some((order) => order.id === editing.order?.id) ? (
+                                    <option value={editing.order.id}>
+                                        {editing.order.code} —{' '}
+                                        {editing.customer?.name ?? 'بدون مشتری'} (فاکتور فعلی)
+                                    </option>
+                                ) : null}
                                 {availableOrders.map((order) => (
                                     <option key={order.id} value={order.id}>
                                         {order.invoice_code ?? order.code} —{' '}
