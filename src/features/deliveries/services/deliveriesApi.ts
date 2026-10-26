@@ -12,6 +12,7 @@ export async function cancelDelivery(id:string){const r=await apiClient.post<Del
 export type DeliveryOrderSource = {
   id: string;
   code: string;
+  invoice_code?: string | null;
   status: string;
   customer: { id: string; code: string; name: string; phone: string | null } | null;
 };
