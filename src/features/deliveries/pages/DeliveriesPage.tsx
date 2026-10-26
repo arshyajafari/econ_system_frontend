@@ -58,6 +58,10 @@ export function DeliveriesPage() {
         [editing, setEditing] = useState<Delivery | null>(null),
         [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null),
         [deleteTarget, setDeleteTarget] = useState<Delivery | null>(null),
+        [handoffTarget, setHandoffTarget] = useState<Delivery | null>(null),
+        [handoffName, setHandoffName] = useState(''),
+        [handoffPhone, setHandoffPhone] = useState(''),
+        [handoffDescription, setHandoffDescription] = useState(''),
         [detailsLoading, setDetailsLoading] = useState(false),
         [actionTarget, setActionTarget] = useState<{
             delivery: Delivery;
