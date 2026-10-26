@@ -42,7 +42,7 @@ export function DeliveriesPage() {
     const isAccountant = normalizedRoles.includes('accountant');
     const canOperate = isAdmin || isAccountant || isDeliveryOperator;
     const canApproveDelivery = isAdmin;
-    const canManageForm = isAdmin || isDeliveryOperator;
+    const canManageForm = isAdmin;
     const [items, setItems] = useState<Delivery[]>([]),
         [availableOrders, setAvailableOrders] = useState<DeliveryOrderSource[]>([]),
         [status, setStatus] = useState<DeliveryStatus | ''>(''),
@@ -160,7 +160,7 @@ export function DeliveriesPage() {
                     : a === 'ship'
                     ? await shipDelivery(d.id)
                     : a === 'complete'
-                    ? await completeDelivery(d.id)
+                    ? await completeDelivery(d.id, { recipient_name: handoffName, recipient_phone: handoffPhone, description: handoffDescription })
                     : await cancelDelivery(d.id);
             setItems((x) => x.map((i) => (i.id === u.id ? u : i)));
         } catch (e: unknown) {
@@ -260,21 +260,13 @@ export function DeliveriesPage() {
                             onChange={(e) => setForm({ ...form, order_id: e.target.value })}
                             className="rounded-lg border px-3 py-2"
                         >
-                            <option value="">انتخاب سفارش آماده ارسال</option>
+                            <option value="">انتخاب فاکتور صادرشده</option>
                             {availableOrders.map((order) => (
                                 <option key={order.id} value={order.id}>
-                                    {order.code} — {order.customer?.name ?? 'بدون مشتری'}
+                                    {order.invoice_code ?? order.code} — {order.customer?.name ?? 'بدون مشتری'}
                                 </option>
                             ))}
                         </select>
-                        <input
-                            required
-                            disabled={saving}
-                            value={form.recipient_name}
-                            onChange={(e) => setForm({ ...form, recipient_name: e.target.value })}
-                            placeholder="نام گیرنده"
-                            className="rounded-lg border px-3 py-2"
-                        />
                         <IranAddressFields
                             province={form.province ?? ''}
                             city={form.city ?? ''}
@@ -284,20 +276,6 @@ export function DeliveriesPage() {
                             onCityChange={(city) => setForm((current) => ({ ...current, city }))}
                             disabled={saving}
                             className="md:col-span-1"
-                        />
-                        <input
-                            disabled={saving}
-                            value={form.recipient_phone}
-                            onChange={(e) => setForm({ ...form, recipient_phone: e.target.value })}
-                            placeholder="تلفن گیرنده"
-                            className="rounded-lg border px-3 py-2"
-                        />
-                        <input
-                            disabled={saving}
-                            value={form.address}
-                            onChange={(e) => setForm({ ...form, address: e.target.value })}
-                            placeholder="آدرس"
-                            className="rounded-lg border px-3 py-2 md:col-span-1"
                         />
                         <textarea
                             disabled={saving}
@@ -518,7 +496,7 @@ export function DeliveriesPage() {
                                                             </>
                                                         )}
                                                     {d.status === 'shipped' &&
-                                                        (isDeliveryOperator || isAdmin) && (
+                                                        isDeliveryOperator && (
                                                             <button
                                                                 type="button"
                                                                 disabled={actionId === d.id}
@@ -536,7 +514,7 @@ export function DeliveriesPage() {
                                                 </>
                                             ) : (
                                                 <span className="text-xs text-gray-400">
-                                                    فقط نقش مسئول تحویل یا ادمین مجاز است
+                                                    فقط مسئول تحویل مجاز به ثبت تحویل نهایی است
                                                 </span>
                                             )}
                                         </div>
@@ -661,6 +639,51 @@ export function DeliveriesPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+            ) : null}
+
+            {handoffTarget ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="handoff-title">
+                    <form
+                        className="w-full max-w-xl space-y-4 rounded-2xl bg-white p-5 shadow-2xl"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            if (actionId) return;
+                            setActionId(handoffTarget.id);
+                            setError(null);
+                            void completeDelivery(handoffTarget.id, {
+                                recipient_name: handoffName.trim(),
+                                recipient_phone: handoffPhone.trim() || undefined,
+                                description: handoffDescription.trim() || undefined,
+                            }).then((updated) => {
+                                setItems((current) => current.map((item) => item.id === updated.id ? updated : item));
+                                setHandoffTarget(null);
+                            }).catch((e: unknown) => {
+                                setError(e instanceof ApiError ? e.message : 'خطا در ثبت تحویل بار.');
+                            }).finally(() => setActionId(null));
+                        }}
+                    >
+                        <div>
+                            <h2 id="handoff-title" className="text-lg font-bold text-gray-900">ثبت تحویل فیزیکی بار</h2>
+                            <p className="mt-1 text-sm text-gray-500">فاکتور: {handoffTarget.order?.code ?? '—'} — {handoffTarget.customer?.name ?? 'بدون مشتری'}</p>
+                        </div>
+                        <label className="block text-sm font-medium text-gray-700">
+                            نام گیرنده
+                            <input required maxLength={150} disabled={actionId !== null} value={handoffName} onChange={(event) => setHandoffName(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
+                        </label>
+                        <label className="block text-sm font-medium text-gray-700">
+                            شماره تماس گیرنده (اختیاری؛ در صورت خالی‌بودن از شماره مشتری استفاده می‌شود)
+                            <input maxLength={30} disabled={actionId !== null} value={handoffPhone} onChange={(event) => setHandoffPhone(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
+                        </label>
+                        <label className="block text-sm font-medium text-gray-700">
+                            توضیحات
+                            <textarea maxLength={5000} disabled={actionId !== null} value={handoffDescription} onChange={(event) => setHandoffDescription(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
+                        </label>
+                        <div className="flex justify-end gap-2">
+                            <button type="button" disabled={actionId !== null} onClick={() => setHandoffTarget(null)} className="rounded-lg border px-4 py-2">انصراف</button>
+                            <button type="submit" disabled={actionId !== null || !handoffName.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50">{actionId ? 'در حال ثبت...' : 'تأیید تحویل'}</button>
+                        </div>
+                    </form>
                 </div>
             ) : null}
 
