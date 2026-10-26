@@ -7,11 +7,12 @@ export async function deleteDelivery(id:string){await apiClient.delete(`/deliver
 export async function updateDelivery(id:string,d:Omit<DeliveryFormData,"order_id">){const r=await apiClient.put<Delivery>(`/deliveries/${id}`,{...d,recipient_name:d.recipient_name.trim(),recipient_phone:d.recipient_phone.trim(),province:d.province.trim()||undefined,city:d.city.trim()||undefined,address:d.address.trim(),description:d.description.trim()||undefined});return r.data}
 export async function prepareDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/prepare`);return r.data}
 export async function shipDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/ship`);return r.data}
-export async function completeDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`);return r.data}
+export async function completeDelivery(id:string, data:{recipient_name:string;recipient_phone?:string;description?:string}){const r=await apiClient.post<Delivery>(`/deliveries/${id}/complete`,data);return r.data}
 export async function cancelDelivery(id:string){const r=await apiClient.post<Delivery>(`/deliveries/${id}/cancel`);return r.data}
 export type DeliveryOrderSource = {
   id: string;
   code: string;
+  invoice_code?: string | null;
   status: string;
   customer: { id: string; code: string; name: string; phone: string | null } | null;
 };
