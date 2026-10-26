@@ -221,7 +221,7 @@ export function DeliveriesPage() {
         setEditing(d);
         setForm({
             order_id: d.order?.id ?? '',
-            recipient_name: d.recipient_name,
+            recipient_name: d.recipient_name ?? '',
             recipient_phone: d.recipient_phone ?? '',
             province: d.province ?? '',
             city: d.city ?? '',
