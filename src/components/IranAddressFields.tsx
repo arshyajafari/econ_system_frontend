@@ -1,4 +1,7 @@
-import { IRAN_PROVINCES, getIranProvince } from "../data/iranLocations";
+import { useEffect } from "react";
+import { getIranProvince } from "../data/iranLocations";
+
+const FIXED_PROVINCE = "مازندران";
 
 type Props = {
   province: string;
@@ -19,13 +22,20 @@ export function IranAddressFields({
   required = false,
   className = "",
 }: Props) {
-  const selectedProvince = getIranProvince(province);
+  const selectedProvince = getIranProvince(FIXED_PROVINCE);
   const cities = selectedProvince?.cities ?? [];
 
-  const legacyProvince = Boolean(province && !selectedProvince);
-  const legacyCity = Boolean(
-    city && selectedProvince && !cities.includes(city),
-  );
+  useEffect(() => {
+    if (province !== FIXED_PROVINCE) {
+      onProvinceChange(FIXED_PROVINCE);
+      onCityChange("");
+      return;
+    }
+
+    if (city && !cities.includes(city)) onCityChange("");
+  }, [province, city, cities, onProvinceChange, onCityChange]);
+
+
 
   return (
     <>
@@ -36,29 +46,12 @@ export function IranAddressFields({
         </label>
 
         <select
-          value={province ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-
-            onProvinceChange(value);
-
-            onCityChange("");
-          }}
-          disabled={disabled}
+          value={FIXED_PROVINCE}
+          disabled
           required={required}
           className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-gray-900 focus:ring-2 focus:ring-gray-900/10 disabled:bg-gray-100"
         >
-          <option value="">انتخاب استان</option>
-
-          {legacyProvince && (
-            <option value={province}>مقدار ثبت‌شده قدیمی: {province}</option>
-          )}
-
-          {IRAN_PROVINCES.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
-            </option>
-          ))}
+          <option value={FIXED_PROVINCE}>{FIXED_PROVINCE}</option>
         </select>
       </div>
 
@@ -78,10 +71,6 @@ export function IranAddressFields({
           <option value="">
             {selectedProvince ? "انتخاب شهر" : "ابتدا استان را انتخاب کنید"}
           </option>
-
-          {legacyCity && (
-            <option value={city}>مقدار ثبت‌شده قدیمی: {city}</option>
-          )}
 
           {cities.map((item) => (
             <option key={item} value={item}>
