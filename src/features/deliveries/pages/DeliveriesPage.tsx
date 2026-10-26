@@ -66,7 +66,7 @@ export function DeliveriesPage() {
         [detailsLoading, setDetailsLoading] = useState(false),
         [actionTarget, setActionTarget] = useState<{
             delivery: Delivery;
-            action: 'prepare' | 'ship' | 'complete' | 'cancel';
+            action: 'prepare' | 'ship' | 'cancel';
         } | null>(null);
 
     const load = async () => {
