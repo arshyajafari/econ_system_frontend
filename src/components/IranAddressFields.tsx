@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { getIranProvince } from "../data/iranLocations";
 
 const FIXED_PROVINCE = "مازندران";
@@ -23,7 +23,7 @@ export function IranAddressFields({
   className = "",
 }: Props) {
   const selectedProvince = getIranProvince(FIXED_PROVINCE);
-  const cities = selectedProvince?.cities ?? [];
+  const cities = useMemo(() => selectedProvince?.cities ?? [], [selectedProvince]);
 
   useEffect(() => {
     if (province !== FIXED_PROVINCE) {
