@@ -61,6 +61,7 @@ export function DeliveriesPage() {
         [handoffTarget, setHandoffTarget] = useState<Delivery | null>(null),
         [handoffName, setHandoffName] = useState(''),
         [handoffPhone, setHandoffPhone] = useState(''),
+        [handoffAddress, setHandoffAddress] = useState(''),
         [handoffDescription, setHandoffDescription] = useState(''),
         [detailsLoading, setDetailsLoading] = useState(false),
         [actionTarget, setActionTarget] = useState<{
@@ -154,7 +155,7 @@ export function DeliveriesPage() {
             setSaving(false);
         }
     };
-    const action = async (d: Delivery, a: 'prepare' | 'ship' | 'complete' | 'cancel') => {
+    const action = async (d: Delivery, a: 'prepare' | 'ship' | 'cancel') => {
         if (actionId) return;
         setActionId(d.id);
         try {
@@ -163,8 +164,6 @@ export function DeliveriesPage() {
                     ? await prepareDelivery(d.id)
                     : a === 'ship'
                     ? await shipDelivery(d.id)
-                    : a === 'complete'
-                    ? await completeDelivery(d.id, { recipient_name: handoffName, recipient_phone: handoffPhone, description: handoffDescription })
                     : await cancelDelivery(d.id);
             setItems((x) => x.map((i) => (i.id === u.id ? u : i)));
         } catch (e: unknown) {
@@ -281,13 +280,9 @@ export function DeliveriesPage() {
                             disabled={saving}
                             className="md:col-span-1"
                         />
-                        <textarea
-                            disabled={saving}
-                            value={form.description}
-                            onChange={(e) => setForm({ ...form, description: e.target.value })}
-                            placeholder="توضیحات"
-                            className="rounded-lg border px-3 py-2 md:col-span-2"
-                        />
+                        <div className="md:col-span-2 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm leading-6 text-blue-900">
+                            نام گیرنده، آدرس نهایی و توضیحات تحویل در مرحله تحویل فیزیکی توسط مسئول تحویل ثبت می‌شود. در صورت خالی‌بودن شماره تماس یا آدرس، اطلاعات ثبت‌شده مشتری استفاده خواهد شد.
+                        </div>
                     </div>
                     <div className="flex gap-2">
                         <button
@@ -504,12 +499,13 @@ export function DeliveriesPage() {
                                                             <button
                                                                 type="button"
                                                                 disabled={actionId === d.id}
-                                                                onClick={() =>
-                                                                    setActionTarget({
-                                                                        delivery: d,
-                                                                        action: 'complete',
-                                                                    })
-                                                                }
+                                                                onClick={() => {
+                                                                    setHandoffTarget(d);
+                                                                    setHandoffName(d.recipient_name ?? '');
+                                                                    setHandoffPhone(d.recipient_phone ?? d.customer?.phone ?? '');
+                                                                    setHandoffAddress(d.address ?? '');
+                                                                    setHandoffDescription(d.description ?? '');
+                                                                }}
                                                                 className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                             >
                                                                 تکمیل شد
@@ -649,7 +645,7 @@ export function DeliveriesPage() {
             {handoffTarget ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="handoff-title">
                     <form
-                        className="w-full max-w-xl space-y-4 rounded-2xl bg-white p-5 shadow-2xl"
+                        className="w-full max-w-2xl space-y-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-2xl md:p-6"
                         onSubmit={(event) => {
                             event.preventDefault();
                             if (actionId) return;
@@ -658,6 +654,7 @@ export function DeliveriesPage() {
                             void completeDelivery(handoffTarget.id, {
                                 recipient_name: handoffName.trim(),
                                 recipient_phone: handoffPhone.trim() || undefined,
+                                address: handoffAddress.trim() || undefined,
                                 description: handoffDescription.trim() || undefined,
                             }).then((updated) => {
                                 setItems((current) => current.map((item) => item.id === updated.id ? updated : item));
@@ -668,24 +665,37 @@ export function DeliveriesPage() {
                         }}
                     >
                         <div>
-                            <h2 id="handoff-title" className="text-lg font-bold text-gray-900">ثبت تحویل فیزیکی بار</h2>
-                            <p className="mt-1 text-sm text-gray-500">فاکتور: {handoffTarget.order?.code ?? '—'} — {handoffTarget.customer?.name ?? 'بدون مشتری'}</p>
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-lg text-white" aria-hidden="true">✓</div>
+                                <div>
+                                    <h2 id="handoff-title" className="text-lg font-bold text-gray-900">ثبت تحویل فیزیکی بار</h2>
+                                    <p className="mt-1 text-sm text-gray-500">فاکتور: {handoffTarget.order?.code ?? '—'} · {handoffTarget.customer?.name ?? 'بدون مشتری'}</p>
+                                    <p className="mt-2 text-xs leading-5 text-gray-500">این بخش توسط مسئول تحویل تکمیل می‌شود. شماره تماس و آدرس در صورت خالی‌بودن از اطلاعات مشتری برداشته می‌شود.</p>
+                                </div>
+                            </div>
                         </div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            نام گیرنده
-                            <input required maxLength={150} disabled={actionId !== null} value={handoffName} onChange={(event) => setHandoffName(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
-                        </label>
-                        <label className="block text-sm font-medium text-gray-700">
-                            شماره تماس گیرنده (اختیاری؛ در صورت خالی‌بودن از شماره مشتری استفاده می‌شود)
-                            <input maxLength={30} disabled={actionId !== null} value={handoffPhone} onChange={(event) => setHandoffPhone(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
-                        </label>
-                        <label className="block text-sm font-medium text-gray-700">
-                            توضیحات
-                            <textarea maxLength={5000} disabled={actionId !== null} value={handoffDescription} onChange={(event) => setHandoffDescription(event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" />
-                        </label>
-                        <div className="flex justify-end gap-2">
-                            <button type="button" disabled={actionId !== null} onClick={() => setHandoffTarget(null)} className="rounded-lg border px-4 py-2">انصراف</button>
-                            <button type="submit" disabled={actionId !== null || !handoffName.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50">{actionId ? 'در حال ثبت...' : 'تأیید تحویل'}</button>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                نام گیرنده <span className="text-red-600">*</span>
+                                <input required maxLength={150} disabled={actionId !== null} value={handoffName} onChange={(event) => setHandoffName(event.target.value)} placeholder="نام و نام خانوادگی گیرنده" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                            </label>
+                            <label className="block text-sm font-medium text-gray-700">
+                                شماره تماس گیرنده <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <input maxLength={30} disabled={actionId !== null} value={handoffPhone} onChange={(event) => setHandoffPhone(event.target.value)} placeholder={handoffTarget.customer?.phone ?? 'شماره تماس'} dir="ltr" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-right outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                                <span className="mt-1 block text-xs font-normal text-gray-500">اگر خالی باشد، شماره مشتری استفاده می‌شود.</span>
+                            </label>
+                            <label className="block text-sm font-medium text-gray-700 md:col-span-2">
+                                آدرس تحویل <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <textarea rows={2} maxLength={2000} disabled={actionId !== null} value={handoffAddress} onChange={(event) => setHandoffAddress(event.target.value)} placeholder="آدرس دقیق محل تحویل؛ در صورت خالی‌بودن از آدرس مشتری استفاده می‌شود" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                            </label>
+                            <label className="block text-sm font-medium text-gray-700 md:col-span-2">
+                                توضیحات تحویل <span className="font-normal text-gray-400">(اختیاری)</span>
+                                <textarea rows={3} maxLength={5000} disabled={actionId !== null} value={handoffDescription} onChange={(event) => setHandoffDescription(event.target.value)} placeholder="توضیحات یا نکات مربوط به تحویل بار" className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 leading-6 outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-100" />
+                            </label>
+                        </div>
+                        <div className="flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
+                            <button type="button" disabled={actionId !== null} onClick={() => setHandoffTarget(null)} className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50">انصراف</button>
+                            <button type="submit" disabled={actionId !== null || !handoffName.trim()} className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50">{actionId ? 'در حال ثبت...' : 'تأیید تحویل'}</button>
                         </div>
                     </form>
                 </div>
@@ -717,8 +727,6 @@ export function DeliveriesPage() {
                                   ? 'آماده‌سازی'
                                   : actionTarget.action === 'ship'
                                   ? 'ارسال'
-                                  : actionTarget.action === 'complete'
-                                  ? 'تحویل'
                                   : 'لغو'
                           }» برای این ارسال مطمئن هستید؟`
                         : ''
