@@ -102,7 +102,10 @@ export function PaymentTable({
                     ? formatNumber(Number(payment.settlement_discount_amount))
                     : "—"}
                 </td>
-                <td className="px-4 py-4 align-top">{getPaymentMethodLabel(payment.method)}</td>
+                <td className="px-4 py-4 align-top">
+                  <div>{getPaymentMethodLabel(payment.method)}</div>
+                  {payment.method === "cheque" && payment.cheque_details ? <div className="mt-1 space-y-0.5 text-xs text-gray-500"><div>چک: {payment.cheque_details.number || "—"} · {payment.cheque_details.bank_name || "—"}</div><div>سررسید: {payment.cheque_details.due_date || "—"}</div><div>{payment.cheque_details.status === "cleared" ? "وصول‌شده" : payment.cheque_details.status === "cancelled" ? "لغوشده" : "در انتظار وصول"}</div></div> : null}
+                </td>
                 <td className="px-4 py-4 align-top">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(payment.status)}`}>
                     {getPaymentStatusLabel(payment.status)}

@@ -53,6 +53,11 @@ export function PaymentForm({
     payment?.payment_date ?? new Date().toISOString().slice(0, 10),
   );
   const [description, setDescription] = useState(payment?.description ?? "");
+  const [chequeIssueDate, setChequeIssueDate] = useState(payment?.cheque_details?.issue_date ?? "");
+  const [chequeDueDate, setChequeDueDate] = useState(payment?.cheque_details?.due_date ?? "");
+  const [chequeNumber, setChequeNumber] = useState(payment?.cheque_details?.number ?? "");
+  const [chequeBankName, setChequeBankName] = useState(payment?.cheque_details?.bank_name ?? "");
+  const [chequeSayadId, setChequeSayadId] = useState(payment?.cheque_details?.sayad_id ?? "");
   const [receiptImage, setReceiptImage] = useState<File | null>(null);
   const [receiptError, setReceiptError] = useState<string | null>(null);
 
@@ -146,6 +151,20 @@ export function PaymentForm({
       setValidationError("مجموع مبلغ پرداخت و تخفیف تسویه بیشتر از مانده قابل پرداخت است.");
       return;
     }
+    if (method === "cheque") {
+      if (!chequeNumber.trim() || !chequeBankName.trim() || !chequeDueDate) {
+        setValidationError("برای چک، شماره چک، نام بانک و تاریخ سررسید الزامی است.");
+        return;
+      }
+      if (chequeIssueDate && chequeDueDate < chequeIssueDate) {
+        setValidationError("تاریخ سررسید نمی‌تواند قبل از تاریخ صدور چک باشد.");
+        return;
+      }
+      if (chequeSayadId.trim() && !/^\d{16}$/.test(chequeSayadId.trim())) {
+        setValidationError("شناسه صیادی باید دقیقاً ۱۶ رقم باشد.");
+        return;
+      }
+    }
     if (receiptError) {
       setValidationError("لطفاً خطای تصویر رسید را برطرف کنید.");
       return;
@@ -157,6 +176,11 @@ export function PaymentForm({
       amount: amount.trim(),
       settlement_discount_amount: String(numericDiscount),
       reference_number: referenceNumber,
+      cheque_issue_date: chequeIssueDate,
+      cheque_due_date: chequeDueDate,
+      cheque_number: chequeNumber,
+      cheque_bank_name: chequeBankName,
+      cheque_sayad_id: chequeSayadId,
       payment_date: paymentDate,
       description,
       receipt_image: receiptImage,
@@ -343,6 +367,20 @@ export function PaymentForm({
             {discountMode === "percent" ? "مبلغ تخفیف محاسبه‌شده: " + numberFormatter.format(effectiveDiscountAmount) + " ریال" : "مبلغ تخفیف را به ریال وارد کنید."}
           </p>
         </div>
+
+        {method === "cheque" ? (
+          <div className="md:col-span-2 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
+            <h3 className="mb-3 text-sm font-semibold text-gray-900">اطلاعات اختصاصی چک</h3>
+            <p className="mb-4 text-xs leading-6 text-gray-600">چک تا زمان تأیید وصول، پرداخت قطعی محسوب نمی‌شود و مانده مشتری را کاهش نمی‌دهد.</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div><label className="mb-1.5 block text-sm font-medium text-gray-700">شماره چک <span className="text-red-600">*</span></label><input required maxLength={100} disabled={isSubmitting} value={chequeNumber} onChange={(event) => setChequeNumber(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
+              <div><label className="mb-1.5 block text-sm font-medium text-gray-700">بانک <span className="text-red-600">*</span></label><input required maxLength={150} disabled={isSubmitting} value={chequeBankName} onChange={(event) => setChequeBankName(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="نام بانک صادرکننده" /></div>
+              <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ صدور</label><input type="date" disabled={isSubmitting} value={chequeIssueDate} onChange={(event) => setChequeIssueDate(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
+              <div><label className="mb-1.5 block text-sm font-medium text-gray-700">تاریخ سررسید <span className="text-red-600">*</span></label><input type="date" required min={chequeIssueDate || undefined} disabled={isSubmitting} value={chequeDueDate} onChange={(event) => setChequeDueDate(event.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" /></div>
+              <div className="md:col-span-2"><label className="mb-1.5 block text-sm font-medium text-gray-700">شناسه صیادی ۱۶ رقمی (اختیاری)</label><input inputMode="numeric" maxLength={16} dir="ltr" disabled={isSubmitting} value={chequeSayadId} onChange={(event) => setChequeSayadId(event.target.value.replace(/\D/g, "").slice(0, 16))} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="۱۶ رقم شناسه صیادی" /></div>
+            </div>
+          </div>
+        ) : null}
 
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
