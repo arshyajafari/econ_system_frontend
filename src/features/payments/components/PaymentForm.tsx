@@ -55,8 +55,8 @@ export function PaymentForm({
             : Number(discountInput || 0);
     const [referenceNumber, setReferenceNumber] = useState(
         payment?.method === 'cheque'
-            ? payment.cheque_details?.number ?? payment.reference_number ?? ''
-            : payment?.reference_number ?? ''
+            ? (payment.cheque_details?.number ?? payment.reference_number ?? '')
+            : (payment?.reference_number ?? '')
     );
     const [paymentDate, setPaymentDate] = useState(
         payment?.payment_date ?? new Date().toISOString().slice(0, 10)
@@ -65,7 +65,7 @@ export function PaymentForm({
     const [chequeDueDate, setChequeDueDate] = useState(payment?.cheque_details?.due_date ?? '');
     const [chequeBankName, setChequeBankName] = useState(
         IRANIAN_BANK_OPTIONS.some((bank) => bank === payment?.cheque_details?.bank_name)
-            ? payment?.cheque_details?.bank_name ?? ''
+            ? (payment?.cheque_details?.bank_name ?? '')
             : ''
     );
     const [chequeSayadId, setChequeSayadId] = useState(payment?.cheque_details?.sayad_id ?? '');
@@ -430,10 +430,11 @@ export function PaymentForm({
                             >
                                 <option value="">انتخاب بانک</option>
                                 {IRANIAN_BANK_OPTIONS.map((bank) => (
-                                    <option key={bank} value={bank}>{bank}</option>
+                                    <option key={bank} value={bank}>
+                                        {bank}
+                                    </option>
                                 ))}
                             </select>
-                            <p className="mt-1 text-xs text-gray-500">برای یکسان‌سازی اطلاعات، بانک را از فهرست انتخاب کنید.</p>
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -448,7 +449,6 @@ export function PaymentForm({
                                     setValidationError(null);
                                 }}
                                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                                placeholder="تاریخ شمسی"
                             />
                         </div>
                         <div>
@@ -497,11 +497,13 @@ export function PaymentForm({
                         value={referenceNumber}
                         onChange={(event) => setReferenceNumber(event.target.value)}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                        placeholder={method === 'cheque' ? 'شماره چک' : 'شماره پیگیری یا مرجع بانکی'}
+                        placeholder={
+                            method === 'cheque' ? 'شماره چک' : 'شماره پیگیری یا مرجع بانکی'
+                        }
                     />
                 </div>
 
-                <div className="md:col-span-2">
+                <div>
                     <label className="mb-1.5 block text-sm font-medium text-gray-700">
                         توضیحات
                     </label>
