@@ -63,7 +63,11 @@ export function PaymentForm({
     );
     const [description, setDescription] = useState(payment?.description ?? '');
     const [chequeDueDate, setChequeDueDate] = useState(payment?.cheque_details?.due_date ?? '');
-    const [chequeBankName, setChequeBankName] = useState(payment?.cheque_details?.bank_name ?? '');
+    const [chequeBankName, setChequeBankName] = useState(
+        IRANIAN_BANK_OPTIONS.some((bank) => bank === payment?.cheque_details?.bank_name)
+            ? payment?.cheque_details?.bank_name ?? ''
+            : ''
+    );
     const [chequeSayadId, setChequeSayadId] = useState(payment?.cheque_details?.sayad_id ?? '');
     const [receiptImage, setReceiptImage] = useState<File | null>(null);
     const [receiptError, setReceiptError] = useState<string | null>(null);
@@ -429,6 +433,7 @@ export function PaymentForm({
                                     <option key={bank} value={bank}>{bank}</option>
                                 ))}
                             </select>
+                            <p className="mt-1 text-xs text-gray-500">برای یکسان‌سازی اطلاعات، بانک را از فهرست انتخاب کنید.</p>
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-gray-700">
