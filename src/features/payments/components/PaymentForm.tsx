@@ -86,7 +86,7 @@ export function PaymentForm({
 
         setCustomerBalance(null);
         setPreviousBalance(null);
-        setAmount("");
+        if (!payment) setAmount("");
         setBalanceError(
           requestError instanceof ApiError && requestError.message
             ? requestError.message
@@ -227,11 +227,15 @@ export function PaymentForm({
             value={amount}
             onValueChange={(value) => {
               const numericValue = Number(value || 0);
-              if (customerBalance !== null && numericValue > customerBalance) {
-                setAmount(String(customerBalance));
+              const maxAmount = customerBalance === null
+                ? null
+                : Math.max(0, Math.round((customerBalance - effectiveDiscountAmount) * 100) / 100);
+              if (maxAmount !== null && numericValue > maxAmount) {
+                setAmount(String(maxAmount));
                 return;
               }
               setAmount(value);
+              setValidationError(null);
             }}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
             placeholder="مثلاً 1,500,000"
@@ -311,14 +315,14 @@ export function PaymentForm({
             <button type="button" disabled={isSubmitting || !customerId}
               onClick={() => {
                 setDiscountMode("percent");
-                setDiscountInput(customerBalance && customerBalance > 0 ? String(Math.round((effectiveDiscountAmount / customerBalance) * 10000) / 100) : "0");
+                setDiscountInput(customerBalance && customerBalance > 0 ? String(Math.round((effectiveDiscountAmount / customerBalance) * 100000000) / 1000000) : "0");
                 setValidationError(null);
               }}
               className={"rounded-md border px-3 py-1 text-xs " + (discountMode === "percent" ? "border-gray-900 bg-gray-900 text-white" : "border-gray-300 text-gray-700")}>
               درصد
             </button>
           </div>
-          <FormattedNumberInput min="0" max={discountMode === "percent" ? "100" : undefined} step="0.01" dir="ltr"
+          <FormattedNumberInput min="0" maxDecimalPlaces={discountMode === "percent" ? 8 : 2} max={discountMode === "percent" ? "100" : undefined} step="0.01" dir="ltr"
             disabled={isSubmitting || isLoadingBalance || !customerId}
             value={discountInput}
             onValueChange={(value) => {
@@ -402,10 +406,10 @@ export function PaymentForm({
             isSubmitting ||
             !customerId ||
             Boolean(receiptError) ||
-            (!payment &&
-              (isLoadingBalance ||
-                customerBalance === null ||
-                customerBalance <= 0))
+            isLoadingBalance ||
+            customerBalance === null ||
+            Boolean(balanceError) ||
+            customerBalance <= 0
           }
           className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
