@@ -63,7 +63,6 @@ export type PaymentFormData = {
   settlement_discount_amount: string;
   reference_number: string;
   cheque_due_date: string;
-  cheque_number: string;
   cheque_bank_name: string;
   cheque_sayad_id: string;
   payment_date: string;
@@ -75,6 +74,35 @@ export const PAYMENT_STATUS_OPTIONS = [
   { value: "pending", label: "در انتظار تأیید" },
   { value: "confirmed", label: "تأیید شده" },
   { value: "cancelled", label: "لغو شده" },
+] as const;
+
+export const IRANIAN_BANK_OPTIONS = [
+  "بانک ملی ایران",
+  "بانک سپه",
+  "بانک تجارت",
+  "بانک ملت",
+  "بانک صادرات ایران",
+  "بانک مسکن",
+  "بانک کشاورزی",
+  "بانک رفاه کارگران",
+  "بانک توسعه صادرات ایران",
+  "بانک صنعت و معدن",
+  "بانک توسعه تعاون",
+  "پست بانک ایران",
+  "بانک پارسیان",
+  "بانک پاسارگاد",
+  "بانک سامان",
+  "بانک اقتصاد نوین",
+  "بانک سرمایه",
+  "بانک شهر",
+  "بانک دی",
+  "بانک کارآفرین",
+  "بانک گردشگری",
+  "بانک ایران زمین",
+  "بانک خاورمیانه",
+  "بانک سینا",
+  "بانک قرض‌الحسنه مهر ایران",
+  "بانک قرض‌الحسنه رسالت",
 ] as const;
 
 export const PAYMENT_METHOD_OPTIONS = [
