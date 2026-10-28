@@ -19,6 +19,7 @@ export type PaymentInvoice = {
 
 export type PaymentCustomer = { id: string; code: string; name: string };
 export type PaymentEmployee = { id: string; name: string };
+export type ChequeDetails = { issue_date: string | null; due_date: string | null; number: string; bank_name: string; sayad_id: string | null; status: "awaiting_clearance" | "cleared" | "cancelled" | string; cleared_at?: string | null };
 
 export type Payment = {
   id: string;
@@ -30,6 +31,7 @@ export type Payment = {
   amount: number;
   settlement_discount_amount: number;
   reference_number: string | null;
+  cheque_details?: ChequeDetails | null;
   payment_date: string | null;
   description: string | null;
   receipt_image_url: string | null;
@@ -60,6 +62,11 @@ export type PaymentFormData = {
   amount: string;
   settlement_discount_amount: string;
   reference_number: string;
+  cheque_issue_date: string;
+  cheque_due_date: string;
+  cheque_number: string;
+  cheque_bank_name: string;
+  cheque_sayad_id: string;
   payment_date: string;
   description: string;
   receipt_image: File | null;
