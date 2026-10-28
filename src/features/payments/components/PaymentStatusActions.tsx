@@ -28,7 +28,7 @@ export function PaymentStatusActions({
           onClick={() => onAction("confirm")}
           className="rounded-lg border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          تأیید پرداخت
+          {payment.method === "cheque" ? "تأیید وصول چک" : "تأیید پرداخت"}
         </button>
       ) : null}
 
