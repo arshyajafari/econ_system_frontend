@@ -8,7 +8,7 @@ import { ImageUploadField } from '../../../components/ImageUploadField';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { searchCustomers } from '../../customers/services/customersApi';
 import { getCustomerPayableBalance } from '../services/paymentsApi';
-import { PAYMENT_METHOD_OPTIONS } from '../types/payment';
+import { IRANIAN_BANK_OPTIONS, PAYMENT_METHOD_OPTIONS } from '../types/payment';
 import type { Payment, PaymentFormData, PaymentMethod } from '../types/payment';
 
 type PaymentFormProps = {
@@ -53,14 +53,21 @@ export function PaymentForm({
         discountMode === 'percent'
             ? Math.round((((customerBalance ?? 0) * Number(discountInput || 0)) / 100) * 100) / 100
             : Number(discountInput || 0);
-    const [referenceNumber, setReferenceNumber] = useState(payment?.reference_number ?? '');
+    const [referenceNumber, setReferenceNumber] = useState(
+        payment?.method === 'cheque'
+            ? payment.cheque_details?.number ?? payment.reference_number ?? ''
+            : payment?.reference_number ?? ''
+    );
     const [paymentDate, setPaymentDate] = useState(
         payment?.payment_date ?? new Date().toISOString().slice(0, 10)
     );
     const [description, setDescription] = useState(payment?.description ?? '');
     const [chequeDueDate, setChequeDueDate] = useState(payment?.cheque_details?.due_date ?? '');
-    const [chequeNumber, setChequeNumber] = useState(payment?.cheque_details?.number ?? '');
-    const [chequeBankName, setChequeBankName] = useState(payment?.cheque_details?.bank_name ?? '');
+    const [chequeBankName, setChequeBankName] = useState(
+        IRANIAN_BANK_OPTIONS.some((bank) => bank === payment?.cheque_details?.bank_name)
+            ? payment?.cheque_details?.bank_name ?? ''
+            : ''
+    );
     const [chequeSayadId, setChequeSayadId] = useState(payment?.cheque_details?.sayad_id ?? '');
     const [receiptImage, setReceiptImage] = useState<File | null>(null);
     const [receiptError, setReceiptError] = useState<string | null>(null);
@@ -156,7 +163,7 @@ export function PaymentForm({
             return;
         }
         if (method === 'cheque') {
-            if (!chequeNumber.trim() || !chequeBankName.trim() || !chequeDueDate) {
+            if (!referenceNumber.trim() || !chequeBankName.trim() || !chequeDueDate) {
                 setValidationError('برای چک، شماره چک، نام بانک و تاریخ سررسید الزامی است.');
                 return;
             }
@@ -181,7 +188,6 @@ export function PaymentForm({
             settlement_discount_amount: String(numericDiscount),
             reference_number: referenceNumber,
             cheque_due_date: chequeDueDate,
-            cheque_number: chequeNumber,
             cheque_bank_name: chequeBankName,
             cheque_sayad_id: chequeSayadId,
             payment_date: paymentDate,
@@ -413,30 +419,21 @@ export function PaymentForm({
                     <>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                                شماره چک <span className="text-red-600">*</span>
-                            </label>
-                            <input
-                                required
-                                maxLength={100}
-                                disabled={isSubmitting}
-                                value={chequeNumber}
-                                onChange={(event) => setChequeNumber(event.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="mb-1.5 block text-sm font-medium text-gray-700">
                                 بانک <span className="text-red-600">*</span>
                             </label>
-                            <input
+                            <select
                                 required
-                                maxLength={150}
                                 disabled={isSubmitting}
                                 value={chequeBankName}
                                 onChange={(event) => setChequeBankName(event.target.value)}
                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                                placeholder="نام بانک صادرکننده"
-                            />
+                            >
+                                <option value="">انتخاب بانک</option>
+                                {IRANIAN_BANK_OPTIONS.map((bank) => (
+                                    <option key={bank} value={bank}>{bank}</option>
+                                ))}
+                            </select>
+                            <p className="mt-1 text-xs text-gray-500">برای یکسان‌سازی اطلاعات، بانک را از فهرست انتخاب کنید.</p>
                         </div>
                         <div>
                             <label className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -491,7 +488,7 @@ export function PaymentForm({
 
                 <div>
                     <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                        شماره مرجع
+                        {method === 'cheque' ? 'شماره چک' : 'شماره مرجع'}
                     </label>
                     <input
                         type="text"
@@ -500,7 +497,7 @@ export function PaymentForm({
                         value={referenceNumber}
                         onChange={(event) => setReferenceNumber(event.target.value)}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                        placeholder="شماره پیگیری، چک و..."
+                        placeholder={method === 'cheque' ? 'شماره چک' : 'شماره پیگیری یا مرجع بانکی'}
                     />
                 </div>
 
