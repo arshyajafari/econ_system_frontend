@@ -62,7 +62,6 @@ export type PaymentFormData = {
   amount: string;
   settlement_discount_amount: string;
   reference_number: string;
-  cheque_issue_date: string;
   cheque_due_date: string;
   cheque_number: string;
   cheque_bank_name: string;

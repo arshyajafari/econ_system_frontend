@@ -6,7 +6,7 @@ export type PaymentCustomerBalance = {
   previous_balance: number;
   customer: { id: string; code: string; name: string };
 };
-type PaymentApiPayload = { method: string; amount: number; settlement_discount_amount: number; reference_number?: string; cheque_issue_date?: string; cheque_due_date?: string; cheque_number?: string; cheque_bank_name?: string; cheque_sayad_id?: string; payment_date: string; description?: string };
+type PaymentApiPayload = { method: string; amount: number; settlement_discount_amount: number; reference_number?: string; cheque_due_date?: string; cheque_number?: string; cheque_bank_name?: string; cheque_sayad_id?: string; payment_date: string; description?: string };
 
 export async function getPayments(params: PaymentListParams = {}): Promise<PaymentListResponse> {
   const response = await apiClient.get<PaymentListResponse>("/payments", { params }); return response.data;
@@ -52,7 +52,6 @@ function normalizePaymentPayload(payload: PaymentFormData): PaymentApiPayload {
     payment_date: payload.payment_date,
     ...(payload.reference_number.trim() ? { reference_number: payload.reference_number.trim() } : {}),
     ...(payload.method === "cheque" ? {
-      cheque_issue_date: payload.cheque_issue_date || "",
       cheque_due_date: payload.cheque_due_date,
       cheque_number: payload.cheque_number.trim(),
       cheque_bank_name: payload.cheque_bank_name.trim(),
@@ -70,7 +69,6 @@ function toMultipart(payload: PaymentFormData, isUpdate = false): FormData {
   form.append("reference_number", payload.reference_number.trim());
   form.append("payment_date", payload.payment_date);
   if (payload.method === "cheque") {
-    form.append("cheque_issue_date", payload.cheque_issue_date || "");
     form.append("cheque_due_date", payload.cheque_due_date);
     form.append("cheque_number", payload.cheque_number.trim());
     form.append("cheque_bank_name", payload.cheque_bank_name.trim());
