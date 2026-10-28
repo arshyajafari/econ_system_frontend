@@ -315,7 +315,7 @@ export function PaymentForm({
             <button type="button" disabled={isSubmitting || !customerId}
               onClick={() => {
                 setDiscountMode("percent");
-                setDiscountInput(customerBalance && customerBalance > 0 ? String(Math.round((effectiveDiscountAmount / customerBalance) * 100000000) / 1000000) : "0");
+                setDiscountInput(customerBalance && customerBalance > 0 ? String(Math.round((effectiveDiscountAmount / customerBalance) * 10000000000) / 100000000) : "0");
                 setValidationError(null);
               }}
               className={"rounded-md border px-3 py-1 text-xs " + (discountMode === "percent" ? "border-gray-900 bg-gray-900 text-white" : "border-gray-300 text-gray-700")}>
