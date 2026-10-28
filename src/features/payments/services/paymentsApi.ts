@@ -14,11 +14,13 @@ export async function getPayments(params: PaymentListParams = {}): Promise<Payme
 export async function getPayment(id: string): Promise<Payment> {
   const response = await apiClient.get<Payment>(`/payments/${id}`); return response.data;
 }
-export async function getCustomerPayableBalance(customerId: string): Promise<{
+export async function getCustomerPayableBalance(customerId: string, excludePaymentId?: string): Promise<{
   payableBalance: number;
   previousBalance: number;
 }> {
-  const response = await apiClient.get<PaymentCustomerBalance>(`/payments/customer/${customerId}/payable-balance`);
+  const response = await apiClient.get<PaymentCustomerBalance>(`/payments/customer/${customerId}/payable-balance`, {
+    params: excludePaymentId ? { exclude_payment_id: excludePaymentId } : undefined,
+  });
   return {
     payableBalance: Number(response.data.payable_balance || 0),
     previousBalance: Number(response.data.previous_balance || 0),
