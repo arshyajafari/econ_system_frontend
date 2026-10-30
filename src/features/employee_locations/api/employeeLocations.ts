@@ -48,3 +48,14 @@ export async function getEmployeeLocationDailySummary(employeeId: string): Promi
   const response = await apiClient.get<EmployeeLocationDailySummary[]>(`/employees/locations/history/daily-summary?${params.toString()}`);
   return response.data;
 }
+
+
+export async function getEmployeeLocationLive(
+  employeeId: string,
+  after?: string | null
+): Promise<EmployeeLocation[]> {
+  const params = new URLSearchParams({ employee_id: employeeId });
+  if (after) params.set('after', after);
+  const response = await apiClient.get<EmployeeLocation[]>(`/employees/locations/live?${params.toString()}`);
+  return response.data;
+}
