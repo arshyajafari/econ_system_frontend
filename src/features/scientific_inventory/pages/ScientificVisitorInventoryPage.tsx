@@ -85,10 +85,7 @@ export function ScientificVisitorInventoryPage() {
     }
     const activeQuantity = editing.quantity - editing.returned_quantity;
     if (editQuantity > activeQuantity) {
-      const increase = editQuantity - activeQuantity;
-      if (!selectedEditBatch || selectedEditBatch.product?.id !== editing.product_id || selectedEditBatch.available_quantity < increase) {
-        setError('برای افزایش، بچ معتبر همین محصول با موجودی کافی انتخاب کنید.'); return;
-      }
+      setError('برای افزایش تعداد، از فرم «ثبت تحویل جدید» استفاده کنید تا تاریخ و بچ انبار جداگانه ثبت شود.'); return;
     }
     setSaving(true); setError(null);
     try {
@@ -138,8 +135,7 @@ export function ScientificVisitorInventoryPage() {
     {editing && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><form onSubmit={saveEdit} className="w-full max-w-md space-y-4 rounded-2xl bg-white p-5 shadow-xl">
       <h2 className="text-lg font-bold">ویرایش تحویل مستقل</h2><p className="text-sm text-gray-500">{editing.employee_name} — {editing.product_title} — {editing.delivered_at ? new Date(editing.delivered_at).toLocaleDateString('fa-IR') : ''}</p>
       <div className="rounded-lg bg-gray-50 p-3 text-sm">مصرف این تحویل: {nf.format(editing.used_quantity)} | برگشتی قبلی: {nf.format(editing.returned_quantity)} | موجودی: {nf.format(editing.available_quantity)}</div>
-      <label className="block text-sm">مقدار نهایی تحویل (پس از اصلاح)<input type="number" min={editing.used_quantity} step={1} required value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
-      {editQuantity > editing.received_quantity && <select required value={editBatchId} onChange={e => setEditBatchId(e.target.value)} className="w-full rounded-lg border px-3 py-2"><option value="">انتخاب بچ برای افزایش</option>{batches.filter(b => b.product?.id === editing.product_id).map(b => <option key={b.id} value={b.id}>{b.batch_number || 'بچ'} — {nf.format(b.available_quantity)}</option>)}</select>}
+      <label className="block text-sm">مقدار نهایی تحویل (پس از اصلاح)<input type="number" min={editing.used_quantity} max={editing.received_quantity} step={1} required value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
       <div className="flex justify-end gap-2"><button type="button" onClick={() => setEditing(null)} disabled={saving} className="rounded-lg border px-4 py-2">انصراف</button><button disabled={saving} className="rounded-lg bg-gray-900 px-4 py-2 text-white">{saving ? 'در حال ذخیره...' : 'ذخیره'}</button></div>
     </form></div>}
     {deleting && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="w-full max-w-md space-y-4 rounded-2xl bg-white p-5"><h2 className="font-bold">حذف نوبت تحویل</h2><p className="text-sm text-gray-600">مقدار استفاده‌نشده این تحویل به همان بچ انبار اصلی برمی‌گردد. سابقه تحویل حذف فیزیکی نمی‌شود.</p><div className="flex justify-end gap-2"><button onClick={() => setDeleting(null)} className="rounded-lg border px-4 py-2">انصراف</button><button onClick={() => void confirmDelete()} disabled={saving} className="ui-btn-delete rounded-lg border px-4 py-2">{saving ? 'در حال حذف...' : 'تأیید حذف'}</button></div></div></div>}
