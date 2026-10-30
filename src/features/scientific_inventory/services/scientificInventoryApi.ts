@@ -25,7 +25,6 @@ export async function deleteScientificInventory(id: string) {
 export async function updateScientificInventory(id: string, data: UpdateScientificInventoryData) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${id}`, {
     quantity: data.quantity,
-    delivered_at: data.delivered_at || undefined,
     inventory_batch_id: data.inventory_batch_id || undefined,
     description: data.description.trim() || undefined,
   });
@@ -40,6 +39,7 @@ export async function getScientificInventoryTransfers(params: { page?: number; p
 export async function updateScientificInventoryTransfer(inventoryId: string, transferId: number, data: UpdateScientificInventoryTransferData) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${inventoryId}/transfers/${transferId}`, {
     quantity: data.quantity,
+    delivered_at: data.delivered_at || undefined,
     inventory_batch_id: data.inventory_batch_id || undefined,
     description: data.description?.trim() || undefined,
   });
