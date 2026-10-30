@@ -32,11 +32,9 @@ export function ScientificVisitorInventoryPage() {
   const [description, setDescription] = useState('');
   const [editing, setEditing] = useState<ScientificInventoryTransfer | null>(null);
   const [editQuantity, setEditQuantity] = useState(0);
-  const [editBatchId, setEditBatchId] = useState('');
   const [deleting, setDeleting] = useState<ScientificInventoryTransfer | null>(null);
 
   const selectedBatch = useMemo(() => batches.find(x => x.id === batchId) ?? null, [batches, batchId]);
-  const selectedEditBatch = useMemo(() => batches.find(x => x.id === editBatchId) ?? null, [batches, editBatchId]);
 
   useEffect(() => {
     let active = true;
@@ -89,7 +87,7 @@ export function ScientificVisitorInventoryPage() {
     }
     setSaving(true); setError(null);
     try {
-      await updateScientificInventoryTransfer(editing.inventory_id, editing.id, { quantity: editQuantity, inventory_batch_id: editQuantity > activeQuantity ? editBatchId : undefined });
+      await updateScientificInventoryTransfer(editing.inventory_id, editing.id, { quantity: editQuantity });
       setEditing(null); setRefresh(x => x + 1);
     } catch (err) { setError(err instanceof ApiError ? err.message : 'ویرایش ردیف تحویل ناموفق بود.'); }
     finally { setSaving(false); }
@@ -128,7 +126,7 @@ export function ScientificVisitorInventoryPage() {
         <td className="px-4 py-3 font-medium">{row.product_title}<div className="text-xs text-gray-500">{row.product_code}</div></td>
         <td className="whitespace-nowrap px-4 py-3">{row.delivered_at ? new Date(row.delivered_at).toLocaleDateString('fa-IR') : '—'}</td>
         <td className="px-4 py-3">{nf.format(row.received_quantity)}</td><td className="px-4 py-3">{nf.format(row.used_quantity)}</td><td className="px-4 py-3">{nf.format(row.returned_quantity)}</td><td className="px-4 py-3 font-semibold">{nf.format(row.available_quantity)}</td>
-        {isManager && <td className="px-4 py-3"><div className="flex gap-2"><button type="button" disabled={saving} onClick={() => { setEditing(row); setEditQuantity(row.received_quantity); setEditBatchId(''); }} className="ui-btn-edit rounded-lg border px-3 py-1.5">ویرایش</button><button type="button" disabled={saving || row.used_quantity > 0} title={row.used_quantity > 0 ? 'به دلیل وجود مصرف قابل حذف نیست' : 'حذف و برگشت به انبار اصلی'} onClick={() => setDeleting(row)} className="ui-btn-delete rounded-lg border px-3 py-1.5 disabled:opacity-40">حذف</button></div></td>}
+        {isManager && <td className="px-4 py-3"><div className="flex gap-2"><button type="button" disabled={saving} onClick={() => { setEditing(row); setEditQuantity(row.received_quantity); }} className="ui-btn-edit rounded-lg border px-3 py-1.5">ویرایش</button><button type="button" disabled={saving || row.used_quantity > 0} title={row.used_quantity > 0 ? 'به دلیل وجود مصرف قابل حذف نیست' : 'حذف و برگشت به انبار اصلی'} onClick={() => setDeleting(row)} className="ui-btn-delete rounded-lg border px-3 py-1.5 disabled:opacity-40">حذف</button></div></td>}
       </tr>)}</tbody>
     </table></div>
     <Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} onPageChange={setPage} />
