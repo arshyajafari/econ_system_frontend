@@ -4,6 +4,7 @@ import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
 import { getEmployeeLocations, type EmployeeLocation } from '../api/employeeLocations';
 import { EmployeeLocationHistory } from '../components/EmployeeLocationHistory';
+import { LiveEmployeeMap } from '../components/LiveEmployeeMap';
 
 const REFRESH_INTERVAL_MS = 10_000;
 const STALE_AFTER_MS = 5 * 60_000;
@@ -22,15 +23,6 @@ function isLocationFresh(value: string | null, now: number): boolean {
     );
 }
 
-function mapEmbedUrl(location: EmployeeLocation): string {
-    const { latitude, longitude } = location;
-    const offset = 0.012;
-    const west = (longitude - offset).toFixed(6);
-    const east = (longitude + offset).toFixed(6);
-    const south = (latitude - offset).toFixed(6);
-    const north = (latitude + offset).toFixed(6);
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${west}%2C${south}%2C${east}%2C${north}&layer=mapnik&marker=${latitude}%2C${longitude}`;
-}
 
 export function EmployeeLocationsPage() {
     const { user } = useAuth();
@@ -207,13 +199,9 @@ export function EmployeeLocationsPage() {
                         ) : null}
                     </div>
                     {selectedLocation ? (
-                        <iframe
-                            key={selectedLocation.id}
-                            title={`نقشه موقعیت ${selectedLocation.employee_name}`}
-                            src={mapEmbedUrl(selectedLocation)}
-                            className="h-[320px] w-full border-0 sm:h-[390px]"
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
+                        <LiveEmployeeMap
+                            locations={filteredLocations}
+                            selectedEmployeeId={selectedLocation.employee_id}
                         />
                     ) : (
                         <div className="flex h-[280px] items-center justify-center px-6 text-center text-sm text-gray-500">
