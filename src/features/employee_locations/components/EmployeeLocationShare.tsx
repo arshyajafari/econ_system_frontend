@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { sendMyLocation } from '../api/employeeLocations';
 
-const MIN_SEND_INTERVAL_MS = 30_000;
+const MIN_SEND_INTERVAL_MS = 15_000;
 const SEND_RETRY_TICK_MS = 5_000;
 const MAX_FIX_AGE_MS = 90_000;
 
@@ -183,7 +183,7 @@ export function EmployeeLocationShare() {
                     <div className="mt-1 text-xs leading-5 text-slate-500">
                         {enabled
                             ? hasFix
-                                ? 'مکان‌یابی فعال است؛ آخرین مختصات هر ۳۰ ثانیه ارسال می‌شود.'
+                                ? 'مکان‌یابی فعال است؛ آخرین مختصات تازه تقریباً هر ۱۵ ثانیه ارسال می‌شود.'
                                 : 'اشتراک‌گذاری فعال است؛ منتظر دریافت مختصات GPS...'
                             : 'اشتراک‌گذاری فقط با فعال‌کردن شما آغاز می‌شود.'}
                     </div>
