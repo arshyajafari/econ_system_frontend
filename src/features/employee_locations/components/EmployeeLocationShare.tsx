@@ -27,12 +27,13 @@ export function EmployeeLocationShare() {
     const sendPosition = useCallback(async (position: GeolocationPosition) => {
         if (!active.current) return;
         latestPosition.current = position;
-        setHasFix(true);
 
         if (Date.now() - position.timestamp > MAX_FIX_AGE_MS) {
+            setHasFix(false);
             setMessage('مختصات دریافتی قدیمی است؛ تا دریافت موقعیت تازه، مختصات قبلی دوباره ثبت نمی‌شود.');
             return;
         }
+        setHasFix(true);
         if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS || sending.current) return;
         sending.current = true;
         try {
@@ -124,6 +125,7 @@ export function EmployeeLocationShare() {
             const position = latestPosition.current;
             if (!active.current || !position || sending.current) return;
             if (Date.now() - position.timestamp > MAX_FIX_AGE_MS) {
+                setHasFix(false);
                 setMessage('موقعیت GPS تازه دریافت نمی‌شود؛ GPS و مجوز مکان‌یابی دستگاه را بررسی کنید.');
                 return;
             }
