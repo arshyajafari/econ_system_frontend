@@ -38,7 +38,6 @@ export function ScientificVisitorInventoryPage() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     getScientificInventoryTransfers({ page, per_page: 20 })
       .then(result => {
         if (!active) return;
