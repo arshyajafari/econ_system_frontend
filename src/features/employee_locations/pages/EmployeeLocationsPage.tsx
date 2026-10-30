@@ -200,6 +200,7 @@ export function EmployeeLocationsPage() {
                     </div>
                     {selectedLocation ? (
                         <LiveEmployeeMap
+                            key={selectedLocation.employee_id}
                             locations={filteredLocations}
                             selectedEmployeeId={selectedLocation.employee_id}
                         />
