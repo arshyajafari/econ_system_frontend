@@ -21,6 +21,8 @@ export function EmployeeLocationShare() {
     const retryTimer = useRef<number | null>(null);
     const latestPosition = useRef<GeolocationPosition | null>(null);
     const lastSentAtRef = useRef(0);
+    const lastSentPositionTimestampRef = useRef(0);
+    const operationRef = useRef<{ timestamp: number; id: string } | null>(null);
     const sending = useRef(false);
     const active = useRef(false);
 
@@ -34,7 +36,14 @@ export function EmployeeLocationShare() {
             return;
         }
         setHasFix(true);
-        if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS || sending.current) return;
+
+        // A GPS fix is one event: reuse its operation ID during retries and never store
+        // the same fix repeatedly as if it were a new movement.
+        if (!operationRef.current || operationRef.current.timestamp !== position.timestamp) {
+            operationRef.current = { timestamp: position.timestamp, id: crypto.randomUUID() };
+        }
+        if (position.timestamp <= lastSentPositionTimestampRef.current || sending.current) return;
+        if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS) return;
         sending.current = true;
         try {
             await sendMyLocation({
@@ -42,9 +51,12 @@ export function EmployeeLocationShare() {
                 longitude: position.coords.longitude,
                 accuracy: position.coords.accuracy,
                 source: 'browser',
+                captured_at: new Date(position.timestamp).toISOString(),
+                client_operation_id: operationRef.current.id,
             });
             const sentAt = Date.now();
             lastSentAtRef.current = sentAt;
+            lastSentPositionTimestampRef.current = position.timestamp;
             setLastSentAt(sentAt);
             setMessage('موقعیت با موفقیت ثبت شد و برای مدیر قابل مشاهده است.');
         } catch (error: unknown) {
@@ -90,6 +102,8 @@ export function EmployeeLocationShare() {
 
         active.current = true;
         lastSentAtRef.current = 0;
+        lastSentPositionTimestampRef.current = 0;
+        operationRef.current = null;
         latestPosition.current = null;
         setBusy(true);
         setHasFix(false);
