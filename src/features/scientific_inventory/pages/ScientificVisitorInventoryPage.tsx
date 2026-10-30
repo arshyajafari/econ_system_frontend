@@ -125,7 +125,7 @@ export function ScientificVisitorInventoryPage() {
     </form>}
     <div className="overflow-x-auto rounded-xl border bg-white"><table className="min-w-full text-right text-sm">
       <thead className="bg-gray-50"><tr>{(isManager ? ['ویزیتور علمی','محصول','تاریخ تحویل','تحویل خالص','مصرف‌شده','موجودی باقی‌مانده','عملیات'] : ['محصول','تاریخ تحویل','تحویل خالص','مصرف‌شده','موجودی باقی‌مانده']).map(x => <th key={x} className="whitespace-nowrap px-4 py-3">{x}</th>)}</tr></thead>
-      <tbody className="divide-y">{loading && !rows.length ? <tr><td colSpan={isManager ? 7 : 5} className="p-10 text-center">در حال دریافت...</td></tr> : !rows.length ? <tr><td colSpan={isManager ? 8 : 6} className="p-10 text-center">سابقه تحویلی ثبت نشده است.</td></tr> : rows.map(row => <tr key={row.id}>
+      <tbody className="divide-y">{loading && !rows.length ? <tr><td colSpan={isManager ? 7 : 5} className="p-10 text-center">در حال دریافت...</td></tr> : !rows.length ? <tr><td colSpan={isManager ? 7 : 5} className="p-10 text-center">سابقه تحویلی ثبت نشده است.</td></tr> : rows.map(row => <tr key={row.id}>
         {isManager && <td className="px-4 py-3">{row.employee_name}<div className="text-xs text-gray-500">{row.employee_code}</div></td>}
         <td className="px-4 py-3 font-medium">{row.product_title}<div className="text-xs text-gray-500">{row.product_code}</div></td>
         <td className="whitespace-nowrap px-4 py-3">{displayDeliveryDate(row.delivered_at)}</td>
