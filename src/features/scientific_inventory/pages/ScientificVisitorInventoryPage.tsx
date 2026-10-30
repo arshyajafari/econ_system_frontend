@@ -410,8 +410,12 @@ export function ScientificVisitorInventoryPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setDeleteTarget(item)}
-                                                    disabled={saving}
-                                                    title="حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی"
+                                                    disabled={saving || item.used_quantity > 0}
+                                                    title={
+                                                        item.used_quantity > 0
+                                                            ? 'به دلیل وجود نمونه مصرف‌شده، حذف این موجودی مجاز نیست.'
+                                                            : 'حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی'
+                                                    }
                                                     className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                 >
                                                     حذف
@@ -579,8 +583,9 @@ export function ScientificVisitorInventoryPage() {
                             <p className="mt-2 text-sm text-gray-600">
                                 آیا می‌خواهید ردیف موجودی «{deleteTarget.product?.title ?? 'محصول'}»
                                 برای «{deleteTarget.employee?.name ?? 'ویزیتور علمی'}» را حذف کنید؟
-                                موجودی استفاده‌نشده به بچ‌های انبار اصلی برمی‌گردد؛ مقدار مصرف‌شده و
-                                سوابق نمونه برای گزارش و حسابرسی حفظ می‌شود.
+                                فقط ردیفی که هیچ نمونه‌ای از آن مصرف نشده باشد قابل حذف است؛ در این
+                                حالت کل مقدار استفاده‌نشده به بچ‌های انبار اصلی برمی‌گردد. اگر مصرف
+                                ثبت شده باشد، ابتدا باید تعداد تحویل را از مسیر ویرایش اصلاح کنید.
                             </p>
                         </div>
                         <div className="flex justify-end gap-2">
