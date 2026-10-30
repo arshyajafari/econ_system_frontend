@@ -11,11 +11,12 @@ import { getInventory } from '../../inventory/services/inventoryApi';
 import type { InventoryBatch } from '../../inventory/types/inventory';
 import {
     assignScientificInventory,
+    getScientificInventory,
     getScientificInventoryTransfers,
     updateScientificInventoryTransfer,
     deleteScientificInventoryTransfer,
 } from '../services/scientificInventoryApi';
-import type { ScientificInventoryTransfer } from '../types/scientificInventory';
+import type { ScientificInventoryItem, ScientificInventoryTransfer } from '../types/scientificInventory';
 
 const nf = new Intl.NumberFormat('fa-IR');
 const localToday = () => {
@@ -28,6 +29,10 @@ export function ScientificVisitorInventoryPage() {
     const { user } = useAuth();
     const roles = user?.roles ?? [];
     const isManager = roles.includes('admin') || roles.includes('accountant');
+    const [inventoryRows, setInventoryRows] = useState<ScientificInventoryItem[]>([]);
+    const [inventoryPage, setInventoryPage] = useState(1);
+    const [inventoryLastPage, setInventoryLastPage] = useState(1);
+    const [inventoryTotal, setInventoryTotal] = useState(0);
     const [rows, setRows] = useState<ScientificInventoryTransfer[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [batches, setBatches] = useState<InventoryBatch[]>([]);
@@ -52,6 +57,24 @@ export function ScientificVisitorInventoryPage() {
         () => batches.find((x) => x.id === batchId) ?? null,
         [batches, batchId]
     );
+
+    useEffect(() => {
+        let active = true;
+        getScientificInventory({ page: inventoryPage, per_page: 20, sort: '-last_received_at' })
+            .then((result) => {
+                if (!active) return;
+                setInventoryRows(result.data);
+                setInventoryLastPage(result.meta.last_page);
+                setInventoryTotal(result.meta.total);
+            })
+            .catch((err: unknown) => {
+                if (active)
+                    setError(err instanceof ApiError ? err.message : 'خطا در دریافت موجودی تجمیعی ویزیتور.');
+            });
+        return () => {
+            active = false;
+        };
+    }, [inventoryPage, refresh]);
 
     useEffect(() => {
         let active = true;
@@ -259,6 +282,62 @@ export function ScientificVisitorInventoryPage() {
                     </button>
                 </form>
             )}
+            <section className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-lg font-bold">موجودی تجمیعی ویزیتورها</h2>
+                    <span className="text-sm text-gray-500">تعداد محصولات دارای موجودی: {nf.format(inventoryTotal)}</span>
+                </div>
+                <div className="overflow-x-auto rounded-xl border bg-white">
+                    <table className="min-w-full text-right text-sm">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                {isManager && <th className="whitespace-nowrap px-4 py-3">ویزیتور علمی</th>}
+                                <th className="whitespace-nowrap px-4 py-3">محصول</th>
+                                <th className="whitespace-nowrap px-4 py-3">مجموع تحویل</th>
+                                <th className="whitespace-nowrap px-4 py-3">مصرف‌شده</th>
+                                <th className="whitespace-nowrap px-4 py-3">موجودی قابل استفاده</th>
+                                <th className="whitespace-nowrap px-4 py-3">آخرین تاریخ تحویل</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                            {inventoryRows.length === 0 ? (
+                                <tr>
+                                    <td colSpan={isManager ? 6 : 5} className="p-8 text-center text-gray-500">
+                                        موجودی قابل استفاده‌ای ثبت نشده است.
+                                    </td>
+                                </tr>
+                            ) : inventoryRows.map((row) => (
+                                <tr key={row.id}>
+                                    {isManager && (
+                                        <td className="px-4 py-3">
+                                            {row.employee?.name ?? '—'}
+                                            <div className="text-xs text-gray-500">{row.employee?.code ?? ''}</div>
+                                        </td>
+                                    )}
+                                    <td className="px-4 py-3 font-medium">
+                                        {row.product?.title ?? 'محصول حذف‌شده'}
+                                        <div className="text-xs text-gray-500">{row.product?.code ?? ''}</div>
+                                    </td>
+                                    <td className="px-4 py-3">{nf.format(row.received_quantity)}</td>
+                                    <td className="px-4 py-3">{nf.format(row.used_quantity)}</td>
+                                    <td className="px-4 py-3 font-semibold">{nf.format(row.available_quantity)}</td>
+                                    <td className="whitespace-nowrap px-4 py-3">{displayDeliveryDate(row.last_received_at)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <Pagination
+                    page={inventoryPage}
+                    lastPage={inventoryLastPage}
+                    isLoading={loading}
+                    total={inventoryTotal}
+                    onPageChange={setInventoryPage}
+                />
+            </section>
+            <section className="space-y-3">
+                <h2 className="text-lg font-bold">ریز سوابق تحویل</h2>
+                <p className="text-sm text-gray-500">این جدول هر نوبت تحویل ثبت‌شده را جداگانه نشان می‌دهد؛ بنابراین تعداد ردیف‌های آن ممکن است از تعداد محصولات موجودی تجمیعی کمتر یا بیشتر باشد.</p>
             <div className="overflow-x-auto rounded-xl border bg-white">
                 <table className="min-w-full text-right text-sm">
                     <thead className="bg-gray-50">
