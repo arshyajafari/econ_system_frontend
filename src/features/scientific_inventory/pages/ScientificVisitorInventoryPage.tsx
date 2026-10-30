@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from '../../../api/client';
 import { Pagination } from '../../../components/Pagination';
+import { JalaliDateInput } from '../../../components/JalaliDateInput';
+import { formatJalaliDate } from '../../../utils/date';
 import { useAuth } from '../../auth';
 import { getEmployees } from '../../employees/services/employeesApi';
 import type { Employee } from '../../employees/types/employee';
@@ -12,7 +14,7 @@ import type { ScientificInventoryTransfer } from '../types/scientificInventory';
 
 const nf = new Intl.NumberFormat('fa-IR');
 const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-const displayDeliveryDate = (value: string | null) => value ? new Date(`${value.slice(0,10)}T12:00:00`).toLocaleDateString('fa-IR') : '—';
+const displayDeliveryDate = (value: string | null) => formatJalaliDate(value?.slice(0, 10));
 
 export function ScientificVisitorInventoryPage() {
   const { user } = useAuth();
@@ -117,7 +119,7 @@ export function ScientificVisitorInventoryPage() {
         <select required disabled={saving} value={batchId} onChange={e => setBatchId(e.target.value)} className="rounded-lg border px-3 py-2">
           <option value="">انتخاب محصول / بچ</option>{batches.map(b => <option key={b.id} value={b.id}>{b.product?.title ?? 'محصول'} {b.batch_number ? '— بچ '+b.batch_number : ''} (موجودی {nf.format(b.available_quantity)})</option>)}
         </select>
-        <input type="date" required value={deliveredAt} onChange={e => setDeliveredAt(e.target.value)} disabled={saving} className="rounded-lg border px-3 py-2" />
+        <JalaliDateInput required value={deliveredAt} onChange={setDeliveredAt} disabled={saving} className="rounded-lg border px-3 py-2" placeholder="تاریخ تحویل (شمسی)" />
         <input type="number" min={1} max={selectedBatch?.available_quantity} required value={quantity} onChange={e => setQuantity(Number(e.target.value))} disabled={saving} placeholder="تعداد تحویل" className="rounded-lg border px-3 py-2" />
         <input value={description} onChange={e => setDescription(e.target.value)} disabled={saving} placeholder="توضیحات" className="rounded-lg border px-3 py-2" />
       </div>
@@ -137,7 +139,7 @@ export function ScientificVisitorInventoryPage() {
     {editing && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><form onSubmit={saveEdit} className="w-full max-w-md space-y-4 rounded-2xl bg-white p-5 shadow-xl">
       <h2 className="text-lg font-bold">ویرایش تحویل مستقل</h2><p className="text-sm text-gray-500">{editing.employee_name} — {editing.product_title} — {displayDeliveryDate(editing.delivered_at)}</p>
       <div className="rounded-lg bg-gray-50 p-3 text-sm">مصرف این تحویل: {nf.format(editing.used_quantity)} | موجودی: {nf.format(editing.available_quantity)}</div>
-      <label className="block text-sm">تاریخ تحویل<input type="date" required value={editDeliveredAt} onChange={e => setEditDeliveredAt(e.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
+      <label className="block text-sm">تاریخ تحویل<JalaliDateInput required value={editDeliveredAt} onChange={setEditDeliveredAt} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
       <label className="block text-sm">مقدار نهایی تحویل (پس از اصلاح)<input type="number" min={editing.used_quantity} max={editing.received_quantity} step={1} required value={editQuantity} onChange={e => setEditQuantity(Number(e.target.value))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
       <div className="flex justify-end gap-2"><button type="button" onClick={() => setEditing(null)} disabled={saving} className="rounded-lg border px-4 py-2">انصراف</button><button disabled={saving} className="rounded-lg bg-gray-900 px-4 py-2 text-white">{saving ? 'در حال ذخیره...' : 'ذخیره'}</button></div>
     </form></div>}
