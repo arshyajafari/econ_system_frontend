@@ -4,6 +4,7 @@ import { sendMyLocation } from '../api/employeeLocations';
 
 const MIN_SEND_INTERVAL_MS = 30_000;
 const SEND_RETRY_TICK_MS = 5_000;
+const MAX_FIX_AGE_MS = 90_000;
 
 function formatTime(timestamp: number | null): string {
     if (!timestamp) return 'هنوز ثبت نشده';
@@ -28,6 +29,10 @@ export function EmployeeLocationShare() {
         latestPosition.current = position;
         setHasFix(true);
 
+        if (Date.now() - position.timestamp > MAX_FIX_AGE_MS) {
+            setMessage('مختصات دریافتی قدیمی است؛ تا دریافت موقعیت تازه، مختصات قبلی دوباره ثبت نمی‌شود.');
+            return;
+        }
         if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS || sending.current) return;
         sending.current = true;
         try {
@@ -117,9 +122,12 @@ export function EmployeeLocationShare() {
         // fix periodically so failed sends are retried and the 30-second cadence is enforced.
         retryTimer.current = window.setInterval(() => {
             const position = latestPosition.current;
-            if (active.current && position && !sending.current) {
-                void sendPosition(position);
+            if (!active.current || !position || sending.current) return;
+            if (Date.now() - position.timestamp > MAX_FIX_AGE_MS) {
+                setMessage('موقعیت GPS تازه دریافت نمی‌شود؛ GPS و مجوز مکان‌یابی دستگاه را بررسی کنید.');
+                return;
             }
+            void sendPosition(position);
         }, SEND_RETRY_TICK_MS);
         setEnabled(true);
     }, [busy, sendPosition, stop]);
