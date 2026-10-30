@@ -14,7 +14,7 @@ import type { ScientificInventoryTransfer } from '../types/scientificInventory';
 
 const nf = new Intl.NumberFormat('fa-IR');
 const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-const displayDeliveryDate = (value: string | null) => formatJalaliDate(value);
+const displayDeliveryDate = (value: string | null) => formatJalaliDate(value?.slice(0, 10));
 
 export function ScientificVisitorInventoryPage() {
   const { user } = useAuth();
