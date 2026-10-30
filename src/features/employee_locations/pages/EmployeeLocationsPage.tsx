@@ -208,6 +208,7 @@ export function EmployeeLocationsPage() {
                     </div>
                     {selectedLocation ? (
                         <iframe
+                            key={selectedLocation.id}
                             title={`نقشه موقعیت ${selectedLocation.employee_name}`}
                             src={mapEmbedUrl(selectedLocation)}
                             className="h-[320px] w-full border-0 sm:h-[390px]"
@@ -226,6 +227,9 @@ export function EmployeeLocationsPage() {
                             <span>
                                 عرض: {selectedLocation.latitude.toFixed(5)}، طول:{' '}
                                 {selectedLocation.longitude.toFixed(5)}
+                            </span>
+                            <span>
+                                آخرین ثبت: {formatCapturedAt(selectedLocation.captured_at)}
                             </span>
                             <span>
                                 دقت GPS:{' '}
