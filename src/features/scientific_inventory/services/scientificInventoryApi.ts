@@ -11,6 +11,7 @@ export async function assignScientificInventory(data: AssignScientificInventoryD
     employee_id: data.employee_id,
     inventory_batch_id: data.inventory_batch_id,
     quantity: data.quantity,
+    delivered_at: data.delivered_at,
     description: data.description.trim() || undefined,
   });
   return response.data;
@@ -38,6 +39,7 @@ export async function getScientificInventoryTransfers(params: { page?: number; p
 export async function updateScientificInventoryTransfer(inventoryId: string, transferId: number, data: UpdateScientificInventoryTransferData) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${inventoryId}/transfers/${transferId}`, {
     quantity: data.quantity,
+    delivered_at: data.delivered_at || undefined,
     inventory_batch_id: data.inventory_batch_id || undefined,
     description: data.description?.trim() || undefined,
   });
