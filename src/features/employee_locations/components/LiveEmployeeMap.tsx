@@ -155,7 +155,7 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
                 fillOpacity: 0.95,
             });
             marker.bindTooltip(item.employee_name, { direction: 'top', offset: [0, -8] });
-            marker.addTo(employeeLayer.current);
+            marker.addTo(employeeLayer.current!);
         });
 
         const segments: EmployeeLocation[][] = [];
@@ -182,7 +182,7 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
                 opacity: 0.82,
                 lineCap: 'round',
                 lineJoin: 'round',
-            }).addTo(routeLayer.current);
+            }).addTo(routeLayer.current!);
         });
 
         if (selectedLocation) {
@@ -194,7 +194,7 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
                 permanent: false,
                 direction: 'top',
             });
-            currentMarker.addTo(routeLayer.current);
+            currentMarker.addTo(routeLayer.current!);
             if (followSelected) {
                 map.setView([selectedLocation.latitude, selectedLocation.longitude], Math.max(map.getZoom(), 15), {
                     animate: true,
