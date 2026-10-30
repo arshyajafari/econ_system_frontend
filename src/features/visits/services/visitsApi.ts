@@ -42,8 +42,29 @@ export async function createVisitSample(data: VisitSampleFormData): Promise<Visi
 
 export async function getVisitSampleProducts(isScientificVisitor = false): Promise<VisitSampleProduct[]> {
   if (isScientificVisitor) {
-    const response = await getScientificInventory({ available_only: true, per_page: 100, sort: "-last_received_at" });
-    return response.data
+    // Inventory is paginated by the API. Fetch every page so a visitor with
+    // more than 100 assigned products does not lose positive-stock products
+    // from the visit/sample selector simply because they fall on later pages.
+    const firstPage = await getScientificInventory({
+      available_only: true,
+      page: 1,
+      per_page: 100,
+      sort: "-last_received_at",
+    });
+    const inventoryItems = [...firstPage.data];
+    const lastPage = Math.max(1, firstPage.meta?.last_page ?? 1);
+
+    for (let page = 2; page <= lastPage; page += 1) {
+      const response = await getScientificInventory({
+        available_only: true,
+        page,
+        per_page: 100,
+        sort: "-last_received_at",
+      });
+      inventoryItems.push(...response.data);
+    }
+
+    return inventoryItems
       .filter((item) => Boolean(item.product?.id) && item.available_quantity > 0)
       .map((item) => ({
         id: item.product!.id,
