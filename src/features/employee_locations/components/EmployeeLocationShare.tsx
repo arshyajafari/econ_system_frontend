@@ -3,6 +3,7 @@ import { ApiError } from '../../../api/client';
 import { sendMyLocation } from '../api/employeeLocations';
 
 const MIN_SEND_INTERVAL_MS = 30_000;
+const SEND_RETRY_TICK_MS = 5_000;
 
 function formatTime(timestamp: number | null): string {
     if (!timestamp) return 'هنوز ثبت نشده';
@@ -16,11 +17,15 @@ export function EmployeeLocationShare() {
     const [lastSentAt, setLastSentAt] = useState<number | null>(null);
     const [hasFix, setHasFix] = useState(false);
     const watchId = useRef<number | null>(null);
+    const retryTimer = useRef<number | null>(null);
+    const latestPosition = useRef<GeolocationPosition | null>(null);
     const lastSentAtRef = useRef(0);
     const sending = useRef(false);
     const active = useRef(false);
 
     const sendPosition = useCallback(async (position: GeolocationPosition) => {
+        if (!active.current) return;
+        latestPosition.current = position;
         setHasFix(true);
 
         if (Date.now() - lastSentAtRef.current < MIN_SEND_INTERVAL_MS || sending.current) return;
@@ -40,7 +45,7 @@ export function EmployeeLocationShare() {
             setMessage(
                 error instanceof ApiError
                     ? error.message
-                    : 'ارسال موقعیت انجام نشد؛ با برقراری اتصال دوباره تلاش می‌شود.'
+                    : 'ارسال موقعیت انجام نشد؛ اتصال بررسی می‌شود و ارسال دوباره تلاش خواهد شد.'
             );
         } finally {
             sending.current = false;
@@ -53,6 +58,11 @@ export function EmployeeLocationShare() {
             navigator.geolocation.clearWatch(watchId.current);
             watchId.current = null;
         }
+        if (retryTimer.current !== null) {
+            window.clearInterval(retryTimer.current);
+            retryTimer.current = null;
+        }
+        latestPosition.current = null;
         setEnabled(false);
         setBusy(false);
         setHasFix(false);
@@ -73,6 +83,8 @@ export function EmployeeLocationShare() {
         }
 
         active.current = true;
+        lastSentAtRef.current = 0;
+        latestPosition.current = null;
         setBusy(true);
         setHasFix(false);
         setMessage('در انتظار دریافت موقعیت GPS از دستگاه...');
@@ -80,6 +92,7 @@ export function EmployeeLocationShare() {
             (position) => {
                 if (!active.current) return;
                 setBusy(false);
+                latestPosition.current = position;
                 void sendPosition(position);
             },
             (error) => {
@@ -97,8 +110,17 @@ export function EmployeeLocationShare() {
                     );
                 }
             },
-            { enableHighAccuracy: true, maximumAge: 15_000, timeout: 20_000 }
+            { enableHighAccuracy: true, maximumAge: 5_000, timeout: 20_000 }
         );
+
+        // watchPosition can be quiet for long periods on some devices. Re-check the latest
+        // fix periodically so failed sends are retried and the 30-second cadence is enforced.
+        retryTimer.current = window.setInterval(() => {
+            const position = latestPosition.current;
+            if (active.current && position && !sending.current) {
+                void sendPosition(position);
+            }
+        }, SEND_RETRY_TICK_MS);
         setEnabled(true);
     }, [busy, sendPosition, stop]);
 
@@ -108,6 +130,10 @@ export function EmployeeLocationShare() {
             if (watchId.current !== null && 'geolocation' in navigator) {
                 navigator.geolocation.clearWatch(watchId.current);
                 watchId.current = null;
+            }
+            if (retryTimer.current !== null) {
+                window.clearInterval(retryTimer.current);
+                retryTimer.current = null;
             }
         },
         []
@@ -133,7 +159,7 @@ export function EmployeeLocationShare() {
                     <div className="mt-1 text-xs leading-5 text-slate-500">
                         {enabled
                             ? hasFix
-                                ? 'مکان‌یابی فعال است؛ موقعیت طبق بازه زمانی ارسال می‌شود.'
+                                ? 'مکان‌یابی فعال است؛ آخرین مختصات هر ۳۰ ثانیه ارسال می‌شود.'
                                 : 'اشتراک‌گذاری فعال است؛ منتظر دریافت مختصات GPS...'
                             : 'اشتراک‌گذاری فقط با فعال‌کردن شما آغاز می‌شود.'}
                     </div>
