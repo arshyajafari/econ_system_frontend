@@ -11,7 +11,14 @@ export type EmployeeLocation = {
   captured_at: string | null;
 };
 
-export async function sendMyLocation(payload: { latitude: number; longitude: number; accuracy?: number; source?: string }): Promise<EmployeeLocation> {
+export async function sendMyLocation(payload: {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  source?: string;
+  captured_at?: string;
+  client_operation_id?: string;
+}): Promise<EmployeeLocation> {
   const response = await apiClient.post<EmployeeLocation>("/employees/locations/me", payload);
   return response.data;
 }
