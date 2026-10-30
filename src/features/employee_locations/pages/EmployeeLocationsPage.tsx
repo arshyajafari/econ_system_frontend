@@ -5,7 +5,7 @@ import { useAuth } from '../../auth';
 import { getEmployeeLocations, type EmployeeLocation } from '../api/employeeLocations';
 import { EmployeeLocationHistory } from '../components/EmployeeLocationHistory';
 
-const REFRESH_INTERVAL_MS = 30_000;
+const REFRESH_INTERVAL_MS = 10_000;
 const STALE_AFTER_MS = 5 * 60_000;
 
 function formatCapturedAt(value: string | null): string {
