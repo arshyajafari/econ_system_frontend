@@ -11,6 +11,7 @@ export async function assignScientificInventory(data: AssignScientificInventoryD
     employee_id: data.employee_id,
     inventory_batch_id: data.inventory_batch_id,
     quantity: data.quantity,
+    delivered_at: data.delivered_at,
     description: data.description.trim() || undefined,
   });
   return response.data;
@@ -24,6 +25,7 @@ export async function deleteScientificInventory(id: string) {
 export async function updateScientificInventory(id: string, data: UpdateScientificInventoryData) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${id}`, {
     quantity: data.quantity,
+    delivered_at: data.delivered_at || undefined,
     inventory_batch_id: data.inventory_batch_id || undefined,
     description: data.description.trim() || undefined,
   });
