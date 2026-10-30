@@ -453,6 +453,7 @@ export function ScientificVisitorInventoryPage() {
                 total={total}
                 onPageChange={setPage}
             />
+            </section>
             {editing && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                     <form
