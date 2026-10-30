@@ -1,9 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getEmployeeLocationLive, type EmployeeLocation } from '../api/employeeLocations';
 
+type LeafletMap = {
+    remove(): void;
+    setView(center: number[], zoom: number, options?: Record<string, unknown>): LeafletMap;
+    getZoom(): number;
+    invalidateSize(): void;
+    fitBounds(bounds: unknown, options?: Record<string, unknown>): void;
+};
+type LeafletLayer = {
+    addTo(map: LeafletMap | LeafletLayer): LeafletLayer;
+    clearLayers(): void;
+};
+type LeafletMarker = LeafletLayer & {
+    bindTooltip(content: string, options?: Record<string, unknown>): LeafletMarker;
+};
+type LeafletApi = {
+    map(element: HTMLElement, options?: Record<string, unknown>): LeafletMap;
+    tileLayer(url: string, options?: Record<string, unknown>): LeafletLayer;
+    layerGroup(): LeafletLayer;
+    circleMarker(center: number[], options?: Record<string, unknown>): LeafletMarker;
+    polyline(points: number[][], options?: Record<string, unknown>): LeafletLayer;
+    latLngBounds(points: number[][]): unknown;
+};
+
 declare global {
     interface Window {
-        L?: any;
+        L?: LeafletApi;
     }
 }
 
@@ -34,12 +57,11 @@ function distanceMeters(a: EmployeeLocation, b: EmployeeLocation): number {
 
 export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
     const mapElement = useRef<HTMLDivElement | null>(null);
-    const mapRef = useRef<any>(null);
-    const employeeLayer = useRef<any>(null);
-    const routeLayer = useRef<any>(null);
+    const mapRef = useRef<LeafletMap | null>(null);
+    const employeeLayer = useRef<LeafletLayer | null>(null);
+    const routeLayer = useRef<LeafletLayer | null>(null);
     const mapInitialized = useRef(false);
     const [routePoints, setRoutePoints] = useState<EmployeeLocation[]>([]);
-    const [routeLoading, setRouteLoading] = useState(false);
     const [routeError, setRouteError] = useState<string | null>(null);
     const [followSelected, setFollowSelected] = useState(true);
     const selectedLocation = useMemo(
@@ -71,7 +93,6 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
 
     useEffect(() => {
         if (!selectedEmployeeId) {
-            setRoutePoints([]);
             return;
         }
         let cancelled = false;
@@ -104,15 +125,11 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
                 if (!cancelled) setRouteError('دریافت مسیر زنده با مشکل مواجه شد؛ تلاش مجدد ادامه دارد.');
             } finally {
                 if (!cancelled) {
-                    setRouteLoading(false);
                     timer = window.setTimeout(() => void poll(false), POLL_MS);
                 }
             }
         };
 
-        setRoutePoints([]);
-        setRouteError(null);
-        setRouteLoading(true);
         void poll(true);
         return () => {
             cancelled = true;
@@ -220,7 +237,7 @@ export function LiveEmployeeMap({ locations, selectedEmployeeId }: Props) {
             <div ref={mapElement} className="h-[360px] w-full bg-slate-100 sm:h-[480px]" />
             <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 px-4 py-2 text-xs text-gray-500">
                 <span>
-                    {routeLoading ? 'در حال دریافت مسیر...' : `نقاط مسیر: ${routePoints.length.toLocaleString('fa-IR')}`}
+                    {routePoints.length ? `نقاط مسیر: ${routePoints.length.toLocaleString('fa-IR')}` : 'در انتظار دریافت مسیر...'}
                 </span>
                 {routeError ? <span role="status" className="text-amber-700">{routeError}</span> : null}
                 <span>به‌روزرسانی مسیر: هر ۵ ثانیه</span>
