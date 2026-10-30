@@ -411,7 +411,7 @@ export function ScientificVisitorInventoryPage() {
                                                     type="button"
                                                     onClick={() => setDeleteTarget(item)}
                                                     disabled={saving}
-                                                    title="حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی"
+                                                    title="حذف ردیف بدون سابقه مصرف"
                                                     className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                 >
                                                     حذف
