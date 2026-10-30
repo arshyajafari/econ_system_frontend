@@ -6,31 +6,3 @@ export type ScientificInventoryListParams={employee_id?:string;product_id?:strin
 export type AssignScientificInventoryData={employee_id:string;inventory_batch_id:string;quantity:number;description:string};
 export type UpdateScientificInventoryData={quantity:number;inventory_batch_id?:string;description:string};
 
-export type ScientificInventoryTransfer = {
-  id: number;
-  inventory_id: string;
-  employee_id: string;
-  employee_code: string;
-  employee_name: string;
-  product_id: string;
-  product_code: string;
-  product_title: string;
-  quantity: number;
-  received_quantity: number;
-  used_quantity: number;
-  returned_quantity: number;
-  available_quantity: number;
-  delivered_at: string | null;
-};
-export type ScientificInventoryTransferListResponse = {
-  data: ScientificInventoryTransfer[];
-  current_page: number;
-  last_page: number;
-  total: number;
-  per_page: number;
-};
-export type UpdateScientificInventoryTransferData = {
-  quantity: number;
-  inventory_batch_id?: string;
-  description?: string;
-};
