@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import {
     endMyWorkSession,
@@ -52,19 +52,20 @@ export function EmployeeLocationShare() {
     const startOperationId = useRef<string | null>(null);
     const endOperationId = useRef<string | null>(null);
 
-    const refresh = useCallback(async () => {
-        setLoading(true);
-        try {
-            setSession(await getMyWorkSession());
-            setMessage(null);
-        } catch (error: unknown) {
-            setMessage(errorMessage(error));
-        } finally {
-            setLoading(false);
-        }
+    useEffect(() => {
+        let cancelled = false;
+        getMyWorkSession()
+            .then(value => {
+                if (!cancelled) setSession(value);
+            })
+            .catch((error: unknown) => {
+                if (!cancelled) setMessage(errorMessage(error));
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => { cancelled = true; };
     }, []);
-
-    useEffect(() => { void refresh(); }, [refresh]);
 
     const submit = async (action: Action) => {
         if (busy || loading) return;
