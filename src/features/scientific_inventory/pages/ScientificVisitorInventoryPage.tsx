@@ -207,10 +207,6 @@ export function ScientificVisitorInventoryPage() {
             setError('موجودی تاریخی به تحویل مشخصی متصل نیست؛ برای حفظ صحت انبار امکان ویرایش مستقیم ندارد.');
             return;
         }
-        if (editingItem.transfer_id && editQuantity > editingItem.received_quantity) {
-            setError('برای افزایش موجودی، تحویل جدید ثبت کنید تا تاریخ و بچ آن جداگانه ثبت شود.');
-            return;
-        }
         if (!Number.isInteger(editQuantity) || editQuantity < editingItem.used_quantity) {
             setError(
                 `تعداد دریافتی نمی‌تواند کمتر از مصرف‌شده باشد (${editingItem.used_quantity} عدد).`
@@ -237,6 +233,7 @@ export function ScientificVisitorInventoryPage() {
             if (editingItem.transfer_id && editingItem.ledger_id) {
                 await updateScientificInventoryTransfer(editingItem.ledger_id, editingItem.transfer_id, {
                     quantity: editQuantity,
+                    inventory_batch_id: editQuantity > editingItem.received_quantity ? editBatchId : undefined,
                     description: editDescription,
                 });
             } else {
