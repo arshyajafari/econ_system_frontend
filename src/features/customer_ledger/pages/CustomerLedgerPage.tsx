@@ -78,9 +78,13 @@ export function CustomerLedgerPage() {
     );
   return (
     <section className="space-y-6 p-4 md:p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <BackButton fallbackTo="/customers" label="بازگشت به مشتریان" />
+      <div className="flex flex-row items-start justify-between gap-3 md:items-center">
+        <div className="min-w-0">
+          <BackButton
+            fallbackTo="/customers"
+            label="بازگشت به مشتریان"
+            className="mb-0"
+          />
           <h1 className="mt-3 text-2xl font-bold text-gray-900">حساب مشتری</h1>
           <p className="mt-1 text-sm text-gray-500">
             {ledger?.customer.name ?? "در حال دریافت اطلاعات مشتری..."}
@@ -90,7 +94,7 @@ export function CustomerLedgerPage() {
           type="button"
           onClick={() => void loadLedger()}
           disabled={isLoading}
-          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+          className="shrink-0 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 md:px-4 md:py-2.5"
         >
           بروزرسانی
         </button>
