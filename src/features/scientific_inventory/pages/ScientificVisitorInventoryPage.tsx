@@ -414,13 +414,9 @@ export function ScientificVisitorInventoryPage() {
                                         {numberFormat.format(item.available_quantity)}
                                     </td>
                                     <td className="px-4 py-3">
-                                        {item.is_legacy
-                                            ? 'تاریخ نامشخص (موجودی قدیمی)'
-                                            : item.last_received_at
-                                              ? new Date(item.last_received_at).toLocaleDateString(
-                                                    'fa-IR'
-                                                )
-                                              : '—'}
+                                        {item.last_received_at
+                                            ? new Date(item.last_received_at).toLocaleDateString('fa-IR')
+                                            : 'تاریخ ثبت نشده'}
                                         {item.batch_number ? (
                                             <div className="text-xs text-gray-500">
                                                 بچ: {item.batch_number}
