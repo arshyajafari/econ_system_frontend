@@ -59,3 +59,41 @@ export async function getEmployeeLocationLive(
   const response = await apiClient.get<EmployeeLocation[]>(`/employees/locations/live?${params.toString()}`);
   return response.data;
 }
+
+
+export type EmployeeWorkSession = {
+  id: string;
+  employee_id: string;
+  employee_name: string;
+  work_date: string;
+  started_at: string;
+  start: { latitude: number; longitude: number; accuracy: number | null };
+  ended_at: string | null;
+  end: { latitude: number; longitude: number; accuracy: number | null } | null;
+  status: "in_progress" | "completed";
+};
+
+export async function getMyWorkSession(): Promise<EmployeeWorkSession | null> {
+  const response = await apiClient.get<{ data: EmployeeWorkSession | null }>("/employees/locations/work-sessions/me");
+  return response.data.data;
+}
+
+export async function startMyWorkSession(payload: {
+  latitude: number; longitude: number; accuracy: number | null; client_operation_id: string;
+}): Promise<EmployeeWorkSession> {
+  const response = await apiClient.post<{ data: EmployeeWorkSession }>("/employees/locations/work-sessions/start", payload);
+  return response.data.data;
+}
+
+export async function endMyWorkSession(payload: {
+  latitude: number; longitude: number; accuracy: number | null; client_operation_id: string;
+}): Promise<EmployeeWorkSession> {
+  const response = await apiClient.post<{ data: EmployeeWorkSession }>("/employees/locations/work-sessions/end", payload);
+  return response.data.data;
+}
+
+export async function getEmployeeWorkSessions(date?: string): Promise<EmployeeWorkSession[]> {
+  const params = date ? `?date=${encodeURIComponent(date)}` : "";
+  const response = await apiClient.get<{ data: EmployeeWorkSession[] }>(`/employees/locations/work-sessions${params}`);
+  return response.data.data;
+}
