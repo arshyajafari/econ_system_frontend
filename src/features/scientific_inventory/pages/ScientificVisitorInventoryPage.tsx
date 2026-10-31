@@ -1,4 +1,5 @@
-import { jalaliStringToGregorian, sortTableRecords } from '../../../utils/date';
+import { sortTableRecords } from '../../../utils/date';
+import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from '../../../api/client';
@@ -19,7 +20,6 @@ import {
 import type { ScientificInventoryItem } from '../types/scientificInventory';
 
 const numberFormat = new Intl.NumberFormat('fa-IR');
-const todayJalali = new Intl.DateTimeFormat('en-US-u-ca-persian', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).split('/').reverse().join('/');
 
 export function ScientificVisitorInventoryPage() {
     const { user } = useAuth();
@@ -37,9 +37,8 @@ export function ScientificVisitorInventoryPage() {
     const [batchId, setBatchId] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [receivedDate, setReceivedDate] = useState(() => {
-        const parts = new Intl.DateTimeFormat('en-US-u-ca-persian', { year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
-        const part = (type: string) => parts.find((entry) => entry.type === type)?.value ?? '';
-        return `${part('year')}/${part('month')}/${part('day')}`;
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     });
     const [description, setDescription] = useState('');
     const [editingItem, setEditingItem] = useState<ScientificInventoryItem | null>(null);
@@ -152,7 +151,7 @@ export function ScientificVisitorInventoryPage() {
             !batchId ||
             quantity < 1 ||
             quantity > (selectedBatch?.available_quantity ?? 0) ||
-            !jalaliStringToGregorian(receivedDate)
+            !receivedDate
         )
             return;
 
@@ -163,7 +162,7 @@ export function ScientificVisitorInventoryPage() {
                 employee_id: employeeId,
                 inventory_batch_id: batchId,
                 quantity,
-                received_at: jalaliStringToGregorian(receivedDate),
+                received_at: receivedDate,
                 description,
             });
             setQuantity(1);
@@ -353,7 +352,8 @@ export function ScientificVisitorInventoryPage() {
                             !employeeId ||
                             !batchId ||
                             quantity < 1 ||
-                            quantity > (selectedBatch?.available_quantity ?? 0)
+                            quantity > (selectedBatch?.available_quantity ?? 0) ||
+                            !receivedDate
                         }
                         className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
                     >
