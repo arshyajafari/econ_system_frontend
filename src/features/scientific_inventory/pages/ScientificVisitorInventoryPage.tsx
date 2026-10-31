@@ -45,7 +45,6 @@ export function ScientificVisitorInventoryPage() {
     const [deleteTarget, setDeleteTarget] = useState<ScientificInventoryItem | null>(null);
     const [editDescription, setEditDescription] = useState('');
     const [editQuantity, setEditQuantity] = useState(0);
-    const [editBatchId, setEditBatchId] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -123,16 +122,11 @@ export function ScientificVisitorInventoryPage() {
         () => batches.find((batch) => batch.id === batchId) ?? null,
         [batches, batchId]
     );
-    const selectedEditBatch = useMemo(
-        () => batches.find((batch) => batch.id === editBatchId) ?? null,
-        [batches, editBatchId]
-    );
 
     function openEdit(item: ScientificInventoryItem) {
         setEditingItem(item);
         setEditDescription(item.description ?? '');
         setEditQuantity(item.received_quantity);
-        setEditBatchId('');
         setError(null);
     }
 
@@ -141,7 +135,6 @@ export function ScientificVisitorInventoryPage() {
         setEditingItem(null);
         setEditDescription('');
         setEditQuantity(0);
-        setEditBatchId('');
     }
 
     async function submit(event: FormEvent) {
@@ -220,20 +213,6 @@ export function ScientificVisitorInventoryPage() {
             );
             return;
         }
-        if (editQuantity > editingItem.received_quantity) {
-            const increase = editQuantity - editingItem.received_quantity;
-            if (
-                !selectedEditBatch ||
-                selectedEditBatch.product?.id !== editingItem.product?.id ||
-                increase > selectedEditBatch.available_quantity
-            ) {
-                setError(
-                    'برای افزایش تعداد، بچ معتبر همین محصول را انتخاب کنید و موجودی کافی داشته باشد.'
-                );
-                return;
-            }
-        }
-
         setSaving(true);
         setError(null);
         try {
@@ -243,16 +222,12 @@ export function ScientificVisitorInventoryPage() {
                     editingItem.transfer_id,
                     {
                         quantity: editQuantity,
-                        inventory_batch_id:
-                            editQuantity > editingItem.received_quantity ? editBatchId : undefined,
                         description: editDescription,
                     }
                 );
             } else {
                 await updateScientificInventory(editingItem.id, {
                     quantity: editQuantity,
-                    inventory_batch_id:
-                        editQuantity > editingItem.received_quantity ? editBatchId : undefined,
                     description: editDescription,
                 });
             }
@@ -555,37 +530,9 @@ export function ScientificVisitorInventoryPage() {
                             />
                         </label>
 
-                        {editQuantity > editingItem.received_quantity ? (
-                            <label className="w-full block space-y-1 mt-1">
-                                <span className="text-sm font-medium">بچ برای افزایش موجودی</span>
-                                <select
-                                    required
-                                    disabled={saving}
-                                    value={editBatchId}
-                                    onChange={(event) => setEditBatchId(event.target.value)}
-                                    className="w-full rounded-lg border px-3 py-2"
-                                >
-                                    <option value="">انتخاب بچ محصول</option>
-                                    {batches
-                                        .filter(
-                                            (batch) => batch.product?.id === editingItem.product?.id
-                                        )
-                                        .map((batch) => (
-                                            <option
-                                                key={batch.id}
-                                                value={batch.id}
-                                                disabled={batch.available_quantity <= 0}
-                                            >
-                                                {batch.batch_number
-                                                    ? `بچ ${batch.batch_number} — `
-                                                    : ''}
-                                                موجودی:{' '}
-                                                {numberFormat.format(batch.available_quantity)}
-                                            </option>
-                                        ))}
-                                </select>
-                            </label>
-                        ) : null}
+                        <p className="text-xs text-gray-500">
+                            تغییر مقدار فقط روی همان بچ اولیه انجام می‌شود. برای ثبت از بچ دیگر باید تحویل جدید ثبت کنید.
+                        </p>
 
                         <label className="w-full block space-y-1 mt-1">
                             <span className="text-sm font-medium">توضیحات</span>
