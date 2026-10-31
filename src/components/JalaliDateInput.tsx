@@ -126,8 +126,9 @@ export function JalaliDateInput({
     const normalized = normalizeInput(next);
     setDraft(normalized);
     const gregorian = jalaliStringToGregorian(normalized);
-    if (gregorian) onChange(gregorian);
-    else if (!normalized) onChange("");
+    // Clear the parent value while the visible draft is invalid. This prevents
+    // submitting a previous valid date while the user is editing a new one.
+    onChange(gregorian || "");
   }
 
   function selectDate(year: number, month: number, day: number) {

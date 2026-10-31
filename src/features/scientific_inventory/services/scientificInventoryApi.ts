@@ -37,9 +37,10 @@ export async function getScientificInventoryTransfers(params: ScientificInventor
   return response.data;
 }
 
-export async function updateScientificInventoryTransfer(ledgerId: string, transferId: number, data: { quantity: number; description: string }) {
+export async function updateScientificInventoryTransfer(ledgerId: string, transferId: number, data: { quantity: number; description: string; inventory_batch_id?: string }) {
   const response = await apiClient.put(`/scientific-visitor-inventory/${ledgerId}/transfers/${transferId}`, {
     quantity: data.quantity,
+    inventory_batch_id: data.inventory_batch_id || undefined,
     description: data.description.trim() || undefined,
   });
   return response.data;
