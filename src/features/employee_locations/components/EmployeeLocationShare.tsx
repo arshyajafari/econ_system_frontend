@@ -98,7 +98,7 @@ export function EmployeeLocationShare() {
             if (action === 'start') startOperationId.current = null;
             else endOperationId.current = null;
             setMessage(
-                accuracy > 100
+                accuracy !== null && accuracy > 100
                     ? `ثبت انجام شد؛ دقت GPS حدود ${Math.round(accuracy)} متر است و ممکن است موقعیت دقیق نباشد.`
                     : action === 'start'
                         ? 'شروع کار با موفقیت ثبت شد.'
