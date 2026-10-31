@@ -65,7 +65,7 @@ export function ScientificVisitorInventoryPage() {
                     setError(
                         err instanceof ApiError
                             ? err.message
-                            : 'خطا در دریافت موجودی نمونه ویزیتور علمی.'
+                            : 'خطا در دریافت موجودی تحویلی ویزیتور علمی.'
                     );
                 }
             } finally {
@@ -219,7 +219,7 @@ export function ScientificVisitorInventoryPage() {
             closeEdit();
             setRefreshKey((value) => value + 1);
         } catch (err: unknown) {
-            setError(err instanceof ApiError ? err.message : 'خطا در ویرایش موجودی نمونه.');
+            setError(err instanceof ApiError ? err.message : 'خطا در ویرایش موجودی تحویلی.');
         } finally {
             setSaving(false);
         }
@@ -358,7 +358,7 @@ export function ScientificVisitorInventoryPage() {
                         ) : !items.length ? (
                             <tr>
                                 <td colSpan={isManager ? 7 : 5} className="p-10 text-center">
-                                    موجودی نمونه‌ای ثبت نشده است.
+                                    موجودی تحویلی ثبت نشده است.
                                 </td>
                             </tr>
                         ) : (
@@ -439,7 +439,7 @@ export function ScientificVisitorInventoryPage() {
                     >
                         <div>
                             <h2 id="edit-scientific-inventory-title" className="text-lg font-bold">
-                                ویرایش نمونه تحویلی
+                                ویرایش موجودی تحویلی
                             </h2>
                             <p className="mt-1 text-sm text-gray-500">
                                 {editingItem.employee?.name ?? '—'} —{' '}
