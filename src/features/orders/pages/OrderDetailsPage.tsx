@@ -1,45 +1,419 @@
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../auth";
-import { ApiError } from "../../../api/client";
-import { BackButton } from "../../../components/BackButton";
-import { ConfirmModal } from "../../../components/ConfirmModal";
-import { OrderStatusActions } from "../components/OrderStatusActions";
-import { getOrder, performOrderStatusAction } from "../services/ordersApi";
-import type { Order, OrderStatusAction } from "../types/order";
-import { getOrderStatusLabel } from "../types/order";
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../auth';
+import { ApiError } from '../../../api/client';
+import { BackButton } from '../../../components/BackButton';
+import { ConfirmModal } from '../../../components/ConfirmModal';
+import { OrderStatusActions } from '../components/OrderStatusActions';
+import { getOrder, performOrderStatusAction } from '../services/ordersApi';
+import type { Order, OrderStatusAction } from '../types/order';
+import { getOrderStatusLabel } from '../types/order';
 
-const numberFormatter = new Intl.NumberFormat("fa-IR");
-function formatNumber(value: number) { return numberFormatter.format(value); }
-function formatDate(value: string | null): string { if (!value) return "—"; const date = new Date(value); if (Number.isNaN(date.getTime())) return "—"; return new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium", timeStyle: "short" }).format(date); }
-function getOrderSubtotal(order: Order): number { return Number(order.items_subtotal ?? order.items.reduce((sum, item) => sum + Number(item.total_price || 0), 0)); }
-function getOrderFinalAmount(order: Order): number { return Number(order.final_amount ?? getOrderSubtotal(order)); }
-function getStatusClass(status: Order["status"]): string { switch (status) { case "draft": return "bg-gray-100 text-gray-700"; case "pending": return "bg-yellow-100 text-yellow-700"; case "confirmed": return "bg-blue-100 text-blue-700"; case "cancelled": return "bg-red-100 text-red-700"; case "completed": return "bg-green-100 text-green-700"; } }
+const numberFormatter = new Intl.NumberFormat('fa-IR');
+function formatNumber(value: number) {
+    return numberFormatter.format(value);
+}
+function formatDate(value: string | null): string {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
+    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium', timeStyle: 'short' }).format(
+        date
+    );
+}
+function getOrderSubtotal(order: Order): number {
+    return Number(
+        order.items_subtotal ??
+            order.items.reduce((sum, item) => sum + Number(item.total_price || 0), 0)
+    );
+}
+function getOrderFinalAmount(order: Order): number {
+    return Number(order.final_amount ?? getOrderSubtotal(order));
+}
+function getStatusClass(status: Order['status']): string {
+    switch (status) {
+        case 'draft':
+            return 'bg-gray-100 text-gray-700';
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-700';
+        case 'confirmed':
+            return 'bg-blue-100 text-blue-700';
+        case 'cancelled':
+            return 'bg-red-100 text-red-700';
+        case 'completed':
+            return 'bg-green-100 text-green-700';
+    }
+}
 
 export function OrderDetailsPage() {
-  const { id } = useParams<{ id: string }>(); const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
-  const [order, setOrder] = useState<Order | null>(null); const [isLoading, setIsLoading] = useState(true); const [pendingAction, setPendingAction] = useState<OrderStatusAction | null>(null);
-  const [cancelOpen, setCancelOpen] = useState(false); const [error, setError] = useState<string | null>(null);
-  const loadOrder = useCallback(async () => { if (!id) { setError("شناسه سفارش نامعتبر است."); setIsLoading(false); return; } setIsLoading(true); setError(null); try { setOrder(await getOrder(id)); } catch (error: unknown) { setError(error instanceof ApiError && error.message ? error.message : "خطا در دریافت اطلاعات سفارش."); } finally { setIsLoading(false); } }, [id]);
-  useEffect(() => { const timeoutId = window.setTimeout(() => { void loadOrder(); }, 0); return () => window.clearTimeout(timeoutId); }, [loadOrder]);
-  async function handleAction(action: OrderStatusAction) { if (!order || pendingAction) return; if (action === "cancel") { setCancelOpen(true); return; } setPendingAction(action); setError(null); try { setOrder(await performOrderStatusAction(order.id, action)); } catch (error: unknown) { setError(error instanceof ApiError && error.message ? error.message : "عملیات سفارش انجام نشد."); } finally { setPendingAction(null); } }
-  if (isLoading) return <section className="p-4 md:p-6"><div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">در حال دریافت اطلاعات سفارش...</div></section>;
-  if (!order) return <section className="space-y-4 p-4 md:p-6"><BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" /><div role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">{error ?? "سفارش پیدا نشد."}</div></section>;
-  const subtotal = getOrderSubtotal(order);
-  const discountAmount = Number(order.discount_amount || 0);
-  const finalAmount = getOrderFinalAmount(order);
-  return <section className="space-y-6 p-4 md:p-6">
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div><BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" /><div className="mt-3 flex flex-wrap items-center gap-3"><h1 className="text-2xl font-bold text-gray-900">سفارش {order.code}</h1><span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(order.status)}`}>{getOrderStatusLabel(order.status)}</span></div><p className="mt-1 text-sm text-gray-500">ثبت شده در {formatDate(order.created_at)}</p></div>
-      {order.status === "completed" ? <button type="button" onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">ثبت مرجوعی</button> : null}
-    </div>
-    {error ? <div role="alert" aria-live="polite" className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"><span>{error}</span><button type="button" onClick={() => void loadOrder()} className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto">تلاش مجدد</button></div> : null}
-    <div className="grid gap-4 md:grid-cols-2"><div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="text-sm font-semibold text-gray-900">اطلاعات مشتری</h2><div className="mt-4 space-y-2 text-sm"><div className="flex justify-between gap-4"><span className="text-gray-500">نام</span><span className="font-medium text-gray-900">{order.customer?.customer_name ?? "—"}</span></div><div className="flex justify-between gap-4"><span className="text-gray-500">کد</span><span className="text-gray-800">{order.customer?.code ?? "—"}</span></div></div></div><div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="text-sm font-semibold text-gray-900">کارشناس فروش</h2><div className="mt-4 space-y-2 text-sm"><div className="flex justify-between gap-4"><span className="text-gray-500">نام</span><span className="font-medium text-gray-900">{order.sales_employee?.name ?? "—"}</span></div><div className="flex justify-between gap-4"><span className="text-gray-500">کد</span><span className="text-gray-800">{order.sales_employee?.code ?? "—"}</span></div></div></div></div>
-    <div className="rounded-xl border border-gray-200 bg-white p-5"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"><div className="text-xs text-gray-500">جمع اقلام</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{formatNumber(subtotal)}</div></div><div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"><div className="text-xs text-gray-500">تخفیف سفارش</div><div dir="ltr" className="mt-1 font-bold text-gray-900">{formatNumber(discountAmount)}</div></div><div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"><div className="text-xs text-gray-500">مبلغ نهایی</div><div dir="ltr" className="mt-1 text-lg font-bold text-gray-900">{formatNumber(finalAmount)}</div></div></div>{order.offer_title || order.offer_description ? <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4"><div className="font-semibold text-gray-900">آفر سفارش{order.offer_title ? `: ${order.offer_title}` : ""}</div>{order.offer_description ? <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-600">{order.offer_description}</p> : null}</div> : null}</div><div className="rounded-xl border border-gray-200 bg-white"><div className="border-b border-gray-100 px-5 py-4"><div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><h2 className="font-semibold text-gray-900">اقلام سفارش</h2><span className="text-xs text-gray-500">تخفیف و آفر هر آیتم جداگانه نمایش داده می‌شود.</span></div></div><div className="overflow-x-auto"><table className="min-w-[1250px] w-full text-sm"><thead className="bg-gray-50 text-right text-gray-600"><tr><th className="px-5 py-3 font-medium">محصول</th><th className="px-5 py-3 font-medium">تعداد خرید</th><th className="px-5 py-3 font-medium">رایگان</th><th className="px-5 py-3 font-medium">تحویلی</th><th className="px-5 py-3 font-medium">قیمت واحد</th><th className="px-5 py-3 font-medium">تخفیف آیتم</th><th className="px-5 py-3 font-medium">آفر آیتم</th><th className="px-5 py-3 font-medium">مبلغ نهایی</th><th className="px-5 py-3 font-medium">تخصیص</th></tr></thead><tbody className="divide-y divide-gray-100">{order.items.map((item) => { const allocatedQuantity = item.allocations?.reduce((sum, allocation) => sum + Number(allocation.quantity || 0), 0) ?? 0; const freeQuantity = Number(item.free_quantity || 0); const fulfillmentQuantity = Number(item.fulfillment_quantity || (Number(item.quantity || 0) + freeQuantity)); const discountValue = Number(item.discount_value || 0); const discountAmount = Number(item.discount_amount || 0); const discountLabel = item.discount_type === "percentage" ? `${formatNumber(discountValue)}٪` : item.discount_type === "fixed" ? formatNumber(discountAmount) : "—"; return <tr key={item.id}><td className="px-5 py-4"><div className="font-medium text-gray-900">{item.product?.title ?? "—"}</div>{item.product?.code ? <div className="mt-1 text-xs text-gray-500">{item.product.code}</div> : null}{item.description ? <div className="mt-1 text-xs text-gray-500">{item.description}</div> : null}</td><td className="px-5 py-4">{formatNumber(item.quantity)}</td><td className="px-5 py-4"><span className={freeQuantity > 0 ? "font-semibold text-emerald-700" : "text-gray-400"}>{formatNumber(freeQuantity)}</span></td><td className="px-5 py-4">{formatNumber(fulfillmentQuantity)}</td><td dir="ltr" className="px-5 py-4">{formatNumber(Number(item.unit_price || 0))}</td><td className="px-5 py-4"><div className={discountAmount > 0 ? "font-semibold text-amber-700" : "text-gray-400"}>{discountLabel}</div>{discountAmount > 0 ? <div className="mt-1 text-xs text-gray-500">کسر: {formatNumber(discountAmount)}</div> : null}</td><td className="px-5 py-4">{item.offer_type === "buy_x_get_y" ? <div><div className="font-semibold text-emerald-700">{formatNumber(Number(item.offer_buy_quantity || 0))} + {formatNumber(Number(item.offer_free_quantity || 0))}</div>{item.offer_title ? <div className="mt-1 text-xs text-gray-500">{item.offer_title}</div> : null}</div> : <span className="text-gray-400">—</span>}</td><td dir="ltr" className="px-5 py-4 font-medium text-gray-900">{formatNumber(Number(item.total_price || 0))}</td><td className="px-5 py-4 text-gray-600">{formatNumber(allocatedQuantity)} از {formatNumber(fulfillmentQuantity)}</td></tr>; })}</tbody><tfoot><tr className="border-t border-gray-200"><td colSpan={7} className="px-5 py-4 text-left font-semibold text-gray-900">جمع سفارش</td><td dir="ltr" className="px-5 py-4 font-bold text-gray-900">{formatNumber(finalAmount)}</td><td /></tr></tfoot></table></div></div>
-    <ConfirmModal open={cancelOpen} title="لغو سفارش" description={`آیا از لغو سفارش «${order.code}» مطمئن هستید؟`} confirmLabel="لغو سفارش" variant="danger" isLoading={pendingAction !== null} onCancel={() => setCancelOpen(false)} onConfirm={() => { setCancelOpen(false); void handleAction("cancel"); }} />
-    {order.description ? <div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="text-sm font-semibold text-gray-900">توضیحات</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-600">{order.description}</p></div> : null}
-    <div className="rounded-xl border border-gray-200 bg-white p-5"><h2 className="mb-4 text-sm font-semibold text-gray-900">عملیات سفارش</h2><OrderStatusActions order={order} isAdmin={isAdmin} disabled={pendingAction !== null} onAction={(action) => { void handleAction(action); }} /></div>
-  </section>;
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const isAdmin = user?.roles.includes('admin') ?? false;
+    const [order, setOrder] = useState<Order | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [pendingAction, setPendingAction] = useState<OrderStatusAction | null>(null);
+    const [cancelOpen, setCancelOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const loadOrder = useCallback(async () => {
+        if (!id) {
+            setError('شناسه سفارش نامعتبر است.');
+            setIsLoading(false);
+            return;
+        }
+        setIsLoading(true);
+        setError(null);
+        try {
+            setOrder(await getOrder(id));
+        } catch (error: unknown) {
+            setError(
+                error instanceof ApiError && error.message
+                    ? error.message
+                    : 'خطا در دریافت اطلاعات سفارش.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }, [id]);
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            void loadOrder();
+        }, 0);
+        return () => window.clearTimeout(timeoutId);
+    }, [loadOrder]);
+    async function handleAction(action: OrderStatusAction) {
+        if (!order || pendingAction) return;
+        if (action === 'cancel') {
+            setCancelOpen(true);
+            return;
+        }
+        setPendingAction(action);
+        setError(null);
+        try {
+            setOrder(await performOrderStatusAction(order.id, action));
+        } catch (error: unknown) {
+            setError(
+                error instanceof ApiError && error.message
+                    ? error.message
+                    : 'عملیات سفارش انجام نشد.'
+            );
+        } finally {
+            setPendingAction(null);
+        }
+    }
+    if (isLoading)
+        return (
+            <section className="p-4 md:p-6">
+                <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
+                    در حال دریافت اطلاعات سفارش...
+                </div>
+            </section>
+        );
+    if (!order)
+        return (
+            <section className="space-y-4 p-4 md:p-6">
+                <BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" />
+                <div role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+                    {error ?? 'سفارش پیدا نشد.'}
+                </div>
+            </section>
+        );
+    const subtotal = getOrderSubtotal(order);
+    const discountAmount = Number(order.discount_amount || 0);
+    const finalAmount = getOrderFinalAmount(order);
+    return (
+        <section className="space-y-6 p-4 md:p-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
+                <div className="w-full">
+                    <BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" />
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <h1 className="text-2xl font-bold text-gray-900">سفارش {order.code}</h1>
+                        <span
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(order.status)}`}
+                        >
+                            {getOrderStatusLabel(order.status)}
+                        </span>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">
+                        ثبت شده در {formatDate(order.created_at)}
+                    </p>
+                </div>
+                {order.status === 'completed' ? (
+                    <div className="w-full flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)}
+                            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                        >
+                            ثبت مرجوعی
+                        </button>
+                    </div>
+                ) : null}
+            </div>
+            {error ? (
+                <div
+                    role="alert"
+                    aria-live="polite"
+                    className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <span>{error}</span>
+                    <button
+                        type="button"
+                        onClick={() => void loadOrder()}
+                        className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
+                    >
+                        تلاش مجدد
+                    </button>
+                </div>
+            ) : null}
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                    <h2 className="text-sm font-semibold text-gray-900">اطلاعات مشتری</h2>
+                    <div className="mt-4 space-y-2 text-sm">
+                        <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">نام</span>
+                            <span className="font-medium text-gray-900">
+                                {order.customer?.customer_name ?? '—'}
+                            </span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">کد</span>
+                            <span className="text-gray-800">{order.customer?.code ?? '—'}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                    <h2 className="text-sm font-semibold text-gray-900">کارشناس فروش</h2>
+                    <div className="mt-4 space-y-2 text-sm">
+                        <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">نام</span>
+                            <span className="font-medium text-gray-900">
+                                {order.sales_employee?.name ?? '—'}
+                            </span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-gray-500">کد</span>
+                            <span className="text-gray-800">
+                                {order.sales_employee?.code ?? '—'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div className="text-xs text-gray-500">جمع اقلام</div>
+                        <div dir="ltr" className="mt-1 font-bold text-gray-900">
+                            {formatNumber(subtotal)}
+                        </div>
+                    </div>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div className="text-xs text-gray-500">تخفیف سفارش</div>
+                        <div dir="ltr" className="mt-1 font-bold text-gray-900">
+                            {formatNumber(discountAmount)}
+                        </div>
+                    </div>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div className="text-xs text-gray-500">مبلغ نهایی</div>
+                        <div dir="ltr" className="mt-1 text-lg font-bold text-gray-900">
+                            {formatNumber(finalAmount)}
+                        </div>
+                    </div>
+                </div>
+                {order.offer_title || order.offer_description ? (
+                    <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+                        <div className="font-semibold text-gray-900">
+                            آفر سفارش{order.offer_title ? `: ${order.offer_title}` : ''}
+                        </div>
+                        {order.offer_description ? (
+                            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-600">
+                                {order.offer_description}
+                            </p>
+                        ) : null}
+                    </div>
+                ) : null}
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white">
+                <div className="border-b border-gray-100 px-5 py-4">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="font-semibold text-gray-900">اقلام سفارش</h2>
+                        <span className="text-xs text-gray-500">
+                            تخفیف و آفر هر آیتم جداگانه نمایش داده می‌شود.
+                        </span>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="min-w-[1250px] w-full text-sm">
+                        <thead className="bg-gray-50 text-right text-gray-600">
+                            <tr>
+                                <th className="px-5 py-3 font-medium">محصول</th>
+                                <th className="px-5 py-3 font-medium">تعداد خرید</th>
+                                <th className="px-5 py-3 font-medium">رایگان</th>
+                                <th className="px-5 py-3 font-medium">تحویلی</th>
+                                <th className="px-5 py-3 font-medium">قیمت واحد</th>
+                                <th className="px-5 py-3 font-medium">تخفیف آیتم</th>
+                                <th className="px-5 py-3 font-medium">آفر آیتم</th>
+                                <th className="px-5 py-3 font-medium">مبلغ نهایی</th>
+                                <th className="px-5 py-3 font-medium">تخصیص</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {order.items.map((item) => {
+                                const allocatedQuantity =
+                                    item.allocations?.reduce(
+                                        (sum, allocation) => sum + Number(allocation.quantity || 0),
+                                        0
+                                    ) ?? 0;
+                                const freeQuantity = Number(item.free_quantity || 0);
+                                const fulfillmentQuantity = Number(
+                                    item.fulfillment_quantity ||
+                                        Number(item.quantity || 0) + freeQuantity
+                                );
+                                const discountValue = Number(item.discount_value || 0);
+                                const discountAmount = Number(item.discount_amount || 0);
+                                const discountLabel =
+                                    item.discount_type === 'percentage'
+                                        ? `${formatNumber(discountValue)}٪`
+                                        : item.discount_type === 'fixed'
+                                          ? formatNumber(discountAmount)
+                                          : '—';
+                                return (
+                                    <tr key={item.id}>
+                                        <td className="px-5 py-4">
+                                            <div className="font-medium text-gray-900">
+                                                {item.product?.title ?? '—'}
+                                            </div>
+                                            {item.product?.code ? (
+                                                <div className="mt-1 text-xs text-gray-500">
+                                                    {item.product.code}
+                                                </div>
+                                            ) : null}
+                                            {item.description ? (
+                                                <div className="mt-1 text-xs text-gray-500">
+                                                    {item.description}
+                                                </div>
+                                            ) : null}
+                                        </td>
+                                        <td className="px-5 py-4">{formatNumber(item.quantity)}</td>
+                                        <td className="px-5 py-4">
+                                            <span
+                                                className={
+                                                    freeQuantity > 0
+                                                        ? 'font-semibold text-emerald-700'
+                                                        : 'text-gray-400'
+                                                }
+                                            >
+                                                {formatNumber(freeQuantity)}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            {formatNumber(fulfillmentQuantity)}
+                                        </td>
+                                        <td dir="ltr" className="px-5 py-4">
+                                            {formatNumber(Number(item.unit_price || 0))}
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <div
+                                                className={
+                                                    discountAmount > 0
+                                                        ? 'font-semibold text-amber-700'
+                                                        : 'text-gray-400'
+                                                }
+                                            >
+                                                {discountLabel}
+                                            </div>
+                                            {discountAmount > 0 ? (
+                                                <div className="mt-1 text-xs text-gray-500">
+                                                    کسر: {formatNumber(discountAmount)}
+                                                </div>
+                                            ) : null}
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            {item.offer_type === 'buy_x_get_y' ? (
+                                                <div>
+                                                    <div className="font-semibold text-emerald-700">
+                                                        {formatNumber(
+                                                            Number(item.offer_buy_quantity || 0)
+                                                        )}{' '}
+                                                        +{' '}
+                                                        {formatNumber(
+                                                            Number(item.offer_free_quantity || 0)
+                                                        )}
+                                                    </div>
+                                                    {item.offer_title ? (
+                                                        <div className="mt-1 text-xs text-gray-500">
+                                                            {item.offer_title}
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-400">—</span>
+                                            )}
+                                        </td>
+                                        <td
+                                            dir="ltr"
+                                            className="px-5 py-4 font-medium text-gray-900"
+                                        >
+                                            {formatNumber(Number(item.total_price || 0))}
+                                        </td>
+                                        <td className="px-5 py-4 text-gray-600">
+                                            {formatNumber(allocatedQuantity)} از{' '}
+                                            {formatNumber(fulfillmentQuantity)}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                        <tfoot>
+                            <tr className="border-t border-gray-200">
+                                <td
+                                    colSpan={7}
+                                    className="px-5 py-4 text-left font-semibold text-gray-900"
+                                >
+                                    جمع سفارش
+                                </td>
+                                <td dir="ltr" className="px-5 py-4 font-bold text-gray-900">
+                                    {formatNumber(finalAmount)}
+                                </td>
+                                <td />
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <ConfirmModal
+                open={cancelOpen}
+                title="لغو سفارش"
+                description={`آیا از لغو سفارش «${order.code}» مطمئن هستید؟`}
+                confirmLabel="لغو سفارش"
+                variant="danger"
+                isLoading={pendingAction !== null}
+                onCancel={() => setCancelOpen(false)}
+                onConfirm={() => {
+                    setCancelOpen(false);
+                    void handleAction('cancel');
+                }}
+            />
+            {order.description ? (
+                <div className="rounded-xl border border-gray-200 bg-white p-5">
+                    <h2 className="text-sm font-semibold text-gray-900">توضیحات</h2>
+                    <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-600">
+                        {order.description}
+                    </p>
+                </div>
+            ) : null}
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+                <h2 className="mb-4 text-sm font-semibold text-gray-900">عملیات سفارش</h2>
+                <OrderStatusActions
+                    order={order}
+                    isAdmin={isAdmin}
+                    disabled={pendingAction !== null}
+                    onAction={(action) => {
+                        void handleAction(action);
+                    }}
+                />
+            </div>
+        </section>
+    );
 }
