@@ -184,18 +184,16 @@ export function PaymentDetailsPage() {
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500">شناسه صیادی</span>
-                                <div dir="ltr" className="mt-1">
-                                    {payment.cheque_details.sayad_id || '—'}
-                                </div>
+                                <div className="mt-1">{payment.cheque_details.sayad_id || '—'}</div>
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500">وضعیت چک</span>
                                 <div className="mt-1">
                                     {payment.cheque_details.status === 'cleared'
-                                        ? 'وصول‌شده'
+                                        ? 'ثبت شده'
                                         : payment.cheque_details.status === 'cancelled'
                                           ? 'لغوشده'
-                                          : 'در انتظار وصول'}
+                                          : 'در انتظار ثبت'}
                                 </div>
                             </div>
                         </>
