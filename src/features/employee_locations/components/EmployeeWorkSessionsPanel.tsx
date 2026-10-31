@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { getEmployeeWorkSessions, type EmployeeWorkSession } from '../api/employeeLocations';
 
@@ -21,22 +21,28 @@ function mapUrl(point: EmployeeWorkSession['start']): string {
 export function EmployeeWorkSessionsPanel() {
     const [date, setDate] = useState(localDate);
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [loadedDate, setLoadedDate] = useState<string | null>(null);
+    const loading = loadedDate !== date;
     const [error, setError] = useState<string | null>(null);
 
-    const load = useCallback(async () => {
-        setLoading(true);
-        try {
-            setSessions(await getEmployeeWorkSessions(date));
-            setError(null);
-        } catch (cause: unknown) {
-            setError(cause instanceof ApiError ? cause.message : 'دریافت سوابق شروع و پایان ناموفق بود.');
-        } finally {
-            setLoading(false);
-        }
-    }, [date]);
-
-    useEffect(() => { void load(); }, [load]);
+    useEffect(() => {
+        let cancelled = false;
+        getEmployeeWorkSessions(date)
+            .then(value => {
+                if (!cancelled) {
+                    setSessions(value);
+                    setError(null);
+                }
+            })
+            .catch((cause: unknown) => {
+                if (!cancelled) setError(cause instanceof ApiError ? cause.message : 'دریافت سوابق شروع و پایان ناموفق بود.');
+            })
+            .finally(() => {
+                if (!cancelled) setLoadedDate(date);
+            });
+        return () => { cancelled = true; };
+    }, [date, refreshKey]);
 
     return (
         <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
@@ -48,7 +54,7 @@ export function EmployeeWorkSessionsPanel() {
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-gray-500" htmlFor="work-session-date">تاریخ</label>
                     <input id="work-session-date" type="date" value={date} onChange={event => setDate(event.target.value)} className="rounded-lg border border-gray-200 px-2 py-2 text-sm" />
-                    <button type="button" onClick={() => void load()} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
+                    <button type="button" onClick={() => setRefreshKey(value => value + 1)} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
                 </div>
             </div>
             {error ? <div role="alert" className="m-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
