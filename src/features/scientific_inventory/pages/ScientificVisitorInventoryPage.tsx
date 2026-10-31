@@ -319,15 +319,13 @@ export function ScientificVisitorInventoryPage() {
                             placeholder="تعداد تحویل"
                         />
 
-                        <input
+                        <JalaliDateInput
                             required
-                            inputMode="numeric"
-                            pattern="[0-9۰-۹]{4}[/\-][0-9۰-۹]{1,2}[/\-][0-9۰-۹]{1,2}"
                             disabled={saving}
                             value={receivedDate}
-                            onChange={(event) => setReceivedDate(event.target.value)}
+                            onChange={setReceivedDate}
                             className="rounded-lg border px-3 py-2"
-                            placeholder="تاریخ ثبت شمسی (مثلاً ۱۴۰۵/۰۸/۰۹)"
+                            placeholder="تاریخ تحویل"
                         />
 
                         <input
