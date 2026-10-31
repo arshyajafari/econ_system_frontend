@@ -68,7 +68,7 @@ export function EmployeeLocationsPage() {
             setError(
                 e instanceof ApiError
                     ? e.message
-                    : 'دریافت موقعیت کارکنان ناموفق بود. اتصال شبکه را بررسی کنید.'
+                    : 'دریافت موقعیت و حضور کارکنان ناموفق بود. اتصال شبکه را بررسی کنید.'
             );
         } finally {
             requestInFlight.current = false;
@@ -151,13 +151,13 @@ export function EmployeeLocationsPage() {
                     </div>
                 </div>
                 <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
-                    <div className="text-xs text-gray-500">موقعیت تازه (کمتر از ۵ دقیقه)</div>
+                    <div className="text-xs text-gray-500">آخرین موقعیت‌های قدیمی و پیوسته</div>
                     <div className="mt-1 text-2xl font-bold text-emerald-700">
                         {freshCount.toLocaleString('fa-IR')}
                     </div>
                 </div>
                 <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
-                    <div className="text-xs text-gray-500">موقعیت قدیمی یا نامشخص</div>
+                    <div className="text-xs text-gray-500">موقعیت‌های تاریخی نامشخص</div>
                     <div className="mt-1 text-2xl font-bold text-amber-700">
                         {staleCount.toLocaleString('fa-IR')}
                     </div>
@@ -183,10 +183,10 @@ export function EmployeeLocationsPage() {
                 <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
                     <div className="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 className="font-semibold text-gray-900">نقشه موقعیت</h2>
+                            <h2 className="font-semibold text-gray-900">نقشه سوابق موقعیت قبلی</h2>
                             <p className="mt-1 text-xs text-gray-500">
                                 {selectedLocation
-                                    ? `نمایش موقعیت ${selectedLocation.employee_name}`
+                                    ? `نمایش آخرین نقطه ثبت‌شده قبلی برای ${selectedLocation.employee_name}`
                                     : 'برای نمایش موقعیت، یک کارمند انتخاب کنید.'}
                             </p>
                         </div>
