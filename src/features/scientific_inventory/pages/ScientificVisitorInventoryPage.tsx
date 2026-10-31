@@ -183,10 +183,15 @@ export function ScientificVisitorInventoryPage() {
         setError(null);
         try {
             if (deleteTarget.is_legacy) {
-                throw new Error('موجودی تاریخی به تحویل مشخصی متصل نیست و برای جلوگیری از خطای انبار قابل حذف مستقیم نیست.');
+                throw new Error(
+                    'موجودی تاریخی به تحویل مشخصی متصل نیست و برای جلوگیری از خطای انبار قابل حذف مستقیم نیست.'
+                );
             }
             if (deleteTarget.transfer_id && deleteTarget.ledger_id) {
-                await deleteScientificInventoryTransfer(deleteTarget.ledger_id, deleteTarget.transfer_id);
+                await deleteScientificInventoryTransfer(
+                    deleteTarget.ledger_id,
+                    deleteTarget.transfer_id
+                );
             } else {
                 await deleteScientificInventory(deleteTarget.id);
             }
@@ -204,7 +209,9 @@ export function ScientificVisitorInventoryPage() {
         if (!editingItem) return;
 
         if (editingItem.is_legacy) {
-            setError('موجودی تاریخی به تحویل مشخصی متصل نیست؛ برای حفظ صحت انبار امکان ویرایش مستقیم ندارد.');
+            setError(
+                'موجودی تاریخی به تحویل مشخصی متصل نیست؛ برای حفظ صحت انبار امکان ویرایش مستقیم ندارد.'
+            );
             return;
         }
         if (!Number.isInteger(editQuantity) || editQuantity < editingItem.used_quantity) {
@@ -231,15 +238,21 @@ export function ScientificVisitorInventoryPage() {
         setError(null);
         try {
             if (editingItem.transfer_id && editingItem.ledger_id) {
-                await updateScientificInventoryTransfer(editingItem.ledger_id, editingItem.transfer_id, {
-                    quantity: editQuantity,
-                    inventory_batch_id: editQuantity > editingItem.received_quantity ? editBatchId : undefined,
-                    description: editDescription,
-                });
+                await updateScientificInventoryTransfer(
+                    editingItem.ledger_id,
+                    editingItem.transfer_id,
+                    {
+                        quantity: editQuantity,
+                        inventory_batch_id:
+                            editQuantity > editingItem.received_quantity ? editBatchId : undefined,
+                        description: editDescription,
+                    }
+                );
             } else {
                 await updateScientificInventory(editingItem.id, {
                     quantity: editQuantity,
-                    inventory_batch_id: editQuantity > editingItem.received_quantity ? editBatchId : undefined,
+                    inventory_batch_id:
+                        editQuantity > editingItem.received_quantity ? editBatchId : undefined,
                     description: editDescription,
                 });
             }
@@ -329,7 +342,7 @@ export function ScientificVisitorInventoryPage() {
                             disabled={saving}
                             value={description}
                             onChange={(event) => setDescription(event.target.value)}
-                            className="rounded-lg border px-3 py-2"
+                            className="rounded-lg border px-3 py-2 md:col-span-2"
                             placeholder="توضیحات"
                         />
                     </div>
@@ -429,33 +442,45 @@ export function ScientificVisitorInventoryPage() {
                                         {item.is_legacy
                                             ? 'تاریخ نامشخص (موجودی قدیمی)'
                                             : item.last_received_at
-                                              ? new Date(item.last_received_at).toLocaleDateString('fa-IR')
+                                              ? new Date(item.last_received_at).toLocaleDateString(
+                                                    'fa-IR'
+                                                )
                                               : '—'}
-                                        {item.batch_number ? <div className="text-xs text-gray-500">بچ: {item.batch_number}</div> : null}
+                                        {item.batch_number ? (
+                                            <div className="text-xs text-gray-500">
+                                                بچ: {item.batch_number}
+                                            </div>
+                                        ) : null}
                                     </td>
 
                                     {isManager ? (
                                         <td className="px-4 py-3">
                                             <div className="flex flex-wrap items-center gap-1.5">
                                                 {item.is_legacy ? (
-                                                    <span className="px-2 py-1 text-xs text-amber-700">سابقه تاریخی؛ عملیات محدود</span>
-                                                ) : <button
-                                                    type="button"
-                                                    onClick={() => openEdit(item)}
-                                                    disabled={saving}
-                                                    className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
-                                                >
-                                                    ویرایش
-                                                </button>}
-                                                {!item.is_legacy ? <button
-                                                    type="button"
-                                                    onClick={() => setDeleteTarget(item)}
-                                                    disabled={saving}
-                                                    title="حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی"
-                                                    className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
-                                                >
-                                                    حذف
-                                                </button> : null}
+                                                    <span className="px-2 py-1 text-xs text-amber-700">
+                                                        سابقه تاریخی؛ عملیات محدود
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEdit(item)}
+                                                        disabled={saving}
+                                                        className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                                                    >
+                                                        ویرایش
+                                                    </button>
+                                                )}
+                                                {!item.is_legacy ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setDeleteTarget(item)}
+                                                        disabled={saving}
+                                                        title="حذف ردیف و بازگشت موجودی استفاده‌نشده به انبار اصلی"
+                                                        className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                                                    >
+                                                        حذف
+                                                    </button>
+                                                ) : null}
                                             </div>
                                         </td>
                                     ) : null}
@@ -509,7 +534,7 @@ export function ScientificVisitorInventoryPage() {
                             </div>
                         </div>
 
-                        <label className="block space-y-1">
+                        <label className="w-full block space-y-1">
                             <span className="text-sm font-medium">تعداد دریافتی جدید</span>
                             <input
                                 required
@@ -528,17 +553,11 @@ export function ScientificVisitorInventoryPage() {
                                 onChange={(event) => setEditQuantity(Number(event.target.value))}
                                 className="w-full rounded-lg border px-3 py-2"
                             />
-                            <span className="text-xs text-gray-500">
-                                حداقل تعداد مجاز برابر با مصرف‌شده است. کاهش تعداد فقط از موجودی
-                                استفاده‌نشده برمی‌گردد.
-                            </span>
                         </label>
 
                         {editQuantity > editingItem.received_quantity ? (
-                            <label className="block space-y-1">
-                                <span className="text-sm font-medium">
-                                    بچ انبار اصلی برای افزایش موجودی
-                                </span>
+                            <label className="w-full block space-y-1 mt-1">
+                                <span className="text-sm font-medium">بچ برای افزایش موجودی</span>
                                 <select
                                     required
                                     disabled={saving}
@@ -565,13 +584,10 @@ export function ScientificVisitorInventoryPage() {
                                             </option>
                                         ))}
                                 </select>
-                                <span className="text-xs text-gray-500">
-                                    افزایش تعداد به همان میزان از موجودی بچ انتخاب‌شده کم می‌کند.
-                                </span>
                             </label>
                         ) : null}
 
-                        <label className="block space-y-1">
+                        <label className="w-full block space-y-1 mt-1">
                             <span className="text-sm font-medium">توضیحات</span>
                             <input
                                 disabled={saving}
@@ -581,7 +597,7 @@ export function ScientificVisitorInventoryPage() {
                             />
                         </label>
 
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-2 mt-2.5">
                             <button
                                 type="button"
                                 onClick={closeEdit}
