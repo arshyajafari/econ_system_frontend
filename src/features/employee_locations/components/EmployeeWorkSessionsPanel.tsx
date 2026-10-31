@@ -3,9 +3,14 @@ import { ApiError } from '../../../api/client';
 import { getEmployeeWorkSessions, type EmployeeWorkSession } from '../api/employeeLocations';
 
 function localDate(): string {
-    const date = new Date();
-    const offset = date.getTimezoneOffset() * 60_000;
-    return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    return `${values.year}-${values.month}-${values.day}`;
 }
 
 function time(value: string | null): string {
