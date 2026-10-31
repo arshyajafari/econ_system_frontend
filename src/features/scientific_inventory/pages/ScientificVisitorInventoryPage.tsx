@@ -515,13 +515,6 @@ export function ScientificVisitorInventoryPage() {
                                 required
                                 type="number"
                                 min={editingItem.used_quantity}
-                                max={
-                                    editQuantity > editingItem.received_quantity &&
-                                    selectedEditBatch
-                                        ? editingItem.received_quantity +
-                                          selectedEditBatch.available_quantity
-                                        : undefined
-                                }
                                 step={1}
                                 disabled={saving}
                                 value={editQuantity}
