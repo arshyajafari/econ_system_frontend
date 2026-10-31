@@ -51,6 +51,8 @@ export function EmployeeLocationShare() {
     const [message, setMessage] = useState<string | null>(null);
     const startOperationId = useRef<string | null>(null);
     const endOperationId = useRef<string | null>(null);
+    const pendingStart = useRef<{ latitude: number; longitude: number; accuracy: number | null; client_operation_id: string } | null>(null);
+    const pendingEnd = useRef<{ latitude: number; longitude: number; accuracy: number | null; client_operation_id: string } | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -72,22 +74,29 @@ export function EmployeeLocationShare() {
         setBusy(true);
         setMessage(action === 'start' ? 'در حال دریافت موقعیت شروع...' : 'در حال دریافت موقعیت پایان...');
         try {
-            const position = await currentPosition();
-            const payload = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null,
-                client_operation_id: action === 'start'
-                    ? (startOperationId.current ??= crypto.randomUUID())
-                    : (endOperationId.current ??= crypto.randomUUID()),
-            };
+            const pending = action === 'start' ? pendingStart : pendingEnd;
+            let accuracy: number | null;
+            if (!pending.current) {
+                const position = await currentPosition();
+                accuracy = position.coords.accuracy;
+                pending.current = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: Number.isFinite(accuracy) ? accuracy : null,
+                    client_operation_id: action === 'start'
+                        ? (startOperationId.current ??= crypto.randomUUID())
+                        : (endOperationId.current ??= crypto.randomUUID()),
+                };
+            } else {
+                accuracy = pending.current.accuracy;
+            }
             const saved = action === 'start'
-                ? await startMyWorkSession(payload)
-                : await endMyWorkSession(payload);
+                ? await startMyWorkSession(pending.current)
+                : await endMyWorkSession(pending.current);
             setSession(saved);
+            pending.current = null;
             if (action === 'start') startOperationId.current = null;
             else endOperationId.current = null;
-            const accuracy = position.coords.accuracy;
             setMessage(
                 accuracy > 100
                     ? `ثبت انجام شد؛ دقت GPS حدود ${Math.round(accuracy)} متر است و ممکن است موقعیت دقیق نباشد.`
@@ -96,6 +105,16 @@ export function EmployeeLocationShare() {
                         : 'پایان کار با موفقیت ثبت شد.'
             );
         } catch (error: unknown) {
+            if (error instanceof ApiError && error.status === 422) {
+                if (action === 'start') {
+                    pendingStart.current = null;
+                    startOperationId.current = null;
+                } else {
+                    pendingEnd.current = null;
+                    endOperationId.current = null;
+                }
+                getMyWorkSession().then(setSession).catch(() => undefined);
+            }
             setMessage(errorMessage(error));
         } finally {
             setBusy(false);
