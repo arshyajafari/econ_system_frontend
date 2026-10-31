@@ -11,6 +11,7 @@ export async function assignScientificInventory(data: AssignScientificInventoryD
     employee_id: data.employee_id,
     inventory_batch_id: data.inventory_batch_id,
     quantity: data.quantity,
+    received_at: data.received_at,
     description: data.description.trim() || undefined,
   });
   return response.data;
