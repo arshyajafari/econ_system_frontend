@@ -35,10 +35,11 @@ function currentPosition(): Promise<GeolocationPosition> {
 
 function errorMessage(error: unknown): string {
     if (error instanceof ApiError) return error.message;
-    if (error instanceof GeolocationPositionError) {
-        if (error.code === error.PERMISSION_DENIED) return 'دسترسی GPS رد شده است. مجوز مکان‌یابی مرورگر را فعال کنید.';
-        if (error.code === error.TIMEOUT) return 'دریافت موقعیت بیش از حد طول کشید؛ دوباره تلاش کنید.';
-        return 'موقعیت GPS در دسترس نیست. GPS دستگاه را بررسی کنید.';
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+        const code = Number((error as { code: unknown }).code);
+        if (code === 1) return 'دسترسی GPS رد شده است. مجوز مکان‌یابی مرورگر را فعال کنید.';
+        if (code === 3) return 'دریافت موقعیت بیش از حد طول کشید؛ دوباره تلاش کنید.';
+        if (code === 2) return 'موقعیت GPS در دسترس نیست. GPS دستگاه را بررسی کنید.';
     }
     return error instanceof Error ? error.message : 'ثبت موقعیت انجام نشد؛ دوباره تلاش کنید.';
 }
