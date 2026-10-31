@@ -5,6 +5,7 @@ import { useAuth } from '../../auth';
 import { getEmployeeLocations, type EmployeeLocation } from '../api/employeeLocations';
 import { EmployeeLocationHistory } from '../components/EmployeeLocationHistory';
 import { LiveEmployeeMap } from '../components/LiveEmployeeMap';
+import { EmployeeWorkSessionsPanel } from '../components/EmployeeWorkSessionsPanel';
 
 const REFRESH_INTERVAL_MS = 10_000;
 const STALE_AFTER_MS = 5 * 60_000;
@@ -139,6 +140,8 @@ export function EmployeeLocationsPage() {
                         : 'بروزرسانی'}
                 </button>
             </div>
+
+            <EmployeeWorkSessionsPanel />
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm">
