@@ -11,8 +11,10 @@ import type { InventoryBatch } from '../../inventory/types/inventory';
 import {
     assignScientificInventory,
     deleteScientificInventory,
-    getScientificInventory,
+    deleteScientificInventoryTransfer,
+    getScientificInventoryTransfers,
     updateScientificInventory,
+    updateScientificInventoryTransfer,
 } from '../services/scientificInventoryApi';
 import type { ScientificInventoryItem } from '../types/scientificInventory';
 
@@ -50,7 +52,7 @@ export function ScientificVisitorInventoryPage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await getScientificInventory({
+                const response = await getScientificInventoryTransfers({
                     page,
                     per_page: 20,
                     sort: '-last_received_at',
@@ -173,7 +175,14 @@ export function ScientificVisitorInventoryPage() {
         setSaving(true);
         setError(null);
         try {
-            await deleteScientificInventory(deleteTarget.id);
+            if (deleteTarget.is_legacy) {
+                throw new Error('موجودی تاریخی به تحویل مشخصی متصل نیست و برای جلوگیری از خطای انبار قابل حذف مستقیم نیست.');
+            }
+            if (deleteTarget.transfer_id && deleteTarget.ledger_id) {
+                await deleteScientificInventoryTransfer(deleteTarget.ledger_id, deleteTarget.transfer_id);
+            } else {
+                await deleteScientificInventory(deleteTarget.id);
+            }
             setDeleteTarget(null);
             setRefreshKey((value) => value + 1);
         } catch (err: unknown) {
@@ -187,6 +196,14 @@ export function ScientificVisitorInventoryPage() {
         event.preventDefault();
         if (!editingItem) return;
 
+        if (editingItem.is_legacy) {
+            setError('موجودی تاریخی به تحویل مشخصی متصل نیست؛ برای حفظ صحت انبار امکان ویرایش مستقیم ندارد.');
+            return;
+        }
+        if (editingItem.transfer_id && editQuantity > editingItem.received_quantity) {
+            setError('برای افزایش موجودی، تحویل جدید ثبت کنید تا تاریخ و بچ آن جداگانه ثبت شود.');
+            return;
+        }
         if (!Number.isInteger(editQuantity) || editQuantity < editingItem.used_quantity) {
             setError(
                 `تعداد دریافتی نمی‌تواند کمتر از مصرف‌شده باشد (${editingItem.used_quantity} عدد).`
@@ -210,12 +227,18 @@ export function ScientificVisitorInventoryPage() {
         setSaving(true);
         setError(null);
         try {
-            await updateScientificInventory(editingItem.id, {
-                quantity: editQuantity,
-                inventory_batch_id:
-                    editQuantity > editingItem.received_quantity ? editBatchId : undefined,
-                description: editDescription,
-            });
+            if (editingItem.transfer_id && editingItem.ledger_id) {
+                await updateScientificInventoryTransfer(editingItem.ledger_id, editingItem.transfer_id, {
+                    quantity: editQuantity,
+                    description: editDescription,
+                });
+            } else {
+                await updateScientificInventory(editingItem.id, {
+                    quantity: editQuantity,
+                    inventory_batch_id: editQuantity > editingItem.received_quantity ? editBatchId : undefined,
+                    description: editDescription,
+                });
+            }
             closeEdit();
             setRefreshKey((value) => value + 1);
         } catch (err: unknown) {
@@ -389,25 +412,28 @@ export function ScientificVisitorInventoryPage() {
                                         {numberFormat.format(item.available_quantity)}
                                     </td>
                                     <td className="px-4 py-3">
-                                        {item.last_received_at
-                                            ? new Date(item.last_received_at).toLocaleDateString(
-                                                  'fa-IR'
-                                              )
-                                            : '—'}
+                                        {item.is_legacy
+                                            ? 'تاریخ نامشخص (موجودی قدیمی)'
+                                            : item.last_received_at
+                                              ? new Date(item.last_received_at).toLocaleDateString('fa-IR')
+                                              : '—'}
+                                        {item.batch_number ? <div className="text-xs text-gray-500">بچ: {item.batch_number}</div> : null}
                                     </td>
 
                                     {isManager ? (
                                         <td className="px-4 py-3">
                                             <div className="flex flex-wrap items-center gap-1.5">
-                                                <button
+                                                {item.is_legacy ? (
+                                                    <span className="px-2 py-1 text-xs text-amber-700">سابقه تاریخی؛ عملیات محدود</span>
+                                                ) : <button
                                                     type="button"
                                                     onClick={() => openEdit(item)}
                                                     disabled={saving}
                                                     className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                 >
                                                     ویرایش
-                                                </button>
-                                                <button
+                                                </button>}
+                                                {!item.is_legacy ? <button
                                                     type="button"
                                                     onClick={() => setDeleteTarget(item)}
                                                     disabled={saving}
@@ -415,7 +441,7 @@ export function ScientificVisitorInventoryPage() {
                                                     className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                 >
                                                     حذف
-                                                </button>
+                                                </button> : null}
                                             </div>
                                         </td>
                                     ) : null}
