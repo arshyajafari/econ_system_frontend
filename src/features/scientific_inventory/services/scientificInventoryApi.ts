@@ -30,3 +30,21 @@ export async function updateScientificInventory(id: string, data: UpdateScientif
   return response.data;
 }
 
+
+export async function getScientificInventoryTransfers(params: ScientificInventoryListParams = {}): Promise<ScientificInventoryListResponse> {
+  const response = await apiClient.get<ScientificInventoryListResponse>("/scientific-visitor-inventory/transfers", { params });
+  return response.data;
+}
+
+export async function updateScientificInventoryTransfer(ledgerId: string, transferId: number, data: { quantity: number; description: string }) {
+  const response = await apiClient.put(`/scientific-visitor-inventory/${ledgerId}/transfers/${transferId}`, {
+    quantity: data.quantity,
+    description: data.description.trim() || undefined,
+  });
+  return response.data;
+}
+
+export async function deleteScientificInventoryTransfer(ledgerId: string, transferId: number) {
+  const response = await apiClient.delete(`/scientific-visitor-inventory/${ledgerId}/transfers/${transferId}`);
+  return response.data;
+}
