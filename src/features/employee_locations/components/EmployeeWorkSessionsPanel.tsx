@@ -18,7 +18,6 @@ type LeafletApi = {
     polyline(points: number[][], options?: Record<string, unknown>): LeafletLayer;
     latLngBounds(points: number[][]): unknown;
 };
-declare global { interface Window { L?: LeafletApi } }
 
 function localDate(): string {
     const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
@@ -64,8 +63,8 @@ export function EmployeeWorkSessionsPanel() {
     }, [date, refreshKey]);
 
     useEffect(() => {
-        if (!mapElement.current || !window.L || mapRef.current) return;
-        const L = window.L;
+        if (!mapElement.current || !(window as Window & { L?: LeafletApi }).L || mapRef.current) return;
+        const L = (window as Window & { L?: LeafletApi }).L;
         const map = L.map(mapElement.current, { zoomControl: true, preferCanvas: true });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
