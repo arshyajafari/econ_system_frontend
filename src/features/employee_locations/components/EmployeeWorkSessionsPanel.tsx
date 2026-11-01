@@ -23,6 +23,15 @@ function mapUrl(point: EmployeeWorkSession['start']): string {
     return `https://www.openstreetmap.org/?mlat=${point.latitude}&mlon=${point.longitude}#map=17/${point.latitude}/${point.longitude}`;
 }
 
+function formatDuration(seconds: number): string {
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const hours = Math.floor(safeSeconds / 3600);
+    const minutes = Math.floor((safeSeconds % 3600) / 60);
+    return hours > 0
+        ? `${hours.toLocaleString('fa-IR')} ساعت و ${minutes.toLocaleString('fa-IR')} دقیقه`
+        : `${minutes.toLocaleString('fa-IR')} دقیقه`;
+}
+
 export function EmployeeWorkSessionsPanel() {
     const [date, setDate] = useState(localDate);
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
@@ -53,8 +62,8 @@ export function EmployeeWorkSessionsPanel() {
         <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-4">
                 <div>
-                    <h2 className="font-semibold text-gray-900">سوابق شروع و پایان کار</h2>
-                    <p className="mt-1 text-xs text-gray-500">مختصات ثبت‌شده با تأیید کارمند؛ بدون ردیابی پیوسته</p>
+                    <h2 className="font-semibold text-gray-900">سوابق مأموریت‌ها</h2>
+                    <p className="mt-1 text-xs text-gray-500">هر ردیف یک مأموریت مستقل است؛ همراه با مدت و مختصات شروع/پایان، بدون ردیابی پیوسته</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-gray-500" htmlFor="work-session-date">تاریخ</label>
@@ -63,7 +72,7 @@ export function EmployeeWorkSessionsPanel() {
                 </div>
             </div>
             {error ? <div role="alert" className="m-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
-            {loading ? <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق...</p> : sessions.length === 0 ? <p className="p-5 text-sm text-gray-500">برای این تاریخ نوبت کاری ثبت نشده است.</p> : (
+            {loading ? <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق...</p> : sessions.length === 0 ? <p className="p-5 text-sm text-gray-500">برای این تاریخ مأموریتی ثبت نشده است.</p> : (
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[680px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500">
@@ -72,6 +81,7 @@ export function EmployeeWorkSessionsPanel() {
                                 <th className="px-4 py-3 font-medium">شروع</th>
                                 <th className="px-4 py-3 font-medium">موقعیت شروع</th>
                                 <th className="px-4 py-3 font-medium">پایان</th>
+                                <th className="px-4 py-3 font-medium">مدت مأموریت</th>
                                 <th className="px-4 py-3 font-medium">موقعیت پایان</th>
                                 <th className="px-4 py-3 font-medium">وضعیت</th>
                             </tr>
@@ -83,6 +93,7 @@ export function EmployeeWorkSessionsPanel() {
                                     <td className="px-4 py-3 text-gray-700">{time(session.started_at)}</td>
                                     <td className="px-4 py-3"><a href={mapUrl(session.start)} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">مشاهده روی نقشه</a></td>
                                     <td className="px-4 py-3 text-gray-700">{time(session.ended_at)}</td>
+                                    <td className="px-4 py-3 text-gray-700">{formatDuration(session.duration_seconds)}</td>
                                     <td className="px-4 py-3">{session.end ? <a href={mapUrl(session.end)} target="_blank" rel="noreferrer" className="text-blue-700 hover:underline">مشاهده روی نقشه</a> : '—'}</td>
                                     <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs ${session.status === 'completed' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'}`}>{session.status === 'completed' ? 'پایان‌یافته' : 'در حال فعالیت'}</span></td>
                                 </tr>
