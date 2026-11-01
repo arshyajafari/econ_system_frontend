@@ -415,7 +415,9 @@ export function ScientificVisitorInventoryPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         {item.last_received_at
-                                            ? new Date(item.last_received_at).toLocaleDateString('fa-IR')
+                                            ? new Date(item.last_received_at).toLocaleDateString(
+                                                  'fa-IR'
+                                              )
                                             : 'تاریخ ثبت نشده'}
                                         {item.batch_number ? (
                                             <div className="text-xs text-gray-500">
@@ -518,10 +520,6 @@ export function ScientificVisitorInventoryPage() {
                                 className="w-full rounded-lg border px-3 py-2"
                             />
                         </label>
-
-                        <p className="text-xs text-gray-500">
-                            تغییر مقدار فقط روی همان بچ اولیه انجام می‌شود. برای ثبت از بچ دیگر باید تحویل جدید ثبت کنید.
-                        </p>
 
                         <label className="w-full block space-y-1 mt-1">
                             <span className="text-sm font-medium">توضیحات</span>

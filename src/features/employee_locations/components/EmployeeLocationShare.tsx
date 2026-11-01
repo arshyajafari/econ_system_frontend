@@ -51,13 +51,23 @@ export function EmployeeLocationShare() {
     const [message, setMessage] = useState<string | null>(null);
     const startOperationId = useRef<string | null>(null);
     const endOperationId = useRef<string | null>(null);
-    const pendingStart = useRef<{ latitude: number; longitude: number; accuracy: number | null; client_operation_id: string } | null>(null);
-    const pendingEnd = useRef<{ latitude: number; longitude: number; accuracy: number | null; client_operation_id: string } | null>(null);
+    const pendingStart = useRef<{
+        latitude: number;
+        longitude: number;
+        accuracy: number | null;
+        client_operation_id: string;
+    } | null>(null);
+    const pendingEnd = useRef<{
+        latitude: number;
+        longitude: number;
+        accuracy: number | null;
+        client_operation_id: string;
+    } | null>(null);
 
     useEffect(() => {
         let cancelled = false;
         getMyWorkSession()
-            .then(value => {
+            .then((value) => {
                 if (!cancelled) setSession(value);
             })
             .catch((error: unknown) => {
@@ -66,13 +76,17 @@ export function EmployeeLocationShare() {
             .finally(() => {
                 if (!cancelled) setLoading(false);
             });
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const submit = async (action: Action) => {
         if (busy || loading) return;
         setBusy(true);
-        setMessage(action === 'start' ? 'در حال دریافت موقعیت شروع...' : 'در حال دریافت موقعیت پایان...');
+        setMessage(
+            action === 'start' ? 'در حال دریافت موقعیت شروع...' : 'در حال دریافت موقعیت پایان...'
+        );
         try {
             const pending = action === 'start' ? pendingStart : pendingEnd;
             let accuracy: number | null;
@@ -83,16 +97,18 @@ export function EmployeeLocationShare() {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     accuracy: Number.isFinite(accuracy) ? accuracy : null,
-                    client_operation_id: action === 'start'
-                        ? (startOperationId.current ??= crypto.randomUUID())
-                        : (endOperationId.current ??= crypto.randomUUID()),
+                    client_operation_id:
+                        action === 'start'
+                            ? (startOperationId.current ??= crypto.randomUUID())
+                            : (endOperationId.current ??= crypto.randomUUID()),
                 };
             } else {
                 accuracy = pending.current.accuracy;
             }
-            const saved = action === 'start'
-                ? await startMyWorkSession(pending.current)
-                : await endMyWorkSession(pending.current);
+            const saved =
+                action === 'start'
+                    ? await startMyWorkSession(pending.current)
+                    : await endMyWorkSession(pending.current);
             setSession(saved);
             pending.current = null;
             if (action === 'start') startOperationId.current = null;
@@ -101,8 +117,8 @@ export function EmployeeLocationShare() {
                 accuracy !== null && accuracy > 100
                     ? `ثبت انجام شد؛ دقت GPS حدود ${Math.round(accuracy)} متر است و ممکن است موقعیت دقیق نباشد.`
                     : action === 'start'
-                        ? 'شروع کار با موفقیت ثبت شد.'
-                        : 'پایان کار با موفقیت ثبت شد.'
+                      ? 'شروع کار با موفقیت ثبت شد.'
+                      : 'پایان کار با موفقیت ثبت شد.'
             );
         } catch (error: unknown) {
             if (error instanceof ApiError && error.status === 422) {
@@ -113,7 +129,9 @@ export function EmployeeLocationShare() {
                     pendingEnd.current = null;
                     endOperationId.current = null;
                 }
-                getMyWorkSession().then(setSession).catch(() => undefined);
+                getMyWorkSession()
+                    .then(setSession)
+                    .catch(() => undefined);
             }
             setMessage(errorMessage(error));
         } finally {
@@ -128,14 +146,26 @@ export function EmployeeLocationShare() {
         <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
             <div className="flex items-center justify-between gap-2">
                 <div className="text-sm font-semibold text-slate-800">ثبت حضور مکانی</div>
-                <span className={`rounded-full px-2 py-1 text-[10px] font-medium ${completed ? 'bg-slate-100 text-slate-600' : started ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                    {loading ? 'در حال بررسی' : started ? 'مأموریت باز' : session ? 'آخرین مأموریت پایان‌یافته' : 'مأموریت شروع‌نشده'}
+                <span
+                    className={`rounded-full px-2 py-1 text-[10px] font-medium ${completed ? 'bg-slate-100 text-slate-600' : started ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+                >
+                    {loading
+                        ? 'در حال بررسی'
+                        : started
+                          ? 'مأموریت باز'
+                          : session
+                            ? 'آخرین مأموریت پایان‌یافته'
+                            : 'مأموریت شروع‌نشده'}
                 </span>
             </div>
             {session ? (
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
-                    <div>شروع: <strong>{formatTime(session.started_at)}</strong></div>
-                    <div>پایان: <strong>{formatTime(session.ended_at)}</strong></div>
+                    <div>
+                        شروع: <strong>{formatTime(session.started_at)}</strong>
+                    </div>
+                    <div>
+                        پایان: <strong>{formatTime(session.ended_at)}</strong>
+                    </div>
                 </div>
             ) : null}
             <button
@@ -144,12 +174,21 @@ export function EmployeeLocationShare() {
                 disabled={loading || busy}
                 className={`mt-3 w-full rounded-lg px-3 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 ${started ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
-                {loading ? 'در حال بررسی وضعیت...' : busy ? 'در حال دریافت و ثبت GPS...' : started ? 'پایان مأموریت' : session ? 'شروع مأموریت بعدی' : 'شروع مأموریت'}
+                {loading
+                    ? 'در حال بررسی وضعیت...'
+                    : busy
+                      ? 'در حال دریافت و ثبت GPS...'
+                      : started
+                        ? 'پایان مأموریت'
+                        : session
+                          ? 'شروع مأموریت بعدی'
+                          : 'شروع مأموریت'}
             </button>
-            {message ? <p role="status" className="mt-2 text-xs leading-5 text-slate-600">{message}</p> : null}
-            <p className="mt-2 text-[10px] leading-4 text-slate-500">
-                هر مأموریت را جداگانه شروع و پایان دهید؛ برای رفتن به مقصد بعدی پس از پایان مأموریت، مورد بعدی را شروع کنید. زمان از سرور گرفته می‌شود و مختصات فقط هنگام فشردن دکمه ارسال خواهد شد.
-            </p>
+            {message ? (
+                <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
+                    {message}
+                </p>
+            ) : null}
         </div>
     );
 }
