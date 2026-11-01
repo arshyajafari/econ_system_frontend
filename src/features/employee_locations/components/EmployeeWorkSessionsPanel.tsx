@@ -117,21 +117,6 @@ export function EmployeeWorkSessionsPanel() {
                     <button type="button" onClick={() => setRefreshKey(value => value + 1)} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
                 </div>
             </div>
-            <div className="relative">
-                <div ref={mapElement} className="h-[300px] w-full bg-slate-100 sm:h-[380px]" />
-                {selectedSession ? (
-                    <div className="absolute bottom-3 right-3 z-[500] rounded-lg border border-gray-200 bg-white/95 px-3 py-2 text-xs shadow">
-                        <span className="ml-3 text-emerald-700">● شروع</span>
-                        <span className="text-red-600">● پایان</span>
-                        <span className="mr-3 text-gray-500">{selectedSession.employee_name}</span>
-                    </div>
-                ) : (
-                    <div className="absolute inset-0 z-[400] flex items-center justify-center bg-white/65 text-sm text-gray-600 pointer-events-none">
-                        برای نمایش مختصات، دکمه «نقشه» یکی از ردیف‌ها را انتخاب کنید.
-                    </div>
-                )}
-            </div>
-            {error ? <div role="alert" className="m-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
             {loading ? <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق...</p> : sessions.length === 0 ? <p className="p-5 text-sm text-gray-500">برای این تاریخ مأموریتی ثبت نشده است.</p> : (
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[760px] text-right text-sm">
@@ -158,6 +143,21 @@ export function EmployeeWorkSessionsPanel() {
                     </table>
                 </div>
             )}
+            <div className="relative">
+                <div ref={mapElement} className="h-[300px] w-full bg-slate-100 sm:h-[380px]" />
+                {selectedSession ? (
+                    <div className="absolute bottom-3 right-3 z-[500] rounded-lg border border-gray-200 bg-white/95 px-3 py-2 text-xs shadow">
+                        <span className="ml-3 text-emerald-700">● شروع</span>
+                        <span className="text-red-600">● پایان</span>
+                        <span className="mr-3 text-gray-500">{selectedSession.employee_name}</span>
+                    </div>
+                ) : (
+                    <div className="absolute inset-0 z-[400] flex items-center justify-center bg-white/65 text-sm text-gray-600 pointer-events-none">
+                        برای نمایش مختصات، دکمه «نقشه» یکی از ردیف‌ها را انتخاب کنید.
+                    </div>
+                )}
+            </div>
+
         </section>
     );
 }
