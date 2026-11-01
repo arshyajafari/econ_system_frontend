@@ -71,6 +71,7 @@ export type EmployeeWorkSession = {
   ended_at: string | null;
   end: { latitude: number; longitude: number; accuracy: number | null } | null;
   status: "in_progress" | "completed";
+  duration_seconds: number;
 };
 
 export async function getMyWorkSession(): Promise<EmployeeWorkSession | null> {
