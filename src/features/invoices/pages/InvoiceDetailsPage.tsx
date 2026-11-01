@@ -149,7 +149,7 @@ export function InvoiceDetailsPage() {
                                     type="button"
                                     disabled={busy}
                                     onClick={() => void action('issue')}
-                                    className="ui-btn-primary rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
+                                    className="ui-btn-primary rounded-lg border px-4 py-2 mx-1 text-sm disabled:opacity-50"
                                 >
                                     صدور فاکتور
                                 </button>
