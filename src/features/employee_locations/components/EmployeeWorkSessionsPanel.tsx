@@ -63,8 +63,8 @@ export function EmployeeWorkSessionsPanel() {
     }, [date, refreshKey]);
 
     useEffect(() => {
-        if (!mapElement.current || !(window as Window & { L?: LeafletApi }).L || mapRef.current) return;
         const L = (window as Window & { L?: LeafletApi }).L;
+        if (!mapElement.current || !L || mapRef.current) return;
         const map = L.map(mapElement.current, { zoomControl: true, preferCanvas: true });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
