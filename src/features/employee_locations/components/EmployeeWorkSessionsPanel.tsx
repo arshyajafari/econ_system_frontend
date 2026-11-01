@@ -84,7 +84,7 @@ export function EmployeeWorkSessionsPanel() {
 
     useEffect(() => {
         const map = mapRef.current;
-        const L = window.L;
+        const L = (window as Window & { L?: LeafletApi }).L;
         const layer = markersRef.current;
         if (!map || !L || !layer) return;
         layer.clearLayers();
