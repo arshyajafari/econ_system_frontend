@@ -122,6 +122,7 @@ export function EmployeeLocationShare() {
     };
 
     const started = session?.status === 'in_progress';
+    const completed = Boolean(session?.ended_at);
 
     return (
         <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
