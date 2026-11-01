@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
+import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { getEmployeeWorkSessions, type EmployeeWorkSession } from '../api/employeeLocations';
 
 type LeafletMap = {
@@ -113,7 +114,7 @@ export function EmployeeWorkSessionsPanel() {
                 </div>
                 <div className="flex items-center gap-2">
                     <label className="text-xs text-gray-500" htmlFor="work-session-date">تاریخ</label>
-                    <input id="work-session-date" type="date" value={date} onChange={event => setDate(event.target.value)} className="rounded-lg border border-gray-200 px-2 py-2 text-sm" />
+                    <JalaliDateInput id="work-session-date" value={date} onChange={setDate} className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="۱۴۰۵/۰۸/۱۰" />
                     <button type="button" onClick={() => setRefreshKey(value => value + 1)} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
                 </div>
             </div>
