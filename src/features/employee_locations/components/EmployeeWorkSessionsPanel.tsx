@@ -118,6 +118,7 @@ export function EmployeeWorkSessionsPanel() {
                     <button type="button" onClick={() => setRefreshKey(value => value + 1)} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
                 </div>
             </div>
+            {error ? <div role="alert" className="mx-4 mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
             {loading ? <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق...</p> : sessions.length === 0 ? <p className="p-5 text-sm text-gray-500">برای این تاریخ مأموریتی ثبت نشده است.</p> : (
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[760px] text-right text-sm">
