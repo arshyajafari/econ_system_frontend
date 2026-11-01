@@ -121,7 +121,6 @@ export function EmployeeLocationShare() {
         }
     };
 
-    const completed = session?.status === 'completed';
     const started = session?.status === 'in_progress';
 
     return (
@@ -129,7 +128,7 @@ export function EmployeeLocationShare() {
             <div className="flex items-center justify-between gap-2">
                 <div className="text-sm font-semibold text-slate-800">ثبت حضور مکانی</div>
                 <span className={`rounded-full px-2 py-1 text-[10px] font-medium ${completed ? 'bg-slate-100 text-slate-600' : started ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                    {loading ? 'در حال بررسی' : completed ? 'پایان‌یافته' : started ? 'در حال فعالیت' : 'شروع‌نشده'}
+                    {loading ? 'در حال بررسی' : started ? 'مأموریت باز' : session ? 'آخرین مأموریت پایان‌یافته' : 'مأموریت شروع‌نشده'}
                 </span>
             </div>
             {session ? (
@@ -141,14 +140,14 @@ export function EmployeeLocationShare() {
             <button
                 type="button"
                 onClick={() => void submit(started ? 'end' : 'start')}
-                disabled={loading || busy || completed}
+                disabled={loading || busy}
                 className={`mt-3 w-full rounded-lg px-3 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 ${started ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
-                {loading ? 'در حال بررسی وضعیت...' : busy ? 'در حال دریافت و ثبت GPS...' : completed ? 'فعالیت امروز پایان یافته است' : started ? 'ثبت پایان کار' : 'ثبت شروع کار'}
+                {loading ? 'در حال بررسی وضعیت...' : busy ? 'در حال دریافت و ثبت GPS...' : started ? 'پایان مأموریت' : session ? 'شروع مأموریت بعدی' : 'شروع مأموریت'}
             </button>
             {message ? <p role="status" className="mt-2 text-xs leading-5 text-slate-600">{message}</p> : null}
             <p className="mt-2 text-[10px] leading-4 text-slate-500">
-                فقط یک نوبت کاری در روز ثبت می‌شود. زمان از سرور گرفته می‌شود و مختصات فقط هنگام فشردن دکمه ارسال خواهد شد.
+                هر مأموریت را جداگانه شروع و پایان دهید؛ برای رفتن به مقصد بعدی پس از پایان مأموریت، مورد بعدی را شروع کنید. زمان از سرور گرفته می‌شود و مختصات فقط هنگام فشردن دکمه ارسال خواهد شد.
             </p>
         </div>
     );
