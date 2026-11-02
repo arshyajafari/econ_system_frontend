@@ -49,6 +49,7 @@ export function EmployeeLocationShare() {
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const [description, setDescription] = useState('');
     const startOperationId = useRef<string | null>(null);
     const endOperationId = useRef<string | null>(null);
     const pendingStart = useRef<{
@@ -107,12 +108,14 @@ export function EmployeeLocationShare() {
             }
             const saved =
                 action === 'start'
-                    ? await startMyWorkSession(pending.current)
+                    ? await startMyWorkSession({ ...pending.current, description: description.trim() || null })
                     : await endMyWorkSession(pending.current);
             setSession(saved);
             pending.current = null;
-            if (action === 'start') startOperationId.current = null;
-            else endOperationId.current = null;
+            if (action === 'start') {
+                startOperationId.current = null;
+                setDescription('');
+            } else endOperationId.current = null;
             setMessage(
                 accuracy !== null && accuracy > 100
                     ? `ثبت انجام شد؛ دقت GPS حدود ${Math.round(accuracy)} متر است و ممکن است موقعیت دقیق نباشد.`
@@ -158,6 +161,22 @@ export function EmployeeLocationShare() {
                             : 'مأموریت شروع‌نشده'}
                 </span>
             </div>
+            {!started ? (
+                <label className="mt-3 block text-xs text-slate-600">
+                    توضیح کوتاه مأموریت (اختیاری)
+                    <input
+                        type="text"
+                        maxLength={255}
+                        value={description}
+                        onChange={event => setDescription(event.target.value)}
+                        placeholder="مثلاً ملاقات پزشک یا تحویل محصول"
+                        disabled={loading || busy}
+                        className="mt-1 w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-400"
+                    />
+                </label>
+            ) : session?.description ? (
+                <p className="mt-2 text-xs text-slate-600">توضیح مأموریت: {session.description}</p>
+            ) : null}
             {session ? (
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
                     <div>
