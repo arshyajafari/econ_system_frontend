@@ -66,12 +66,15 @@ export type EmployeeWorkSession = {
   employee_id: string;
   employee_name: string;
   work_date: string;
+  description: string | null;
   started_at: string;
   start: { latitude: number; longitude: number; accuracy: number | null };
   ended_at: string | null;
   end: { latitude: number; longitude: number; accuracy: number | null } | null;
   status: "in_progress" | "completed";
   duration_seconds: number;
+  admin_corrected_at: string | null;
+  admin_correction_reason: string | null;
 };
 
 export async function getMyWorkSession(): Promise<EmployeeWorkSession | null> {
@@ -80,7 +83,7 @@ export async function getMyWorkSession(): Promise<EmployeeWorkSession | null> {
 }
 
 export async function startMyWorkSession(payload: {
-  latitude: number; longitude: number; accuracy: number | null; client_operation_id: string;
+  latitude: number; longitude: number; accuracy: number | null; client_operation_id: string; description?: string | null;
 }): Promise<EmployeeWorkSession> {
   const response = await apiClient.post<{ data: EmployeeWorkSession }>("/employees/locations/work-sessions/start", payload);
   return response.data.data;
@@ -96,5 +99,13 @@ export async function endMyWorkSession(payload: {
 export async function getEmployeeWorkSessions(date?: string): Promise<EmployeeWorkSession[]> {
   const params = date ? `?date=${encodeURIComponent(date)}` : "";
   const response = await apiClient.get<{ data: EmployeeWorkSession[] }>(`/employees/locations/work-sessions${params}`);
+  return response.data.data;
+}
+
+export async function correctEmployeeWorkSession(sessionId: string, reason: string): Promise<EmployeeWorkSession> {
+  const response = await apiClient.patch<{ data: EmployeeWorkSession }>(
+    `/employees/locations/work-sessions/${encodeURIComponent(sessionId)}/correct`,
+    { reason }
+  );
   return response.data.data;
 }
