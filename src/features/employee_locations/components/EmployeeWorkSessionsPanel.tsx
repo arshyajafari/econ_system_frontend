@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
-import { getEmployeeWorkSessions, type EmployeeWorkSession } from '../api/employeeLocations';
+import { correctEmployeeWorkSession, getEmployeeWorkSessions, type EmployeeWorkSession } from '../api/employeeLocations';
 
 type LeafletMap = {
     remove(): void;
@@ -45,6 +45,9 @@ export function EmployeeWorkSessionsPanel() {
     const loading = loadedDate !== date;
     const [error, setError] = useState<string | null>(null);
     const [selectedSession, setSelectedSession] = useState<EmployeeWorkSession | null>(null);
+    const [correctionSession, setCorrectionSession] = useState<EmployeeWorkSession | null>(null);
+    const [correctionReason, setCorrectionReason] = useState('');
+    const [savingCorrection, setSavingCorrection] = useState(false);
     const mapElement = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<LeafletMap | null>(null);
     const markersRef = useRef<LeafletLayer | null>(null);
@@ -105,6 +108,23 @@ export function EmployeeWorkSessionsPanel() {
         window.setTimeout(() => map.invalidateSize(), 100);
     }, [selectedSession]);
 
+    const submitCorrection = async () => {
+        if (!correctionSession || correctionReason.trim().length < 5 || savingCorrection) return;
+        setSavingCorrection(true);
+        setError(null);
+        try {
+            const corrected = await correctEmployeeWorkSession(correctionSession.id, correctionReason.trim());
+            setSessions(current => current.map(item => item.id === corrected.id ? corrected : item));
+            setSelectedSession(current => current?.id === corrected.id ? corrected : current);
+            setCorrectionSession(null);
+            setCorrectionReason('');
+        } catch (cause: unknown) {
+            setError(cause instanceof ApiError ? cause.message : 'اصلاح مأموریت انجام نشد.');
+        } finally {
+            setSavingCorrection(false);
+        }
+    };
+
     return (
         <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-4">
@@ -124,27 +144,39 @@ export function EmployeeWorkSessionsPanel() {
                     <table className="w-full min-w-[760px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500"><tr>
                             <th className="px-4 py-3 font-medium">کارمند</th>
-                            <th className="px-4 py-3 font-medium">شروع</th>
-                            <th className="px-4 py-3 font-medium">پایان</th>
+                            <th className="px-4 py-3 font-medium">شرح مأموریت</th>
+                            <th className="px-4 py-3 font-medium">شروع / دقت GPS</th>
+                            <th className="px-4 py-3 font-medium">پایان / دقت GPS</th>
                             <th className="px-4 py-3 font-medium">مدت مأموریت</th>
                             <th className="px-4 py-3 font-medium">وضعیت</th>
-                            <th className="px-4 py-3 font-medium">نقشه</th>
+                            <th className="px-4 py-3 font-medium">اقدامات</th>
                         </tr></thead>
                         <tbody className="divide-y divide-gray-100">
                             {sessions.map(session => (
                                 <tr key={session.id} className={selectedSession?.id === session.id ? 'bg-blue-50/70' : ''}>
                                     <td className="px-4 py-3 font-medium text-gray-900">{session.employee_name}</td>
-                                    <td className="px-4 py-3 text-gray-700">{time(session.started_at)}</td>
-                                    <td className="px-4 py-3 text-gray-700">{time(session.ended_at)}</td>
+                                    <td className="px-4 py-3 text-gray-700">{session.description || '—'}{session.admin_correction_reason ? <p className="mt-1 text-xs text-amber-700">دلیل اصلاح: {session.admin_correction_reason}</p> : null}</td>
+                                    <td className="px-4 py-3 text-gray-700">{time(session.started_at)}<p className="mt-1 text-xs text-gray-500">دقت: {session.start.accuracy === null ? 'نامشخص' : `${Math.round(session.start.accuracy)} متر`}</p></td>
+                                    <td className="px-4 py-3 text-gray-700">{time(session.ended_at)}<p className="mt-1 text-xs text-gray-500">دقت: {session.end?.accuracy == null ? 'ثبت نشده' : `${Math.round(session.end.accuracy)} متر`}</p>{session.admin_corrected_at ? <p className="mt-1 text-xs text-amber-700">اصلاح‌شده توسط مدیر</p> : null}</td>
                                     <td className="px-4 py-3 text-gray-700">{formatDuration(session.duration_seconds)}</td>
                                     <td className="px-4 py-3"><span className={`rounded-full px-2 py-1 text-xs ${session.status === 'completed' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'}`}>{session.status === 'completed' ? 'پایان‌یافته' : 'در حال فعالیت'}</span></td>
-                                    <td className="px-4 py-3"><button type="button" onClick={() => setSelectedSession(session)} className={`rounded-lg px-3 py-1.5 text-xs font-medium ${selectedSession?.id === session.id ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}`}>نمایش روی نقشه</button></td>
+                                    <td className="px-4 py-3"><div className="flex flex-wrap gap-2"><button type="button" onClick={() => setSelectedSession(session)} className={`rounded-lg px-3 py-1.5 text-xs font-medium ${selectedSession?.id === session.id ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}`}>نمایش روی نقشه</button>{session.status === 'in_progress' ? <button type="button" onClick={() => { setCorrectionSession(session); setCorrectionReason(''); }} className="rounded-lg px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">اصلاح مأموریت ناقص</button> : null}</div></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             )}
+            {correctionSession ? (
+                <div className="m-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                    <h3 className="text-sm font-semibold text-amber-900">تکمیل مأموریت ناقص: {correctionSession.employee_name}</h3>
+                    <p className="mt-1 text-xs leading-5 text-amber-800">این کار مأموریت را با زمان فعلی سرور پایان می‌دهد. اگر مختصات پایان در دسترس نیست، مختصاتی ساخته نمی‌شود؛ دلیل اصلاح برای پیگیری ثبت خواهد شد.</p>
+                    <label className="mt-3 block text-sm text-gray-700">دلیل اصلاح (اجباری)
+                        <textarea value={correctionReason} onChange={event => setCorrectionReason(event.target.value)} maxLength={2000} rows={3} placeholder="مثلاً کارمند پایان مأموریت را فراموش کرده؛ زمان پایان با تأیید سرپرست ثبت شد." className="mt-1 w-full rounded-lg border border-amber-200 bg-white p-3 text-sm outline-none focus:border-amber-400" />
+                    </label>
+                    <div className="mt-3 flex gap-2"><button type="button" onClick={() => void submitCorrection()} disabled={savingCorrection || correctionReason.trim().length < 5} className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{savingCorrection ? 'در حال ثبت...' : 'ثبت اصلاح و پایان مأموریت'}</button><button type="button" onClick={() => setCorrectionSession(null)} disabled={savingCorrection} className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700">انصراف</button></div>
+                </div>
+            ) : null}
             <div className="relative">
                 <div ref={mapElement} className="h-[300px] w-full bg-slate-100 sm:h-[380px]" />
                 {selectedSession ? (
