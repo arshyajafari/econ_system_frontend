@@ -108,7 +108,10 @@ export function EmployeeLocationShare() {
             }
             const saved =
                 action === 'start'
-                    ? await startMyWorkSession({ ...pending.current, description: description.trim() || null })
+                    ? await startMyWorkSession({
+                          ...pending.current,
+                          description: description.trim() || null,
+                      })
                     : await endMyWorkSession(pending.current);
             setSession(saved);
             pending.current = null;
@@ -163,13 +166,12 @@ export function EmployeeLocationShare() {
             </div>
             {!started ? (
                 <label className="mt-3 block text-xs text-slate-600">
-                    توضیح کوتاه مأموریت (اختیاری)
+                    توضیح مأموریت
                     <input
                         type="text"
                         maxLength={255}
                         value={description}
-                        onChange={event => setDescription(event.target.value)}
-                        placeholder="مثلاً ملاقات پزشک یا تحویل محصول"
+                        onChange={(event) => setDescription(event.target.value)}
                         disabled={loading || busy}
                         className="mt-1 w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-400"
                     />

@@ -18,8 +18,12 @@ export function EmployeeLocationsPage() {
     return (
         <section className="space-y-4 bg-gray-50/40 p-3 md:p-6">
             <header>
-                <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">موقعیت و مأموریت کارکنان</h1>
-                <p className="mt-1 text-xs text-gray-500">مشاهده محل شروع و پایان مأموریت‌ها روی نقشه</p>
+                <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">
+                    موقعیت کارکنان
+                </h1>
+                <p className="mt-1 text-xs text-gray-500">
+                    مشاهده محل شروع و پایان مأموریت‌ها روی نقشه
+                </p>
             </header>
             <EmployeeWorkSessionsPanel />
         </section>
