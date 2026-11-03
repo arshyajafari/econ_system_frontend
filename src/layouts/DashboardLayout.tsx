@@ -20,7 +20,8 @@ type IconName =
   | "inventory"
   | "returns"
   | "payments"
-  | "expenses";
+  | "expenses"
+  | "cleanup";
 type NavConfig = {
   label: string;
   to: string;
@@ -64,6 +65,12 @@ const navigation: NavConfig[] = [
     to: "/employee-banking",
     icon: "payments",
     requiredPermission: "employees.view",
+  },
+  {
+    label: "مدیریت و پاک‌سازی اطلاعات",
+    to: "/data-cleanup",
+    icon: "cleanup",
+    adminOnly: true,
   },
   {
     label: "موقعیت کارکنان",
@@ -267,7 +274,7 @@ function Icon({
         <path d="M3 10h18M7 15h4" />
       </>
     ),
-    expenses: (
+    cleanup: (\n      <>\n        <path d="M4 7h16M7 7V4h10v3M6 7l1 14h10l1-14" />\n        <path d="M10 11v6M14 11v6" />\n      </>\n    ),\n    expenses: (
       <>
         <path d="M6 3h12v18H6z" />
         <path d="M9 7h6M9 11h6M9 15h4" />
