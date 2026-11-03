@@ -115,27 +115,59 @@ export function EmployeeWorkSessionsPanel() {
 
         let cancelled = false;
         let timer: number | null = null;
+        let cursor: string | null = null;
+        const seen = new Set<string>();
 
         const loadRoute = async () => {
             try {
-                const points = await getEmployeeWorkSessionLocations(sessionId);
-                if (!cancelled) {
-                    setRouteState({
+                const points = await getEmployeeWorkSessionLocations(sessionId, cursor);
+                if (cancelled) return;
+
+                const ordered = points
+                    .filter(
+                        (point) =>
+                            Number.isFinite(point.latitude) &&
+                            Number.isFinite(point.longitude) &&
+                            Boolean(point.captured_at)
+                    )
+                    .sort(
+                        (first, second) =>
+                            new Date(first.captured_at ?? 0).getTime() -
+                            new Date(second.captured_at ?? 0).getTime()
+                    );
+                const additions = ordered.filter((point) => !seen.has(point.id));
+                additions.forEach((point) => seen.add(point.id));
+
+                const lastPoint = ordered[ordered.length - 1];
+                if (lastPoint?.captured_at) cursor = lastPoint.captured_at;
+
+                setRouteState((current) => {
+                    const existing =
+                        current?.sessionId === sessionId ? current.points : [];
+                    const merged = new Map(existing.map((point) => [point.id, point]));
+                    additions.forEach((point) => merged.set(point.id, point));
+                    return {
                         sessionId,
-                        points: Array.isArray(points) ? points : [],
+                        points: Array.from(merged.values())
+                            .sort(
+                                (first, second) =>
+                                    new Date(first.captured_at ?? 0).getTime() -
+                                    new Date(second.captured_at ?? 0).getTime()
+                            )
+                            .slice(-5000),
                         error: null,
-                    });
-                }
+                    };
+                });
             } catch (cause: unknown) {
                 if (!cancelled) {
-                    setRouteState({
+                    setRouteState((current) => ({
                         sessionId,
-                        points: [],
+                        points: current?.sessionId === sessionId ? current.points : [],
                         error:
                             cause instanceof ApiError
                                 ? cause.message
                                 : 'دریافت مسیر این مأموریت ناموفق بود.',
-                    });
+                    }));
                 }
             } finally {
                 if (!cancelled && selectedSession?.status === 'in_progress') {
