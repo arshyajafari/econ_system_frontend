@@ -357,16 +357,16 @@ export function EmployeeWorkSessionsPanel() {
                     </div>
                 </div>
             ) : null}
-            <div className="relative">
-                <div ref={mapElement} className="h-[300px] w-full bg-slate-100 sm:h-[380px]" />
+            <div className="relative isolate z-0">
+                <div ref={mapElement} className="relative z-0 h-[300px] w-full bg-slate-100 sm:h-[380px]" />
                 {selectedSession ? (
-                    <div className="absolute bottom-3 right-3 z-[500] rounded-lg border border-gray-200 bg-white/95 px-3 py-2 text-xs shadow">
+                    <div className="absolute bottom-3 right-3 z-10 rounded-lg border border-gray-200 bg-white/95 px-3 py-2 text-xs shadow">
                         <span className="ml-3 text-emerald-700">● شروع</span>
                         <span className="text-red-600">● پایان</span>
                         <span className="mr-3 text-gray-500">{selectedSession.employee_name}</span>
                     </div>
                 ) : (
-                    <div className="absolute inset-0 z-[400] flex items-center justify-center bg-white/65 text-sm text-gray-600 pointer-events-none">
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/65 text-sm text-gray-600 pointer-events-none">
                         برای نمایش مختصات، دکمه «نقشه» یکی از ردیف‌ها را انتخاب کنید.
                     </div>
                 )}
