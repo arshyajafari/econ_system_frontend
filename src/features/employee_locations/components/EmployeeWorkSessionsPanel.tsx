@@ -88,7 +88,7 @@ export function EmployeeWorkSessionsPanel() {
                 if (!cancelled) {
                     setSessions(value);
                     setSelectedSession((current) =>
-                        current && value.some((item) => item.id === current.id) ? current : null
+                        current ? value.find((item) => item.id === current.id) ?? null : null
                     );
                     setError(null);
                 }
