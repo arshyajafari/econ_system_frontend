@@ -570,7 +570,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                     </table>
                 </div>
                 <div className="border-t border-gray-100 px-4 py-3 text-xs leading-5 text-gray-500">
-                    سوابق مکانی قدیمی‌تر از ۳۰ روز طبق پاک‌سازی خودکار سرور حذف می‌شوند.
+                    سوابق مکانی قدیمی‌تر از ۳۲ روز پس از اجرای پاک‌سازی مدیریت‌شده حذف می‌شوند.
                 </div>
             </div>
         </section>
