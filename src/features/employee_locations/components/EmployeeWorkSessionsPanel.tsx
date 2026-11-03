@@ -4,6 +4,8 @@ import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
     correctEmployeeWorkSession,
     getEmployeeWorkSessions,
+    getEmployeeWorkSessionLocations,
+    type EmployeeLocation,
     type EmployeeWorkSession,
 } from '../api/employeeLocations';
 
@@ -58,6 +60,16 @@ export function EmployeeWorkSessionsPanel() {
     const loading = loadedDate !== date;
     const [error, setError] = useState<string | null>(null);
     const [selectedSession, setSelectedSession] = useState<EmployeeWorkSession | null>(null);
+    const [routeState, setRouteState] = useState<{
+        sessionId: string;
+        points: EmployeeLocation[];
+        error: string | null;
+    } | null>(null);
+    const routePoints =
+        selectedSession && routeState?.sessionId === selectedSession.id ? routeState.points : [];
+    const routeLoading = Boolean(selectedSession && routeState?.sessionId !== selectedSession.id);
+    const routeError =
+        selectedSession && routeState?.sessionId === selectedSession.id ? routeState.error : null;
     const [correctionSession, setCorrectionSession] = useState<EmployeeWorkSession | null>(null);
     const [correctionReason, setCorrectionReason] = useState('');
     const [savingCorrection, setSavingCorrection] = useState(false);
@@ -94,6 +106,39 @@ export function EmployeeWorkSessionsPanel() {
     }, [date, refreshKey]);
 
     useEffect(() => {
+        const sessionId = selectedSession?.id;
+        if (!sessionId) return;
+
+        let cancelled = false;
+        getEmployeeWorkSessionLocations(sessionId)
+            .then((points) => {
+                if (!cancelled) {
+                    setRouteState({
+                        sessionId,
+                        points: Array.isArray(points) ? points : [],
+                        error: null,
+                    });
+                }
+            })
+            .catch((cause: unknown) => {
+                if (!cancelled) {
+                    setRouteState({
+                        sessionId,
+                        points: [],
+                        error:
+                            cause instanceof ApiError
+                                ? cause.message
+                                : 'دریافت مسیر این مأموریت ناموفق بود.',
+                    });
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedSession?.id, refreshKey]);
+
+    useEffect(() => {
         const L = (window as Window & { L?: LeafletApi }).L;
         if (!mapElement.current || !L || mapRef.current) return;
         const map = L.map(mapElement.current, { zoomControl: true, preferCanvas: true });
@@ -120,10 +165,24 @@ export function EmployeeWorkSessionsPanel() {
         if (!map || !L || !layer) return;
         layer.clearLayers();
         if (!selectedSession) return;
+
         const start = [selectedSession.start.latitude, selectedSession.start.longitude];
         const end = selectedSession.end
             ? [selectedSession.end.latitude, selectedSession.end.longitude]
             : null;
+        const recordedPoints = routePoints
+            .filter(
+                (point) =>
+                    Number.isFinite(point.latitude) &&
+                    Number.isFinite(point.longitude) &&
+                    point.latitude >= -90 &&
+                    point.latitude <= 90 &&
+                    point.longitude >= -180 &&
+                    point.longitude <= 180
+            )
+            .map((point) => [point.latitude, point.longitude]);
+        const path = [start, ...recordedPoints, ...(end ? [end] : [])];
+
         L.circleMarker(start, {
             radius: 9,
             color: '#fff',
@@ -133,6 +192,7 @@ export function EmployeeWorkSessionsPanel() {
         })
             .bindTooltip('محل شروع مأموریت')
             .addTo(layer);
+
         if (end) {
             L.circleMarker(end, {
                 radius: 9,
@@ -143,8 +203,21 @@ export function EmployeeWorkSessionsPanel() {
             })
                 .bindTooltip('محل پایان مأموریت')
                 .addTo(layer);
-            L.polyline([start, end], {
+        }
+
+        if (recordedPoints.length > 0) {
+            L.polyline(path, {
                 color: '#2563eb',
+                weight: 4,
+                opacity: 0.85,
+                lineCap: 'round',
+                lineJoin: 'round',
+            }).addTo(layer);
+            map.fitBounds(L.latLngBounds(path), { padding: [40, 40], maxZoom: 16 });
+        } else if (end) {
+            // Legacy sessions have only start/end coordinates; show a dashed estimate.
+            L.polyline([start, end], {
+                color: '#64748b',
                 weight: 4,
                 opacity: 0.8,
                 dashArray: '7 7',
@@ -153,9 +226,9 @@ export function EmployeeWorkSessionsPanel() {
         } else {
             map.setView(start, 16);
         }
-        window.setTimeout(() => map.invalidateSize(), 100);
-    }, [selectedSession]);
 
+        window.setTimeout(() => map.invalidateSize(), 100);
+    }, [selectedSession, routePoints]);
     const submitCorrection = async () => {
         if (!correctionSession || correctionReason.trim().length < 5 || savingCorrection) return;
         setSavingCorrection(true);
@@ -355,6 +428,17 @@ export function EmployeeWorkSessionsPanel() {
                             انصراف
                         </button>
                     </div>
+                </div>
+            ) : null}
+            {selectedSession ? (
+                <div className="mx-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                    {routeLoading
+                        ? 'در حال دریافت مسیر ثبت‌شده مأموریت...'
+                        : routeError
+                          ? routeError
+                          : routePoints.length > 0
+                            ? `مسیر واقعی مأموریت با ${routePoints.length.toLocaleString('fa-IR')} نقطه میانی ثبت‌شده نمایش داده می‌شود.`
+                            : 'برای این مأموریت نقطه میانی ثبت نشده است؛ فقط مختصات شروع و پایان موجود است.'}
                 </div>
             ) : null}
             <div className="relative isolate z-0">
