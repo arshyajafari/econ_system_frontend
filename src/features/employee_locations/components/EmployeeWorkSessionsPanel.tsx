@@ -28,6 +28,8 @@ type LeafletApi = {
     latLngBounds(points: number[][]): unknown;
 };
 
+const EMPTY_ROUTE_POINTS: EmployeeLocation[] = [];
+
 function localDate(): string {
     const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Asia/Tehran',
@@ -66,7 +68,9 @@ export function EmployeeWorkSessionsPanel() {
         error: string | null;
     } | null>(null);
     const routePoints =
-        selectedSession && routeState?.sessionId === selectedSession.id ? routeState.points : [];
+        selectedSession && routeState?.sessionId === selectedSession.id
+            ? routeState.points
+            : EMPTY_ROUTE_POINTS;
     const routeLoading = Boolean(selectedSession && routeState?.sessionId !== selectedSession.id);
     const routeError =
         selectedSession && routeState?.sessionId === selectedSession.id ? routeState.error : null;
@@ -110,8 +114,11 @@ export function EmployeeWorkSessionsPanel() {
         if (!sessionId) return;
 
         let cancelled = false;
-        getEmployeeWorkSessionLocations(sessionId)
-            .then((points) => {
+        let timer: number | null = null;
+
+        const loadRoute = async () => {
+            try {
+                const points = await getEmployeeWorkSessionLocations(sessionId);
                 if (!cancelled) {
                     setRouteState({
                         sessionId,
@@ -119,8 +126,7 @@ export function EmployeeWorkSessionsPanel() {
                         error: null,
                     });
                 }
-            })
-            .catch((cause: unknown) => {
+            } catch (cause: unknown) {
                 if (!cancelled) {
                     setRouteState({
                         sessionId,
@@ -131,12 +137,21 @@ export function EmployeeWorkSessionsPanel() {
                                 : 'دریافت مسیر این مأموریت ناموفق بود.',
                     });
                 }
-            });
+            } finally {
+                if (!cancelled && selectedSession?.status === 'in_progress') {
+                    timer = window.setTimeout(() => void loadRoute(), 10_000);
+                }
+            }
+        };
+
+        void loadRoute();
 
         return () => {
             cancelled = true;
+            if (timer !== null) window.clearTimeout(timer);
         };
-    }, [selectedSession?.id, refreshKey]);
+    }, [selectedSession?.id, selectedSession?.status, refreshKey]);
+
 
     useEffect(() => {
         const L = (window as Window & { L?: LeafletApi }).L;
