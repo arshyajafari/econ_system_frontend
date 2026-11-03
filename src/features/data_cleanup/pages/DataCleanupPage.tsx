@@ -45,7 +45,27 @@ export function DataCleanupPage() {
     }
   }, []);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    let active = true;
+
+    const loadInitialData = async () => {
+      try {
+        const [nextPreview, nextHistory] = await Promise.all([getCleanupPreview(), getCleanupHistory()]);
+        if (!active) return;
+        setPreview(nextPreview);
+        setHistory(nextHistory);
+      } catch (requestError) {
+        if (active) setError(normalizeApiError(requestError).message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void loadInitialData();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const selectedCount = useMemo(() => selected.reduce((sum, key) => sum + (preview?.categories[key]?.count ?? 0), 0), [selected, preview]);
   const toggleCategory = (key: string, checked: boolean) => setSelected(current => checked ? [...current, key] : current.filter(item => item !== key));
