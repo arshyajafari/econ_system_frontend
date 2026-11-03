@@ -274,7 +274,13 @@ function Icon({
         <path d="M3 10h18M7 15h4" />
       </>
     ),
-    cleanup: (\n      <>\n        <path d="M4 7h16M7 7V4h10v3M6 7l1 14h10l1-14" />\n        <path d="M10 11v6M14 11v6" />\n      </>\n    ),\n    expenses: (
+    cleanup: (
+      <>
+        <path d="M4 7h16M7 7V4h10v3M6 7l1 14h10l1-14" />
+        <path d="M10 11v6M14 11v6" />
+      </>
+    ),
+    expenses: (
       <>
         <path d="M6 3h12v18H6z" />
         <path d="M9 7h6M9 11h6M9 15h4" />
