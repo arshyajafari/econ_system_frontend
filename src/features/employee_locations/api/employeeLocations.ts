@@ -102,9 +102,15 @@ export async function getEmployeeWorkSessions(date?: string): Promise<EmployeeWo
   return response.data.data;
 }
 
-export async function getEmployeeWorkSessionLocations(sessionId: string): Promise<EmployeeLocation[]> {
+export async function getEmployeeWorkSessionLocations(
+  sessionId: string,
+  after?: string | null
+): Promise<EmployeeLocation[]> {
+  const params = new URLSearchParams();
+  if (after) params.set('after', after);
+  const query = params.toString();
   const response = await apiClient.get<EmployeeLocation[]>(
-    `/employees/locations/work-sessions/${encodeURIComponent(sessionId)}/locations`
+    `/employees/locations/work-sessions/${encodeURIComponent(sessionId)}/locations${query ? `?${query}` : ''}`
   );
   return response.data;
 }
