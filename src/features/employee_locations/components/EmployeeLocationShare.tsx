@@ -3,6 +3,7 @@ import { ApiError } from '../../../api/client';
 import {
     endMyWorkSession,
     getMyWorkSession,
+    sendMyLocation,
     startMyWorkSession,
     type EmployeeWorkSession,
 } from '../api/employeeLocations';
@@ -33,6 +34,21 @@ function currentPosition(): Promise<GeolocationPosition> {
     });
 }
 
+function distanceMeters(
+    first: { latitude: number; longitude: number },
+    second: { latitude: number; longitude: number }
+): number {
+    const radians = (degrees: number) => (degrees * Math.PI) / 180;
+    const latitudeDelta = radians(second.latitude - first.latitude);
+    const longitudeDelta = radians(second.longitude - first.longitude);
+    const value =
+        Math.sin(latitudeDelta / 2) ** 2 +
+        Math.cos(radians(first.latitude)) *
+            Math.cos(radians(second.latitude)) *
+            Math.sin(longitudeDelta / 2) ** 2;
+    return 6_371_000 * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(Math.max(0, 1 - value)));
+}
+
 function errorMessage(error: unknown): string {
     if (error instanceof ApiError) return error.message;
     if (typeof error === 'object' && error !== null && 'code' in error) {
@@ -49,6 +65,7 @@ export function EmployeeLocationShare() {
     const [loading, setLoading] = useState(true);
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const [trackingNotice, setTrackingNotice] = useState<string | null>(null);
     const [description, setDescription] = useState('');
     const startOperationId = useRef<string | null>(null);
     const endOperationId = useRef<string | null>(null);
@@ -81,6 +98,85 @@ export function EmployeeLocationShare() {
             cancelled = true;
         };
     }, []);
+
+    const activeSessionId = session?.status === 'in_progress' ? session.id : null;
+
+    useEffect(() => {
+        if (!activeSessionId || !('geolocation' in navigator)) return;
+
+        let disposed = false;
+        let inFlight = false;
+        let lastAttemptAt = 0;
+        let lastSentAt = 0;
+        let lastSentPosition: { latitude: number; longitude: number } | null = null;
+
+        const watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const nowMs = Date.now();
+                const nextPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                };
+
+                if (inFlight || nowMs - lastAttemptAt < 15_000) return;
+                if (
+                    lastSentPosition &&
+                    nowMs - lastSentAt < 60_000 &&
+                    distanceMeters(lastSentPosition, nextPosition) < 15
+                ) {
+                    return;
+                }
+
+                lastAttemptAt = nowMs;
+                inFlight = true;
+                void sendMyLocation({
+                    ...nextPosition,
+                    accuracy: Number.isFinite(position.coords.accuracy)
+                        ? position.coords.accuracy
+                        : undefined,
+                    source: 'work_session',
+                    client_operation_id: crypto.randomUUID(),
+                })
+                    .then(() => {
+                        if (disposed) return;
+                        lastSentAt = nowMs;
+                        lastSentPosition = nextPosition;
+                        setTrackingNotice(
+                            position.coords.accuracy > 100
+                                ? `مسیر ثبت می‌شود؛ دقت GPS فعلی حدود ${Math.round(position.coords.accuracy)} متر است.`
+                                : 'مسیر مأموریت در حال ثبت است.'
+                        );
+                    })
+                    .catch((error: unknown) => {
+                        if (!disposed) {
+                            setTrackingNotice(
+                                `ثبت نقطه مسیر ناموفق بود: ${errorMessage(error)}`
+                            );
+                        }
+                    })
+                    .finally(() => {
+                        inFlight = false;
+                    });
+            },
+            (error) => {
+                if (!disposed) {
+                    setTrackingNotice(
+                        `دریافت مسیر GPS با مشکل مواجه شد: ${errorMessage(error)}`
+                    );
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 10_000,
+                timeout: 25_000,
+            }
+        );
+
+        return () => {
+            disposed = true;
+            navigator.geolocation.clearWatch(watchId);
+        };
+    }, [activeSessionId]);
 
     const submit = async (action: Action) => {
         if (busy || loading) return;
@@ -208,6 +304,12 @@ export function EmployeeLocationShare() {
             {message ? (
                 <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
                     {message}
+                </p>
+            ) : null}
+            {started ? (
+                <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
+                    {trackingNotice ??
+                        'ثبت مسیر فقط هنگام فعال بودن مأموریت و باز بودن برنامه انجام می‌شود. قفل صفحه ممکن است ثبت GPS را متوقف کند.'}
                 </p>
             ) : null}
         </div>
