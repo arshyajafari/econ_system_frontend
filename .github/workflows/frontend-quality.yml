@@ -28,3 +28,11 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Verify production API configuration
+        run: |
+          if grep -R -F "http://localhost:8000/api/v1" dist; then
+            echo "Production bundle must not reference localhost."
+            exit 1
+          fi
+          grep -R -F "https://api.econsystem.ir/api/v1" dist/assets >/dev/null
