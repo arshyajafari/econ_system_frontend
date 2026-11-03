@@ -290,6 +290,15 @@ export function DataCleanupPage() {
                                             {numberFormat.format(run.deleted_counts[key] ?? 0)}
                                         </span>
                                     ))}
+                                    {run.categories.includes('devices') &&
+                                        run.deleted_counts.device_tokens !== undefined && (
+                                            <span
+                                                key="device_tokens"
+                                                className="rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-600"
+                                            >
+                                                توکن‌های مرتبط: {numberFormat.format(run.deleted_counts.device_tokens)}
+                                            </span>
+                                        )}
                                 </div>
                                 {run.failure_message && (
                                     <p className="mt-2 break-words text-xs text-red-600">
