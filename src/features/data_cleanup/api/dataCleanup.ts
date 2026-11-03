@@ -27,6 +27,10 @@ export async function getCleanupHistory() {
   return response.data.data;
 }
 export async function executeCleanup(payload: { categories: string[]; reason: string; confirmation: "DELETE" }) {
-  const response = await apiClient.post<{ message: string; data: { run_id: number; deleted_counts: Record<string, number> } }>("/admin/data-cleanup/execute", payload);
+  const response = await apiClient.post<{ message: string; data: { run_id: number; deleted_counts: Record<string, number> } }>(
+    "/admin/data-cleanup/execute",
+    payload,
+    { timeout: 120_000 },
+  );
   return response.data;
 }
