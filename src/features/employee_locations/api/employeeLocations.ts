@@ -102,6 +102,13 @@ export async function getEmployeeWorkSessions(date?: string): Promise<EmployeeWo
   return response.data.data;
 }
 
+export async function getEmployeeWorkSessionLocations(sessionId: string): Promise<EmployeeLocation[]> {
+  const response = await apiClient.get<EmployeeLocation[]>(
+    `/employees/locations/work-sessions/${encodeURIComponent(sessionId)}/locations`
+  );
+  return response.data;
+}
+
 export async function correctEmployeeWorkSession(sessionId: string, reason: string): Promise<EmployeeWorkSession> {
   const response = await apiClient.patch<{ data: EmployeeWorkSession }>(
     `/employees/locations/work-sessions/${encodeURIComponent(sessionId)}/correct`,
