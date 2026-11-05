@@ -42,7 +42,8 @@ export function OrdersPage() {
 
   const [products, setProducts] = useState<OrderProductOption[]>([]);
 
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
 
   const [status, setStatus] = useState<OrderStatus | "">("");
 
@@ -51,7 +52,6 @@ export function OrdersPage() {
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
   const [page, setPage] = useState(1);
-  const [searchParams] = useSearchParams();
   useEffect(() => {
     setSearch(searchParams.get("search") ?? "");
     setPage(1);
