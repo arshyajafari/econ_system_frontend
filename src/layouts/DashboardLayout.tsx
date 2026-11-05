@@ -349,7 +349,7 @@ export function DashboardLayout() {
   const { user, logout, loginVersion } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isCollapsed = false;
   const [unreadCount, setUnreadCount] = useState(0);
   const refreshUnreadCount = useCallback(() => {
     void getUnreadNotificationCount()
@@ -431,7 +431,7 @@ export function DashboardLayout() {
         />
       ) : null}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 flex w-[272px] flex-col border-l border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition-transform duration-200 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "translate-x-full"} ${isCollapsed ? "lg:w-[84px]" : ""}`}
+        className={`fixed inset-y-0 right-0 z-50 flex w-[272px] flex-col border-l border-slate-200 bg-white shadow-xl shadow-slate-900/5 transition-transform duration-200 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="flex h-20 items-center gap-3 border-b border-slate-100 px-4">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white-600 text-lg font-bold text-white shadow-lg shadow-blue-600/20">
@@ -519,7 +519,7 @@ export function DashboardLayout() {
         </div>
       </aside>
       <div
-        className={`min-h-screen transition-[padding] duration-200 lg:pr-[272px] ${isCollapsed ? "lg:pr-[84px]" : ""}`}
+        className="min-h-screen lg:pr-[272px]"
       >
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
           <div className="flex min-h-20 w-full min-w-0 items-center gap-2 px-3 sm:gap-3 md:px-6">
@@ -531,15 +531,6 @@ export function DashboardLayout() {
             >
               <Icon name="menu" />
             </button>
-            <button
-              type="button"
-              aria-label={isCollapsed ? "باز کردن منوی کناری" : "جمع کردن منوی کناری"}
-              aria-expanded={!isCollapsed}
-              onClick={() => setIsCollapsed((v) => !v)}
-              className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:flex"
-            >
-              <Icon name={isCollapsed ? "chevron-right" : "chevron-left"} />
-            </button>
             <div className="hidden min-w-0 flex-1 sm:block">
               <GlobalSearch sections={searchSections} />
             </div>
@@ -547,7 +538,7 @@ export function DashboardLayout() {
               {canUseWorkSessions ? (
                 <EmployeeDailyLocationReminder
                   onOpenTracker={() => {
-                    setIsCollapsed(false);
+                    
                     setIsSidebarOpen(true);
                   }}
                 />
@@ -556,7 +547,7 @@ export function DashboardLayout() {
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
                   onOpenTracker={() => {
-                    setIsCollapsed(false);
+                    
                     setIsSidebarOpen(true);
                   }}
                 />
