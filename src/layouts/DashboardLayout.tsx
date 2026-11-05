@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { getUnreadNotificationCount } from "../features/notifications/api/notifications";
 import { useAuth } from "../features/auth";
 import { EmployeeLocationShare } from "../features/employee_locations/components/EmployeeLocationShare";
+import { EmployeeDailyLocationReminder } from "../features/employee_locations/components/EmployeeDailyLocationReminder";
 
 type IconName =
   | "dashboard"
@@ -536,6 +537,9 @@ export function DashboardLayout() {
               </div>
             </div>
             <div className="mr-auto flex items-center gap-2">
+              {(isSalesVisitor || isScientificVisitor || hasScientificVisitorActivity || isDeliveryOperator || isSettlementOperator) ? (
+                <EmployeeDailyLocationReminder />
+              ) : null}
               <button
                 type="button"
                 aria-label="اعلان‌ها"
