@@ -146,8 +146,8 @@ export async function sendMyDailyLocationCheckin(payload: {
 
 export async function getEmployeeDailyLocationCheckins(date: string): Promise<EmployeeLocation[]> {
   const params = new URLSearchParams({ date });
-  const response = await apiClient.get<{ data: EmployeeLocation[] }>(
+  const response = await apiClient.get<EmployeeLocation[]>(
     `/employees/locations/check-ins?${params.toString()}`
   );
-  return response.data.data;
+  return response.data;
 }
