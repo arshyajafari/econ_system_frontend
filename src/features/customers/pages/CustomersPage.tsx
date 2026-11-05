@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Pagination } from "../../../components/Pagination";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../../auth";
 
@@ -43,6 +43,11 @@ export function CustomersPage() {
   const [type, setType] = useState<CustomerType | "">("");
 
   const [page, setPage] = useState(1);
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    setSearch(searchParams.get("search") ?? "");
+    setPage(1);
+  }, [searchParams]);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
 
