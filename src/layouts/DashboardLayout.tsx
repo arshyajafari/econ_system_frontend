@@ -349,7 +349,7 @@ export function DashboardLayout() {
   const { user, logout, loginVersion } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isCollapsed = false;
   const [unreadCount, setUnreadCount] = useState(0);
   const refreshUnreadCount = useCallback(() => {
     void getUnreadNotificationCount()
@@ -531,15 +531,6 @@ export function DashboardLayout() {
             >
               <Icon name="menu" />
             </button>
-            <button
-              type="button"
-              aria-label={isCollapsed ? "باز کردن منوی کناری" : "جمع کردن منوی کناری"}
-              aria-expanded={!isCollapsed}
-              onClick={() => setIsCollapsed((v) => !v)}
-              className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:flex"
-            >
-              <Icon name={isCollapsed ? "chevron-right" : "chevron-left"} />
-            </button>
             <div className="hidden min-w-0 flex-1 sm:block">
               <GlobalSearch sections={searchSections} />
             </div>
@@ -547,7 +538,7 @@ export function DashboardLayout() {
               {canUseWorkSessions ? (
                 <EmployeeDailyLocationReminder
                   onOpenTracker={() => {
-                    setIsCollapsed(false);
+                    
                     setIsSidebarOpen(true);
                   }}
                 />
@@ -556,7 +547,7 @@ export function DashboardLayout() {
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
                   onOpenTracker={() => {
-                    setIsCollapsed(false);
+                    
                     setIsSidebarOpen(true);
                   }}
                 />
