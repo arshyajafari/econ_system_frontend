@@ -27,6 +27,13 @@ type Props = {
   sections: SearchSections;
 };
 
+function normalizeSearchTerm(value: string): string {
+  return value
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
+    .trim();
+}
+
 const kindLabels: Record<keyof SearchSections, string> = {
   customers: "مشتری",
   doctors: "پزشک",
@@ -42,6 +49,7 @@ export function GlobalSearch({ sections }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -56,12 +64,13 @@ export function GlobalSearch({ sections }: Props) {
   }, []);
 
   useEffect(() => {
-    const term = query.trim();
+    const term = normalizeSearchTerm(query);
     const requestId = ++requestIdRef.current;
 
     if (term.length < 2) {
       setResults([]);
       setLoading(false);
+      setFailed(false);
       setActiveIndex(0);
       return;
     }
@@ -152,6 +161,7 @@ export function GlobalSearch({ sections }: Props) {
         result.status === "fulfilled" ? result.value : [],
       );
       setResults(nextResults);
+      setFailed(tasks.length > 0 && settled.every((result) => result.status === "rejected"));
       setActiveIndex(0);
       setLoading(false);
       setOpen(true);
@@ -159,6 +169,7 @@ export function GlobalSearch({ sections }: Props) {
 
     return () => {
       window.clearTimeout(timeoutId);
+      requestIdRef.current += 1;
     };
   }, [query, sections.customers, sections.doctors, sections.employees, sections.orders, sections.products]);
 
@@ -281,8 +292,8 @@ export function GlobalSearch({ sections }: Props) {
             </div>
           ) : (
             <div className="px-4 py-7 text-center">
-              <p className="text-sm font-semibold text-slate-700">نتیجه‌ای پیدا نشد</p>
-              <p className="mt-1 text-xs text-slate-500">عبارت دیگری وارد کنید یا املای آن را بررسی کنید.</p>
+              <p className="text-sm font-semibold text-slate-700">{failed ? "ارتباط با سرویس جست‌وجو برقرار نشد" : "نتیجه‌ای پیدا نشد"}</p>
+              <p className="mt-1 text-xs text-slate-500">{failed ? "اتصال شبکه را بررسی کنید و دوباره تلاش کنید." : "عبارت دیگری وارد کنید یا املای آن را بررسی کنید."}</p>
             </div>
           )}
         </div>
