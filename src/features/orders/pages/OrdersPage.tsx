@@ -1,3 +1,4 @@
+import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 
@@ -42,7 +43,7 @@ export function OrdersPage() {
 
   const [products, setProducts] = useState<OrderProductOption[]>([]);
 
-  const [search, setSearch] = useState("");
+    const { search, setSearch, page, setPage } = useUrlSearchAndPage();
 
   const [status, setStatus] = useState<OrderStatus | "">("");
 
@@ -50,7 +51,7 @@ export function OrdersPage() {
 
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
-  const [page, setPage] = useState(1);
+  
 
   const [lastPage, setLastPage] = useState(1);
 

@@ -70,6 +70,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
       type="button"
       onClick={onOpenTracker}
       aria-label={"وضعیت ثبت موقعیت امروز: " + countLabel + ". باز کردن بخش ثبت مأموریت"}
+      title="برای مشاهده وضعیت و ثبت مأموریت کلیک کنید"
       className={"group flex min-h-10 max-w-[136px] shrink-0 items-center gap-1.5 rounded-lg border px-2 py-1.5 text-right shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 sm:min-h-11 sm:max-w-none sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2 sm:focus:ring-4 " + toneClass.button}
     >
       <span className={"relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9 " + toneClass.icon}>
