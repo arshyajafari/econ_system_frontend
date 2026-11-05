@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
@@ -57,6 +58,11 @@ export function DoctorsPage() {
   const [status, setStatus] = useState<DoctorStatus | "">("");
   const [specialty, setSpecialty] = useState<DoctorSpecialty | "">("");
   const [page, setPage] = useState(1);
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    setSearch(searchParams.get("search") ?? "");
+    setPage(1);
+  }, [searchParams]);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
