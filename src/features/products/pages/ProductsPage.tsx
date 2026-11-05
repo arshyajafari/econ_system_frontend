@@ -34,13 +34,13 @@ export function ProductsPage() {
   const [brands, setBrands] = useState<ProductBrand[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
 
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [brandId, setBrandId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [status, setStatus] = useState<ProductStatus | "">("");
 
   const [page, setPage] = useState(1);
-  const [searchParams] = useSearchParams();
   useEffect(() => {
     setSearch(searchParams.get("search") ?? "");
     setPage(1);
