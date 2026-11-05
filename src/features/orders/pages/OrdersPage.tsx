@@ -1,7 +1,8 @@
+import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ApiError } from "../../../api/client";
 import { ConfirmModal } from "../../../components/ConfirmModal";
@@ -42,8 +43,7 @@ export function OrdersPage() {
 
   const [products, setProducts] = useState<OrderProductOption[]>([]);
 
-  const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+    const { search, setSearch, page, setPage } = useUrlSearchAndPage();
 
   const [status, setStatus] = useState<OrderStatus | "">("");
 
@@ -51,11 +51,7 @@ export function OrdersPage() {
 
   const [salesEmployeeId, setSalesEmployeeId] = useState("");
 
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setSearch(searchParams.get("search") ?? "");
-    setPage(1);
-  }, [searchParams]);
+  
 
   const [lastPage, setLastPage] = useState(1);
 
