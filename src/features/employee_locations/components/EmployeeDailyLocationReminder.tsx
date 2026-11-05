@@ -21,7 +21,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
   }, []);
 
   useEffect(() => {
-    void refreshCount();
+    const initialRefresh = window.setTimeout(() => void refreshCount(), 0);
 
     const refreshWhenActive = () => {
       if (document.visibilityState === "visible") void refreshCount();
@@ -32,6 +32,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
     window.addEventListener("employee-location:changed", refreshWhenActive);
 
     return () => {
+      window.clearTimeout(initialRefresh);
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", refreshWhenActive);
       window.removeEventListener("focus", refreshWhenActive);
