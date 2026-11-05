@@ -540,7 +540,7 @@ export function DashboardLayout() {
             >
               <Icon name={isCollapsed ? "chevron-right" : "chevron-left"} />
             </button>
-            <div className="hidden min-w-0 flex-1 lg:block">
+            <div className="hidden min-w-0 flex-1 sm:block">
               <GlobalSearch sections={searchSections} />
             </div>
             <div className="mr-auto flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
