@@ -1,206 +1,78 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiError } from "../../../api/client";
-import {
-  getMyDailyLocationCheckin,
-  sendMyDailyLocationCheckin,
-  type EmployeeLocation,
-} from "../api/employeeLocations";
+import { useCallback, useEffect, useState } from "react";
+import { getMyDailyLocationPointCount } from "../api/employeeLocations";
 
-const REMINDER_VISIBLE_MS = 10_000;
-const ACTIVATION_DEBOUNCE_MS = 1_500;
+type Props = {
+  onOpenTracker: () => void;
+};
 
-function currentPosition(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) {
-      reject(new Error("مرورگر این دستگاه از مکان‌یابی پشتیبانی نمی‌کند."));
-      return;
-    }
-    if (!window.isSecureContext) {
-      reject(new Error("برای دریافت موقعیت مکانی، سایت باید با HTTPS باز شود."));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 25_000,
-    });
-  });
-}
+export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
+  const [pointsCount, setPointsCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
-function errorMessage(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  if (typeof error === "object" && error !== null && "code" in error) {
-    const code = Number((error as { code: unknown }).code);
-    if (code === 1) return "اجازه دسترسی به موقعیت مکانی داده نشد. مجوز GPS مرورگر را بررسی کنید.";
-    if (code === 2) return "موقعیت مکانی در دسترس نیست. GPS دستگاه یا اتصال اینترنت را بررسی کنید.";
-    if (code === 3) return "دریافت موقعیت بیش از حد طول کشید؛ دوباره تلاش کنید.";
-  }
-  return error instanceof Error ? error.message : "ثبت موقعیت انجام نشد؛ دوباره تلاش کنید.";
-}
-
-export function EmployeeDailyLocationReminder() {
-  const [location, setLocation] = useState<EmployeeLocation | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [reminderVisible, setReminderVisible] = useState(false);
-  const reminderTimer = useRef<number | null>(null);
-  const requestInFlight = useRef(false);
-  const lastActivationAt = useRef(0);
-
-  const hideReminder = useCallback(() => {
-    setReminderVisible(false);
-    if (reminderTimer.current !== null) {
-      window.clearTimeout(reminderTimer.current);
-      reminderTimer.current = null;
-    }
-  }, []);
-
-  const showReminder = useCallback(() => {
-    setReminderVisible(true);
-    if (reminderTimer.current !== null) {
-      window.clearTimeout(reminderTimer.current);
-    }
-    reminderTimer.current = window.setTimeout(() => {
-      setReminderVisible(false);
-      reminderTimer.current = null;
-    }, REMINDER_VISIBLE_MS);
-  }, []);
-
-  const refreshCheckin = useCallback(async (force = false) => {
-    if (requestInFlight.current) return;
-    const now = Date.now();
-    if (!force && now - lastActivationAt.current < ACTIVATION_DEBOUNCE_MS) return;
-    lastActivationAt.current = now;
-    requestInFlight.current = true;
-
+  const refreshCount = useCallback(async () => {
     try {
-      const value = await getMyDailyLocationCheckin();
-      setLocation(value);
-      setChecked(true);
-      setMessage(null);
-      if (value) hideReminder();
-      else showReminder();
-    } catch (error: unknown) {
-      setMessage(errorMessage(error));
-      setChecked(true);
+      const summary = await getMyDailyLocationPointCount();
+      setPointsCount(summary.points_count);
+    } catch {
+      // Keep the last known count; transient network failures should not hide the reminder.
     } finally {
-      requestInFlight.current = false;
+      setLoading(false);
     }
-  }, [hideReminder, showReminder]);
+  }, []);
 
   useEffect(() => {
-    const checkWhenActive = () => {
-      if (document.visibilityState === "visible") {
-        void refreshCheckin();
-      }
-    };
+    void refreshCount();
 
-    void refreshCheckin(true);
-    document.addEventListener("visibilitychange", checkWhenActive);
-    window.addEventListener("focus", checkWhenActive);
-    window.addEventListener("pageshow", checkWhenActive);
+    const refreshWhenActive = () => {
+      if (document.visibilityState === "visible") void refreshCount();
+    };
+    const interval = window.setInterval(() => void refreshCount(), 60_000);
+    document.addEventListener("visibilitychange", refreshWhenActive);
+    window.addEventListener("focus", refreshWhenActive);
+    window.addEventListener("employee-location:changed", refreshWhenActive);
 
     return () => {
-      document.removeEventListener("visibilitychange", checkWhenActive);
-      window.removeEventListener("focus", checkWhenActive);
-      window.removeEventListener("pageshow", checkWhenActive);
-      if (reminderTimer.current !== null) {
-        window.clearTimeout(reminderTimer.current);
-      }
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshWhenActive);
+      window.removeEventListener("focus", refreshWhenActive);
+      window.removeEventListener("employee-location:changed", refreshWhenActive);
     };
-  }, [refreshCheckin]);
+  }, [refreshCount]);
 
-  const register = async () => {
-    if (busy || location) return;
-    setBusy(true);
-    setMessage("در حال دریافت موقعیت مکانی...");
-    try {
-      const position = await currentPosition();
-      const saved = await sendMyDailyLocationCheckin({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        accuracy: Number.isFinite(position.coords.accuracy)
-          ? position.coords.accuracy
-          : undefined,
-        client_operation_id: crypto.randomUUID(),
-      });
-      setLocation(saved);
-      hideReminder();
-      setMessage(
-        position.coords.accuracy > 100
-          ? `موقعیت ثبت شد؛ دقت GPS حدود ${Math.round(position.coords.accuracy)} متر است و ممکن است دقیق نباشد.`
-          : "موقعیت مکانی امروز با موفقیت ثبت شد."
-      );
-    } catch (error: unknown) {
-      setMessage(errorMessage(error));
-    } finally {
-      setBusy(false);
-    }
-  };
+  const hasPoints = (pointsCount ?? 0) > 0;
+  const countLabel = loading && pointsCount === null
+    ? "در حال بررسی"
+    : (pointsCount ?? 0).toLocaleString("fa-IR") + " نقطه امروز";
 
   return (
-    <>
-      <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="text-sm font-semibold text-slate-800">ثبت موقعیت روزانه</div>
-          <span
-            className={`rounded-full px-2 py-1 text-[10px] font-medium ${
-              !checked
-                ? "bg-slate-100 text-slate-600"
-                : location
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-amber-100 text-amber-700"
-            }`}
-          >
-            {!checked ? "در حال بررسی" : location ? "امروز ثبت شده" : "ثبت نشده"}
-          </span>
-        </div>
-        <p className="mt-2 text-xs leading-5 text-slate-600">
-          {location
-            ? "موقعیت مکانی امروز شما با موفقیت ثبت شده است."
-            : "برای ثبت موقعیت فعلی، دکمه زیر را انتخاب کنید."}
-        </p>
-        <button
-          type="button"
-          onClick={() => void register()}
-          disabled={!checked || busy || Boolean(location)}
-          className="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {busy
-            ? "در حال دریافت و ثبت GPS..."
-            : location
-              ? "موقعیت امروز ثبت شده"
-              : "ثبت موقعیت امروز"}
-        </button>
-        {message ? (
-          <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
-            {message}
-          </p>
-        ) : null}
-      </div>
-
-      {reminderVisible && !location ? (
-        <div
-          role="status"
-          aria-live="polite"
-          dir="rtl"
-          className="fixed left-4 right-4 top-24 z-[70] mx-auto max-w-md rounded-2xl border border-amber-200 bg-white p-4 shadow-xl shadow-slate-900/15 sm:left-auto sm:right-6"
-        >
-          <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-xl text-amber-700">
-              📍
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-900">یادآوری ثبت موقعیت مکانی</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">
-                موقعیت مکانی امروز شما هنوز ثبت نشده است. برای ثبت آن می‌توانید از بخش «ثبت موقعیت روزانه» در منوی کناری استفاده کنید.
-              </p>
-              <p className="mt-2 text-[11px] text-slate-400">این پیام پس از ۱۰ ثانیه بسته می‌شود.</p>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </>
+    <button
+      type="button"
+      onClick={onOpenTracker}
+      aria-label={"وضعیت ثبت موقعیت امروز: " + countLabel + ". باز کردن ثبت حضور مکانی"}
+      className={"group flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-right shadow-sm transition-all hover:-translate-y-px hover:shadow-md focus:outline-none focus:ring-4 focus:ring-offset-1 " + (
+        hasPoints
+          ? "border-emerald-200 bg-gradient-to-l from-emerald-50 to-white text-emerald-900 focus:ring-emerald-100"
+          : "border-amber-300 bg-gradient-to-l from-amber-100 via-amber-50 to-white text-amber-950 focus:ring-amber-100"
+      )}
+    >
+      <span className={"relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg " + (
+        hasPoints ? "bg-emerald-100 text-emerald-700" : "bg-amber-200 text-amber-800"
+      )}>
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </svg>
+        {!hasPoints ? <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-amber-100 bg-rose-500 animate-pulse" /> : null}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-xs font-extrabold leading-5">{countLabel}</span>
+        <span className={"block text-[10px] font-medium leading-4 " + (
+          hasPoints ? "text-emerald-700" : "text-amber-800"
+        )}>
+          {hasPoints ? "ثبت موقعیت ادامه دارد" : "ثبت موقعیت را فراموش نکنید"}
+        </span>
+      </span>
+      <span className="mr-1 text-base leading-none opacity-60 transition-transform group-hover:-translate-x-0.5" aria-hidden="true">‹</span>
+    </button>
   );
 }
