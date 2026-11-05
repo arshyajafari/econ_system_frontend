@@ -482,8 +482,7 @@ export function DashboardLayout() {
         isDeliveryOperator ||
         isSettlementOperator ? (
           <>
-            <EmployeeLocationShare />
-            <EmployeeDailyLocationReminder />
+            {!isCollapsed ? <EmployeeLocationShare /> : null}
           </>
         ) : null}
         <div className="border-t border-slate-100 p-3">
@@ -544,6 +543,9 @@ export function DashboardLayout() {
               </div>
             </div>
             <div className="mr-auto flex items-center gap-2">
+              {canUseWorkSessions ? (
+                <EmployeeDailyLocationReminder onOpenTracker={() => setIsSidebarOpen(true)} />
+              ) : null}
               {canUseWorkSessions ? (
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
