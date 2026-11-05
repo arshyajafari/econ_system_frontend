@@ -553,7 +553,10 @@ export function DashboardLayout() {
               {canUseWorkSessions ? (
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
-                  onOpenTracker={() => setIsSidebarOpen(true)}
+                  onOpenTracker={() => {
+                    setIsCollapsed(false);
+                    setIsSidebarOpen(true);
+                  }}
                 />
               ) : null}
               <button
