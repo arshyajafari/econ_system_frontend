@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCustomers } from "../features/customers/services/customersApi";
 import { getDoctors } from "../features/doctors/services/doctorsApi";
@@ -170,7 +170,7 @@ export function GlobalSearch({ sections }: Props) {
     setActiveIndex(0);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       setOpen(false);
       return;
