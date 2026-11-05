@@ -43,7 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     setAuthSession(nextSession);
     setSession(nextSession);
-  }, []);
+    setLoginVersion((current) => current + 1);
+}, []);
 
   const logout = useCallback(async (): Promise<void> => {
     try {
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       token: session?.token ?? null,
       isAuthenticated: session !== null,
       isLoading: false,
+      loginVersion,
       login,
       logout,
     }),
