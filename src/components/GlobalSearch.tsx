@@ -208,7 +208,8 @@ export function GlobalSearch({ sections }: Props) {
       </span>
       <input
         id="global-system-search"
-        type="search"
+        type="text"
+        inputMode="search"
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open && query.trim().length >= 2}
