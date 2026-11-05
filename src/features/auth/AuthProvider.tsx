@@ -44,7 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setAuthSession(nextSession);
     setSession(nextSession);
     setLoginVersion((current) => current + 1);
-}, []);
+  }, []);
 
   const logout = useCallback(async (): Promise<void> => {
     try {
