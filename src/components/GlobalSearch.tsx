@@ -164,7 +164,6 @@ export function GlobalSearch({ sections }: Props) {
       setFailed(tasks.length > 0 && settled.every((result) => result.status === "rejected"));
       setActiveIndex(0);
       setLoading(false);
-      setOpen(true);
     }, 300);
 
     return () => {
