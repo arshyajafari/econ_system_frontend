@@ -18,13 +18,9 @@ export function EmployeeWorkSessionReminder({
   const lastReminderAt = useRef(0);
   const handledLoginVersion = useRef(0);
   const requestInFlight = useRef(false);
-  const pendingLoginCheck = useRef(false);
 
   const refreshStatus = useCallback(async (successfulLogin = false): Promise<void> => {
-    if (requestInFlight.current) {
-      if (successfulLogin) pendingLoginCheck.current = true;
-      return;
-    }
+    if (requestInFlight.current) return;
     requestInFlight.current = true;
 
     try {
@@ -53,10 +49,6 @@ export function EmployeeWorkSessionReminder({
       // A temporary network error must not create a false start/end reminder.
     } finally {
       requestInFlight.current = false;
-      if (pendingLoginCheck.current) {
-        pendingLoginCheck.current = false;
-        void refreshStatus(true);
-      }
     }
   }, []);
 
