@@ -70,7 +70,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
         <span className={"block text-[10px] font-medium leading-4 " + (
           hasPoints ? "text-emerald-700" : "text-amber-800"
         )}>
-          {hasPoints ? "ثبت موقعیت ادامه دارد" : "ثبت موقعیت را فراموش نکنید"}
+          {hasPoints ? "امروز موقعیت ثبت شده است" : "ثبت موقعیت را فراموش نکنید"}
         </span>
       </span>
       <span className="mr-1 text-base leading-none opacity-60 transition-transform group-hover:-translate-x-0.5" aria-hidden="true">‹</span>
