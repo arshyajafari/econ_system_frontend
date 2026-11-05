@@ -38,12 +38,12 @@ export function CustomersPage() {
     isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [status, setStatus] = useState<CustomerStatus | "">("");
   const [type, setType] = useState<CustomerType | "">("");
 
   const [page, setPage] = useState(1);
-  const [searchParams] = useSearchParams();
   useEffect(() => {
     setSearch(searchParams.get("search") ?? "");
     setPage(1);
