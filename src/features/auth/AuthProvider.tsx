@@ -19,6 +19,7 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<AuthSession | null>(getAuthSession);
+  const [loginVersion, setLoginVersion] = useState(0);
 
   useEffect(() => {
     function handleAuthChanged() {
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       login,
       logout,
     }),
-    [session, login, logout],
+    [session, loginVersion, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

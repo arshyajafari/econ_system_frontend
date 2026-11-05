@@ -6,6 +6,7 @@ export type AuthContextValue = {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  loginVersion: number;
   login: (payload: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
 };

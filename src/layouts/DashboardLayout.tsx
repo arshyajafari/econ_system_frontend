@@ -4,6 +4,7 @@ import { getUnreadNotificationCount } from "../features/notifications/api/notifi
 import { useAuth } from "../features/auth";
 import { EmployeeLocationShare } from "../features/employee_locations/components/EmployeeLocationShare";
 import { EmployeeDailyLocationReminder } from "../features/employee_locations/components/EmployeeDailyLocationReminder";
+import { EmployeeWorkSessionReminder } from "../features/employee_locations/components/EmployeeWorkSessionReminder";
 
 type IconName =
   | "dashboard"
@@ -344,7 +345,7 @@ function NavItem({
 }
 
 export function DashboardLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, loginVersion } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -372,6 +373,9 @@ export function DashboardLayout() {
   const hasScientificVisitorActivity =
     user?.employee.activities?.includes("scientific_visitor") === true ||
     user?.employee.activity_type === "scientific_visitor";
+  const canUseWorkSessions =
+    isSalesVisitor || isScientificVisitor || hasScientificVisitorActivity ||
+    isDeliveryOperator || isSettlementOperator;
   const isRestrictedDeliveryOperator =
     isDeliveryOperator && !isAdmin && !isAccountant;
   const isRestrictedSettlementOperator =
@@ -537,6 +541,12 @@ export function DashboardLayout() {
               </div>
             </div>
             <div className="mr-auto flex items-center gap-2">
+              {canUseWorkSessions ? (
+                <EmployeeWorkSessionReminder
+                  loginVersion={loginVersion}
+                  onOpenTracker={() => setIsSidebarOpen(true)}
+                />
+              ) : null}
               {(isSalesVisitor || isScientificVisitor || hasScientificVisitorActivity || isDeliveryOperator || isSettlementOperator) ? (
                 <EmployeeDailyLocationReminder />
               ) : null}
