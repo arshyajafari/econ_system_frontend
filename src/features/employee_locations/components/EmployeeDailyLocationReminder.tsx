@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "../../../api/client";
 import {
   getMyDailyLocationCheckin,
   sendMyDailyLocationCheckin,
   type EmployeeLocation,
 } from "../api/employeeLocations";
+
+const REMINDER_VISIBLE_MS = 10_000;
+const ACTIVATION_DEBOUNCE_MS = 1_500;
 
 function currentPosition(): Promise<GeolocationPosition> {
   return new Promise((resolve, reject) => {
@@ -19,7 +22,7 @@ function currentPosition(): Promise<GeolocationPosition> {
     navigator.geolocation.getCurrentPosition(resolve, reject, {
       enableHighAccuracy: true,
       maximumAge: 0,
-      timeout: 25000,
+      timeout: 25_000,
     });
   });
 }
@@ -38,28 +41,75 @@ function errorMessage(error: unknown): string {
 export function EmployeeDailyLocationReminder() {
   const [location, setLocation] = useState<EmployeeLocation | null>(null);
   const [checked, setChecked] = useState(false);
-  const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [reminderVisible, setReminderVisible] = useState(false);
+  const reminderTimer = useRef<number | null>(null);
+  const requestInFlight = useRef(false);
+  const lastActivationAt = useRef(0);
+
+  const hideReminder = useCallback(() => {
+    setReminderVisible(false);
+    if (reminderTimer.current !== null) {
+      window.clearTimeout(reminderTimer.current);
+      reminderTimer.current = null;
+    }
+  }, []);
+
+  const showReminder = useCallback(() => {
+    setReminderVisible(true);
+    if (reminderTimer.current !== null) {
+      window.clearTimeout(reminderTimer.current);
+    }
+    reminderTimer.current = window.setTimeout(() => {
+      setReminderVisible(false);
+      reminderTimer.current = null;
+    }, REMINDER_VISIBLE_MS);
+  }, []);
+
+  const refreshCheckin = useCallback(async (force = false) => {
+    if (requestInFlight.current) return;
+    const now = Date.now();
+    if (!force && now - lastActivationAt.current < ACTIVATION_DEBOUNCE_MS) return;
+    lastActivationAt.current = now;
+    requestInFlight.current = true;
+
+    try {
+      const value = await getMyDailyLocationCheckin();
+      setLocation(value);
+      setChecked(true);
+      setMessage(null);
+      if (value) hideReminder();
+      else showReminder();
+    } catch (error: unknown) {
+      setMessage(errorMessage(error));
+      setChecked(true);
+    } finally {
+      requestInFlight.current = false;
+    }
+  }, [hideReminder, showReminder]);
 
   useEffect(() => {
-    let cancelled = false;
-    getMyDailyLocationCheckin()
-      .then((value) => {
-        if (cancelled) return;
-        setLocation(value);
-        setOpen(value === null);
-        setChecked(true);
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return;
-        setMessage(errorMessage(error));
-        setChecked(true);
-      });
-    return () => {
-      cancelled = true;
+    const checkWhenActive = () => {
+      if (document.visibilityState === "visible") {
+        void refreshCheckin();
+      }
     };
-  }, []);
+
+    void refreshCheckin(true);
+    document.addEventListener("visibilitychange", checkWhenActive);
+    window.addEventListener("focus", checkWhenActive);
+    window.addEventListener("pageshow", checkWhenActive);
+
+    return () => {
+      document.removeEventListener("visibilitychange", checkWhenActive);
+      window.removeEventListener("focus", checkWhenActive);
+      window.removeEventListener("pageshow", checkWhenActive);
+      if (reminderTimer.current !== null) {
+        window.clearTimeout(reminderTimer.current);
+      }
+    };
+  }, [refreshCheckin]);
 
   const register = async () => {
     if (busy || location) return;
@@ -76,7 +126,7 @@ export function EmployeeDailyLocationReminder() {
         client_operation_id: crypto.randomUUID(),
       });
       setLocation(saved);
-      setOpen(false);
+      hideReminder();
       setMessage(
         position.coords.accuracy > 100
           ? `موقعیت ثبت شد؛ دقت GPS حدود ${Math.round(position.coords.accuracy)} متر است و ممکن است دقیق نباشد.`
@@ -84,100 +134,71 @@ export function EmployeeDailyLocationReminder() {
       );
     } catch (error: unknown) {
       setMessage(errorMessage(error));
-      setOpen(true);
     } finally {
       setBusy(false);
     }
   };
 
-  if (!checked && !message) return null;
-
   return (
     <>
-      <div className="flex items-center">
-        {location ? (
-          <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-            <span className="sm:hidden">GPS ثبت شد</span><span className="hidden sm:inline">موقعیت امروز ثبت شده</span>
-          </span>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(true);
-              setMessage(null);
-            }}
-            className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100"
+      <div className="mx-3 mb-3 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-sm font-semibold text-slate-800">ثبت موقعیت روزانه</div>
+          <span
+            className={`rounded-full px-2 py-1 text-[10px] font-medium ${
+              !checked
+                ? "bg-slate-100 text-slate-600"
+                : location
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-amber-100 text-amber-700"
+            }`}
           >
-            <span className="sm:hidden">ثبت GPS</span><span className="hidden sm:inline">موقعیت امروز ثبت نشده · ثبت موقعیت</span>
-          </button>
-        )}
+            {!checked ? "در حال بررسی" : location ? "امروز ثبت شده" : "ثبت نشده"}
+          </span>
+        </div>
+        <p className="mt-2 text-xs leading-5 text-slate-600">
+          {location
+            ? "موقعیت مکانی امروز شما با موفقیت ثبت شده است."
+            : "برای ثبت موقعیت فعلی، دکمه زیر را انتخاب کنید."}
+        </p>
+        <button
+          type="button"
+          onClick={() => void register()}
+          disabled={!checked || busy || Boolean(location)}
+          className="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {busy
+            ? "در حال دریافت و ثبت GPS..."
+            : location
+              ? "موقعیت امروز ثبت شده"
+              : "ثبت موقعیت امروز"}
+        </button>
+        {message ? (
+          <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
+            {message}
+          </p>
+        ) : null}
       </div>
 
-      {open && !location ? (
+      {reminderVisible && !location ? (
         <div
           role="status"
+          aria-live="polite"
           dir="rtl"
-          className="fixed left-4 right-4 top-24 z-[60] mx-auto max-w-md rounded-2xl border border-blue-100 bg-white p-4 shadow-xl shadow-slate-900/15 sm:left-auto sm:right-6"
+          className="fixed left-4 right-4 top-24 z-[70] mx-auto max-w-md rounded-2xl border border-amber-200 bg-white p-4 shadow-xl shadow-slate-900/15 sm:left-auto sm:right-6"
         >
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
-                <circle cx="12" cy="10" r="2.5" />
-              </svg>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-xl text-amber-700">
+              📍
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold text-slate-900">یادآوری ثبت موقعیت مکانی</p>
               <p className="mt-1 text-xs leading-5 text-slate-600">
-                لطفاً برای تکمیل اطلاعات حضور کاری، موقعیت مکانی فعلی خود را ثبت کنید.
-                ثبت موقعیت اختیاری است و انجام ندادن آن هیچ محدودیتی در سامانه ایجاد نمی‌کند.
+                موقعیت مکانی امروز شما هنوز ثبت نشده است. برای ثبت آن می‌توانید از بخش «ثبت موقعیت روزانه» در منوی کناری استفاده کنید.
               </p>
+              <p className="mt-2 text-[11px] text-slate-400">این پیام پس از ۱۰ ثانیه بسته می‌شود.</p>
             </div>
-            <button
-              type="button"
-              aria-label="بستن یادآوری"
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-100"
-            >
-              ×
-            </button>
           </div>
-          {message ? (
-            <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800">
-              {message}
-            </p>
-          ) : null}
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => void register()}
-              disabled={busy}
-              className="flex-1 rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-wait disabled:opacity-60"
-            >
-              {busy ? "در حال ثبت..." : "ثبت موقعیت"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                setMessage(null);
-              }}
-              disabled={busy}
-              className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-            >
-              فعلاً نه
-            </button>
-          </div>
-        </div>
-      ) : null}
-
-      {message && !open ? (
-        <div
-          role="status"
-          dir="rtl"
-          className="fixed bottom-4 left-4 z-[60] max-w-sm rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-700 shadow-lg"
-        >
-          {message}
         </div>
       ) : null}
     </>
