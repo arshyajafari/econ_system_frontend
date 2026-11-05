@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { sortTableRecords } from '../../../utils/date';
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
@@ -28,12 +29,17 @@ export function EmployeesPage() {
     const { user } = useAuth();
     const isAdmin = user?.roles.includes('admin') ?? false;
     const [items, setItems] = useState<Employee[]>([]);
-    const [search, setSearch] = useState('');
+    const [searchParams] = useSearchParams();
+    const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
     const [status, setStatus] = useState<EmployeeStatus | ''>('');
     const [gender, setGender] = useState<Gender | ''>('');
     const [employmentType, setEmploymentType] = useState<EmploymentType | ''>('');
     const [activityType, setActivityType] = useState<EmployeeActivityType | ''>('');
     const [page, setPage] = useState(1);
+    useEffect(() => {
+      setSearch(searchParams.get("search") ?? "");
+      setPage(1);
+    }, [searchParams]);
     const [lastPage, setLastPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
