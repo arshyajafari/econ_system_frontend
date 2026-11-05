@@ -5,6 +5,7 @@ import { useAuth } from "../features/auth";
 import { EmployeeLocationShare } from "../features/employee_locations/components/EmployeeLocationShare";
 import { EmployeeDailyLocationReminder } from "../features/employee_locations/components/EmployeeDailyLocationReminder";
 import { EmployeeWorkSessionReminder } from "../features/employee_locations/components/EmployeeWorkSessionReminder";
+import { GlobalSearch } from "../components/GlobalSearch";
 
 type IconName =
   | "dashboard"
@@ -411,6 +412,14 @@ export function DashboardLayout() {
       return isAdmin || isAccountant || isDeliveryOperator || isSettlementOperator;
     return !item.requiredPermission || can(item.requiredPermission);
   };
+  const visibleRoutes = new Set(navigation.filter(canSeeNav).map((item) => item.to));
+  const searchSections = {
+    customers: visibleRoutes.has("/customers"),
+    doctors: visibleRoutes.has("/doctors"),
+    employees: visibleRoutes.has("/employees"),
+    orders: visibleRoutes.has("/orders"),
+    products: visibleRoutes.has("/products"),
+  };
   return (
     <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-900">
       {isSidebarOpen ? (
@@ -513,38 +522,50 @@ export function DashboardLayout() {
         className={`min-h-screen transition-[padding] duration-200 lg:pr-[272px] ${isCollapsed ? "lg:pr-[84px]" : ""}`}
       >
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-          <div className="flex h-20 min-w-0 items-center gap-3 px-3 sm:px-4 md:px-6">
+          <div className="flex min-h-20 w-full min-w-0 items-center gap-2 px-3 sm:gap-3 md:px-6">
             <button
               type="button"
               aria-label="باز کردن منو"
               onClick={() => setIsSidebarOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:hidden"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:hidden"
             >
               <Icon name="menu" />
             </button>
             <button
               type="button"
-              aria-label="جمع کردن منوی کناری"
+              aria-label={isCollapsed ? "باز کردن منوی کناری" : "جمع کردن منوی کناری"}
+              aria-expanded={!isCollapsed}
               onClick={() => setIsCollapsed((v) => !v)}
-              className="hidden h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:flex"
+              className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 lg:flex"
             >
               <Icon name={isCollapsed ? "chevron-right" : "chevron-left"} />
             </button>
-            <div className="mr-auto flex min-w-0 max-w-full shrink-0 items-center gap-1.5 sm:gap-2">
+            <div className="hidden min-w-0 flex-1 lg:block">
+              <GlobalSearch sections={searchSections} />
+            </div>
+            <div className="mr-auto flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
               {canUseWorkSessions ? (
-                <EmployeeDailyLocationReminder onOpenTracker={() => { setIsCollapsed(false); setIsSidebarOpen(true); }} />
+                <EmployeeDailyLocationReminder
+                  onOpenTracker={() => {
+                    setIsCollapsed(false);
+                    setIsSidebarOpen(true);
+                  }}
+                />
               ) : null}
               {canUseWorkSessions ? (
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
-                  onOpenTracker={() => { setIsCollapsed(false); setIsSidebarOpen(true); }}
+                  onOpenTracker={() => {
+                    setIsCollapsed(false);
+                    setIsSidebarOpen(true);
+                  }}
                 />
               ) : null}
               <button
                 type="button"
                 aria-label="اعلان‌ها"
                 onClick={() => navigate("/notifications")}
-                className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+                className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
               >
                 <Icon name="bell" size={19} />
                 {unreadCount > 0 ? (
@@ -553,8 +574,8 @@ export function DashboardLayout() {
                   </span>
                 ) : null}
               </button>
-              <div className="hidden items-center gap-2 border-r border-slate-200 pr-3 sm:flex">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+              <div className="hidden min-w-0 items-center gap-2 border-r border-slate-200 pr-3 2xl:flex">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
                   {user?.employee.full_name?.slice(0, 1) ?? "ک"}
                 </div>
                 <div className="max-w-32">
