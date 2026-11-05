@@ -565,7 +565,7 @@ export function DashboardLayout() {
                   </span>
                 ) : null}
               </button>
-              <div className="hidden min-w-0 items-center gap-2 border-r border-slate-200 pr-3 2xl:flex">
+              <div className="hidden min-w-0 items-center gap-2 border-r border-slate-200 pr-3 xl:flex">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
                   {user?.employee.full_name?.slice(0, 1) ?? "ک"}
                 </div>
