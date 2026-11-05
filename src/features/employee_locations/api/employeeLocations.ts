@@ -151,3 +151,15 @@ export async function getEmployeeDailyLocationCheckins(date: string): Promise<Em
   );
   return response.data;
 }
+
+export type MyDailyLocationPointCount = {
+  date: string;
+  points_count: number;
+};
+
+export async function getMyDailyLocationPointCount(): Promise<MyDailyLocationPointCount> {
+  const response = await apiClient.get<{ data: MyDailyLocationPointCount }>(
+    "/employees/locations/me/daily-point-count"
+  );
+  return response.data.data;
+}
