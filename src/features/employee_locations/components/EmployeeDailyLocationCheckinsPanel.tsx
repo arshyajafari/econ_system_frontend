@@ -18,13 +18,13 @@ function time(value: string | null): string {
 export function EmployeeDailyLocationCheckinsPanel() {
   const [date, setDate] = useState(todayInTehran);
   const [rows, setRows] = useState<EmployeeLocation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedDate, setLoadedDate] = useState<string | null>(null);
+  const loading = loadedDate !== date;
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     getEmployeeDailyLocationCheckins(date)
       .then((result) => {
         if (cancelled) return;
@@ -35,7 +35,7 @@ export function EmployeeDailyLocationCheckinsPanel() {
         if (!cancelled) setError(cause instanceof ApiError ? cause.message : "دریافت ثبت‌های روزانه ناموفق بود.");
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setLoadedDate(date);
       });
     return () => { cancelled = true; };
   }, [date, refreshKey]);
@@ -50,7 +50,7 @@ export function EmployeeDailyLocationCheckinsPanel() {
         <div className="flex items-center gap-2">
           <label className="text-xs text-gray-500" htmlFor="daily-location-date">تاریخ</label>
           <JalaliDateInput id="daily-location-date" value={date} onChange={setDate} className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="۱۴۰۵/۰۸/۱۴" />
-          <button type="button" onClick={() => setRefreshKey((value) => value + 1)} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
+          <button type="button" onClick={() => { setLoadedDate(null); setRefreshKey((value) => value + 1); }} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
         </div>
       </div>
       {error ? <p role="alert" className="m-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
