@@ -74,7 +74,7 @@ export function GlobalSearch({ sections }: Props) {
 
       if (sections.customers) {
         tasks.push(
-          getCustomers({ search: term, page: 1, per_page: 5 }).then((response) =>
+          getCustomers({ search: term, page: 1, per_page: 10 }).then((response) =>
             response.data.map((item) => ({
               id: item.id,
               kind: "customers" as const,
@@ -89,7 +89,7 @@ export function GlobalSearch({ sections }: Props) {
 
       if (sections.doctors) {
         tasks.push(
-          getDoctors({ search: term, page: 1, per_page: 5 }).then((response) =>
+          getDoctors({ search: term, page: 1, per_page: 10 }).then((response) =>
             response.data.map((item) => ({
               id: item.id,
               kind: "doctors" as const,
@@ -104,7 +104,7 @@ export function GlobalSearch({ sections }: Props) {
 
       if (sections.employees) {
         tasks.push(
-          getEmployees({ search: term, page: 1, per_page: 5 }).then((response) =>
+          getEmployees({ search: term, page: 1, per_page: 10 }).then((response) =>
             response.data.map((item) => ({
               id: item.id,
               kind: "employees" as const,
@@ -119,7 +119,7 @@ export function GlobalSearch({ sections }: Props) {
 
       if (sections.orders) {
         tasks.push(
-          getOrders({ search: term, page: 1, per_page: 5 }).then((response) =>
+          getOrders({ search: term, page: 1, per_page: 10 }).then((response) =>
             response.data.map((item) => ({
               id: item.id,
               kind: "orders" as const,
@@ -134,7 +134,7 @@ export function GlobalSearch({ sections }: Props) {
 
       if (sections.products) {
         tasks.push(
-          getProducts({ search: term, page: 1, per_page: 5 }).then((response) =>
+          getProducts({ search: term, page: 1, per_page: 10 }).then((response) =>
             response.data.map((item) => ({
               id: item.id,
               kind: "products" as const,
