@@ -41,7 +41,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
   }, [refreshCount]);
 
   const hasPoints = (pointsCount ?? 0) > 0;
-  const isUnknown = !loading && pointsCount === null;
+  const isUnknown = pointsCount === null;
   const countLabel = loading && pointsCount === null
     ? "در حال بررسی"
     : isUnknown
@@ -77,7 +77,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
           <circle cx="12" cy="10" r="2.5" />
         </svg>
-        {!hasPoints && !isUnknown ? <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-amber-100 bg-rose-500 animate-pulse" /> : null}
+        {pointsCount === 0 ? <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-amber-100 bg-rose-500 animate-pulse" /> : null}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate whitespace-nowrap text-[11px] font-extrabold leading-5 sm:text-xs">{countLabel}</span>
