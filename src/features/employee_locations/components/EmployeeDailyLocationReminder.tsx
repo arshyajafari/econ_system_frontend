@@ -94,10 +94,10 @@ export function EmployeeDailyLocationReminder() {
 
   return (
     <>
-      <div className="hidden items-center sm:flex">
+      <div className="flex items-center">
         {location ? (
           <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-            موقعیت امروز ثبت شده
+            <span className="sm:hidden">GPS ثبت شد</span><span className="hidden sm:inline">موقعیت امروز ثبت شده</span>
           </span>
         ) : (
           <button
@@ -108,7 +108,7 @@ export function EmployeeDailyLocationReminder() {
             }}
             className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100"
           >
-            موقعیت امروز ثبت نشده · ثبت موقعیت
+            <span className="sm:hidden">ثبت GPS</span><span className="hidden sm:inline">موقعیت امروز ثبت نشده · ثبت موقعیت</span>
           </button>
         )}
       </div>
