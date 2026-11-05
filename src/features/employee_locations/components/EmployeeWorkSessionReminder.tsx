@@ -20,7 +20,7 @@ export function EmployeeWorkSessionReminder({
   const requestInFlight = useRef(false);
   const pendingLoginCheck = useRef(false);
 
-  const refreshStatus = useCallback(async (successfulLogin = false) => {
+  const refreshStatus = useCallback(async (successfulLogin = false): Promise<void> => {
     if (requestInFlight.current) {
       if (successfulLogin) pendingLoginCheck.current = true;
       return;
@@ -73,6 +73,8 @@ export function EmployeeWorkSessionReminder({
       }
     };
 
+    checkWhenActive();
+
     const intervalId = window.setInterval(() => {
       if (document.visibilityState === "visible") {
         void refreshStatus(false);
@@ -81,11 +83,13 @@ export function EmployeeWorkSessionReminder({
 
     document.addEventListener("visibilitychange", checkWhenActive);
     window.addEventListener("focus", checkWhenActive);
+    window.addEventListener("pageshow", checkWhenActive);
 
     return () => {
       window.clearInterval(intervalId);
       document.removeEventListener("visibilitychange", checkWhenActive);
       window.removeEventListener("focus", checkWhenActive);
+      window.removeEventListener("pageshow", checkWhenActive);
     };
   }, [refreshStatus]);
 
