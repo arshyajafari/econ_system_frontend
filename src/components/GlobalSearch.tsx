@@ -67,15 +67,8 @@ export function GlobalSearch({ sections }: Props) {
     const term = normalizeSearchTerm(query);
     const requestId = ++requestIdRef.current;
 
-    if (term.length < 2) {
-      setResults([]);
-      setLoading(false);
-      setFailed(false);
-      setActiveIndex(0);
-      return;
-    }
+    if (term.length < 2) return;
 
-    setLoading(true);
     const timeoutId = window.setTimeout(async () => {
       const tasks: Array<Promise<SearchResult[]>> = [];
 
@@ -176,6 +169,8 @@ export function GlobalSearch({ sections }: Props) {
     navigate(result.href);
     setQuery("");
     setResults([]);
+    setLoading(false);
+    setFailed(false);
     setOpen(false);
     setActiveIndex(0);
   };
@@ -221,8 +216,19 @@ export function GlobalSearch({ sections }: Props) {
         autoComplete="off"
         value={query}
         onChange={(event) => {
-          setQuery(event.target.value);
-          setOpen(true);
+          const nextQuery = event.target.value;
+          const hasSearchTerm = normalizeSearchTerm(nextQuery).length >= 2;
+          setQuery(nextQuery);
+          setOpen(hasSearchTerm);
+          if (hasSearchTerm) {
+            setLoading(true);
+            setFailed(false);
+          } else {
+            setResults([]);
+            setLoading(false);
+            setFailed(false);
+            setActiveIndex(0);
+          }
         }}
         onFocus={() => {
           if (query.trim().length >= 2) setOpen(true);
@@ -238,7 +244,10 @@ export function GlobalSearch({ sections }: Props) {
           onClick={() => {
             setQuery("");
             setResults([]);
+            setLoading(false);
+            setFailed(false);
             setOpen(false);
+            setActiveIndex(0);
           }}
           className="absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
         >
