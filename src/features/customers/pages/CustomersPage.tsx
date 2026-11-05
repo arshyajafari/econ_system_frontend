@@ -1,7 +1,8 @@
+import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Pagination } from "../../../components/Pagination";
 
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../auth";
 
@@ -38,16 +39,11 @@ export function CustomersPage() {
     isAdmin || permissions.includes("customers.change_status");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+    const { search, setSearch, page, setPage } = useUrlSearchAndPage();
   const [status, setStatus] = useState<CustomerStatus | "">("");
   const [type, setType] = useState<CustomerType | "">("");
 
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setSearch(searchParams.get("search") ?? "");
-    setPage(1);
-  }, [searchParams]);
+  
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
 
