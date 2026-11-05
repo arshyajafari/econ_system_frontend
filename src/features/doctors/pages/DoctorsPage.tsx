@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
@@ -54,15 +54,10 @@ export function DoctorsPage() {
   const canChangeDoctorStatus =
     hasScientificVisitorActivity || (user?.permissions.includes("doctors.change_status") ?? false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+    const { search, setSearch, page, setPage } = useUrlSearchAndPage();
   const [status, setStatus] = useState<DoctorStatus | "">("");
   const [specialty, setSpecialty] = useState<DoctorSpecialty | "">("");
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setSearch(searchParams.get("search") ?? "");
-    setPage(1);
-  }, [searchParams]);
+  
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
