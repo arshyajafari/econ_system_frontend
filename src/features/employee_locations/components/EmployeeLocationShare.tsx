@@ -141,6 +141,7 @@ export function EmployeeLocationShare() {
                         if (disposed) return;
                         lastSentAt = nowMs;
                         lastSentPosition = nextPosition;
+                        window.dispatchEvent(new Event('employee-location:changed'));
                         setTrackingNotice(
                             position.coords.accuracy > 100
                                 ? `مسیر ثبت می‌شود؛ دقت GPS فعلی حدود ${Math.round(position.coords.accuracy)} متر است.`
