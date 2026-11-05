@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
@@ -34,17 +34,12 @@ export function ProductsPage() {
   const [brands, setBrands] = useState<ProductBrand[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
 
-  const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+    const { search, setSearch, page, setPage } = useUrlSearchAndPage();
   const [brandId, setBrandId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [status, setStatus] = useState<ProductStatus | "">("");
 
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setSearch(searchParams.get("search") ?? "");
-    setPage(1);
-  }, [searchParams]);
+  
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
 
