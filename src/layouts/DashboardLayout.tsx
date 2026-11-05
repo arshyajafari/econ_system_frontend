@@ -513,7 +513,7 @@ export function DashboardLayout() {
         className={`min-h-screen transition-[padding] duration-200 lg:pr-[272px] ${isCollapsed ? "lg:pr-[84px]" : ""}`}
       >
         <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-          <div className="flex h-20 items-center gap-3 px-4 md:px-6">
+          <div className="flex h-20 min-w-0 items-center gap-3 px-3 sm:px-4 md:px-6">
             <button
               type="button"
               aria-label="باز کردن منو"
@@ -530,26 +530,14 @@ export function DashboardLayout() {
             >
               <Icon name={isCollapsed ? "chevron-right" : "chevron-left"} />
             </button>
-            <div className="hidden min-w-0 flex-1 sm:block">
-              <div className="relative max-w-xl">
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <Icon name="search" size={18} />
-                </span>
-                <input
-                  aria-label="جستجو"
-                  placeholder="جستجو در سیستم..."
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/80 pr-10 pl-4 text-sm outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50"
-                />
-              </div>
-            </div>
-            <div className="mr-auto flex items-center gap-2">
+            <div className="mr-auto flex min-w-0 max-w-full shrink-0 items-center gap-1.5 sm:gap-2">
               {canUseWorkSessions ? (
-                <EmployeeDailyLocationReminder onOpenTracker={() => setIsSidebarOpen(true)} />
+                <EmployeeDailyLocationReminder onOpenTracker={() => { setIsCollapsed(false); setIsSidebarOpen(true); }} />
               ) : null}
               {canUseWorkSessions ? (
                 <EmployeeWorkSessionReminder
                   loginVersion={loginVersion}
-                  onOpenTracker={() => setIsSidebarOpen(true)}
+                  onOpenTracker={() => { setIsCollapsed(false); setIsSidebarOpen(true); }}
                 />
               ) : null}
               <button
