@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
@@ -39,6 +40,11 @@ export function ProductsPage() {
   const [status, setStatus] = useState<ProductStatus | "">("");
 
   const [page, setPage] = useState(1);
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    setSearch(searchParams.get("search") ?? "");
+    setPage(1);
+  }, [searchParams]);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
 
