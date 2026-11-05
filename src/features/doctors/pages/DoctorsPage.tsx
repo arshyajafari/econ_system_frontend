@@ -54,11 +54,11 @@ export function DoctorsPage() {
   const canChangeDoctorStatus =
     hasScientificVisitorActivity || (user?.permissions.includes("doctors.change_status") ?? false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [status, setStatus] = useState<DoctorStatus | "">("");
   const [specialty, setSpecialty] = useState<DoctorSpecialty | "">("");
   const [page, setPage] = useState(1);
-  const [searchParams] = useSearchParams();
   useEffect(() => {
     setSearch(searchParams.get("search") ?? "");
     setPage(1);
