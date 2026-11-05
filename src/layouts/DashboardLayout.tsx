@@ -481,7 +481,10 @@ export function DashboardLayout() {
         hasScientificVisitorActivity ||
         isDeliveryOperator ||
         isSettlementOperator ? (
-          <EmployeeLocationShare />
+          <>
+            <EmployeeLocationShare />
+            <EmployeeDailyLocationReminder />
+          </>
         ) : null}
         <div className="border-t border-slate-100 p-3">
           <div
@@ -546,9 +549,6 @@ export function DashboardLayout() {
                   loginVersion={loginVersion}
                   onOpenTracker={() => setIsSidebarOpen(true)}
                 />
-              ) : null}
-              {(isSalesVisitor || isScientificVisitor || hasScientificVisitorActivity || isDeliveryOperator || isSettlementOperator) ? (
-                <EmployeeDailyLocationReminder />
               ) : null}
               <button
                 type="button"
