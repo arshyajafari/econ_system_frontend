@@ -1,27 +1,7 @@
 import { apiClient } from "../../../api/client";
+import type { ActivityCleanupRun, ActivityFilters, DailyActivityReport, DailyActivityReportInput } from "../types/dailyActivityReport";
+export type { ActivityCleanupRun, ActivityFilters, ActivityResult, ContactType, DailyActivityReport, DailyActivityReportInput } from "../types/dailyActivityReport";
 
-export type ActivityResult = "positive" | "neutral" | "negative" | "follow_up";
-export type ContactType = "in_person" | "phone";
-export type DailyActivityReport = {
-  id: number;
-  employee: { id: string | null; name: string };
-  visit_date: string;
-  visit_time: string | null;
-  organization_name: string;
-  contact_name: string | null;
-  contact_type: ContactType;
-  purpose: string;
-  discussion: string;
-  employee_question: string | null;
-  audience_feedback: string | null;
-  outcome: string;
-  result: ActivityResult;
-  is_archived: boolean;
-  retention_until: string;
-  created_at: string;
-  updated_at: string;
-};
-export type DailyActivityReportInput = Omit<DailyActivityReport, "id" | "employee" | "is_archived" | "retention_until" | "created_at" | "updated_at">;
 type Collection<T> = { data: T[]; meta?: { current_page: number; last_page: number; total: number } };
 export type ActivityFilters = { page?: number; per_page?: number; search?: string; from?: string; to?: string; contact_type?: ContactType | ""; result?: ActivityResult | ""; employee_id?: string };
 export async function getDailyActivityReports(params: ActivityFilters = {}) {
@@ -61,7 +41,6 @@ export async function cleanupDailyActivityReports(payload: { report_ids: number[
   const response = await apiClient.post<{ message: string; data: { deleted_count: number } }>("/daily-activity-reports/archive/cleanup", payload);
   return response.data;
 }
-export type ActivityCleanupRun = { id: number; deleted_count: number; reason: string; created_at: string; performed_by: string | null; report_ids: number[] };
 export async function getActivityCleanupHistory() {
   const response = await apiClient.get<{ data: ActivityCleanupRun[] }>("/daily-activity-reports/archive/history");
   return response.data.data;
