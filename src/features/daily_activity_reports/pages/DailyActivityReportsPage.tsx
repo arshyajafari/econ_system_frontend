@@ -600,10 +600,10 @@ export function DailyActivityReportsPage() {
                                 <tr>
                                     <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">تاریخ</th>
                                     <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">مجموعه / مخاطب</th>
-                                    <th className="px-4 py-3">کارمند</th>
-                                    <th className="px-4 py-3">ارتباط</th>
-                                    <th className="px-4 py-3">نتیجه</th>
-                                    <th className="px-4 py-3">عملیات</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">کارمند</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">ارتباط</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">نتیجه</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">عملیات</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
