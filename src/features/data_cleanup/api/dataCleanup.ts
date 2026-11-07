@@ -26,7 +26,7 @@ export async function getCleanupHistory() {
   const response = await apiClient.get<{ data: CleanupRun[] }>("/admin/data-cleanup/history");
   return response.data.data;
 }
-export async function executeCleanup(payload: { categories: string[]; reason: string; confirmation: "DELETE" }) {
+export async function executeCleanup(payload: { categories: string[]; confirmation: "DELETE" }) {
   const response = await apiClient.post<{ message: string; data: { run_id: number; deleted_counts: Record<string, number> } }>(
     "/admin/data-cleanup/execute",
     payload,
