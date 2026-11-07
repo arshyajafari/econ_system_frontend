@@ -1,3 +1,4 @@
+import { Button } from "../../../design-system/components/Button";
 import { PAYMENT_METHOD_OPTIONS, PAYMENT_STATUS_OPTIONS } from '../types/payment';
 
 import type { PaymentMethod, PaymentStatus } from '../types/payment';
