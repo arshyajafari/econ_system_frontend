@@ -203,32 +203,26 @@ export function InvoicesPage() {
                                       </td>
                                       <td className="px-5 py-4 text-left">
                                           <div className="flex flex-wrap justify-end gap-2">
-                                              <button
-                                                  type="button"
-                                                  onClick={() =>
-                                                      navigate(`/invoices/${invoice.id}`)
-                                                  }
-                                                  className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium"
+                                              <Button
+                                                  size="sm"
+                                                  variant="view"
+                                                  onClick={() => navigate(`/invoices/${invoice.id}`)}
                                               >
                                                   مشاهده
-                                              </button>
+                                              </Button>
                                               {canCreateReturn &&
                                               invoice.status === 'issued' &&
                                               invoice.order?.status === 'completed' &&
                                               invoice.order?.id ? (
-                                                  <button
-                                                      type="button"
+                                                  <Button
+                                                      size="sm"
+                                                      variant="warning"
                                                       onClick={() =>
-                                                          navigate(
-                                                              `/order-returns/new?order_id=${encodeURIComponent(
-                                                                  invoice.order!.id
-                                                              )}`
-                                                          )
+                                                          navigate(`/order-returns/new?order_id=${encodeURIComponent(invoice.order!.id)}`)
                                                       }
-                                                      className="ui-btn-warning rounded-lg border px-3 py-1.5 text-xs font-medium"
                                                   >
                                                       ثبت مرجوعی
-                                                  </button>
+                                                  </Button>
                                               ) : null}
                                           </div>
                                       </td>
