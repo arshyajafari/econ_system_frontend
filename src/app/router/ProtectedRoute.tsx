@@ -61,6 +61,7 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[],
     if (pathname === "/invoices" || pathname.startsWith("/invoices/")) return can("invoices.view");
     if (pathname === "/reports" || pathname.startsWith("/reports/")) return can("reports.view");
     if (pathname === "/expenses" || pathname.startsWith("/expenses/")) return can("expenses.view");
+    if (pathname === "/daily-activity-reports" || pathname.startsWith("/daily-activity-reports/")) return can("daily_activity_reports.view_own") || can("daily_activity_reports.view_all");
     return false;
   }
 
