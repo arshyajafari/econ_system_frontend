@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { normalizeApiError } from "../../../api/client";
 import {
   cleanupDailyActivityReports,
-  exportArchivedDailyActivityReports,
+  exportManagedDailyActivityReports,
   getActivityCleanupHistory,
-  getArchivedDailyActivityReports,
+  getManagedDailyActivityReports,
   type ActivityCleanupRun,
   type DailyActivityReport,
 } from "../../daily_activity_reports/services/dailyActivityReportsApi";
@@ -30,7 +30,7 @@ export function DailyActivityReportCleanupSection() {
     setError(null);
     try {
       const [archive, runs] = await Promise.all([
-        getArchivedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
+        getManagedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
         getActivityCleanupHistory(),
       ]);
       setRows(archive.data);
@@ -50,7 +50,7 @@ export function DailyActivityReportCleanupSection() {
       setLoading(true);
       try {
         const [archive, runs] = await Promise.all([
-          getArchivedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
+          getManagedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
           getActivityCleanupHistory(),
         ]);
         if (!active) return;
@@ -92,7 +92,7 @@ export function DailyActivityReportCleanupSection() {
 
   const exportArchive = async () => {
     try {
-      await exportArchivedDailyActivityReports();
+      await exportManagedDailyActivityReports();
     } catch (e) {
       setError(normalizeApiError(e).message);
     }
