@@ -11,7 +11,8 @@ export type ButtonVariant =
   | "edit"
   | "success"
   | "warning"
-  | "danger";
+  | "danger"
+  | "dangerSolid";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -32,6 +33,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   success: "ui-btn-success",
   warning: "ui-btn-warning",
   danger: "ui-btn-delete",
+  dangerSolid: "ui-btn-danger-solid",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
