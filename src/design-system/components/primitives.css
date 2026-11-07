@@ -177,3 +177,10 @@
   background: var(--ds-color-danger) !important;
   color: #fff !important;
 }
+
+/* When a table viewport sits inside an existing bordered card, avoid a double frame. */
+.ui-table-container.ui-table-container--embedded {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
