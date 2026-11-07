@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { normalizeApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import {
@@ -33,7 +33,7 @@ export function DailyActivityReportsPage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editing, setEditing] = useState<DailyActivityReport | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");\n  const [from, setFrom] = useState("");\n  const [to, setTo] = useState("");
   const [contactType, setContactType] = useState<ContactType | "">("");
   const [result, setResult] = useState<ActivityResult | "">("");
   const [page, setPage] = useState(1);
@@ -60,7 +60,7 @@ export function DailyActivityReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, contactType, result]);
+  }, [page, search, from, to, contactType, result]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -87,7 +87,7 @@ export function DailyActivityReportsPage() {
     setError(null);
   };
 
-  const submit = async (event: React.FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     setSaving(true);
     setError(null);
@@ -120,7 +120,7 @@ export function DailyActivityReportsPage() {
 
   const exportRows = async () => {
     try {
-      await exportDailyActivityReports({ search, contact_type: contactType, result });
+      await exportDailyActivityReports({ search, from: from || undefined, to: to || undefined, contact_type: contactType, result });
     } catch (e) {
       setError(normalizeApiError(e).message);
     }
@@ -171,7 +171,7 @@ export function DailyActivityReportsPage() {
       )}
 
       <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3">
-        <input value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} placeholder="جست‌وجو در نام مجموعه، مخاطب و مذاکرات" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+        <input value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} placeholder="جست‌وجو در نام کارمند، مجموعه، مخاطب و مذاکرات" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />\n        <div className="w-40"><JalaliDateInput value={from} onChange={(v) => { setPage(1); setFrom(v); }} placeholder="از تاریخ" className="w-full" /></div>\n        <div className="w-40"><JalaliDateInput value={to} onChange={(v) => { setPage(1); setTo(v); }} placeholder="تا تاریخ" className="w-full" /></div>
         <select value={contactType} onChange={(e) => { setPage(1); setContactType(e.target.value as ContactType | ""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">همه روش‌ها</option><option value="in_person">حضوری</option><option value="phone">تلفنی</option></select>
         <select value={result} onChange={(e) => { setPage(1); setResult(e.target.value as ActivityResult | ""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">همه نتایج</option><option value="positive">مثبت</option><option value="neutral">خنثی</option><option value="negative">منفی</option><option value="follow_up">نیازمند پیگیری</option></select>
       </div>
