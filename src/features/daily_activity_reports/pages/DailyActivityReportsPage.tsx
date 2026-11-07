@@ -27,7 +27,8 @@ const emptyForm = (): FormState => ({
 const resultLabels: Record<ActivityResult, string> = {
   positive: "مثبت", neutral: "خنثی", negative: "منفی", follow_up: "نیازمند پیگیری",
 };
-const resultStyles: Record<ActivityResult, string> = { positive: "bg-emerald-50 text-emerald-700 ring-emerald-600/20", neutral: "bg-slate-100 text-slate-700 ring-slate-500/20", negative: "bg-rose-50 text-rose-700 ring-rose-600/20", follow_up: "bg-amber-50 text-amber-800 ring-amber-600/20" };\nconst dateLabel = (value: string) =>
+const resultStyles: Record<ActivityResult, string> = { positive: "bg-emerald-50 text-emerald-700 ring-emerald-600/20", neutral: "bg-slate-100 text-slate-700 ring-slate-500/20", negative: "bg-rose-50 text-rose-700 ring-rose-600/20", follow_up: "bg-amber-50 text-amber-800 ring-amber-600/20" };
+const dateLabel = (value: string) =>
   new Date(`${value}T12:00:00`).toLocaleDateString("fa-IR-u-ca-persian");
 
 export function DailyActivityReportsPage() {
