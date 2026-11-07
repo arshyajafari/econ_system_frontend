@@ -1,0 +1,78 @@
+/* Layout and interaction styles for the shared Button primitive.
+   Semantic colors continue to come from the established ui-btn-* classes. */
+.ui-button.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  line-height: 1.4;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.ui-button.ui-button--sm {
+  min-height: 36px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+}
+
+.ui-button.ui-button--md {
+  min-height: 42px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+
+.ui-button.ui-button--lg {
+  min-height: 48px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+}
+
+.ui-button.ui-button:focus-visible {
+  outline: 3px solid var(--ds-color-focus);
+  outline-offset: 2px;
+}
+
+.ui-button.ui-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ui-button.ui-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+.ui-button__spinner {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  animation: ui-button-spin 650ms linear infinite;
+}
+
+@keyframes ui-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-button__spinner {
+    animation-duration: 1.5s;
+  }
+}
