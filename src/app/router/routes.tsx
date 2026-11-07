@@ -21,7 +21,7 @@ const DashboardPage = lazy(() =>
   import("../../features/dashboard").then((module) => ({ default: module.DashboardPage })),
 );
 const DailyActivityReportsPage = lazy(() =>
-  import("../../features/daily_activity_reports/pages/DailyActivityReportsPage").then((module) => ({ default: module.DailyActivityReportsPage })),
+  import("../../features/daily_activity_reports").then((module) => ({ default: module.DailyActivityReportsPage })),
 );
 const DataCleanupPage = lazy(() =>
   import("../../features/data_cleanup/pages/DataCleanupPage").then((module) => ({
