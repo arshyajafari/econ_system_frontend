@@ -402,7 +402,7 @@ export function DashboardLayout() {
       return (
         (isSalesVisitor && ["/products", "/orders", "/daily-activity-reports"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
-        (isScientificVisitor && ["/visits", "/scientific-inventory"].includes(item.to)) ||
+        (isScientificVisitor && ["/visits", "/scientific-inventory", "/daily-activity-reports"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
