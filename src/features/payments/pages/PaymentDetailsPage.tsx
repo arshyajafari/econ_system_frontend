@@ -1,3 +1,4 @@
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
