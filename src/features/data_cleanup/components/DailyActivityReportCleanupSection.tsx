@@ -102,30 +102,41 @@ export function DailyActivityReportCleanupSection() {
     <section className="mx-auto max-w-7xl space-y-5 p-4 md:p-6" dir="rtl">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div><h1 className="text-xl font-bold text-slate-900">مدیریت و حذف گزارش‌های فعالیت</h1><p className="mt-1 text-sm text-slate-500">گزارش‌های فعال و منقضی‌شده را یکجا بررسی و در صورت نیاز به‌صورت متمرکز حذف کنید.</p></div>
-        <button onClick={() => void exportArchive()} disabled={rows.length === 0} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-40">خروجی Excel گزارش‌های انتخاب‌شده</button>
+        <button onClick={() => void exportArchive()} disabled={rows.length === 0} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-40">خروجی Excel همه گزارش‌ها</button>
       </header>
       {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
       {success && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-900">گزارش‌های منقضی‌شده با توجه به ماه شمسی تاریخ مراجعه مشخص شده‌اند. گزارش‌ها به‌صورت خودکار حذف نمی‌شوند و فقط با تأیید مدیر پاک خواهند شد.</div>
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-3">
         <input value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} placeholder="جست‌وجو در گزارش‌های منقضی‌شده" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
         <span className="text-sm text-slate-500">{faNumber.format(rows.length)} گزارش در این صفحه</span>
       </div>
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        {loading ? <p className="p-8 text-center text-sm text-slate-500">در حال دریافت...</p> : rows.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">گزارشی برای بررسی یا حذف وجود ندارد.</p> : <div className="divide-y divide-slate-100">
-          <div className="flex items-center gap-3 bg-slate-50 px-4 py-3 text-sm"><input type="checkbox" checked={rows.length > 0 && selected.length === rows.length} onChange={(e) => setSelected(e.target.checked ? rows.map((row) => row.id) : [])} /><span className="font-semibold text-slate-700">انتخاب همه گزارش‌های این صفحه</span></div>
-          {rows.map((row) => <article key={row.id} className="flex gap-3 p-4">
-            <input type="checkbox" checked={selected.includes(row.id)} onChange={(e) => toggle(row.id, e.target.checked)} className="mt-1 h-4 w-4" />
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap justify-between gap-2"><strong className="text-sm text-slate-900">{row.organization_name}{row.contact_name ? ` — ${row.contact_name}` : ""}</strong><span className="text-xs text-slate-500">{row.is_archived ? `منقضی‌شده · مهلت پایان: ${jalali(row.retention_until)}` : `فعال · مهلت پایان: ${jalali(row.retention_until)}`}</span></div>
-              <p className="mt-1 text-xs text-slate-500">{jalali(row.visit_date)} · {row.employee.name} · {row.contact_type === "phone" ? "تلفنی" : "حضوری"}</p>
-              <p className="mt-2 line-clamp-2 text-sm text-slate-600">{row.purpose} — {row.outcome}</p>
-            </div>
-          </article>)}
-        </div>}
+        {loading ? <p className="p-8 text-center text-sm text-slate-500">در حال دریافت...</p> : rows.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">گزارشی برای بررسی یا حذف وجود ندارد.</p> : (
+          <div className="overflow-x-auto">
+            <table className="min-w-[850px] w-full text-right text-sm">
+              <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
+                <tr>
+                  <th className="w-12 px-4 py-3"><input aria-label="انتخاب همه گزارش‌های این صفحه" type="checkbox" checked={rows.length > 0 && rows.every((row) => selected.includes(row.id))} onChange={(e) => setSelected(e.target.checked ? rows.map((row) => row.id) : [])} /></th>
+                  <th className="px-4 py-3">مجموعه / مخاطب</th><th className="px-4 py-3">تاریخ مراجعه</th><th className="px-4 py-3">کارمند</th><th className="px-4 py-3">وضعیت نگهداری</th><th className="px-4 py-3">خلاصه گزارش</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {rows.map((row) => <tr key={row.id} className="align-top hover:bg-slate-50/70">
+                  <td className="px-4 py-3"><input aria-label={`انتخاب گزارش ${row.id}`} type="checkbox" checked={selected.includes(row.id)} onChange={(e) => toggle(row.id, e.target.checked)} className="h-4 w-4" /></td>
+                  <td className="max-w-56 px-4 py-3"><strong className="block text-slate-800">{row.organization_name}</strong>{row.contact_name ? <span className="mt-1 block text-xs text-slate-500">{row.contact_name}</span> : null}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">{jalali(row.visit_date)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">{row.employee.name}<span className="mt-1 block text-xs text-slate-400">{row.contact_type === "phone" ? "تلفنی" : "حضوری"}</span></td>
+                  <td className="whitespace-nowrap px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs ${row.is_archived ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>{row.is_archived ? "منقضی‌شده" : "فعال"}</span><span className="mt-1 block text-xs text-slate-400">مهلت: {jalali(row.retention_until)}</span></td>
+                  <td className="max-w-72 px-4 py-3"><p className="line-clamp-2 text-slate-600">{row.purpose} — {row.outcome}</p></td>
+                </tr>)}
+              </tbody>
+            </table>
+          </div>
+        )}
         <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm"><button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40">قبلی</button><span className="text-slate-500">صفحه {faNumber.format(page)} از {faNumber.format(lastPage)}</span><button disabled={page >= lastPage} onClick={() => setPage((value) => value + 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40">بعدی</button></div>
       </div>
-      <div className="rounded-2xl border border-red-200 bg-white p-4 md:p-5">
+      <div className="rounded-xl border border-red-200 bg-white p-4 md:p-5">
         <h2 className="font-bold text-slate-900">پاک‌سازی نهایی گزارش‌های انتخاب‌شده</h2>
         <p className="mt-1 text-sm text-slate-500">این عملیات حذف دائمی است. پیشنهاد می‌شود پیش از اجرا خروجی Excel را ذخیره کنید.</p>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
