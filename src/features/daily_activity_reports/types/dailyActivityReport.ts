@@ -19,6 +19,7 @@ export type DailyActivityReport = {
   retention_until: string;
   created_at: string;
   updated_at: string;
+  revisions?: Array<{ id: number; reason: string | null; old_values: Record<string, unknown>; new_values: Record<string, unknown>; created_at: string }>;
 };
 
 export type DailyActivityReportInput = Omit<
