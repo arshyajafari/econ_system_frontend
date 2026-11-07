@@ -44,7 +44,29 @@ export function DailyActivityReportArchivePage() {
     }
   }, [search, page]);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const [archive, runs] = await Promise.all([
+          getArchivedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
+          getActivityCleanupHistory(),
+        ]);
+        if (!active) return;
+        setRows(archive.data);
+        setLastPage(archive.meta?.last_page ?? 1);
+        setHistory(runs);
+        setSelected([]);
+      } catch (e) {
+        if (active) setError(normalizeApiError(e).message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    void load();
+    return () => { active = false; };
+  }, [search, page]);
 
   const toggle = (id: number, checked: boolean) =>
     setSelected((current) => checked ? [...current, id] : current.filter((item) => item !== id));
