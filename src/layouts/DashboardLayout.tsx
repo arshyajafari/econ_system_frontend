@@ -400,7 +400,7 @@ export function DashboardLayout() {
     // sections instead of allowing one role to hide the others.
     if (!isAdmin && !isAccountant && (isSalesVisitor || isScientificVisitor || isRestrictedDeliveryOperator || isRestrictedSettlementOperator)) {
       return (
-        (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
+        (isSalesVisitor && ["/products", "/orders", "/daily-activity-reports"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
         (isScientificVisitor && ["/visits", "/scientific-inventory"].includes(item.to)) ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
