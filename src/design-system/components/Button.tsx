@@ -16,7 +16,7 @@ export type ButtonVariant =
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled"> {
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
