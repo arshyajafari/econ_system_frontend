@@ -587,7 +587,7 @@ export function DailyActivityReportsPage() {
                         گزارشی برای نمایش وجود ندارد.
                     </p>
                 ) : (
-                    <TableContainer>
+                    <TableContainer className="ui-table-container--embedded">
                         <table className="min-w-full text-right text-sm">
                             <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
