@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { normalizeApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
+import { Pagination } from '../../../components/Pagination';
 import { DailyActivityReportFilters } from '../components/DailyActivityReportFilters';
 import {
     createDailyActivityReport,
@@ -577,7 +578,7 @@ export function DailyActivityReportsPage() {
                     </section>
                 </div>
             )}
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 text-sm">
                     <strong className="text-slate-800">فهرست گزارش‌های فعالیت</strong>
                     <span className="text-slate-500">
@@ -594,20 +595,20 @@ export function DailyActivityReportsPage() {
                     </p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="min-w-[900px] w-full text-right text-sm">
-                            <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
+                        <table className="min-w-full text-right text-sm">
+                            <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
-                                    <th className="whitespace-nowrap px-4 py-3">تاریخ</th>
-                                    <th className="px-4 py-3">مجموعه / مخاطب</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">تاریخ</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">مجموعه / مخاطب</th>
                                     <th className="px-4 py-3">کارمند</th>
                                     <th className="px-4 py-3">ارتباط</th>
                                     <th className="px-4 py-3">نتیجه</th>
                                     <th className="px-4 py-3">عملیات</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-gray-100">
                                 {rows.map((row) => (
-                                    <tr key={row.id} className="align-top hover:bg-slate-50/70">
+                                    <tr key={row.id} className="hover:bg-gray-50">
                                         <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                                             {dateLabel(row.visit_date)}
                                             {row.visit_time ? (
@@ -670,27 +671,9 @@ export function DailyActivityReportsPage() {
                         </table>
                     </div>
                 )}
-                <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
-                    <button
-                        disabled={page <= 1}
-                        onClick={() => setPage((p) => p - 1)}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40"
-                    >
-                        قبلی
-                    </button>
-                    <span className="text-slate-500">
-                        صفحه {new Intl.NumberFormat('fa-IR').format(page)} از{' '}
-                        {new Intl.NumberFormat('fa-IR').format(lastPage)}
-                    </span>
-                    <button
-                        disabled={page >= lastPage}
-                        onClick={() => setPage((p) => p + 1)}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40"
-                    >
-                        بعدی
-                    </button>
-                </div>
+                
             </div>
+            <Pagination page={page} lastPage={lastPage} isLoading={loading} total={total} perPage={20} onPageChange={setPage} />
         </section>
     );
 }
