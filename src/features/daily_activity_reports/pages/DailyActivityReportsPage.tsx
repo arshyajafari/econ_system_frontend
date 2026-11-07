@@ -242,18 +242,12 @@ export function DailyActivityReportsPage() {
                     <h1 className="text-2xl font-bold text-slate-900">گزارش فعالیت روزانه</h1>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    <button
-                        onClick={() => void exportRows()}
-                        className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                    >
+                    <Button type="button" variant="secondary" onClick={() => void exportRows()}>
                         خروجی Excel
-                    </button>
-                    <button
-                        onClick={openCreate}
-                        className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
-                    >
+                    </Button>
+                    <Button type="button" variant="primary" onClick={openCreate}>
                         ثبت گزارش جدید
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -593,7 +587,7 @@ export function DailyActivityReportsPage() {
                         گزارشی برای نمایش وجود ندارد.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <TableContainer>
                         <table className="min-w-full text-right text-sm">
                             <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
@@ -637,34 +631,16 @@ export function DailyActivityReportsPage() {
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
                                             <div className="flex items-center gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => void openView(row)}
-                                                    className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
-                                                >
-                                                    مشاهده
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openEdit(row)}
-                                                    className="ui-btn-edit rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                                >
-                                                    ویرایش
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setDeleteTarget(row)}
-                                                    className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-                                                >
-                                                    حذف
-                                                </button>
+                                                <Button size="sm" variant="view" type="button" onClick={() => void openView(row)}>مشاهده</Button>
+                                                <Button size="sm" variant="edit" type="button" onClick={() => openEdit(row)}>ویرایش</Button>
+                                                <Button size="sm" variant="danger" type="button" onClick={() => setDeleteTarget(row)}>حذف</Button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </TableContainer>
                 )}
                 
             </div>
