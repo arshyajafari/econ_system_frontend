@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { normalizeApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
+import { DailyActivityReportFilters } from "../components/DailyActivityReportFilters";
 import {
   createDailyActivityReport,
   deleteDailyActivityReport,
@@ -232,13 +233,26 @@ export function DailyActivityReportsPage() {
         </form>
       )}
 
-      <div className="flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-white p-3">
-        <input value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} placeholder="جست‌وجو در نام کارمند، مجموعه، مخاطب و مذاکرات" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
-        <div className="w-40"><JalaliDateInput value={from} onChange={(v) => { setPage(1); setFrom(v); }} placeholder="از تاریخ" className="w-full" /></div>
-        <div className="w-40"><JalaliDateInput value={to} onChange={(v) => { setPage(1); setTo(v); }} placeholder="تا تاریخ" className="w-full" /></div>
-        <select value={contactType} onChange={(e) => { setPage(1); setContactType(e.target.value as ContactType | ""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">همه روش‌ها</option><option value="in_person">حضوری</option><option value="phone">تلفنی</option></select>
-        <select value={result} onChange={(e) => { setPage(1); setResult(e.target.value as ActivityResult | ""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">همه نتایج</option><option value="positive">مثبت</option><option value="neutral">خنثی</option><option value="negative">منفی</option><option value="follow_up">نیازمند پیگیری</option></select>
-      </div>
+      <DailyActivityReportFilters
+        search={search}
+        from={from}
+        to={to}
+        contactType={contactType}
+        result={result}
+        onSearchChange={(value) => { setPage(1); setSearch(value); }}
+        onFromChange={(value) => { setPage(1); setFrom(value); }}
+        onToChange={(value) => { setPage(1); setTo(value); }}
+        onContactTypeChange={(value) => { setPage(1); setContactType(value); }}
+        onResultChange={(value) => { setPage(1); setResult(value); }}
+        onClear={() => {
+          setSearch("");
+          setFrom("");
+          setTo("");
+          setContactType("");
+          setResult("");
+          setPage(1);
+        }}
+      />
 
       {viewing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3 md:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setViewing(null); }}>
