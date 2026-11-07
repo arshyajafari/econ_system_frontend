@@ -7,6 +7,14 @@ export async function getDailyActivityReports(params: ActivityFilters = {}) {
   const response = await apiClient.get<Collection<DailyActivityReport>>("/daily-activity-reports", { params });
   return response.data;
 }
+export async function getDailyActivityReport(id: number) {
+  const response = await apiClient.get<{ data: DailyActivityReport }>(`/daily-activity-reports/${id}`);
+  return response.data.data;
+}
+export async function deleteDailyActivityReport(id: number) {
+  const response = await apiClient.delete(`/daily-activity-reports/${id}`);
+  return response.data;
+}
 export async function createDailyActivityReport(payload: DailyActivityReportInput) {
   const response = await apiClient.post("/daily-activity-reports", payload);
   return response.data;
