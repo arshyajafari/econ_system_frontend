@@ -8,8 +8,8 @@ export async function getDailyActivityReports(params: ActivityFilters = {}) {
   return response.data;
 }
 export async function getDailyActivityReport(id: number) {
-  const response = await apiClient.get<{ data: DailyActivityReport }>(`/daily-activity-reports/${id}`);
-  return response.data.data;
+  const response = await apiClient.get<DailyActivityReport>(`/daily-activity-reports/${id}`);
+  return response.data;
 }
 export async function deleteDailyActivityReport(id: number) {
   const response = await apiClient.delete(`/daily-activity-reports/${id}`);
