@@ -163,3 +163,17 @@
 .ui-table-container > table tbody tr:hover {
   background: var(--ds-color-surface-subtle);
 }
+
+/* Filled destructive action is reserved for explicit confirmation steps. */
+.ui-btn-danger-solid {
+  border: 1px solid var(--ds-color-danger-strong) !important;
+  background: var(--ds-color-danger-strong) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.ui-btn-danger-solid:hover:not(:disabled) {
+  border-color: var(--ds-color-danger) !important;
+  background: var(--ds-color-danger) !important;
+  color: #fff !important;
+}
