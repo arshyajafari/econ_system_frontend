@@ -55,7 +55,7 @@ const navigation: NavConfig[] = [
     label: "پاک‌سازی گزارش‌های فعالیت",
     to: "/data-cleanup/daily-activity-reports",
     icon: "cleanup",
-    adminOnly: true,
+    requiredPermission: "daily_activity_reports.cleanup",
   },
   {
     label: "مشتریان",
@@ -403,6 +403,7 @@ export function DashboardLayout() {
         (isSalesVisitor && ["/products", "/orders", "/daily-activity-reports"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
         (isScientificVisitor && ["/visits", "/scientific-inventory", "/daily-activity-reports"].includes(item.to)) ||
+        (can("daily_activity_reports.cleanup") && item.to === "/data-cleanup/daily-activity-reports") ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
