@@ -18,6 +18,8 @@ export function DailyActivityReportArchivePage() {
   const [reason, setReason] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +30,11 @@ export function DailyActivityReportArchivePage() {
     setError(null);
     try {
       const [archive, runs] = await Promise.all([
-        getArchivedDailyActivityReports({ search: search.trim() || undefined, per_page: 100 }),
+        getArchivedDailyActivityReports({ search: search.trim() || undefined, per_page: 100, page }),
         getActivityCleanupHistory(),
       ]);
       setRows(archive.data);
+      setLastPage(archive.meta?.last_page ?? 1);
       setHistory(runs);
       setSelected([]);
     } catch (e) {
@@ -39,7 +42,7 @@ export function DailyActivityReportArchivePage() {
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, page]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -83,7 +86,7 @@ export function DailyActivityReportArchivePage() {
       {success && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">{success}</div>}
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-900">مهلت هر گزارش بر اساس ماه شمسی تاریخ مراجعه محاسبه می‌شود: تا پایان روز دوم ماه بعد قابل مشاهده و خروجی است؛ از روز سوم در این فهرست قرار می‌گیرد. هیچ پاک‌سازی خودکاری اجرا نمی‌شود.</div>
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جست‌وجو در گزارش‌های منقضی‌شده" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+        <input value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} placeholder="جست‌وجو در گزارش‌های منقضی‌شده" className="min-w-56 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm" />
         <span className="text-sm text-slate-500">{faNumber.format(rows.length)} گزارش در این صفحه</span>
       </div>
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
@@ -98,6 +101,7 @@ export function DailyActivityReportArchivePage() {
             </div>
           </article>)}
         </div>}
+        <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm"><button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40">قبلی</button><span className="text-slate-500">صفحه {faNumber.format(page)} از {faNumber.format(lastPage)}</span><button disabled={page >= lastPage} onClick={() => setPage((value) => value + 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40">بعدی</button></div>
       </div>
       <div className="rounded-2xl border border-red-200 bg-white p-4 md:p-5">
         <h2 className="font-bold text-slate-900">پاک‌سازی نهایی گزارش‌های انتخاب‌شده</h2>
