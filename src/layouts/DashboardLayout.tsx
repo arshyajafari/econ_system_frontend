@@ -46,6 +46,18 @@ const navigation: NavConfig[] = [
     requiredPermission: "reports.view",
   },
   {
+    label: "گزارش فعالیت روزانه",
+    to: "/daily-activity-reports",
+    icon: "reports",
+    requiredPermission: "daily_activity_reports.view_own",
+  },
+  {
+    label: "پاک‌سازی گزارش‌های فعالیت",
+    to: "/data-cleanup/daily-activity-reports",
+    icon: "cleanup",
+    requiredPermission: "daily_activity_reports.cleanup",
+  },
+  {
     label: "مشتریان",
     to: "/customers",
     icon: "customers",
@@ -388,15 +400,17 @@ export function DashboardLayout() {
     // sections instead of allowing one role to hide the others.
     if (!isAdmin && !isAccountant && (isSalesVisitor || isScientificVisitor || isRestrictedDeliveryOperator || isRestrictedSettlementOperator)) {
       return (
-        (isSalesVisitor && ["/products", "/orders"].includes(item.to)) ||
+        (isSalesVisitor && ["/products", "/orders", "/daily-activity-reports"].includes(item.to)) ||
         ((isScientificVisitor || hasScientificVisitorActivity) && item.to === "/doctors") ||
-        (isScientificVisitor && ["/visits", "/scientific-inventory"].includes(item.to)) ||
+        (isScientificVisitor && ["/visits", "/scientific-inventory", "/daily-activity-reports"].includes(item.to)) ||
+        (can("daily_activity_reports.cleanup") && item.to === "/data-cleanup/daily-activity-reports") ||
         (isRestrictedDeliveryOperator && ["/deliveries", "/order-returns"].includes(item.to)) ||
         (isRestrictedSettlementOperator && ["/customers", "/deliveries", "/order-returns", "/payments"].includes(item.to))
       );
     }
     if (item.to === "/visits") return isAdmin || isAccountant || isScientificVisitor || can("visits.view") || can("samples.view");
     if (item.to === "/dashboard") return isAdmin || isAccountant;
+    if (item.to === "/daily-activity-reports") return can("daily_activity_reports.view_own") || can("daily_activity_reports.view_all");
     if (item.adminOnly) return isAdmin;
     if (item.to === "/catalog") return isAdmin || isAccountant;
     if (item.to === "/scientific-inventory")

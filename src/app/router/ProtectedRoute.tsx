@@ -60,14 +60,18 @@ function canAccessPath(pathname: string, roles: string[], permissions: string[],
     if (pathname === "/employee-banking" || pathname.startsWith("/employee-banking/")) return can("employees.view");
     if (pathname === "/invoices" || pathname.startsWith("/invoices/")) return can("invoices.view");
     if (pathname === "/reports" || pathname.startsWith("/reports/")) return can("reports.view");
+    if (pathname === "/data-cleanup/daily-activity-reports") return can("daily_activity_reports.cleanup");
     if (pathname === "/expenses" || pathname.startsWith("/expenses/")) return can("expenses.view");
+    if (pathname === "/daily-activity-reports" || pathname.startsWith("/daily-activity-reports/")) return can("daily_activity_reports.view_own") || can("daily_activity_reports.view_all");
     return false;
   }
 
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return isAdmin || isAccountant;
   if (pathname === "/expenses" || pathname.startsWith("/expenses/")) return isAdmin || isAccountant;
   if (pathname === "/invoices/new") return isAdmin || (isAccountant && permissions.includes("invoices.create"));
+  if (pathname === "/data-cleanup/daily-activity-reports") return can("daily_activity_reports.cleanup");
   if (pathname === "/data-cleanup" || pathname.startsWith("/data-cleanup/")) return isAdmin;
+  if (pathname === "/daily-activity-reports" || pathname.startsWith("/daily-activity-reports/")) return can("daily_activity_reports.view_own") || can("daily_activity_reports.view_all");
   if (pathname === "/employee-locations" || pathname.startsWith("/employee-locations/")) return isAdmin;
   if (pathname === "/catalog" || pathname.startsWith("/catalog/")) return isAdmin || isAccountant;
   if (pathname === "/products" || pathname.startsWith("/products/")) return isAdmin || isAccountant || isSalesVisitor;
