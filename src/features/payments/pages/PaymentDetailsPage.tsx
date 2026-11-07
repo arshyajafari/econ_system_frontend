@@ -16,14 +16,14 @@ function formatDate(value: string | null): string {
     if (Number.isNaN(date.getTime())) return '—';
     return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' }).format(date);
 }
-function statusClass(status: Payment['status']): string {
+function statusVariant(status: Payment["status"]): "warning" | "success" | "danger" {
     switch (status) {
-        case 'pending':
-            return 'bg-yellow-100 text-yellow-700';
-        case 'confirmed':
-            return 'bg-green-100 text-green-700';
-        case 'cancelled':
-            return 'bg-red-100 text-red-700';
+        case "pending":
+            return "warning";
+        case "confirmed":
+            return "success";
+        case "cancelled":
+            return "danger";
     }
 }
 export function PaymentDetailsPage() {
@@ -96,11 +96,7 @@ export function PaymentDetailsPage() {
                 <BackButton fallbackTo="/payments" label="بازگشت به پرداخت‌ها" />
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                     <h1 className="text-2xl font-bold text-gray-900">پرداخت</h1>
-                    <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClass(payment.status)}`}
-                    >
-                        {getPaymentStatusLabel(payment.status)}
-                    </span>
+                    <StatusBadge variant={statusVariant(payment.status)}>{getPaymentStatusLabel(payment.status)}</StatusBadge>
                 </div>
             </div>
             {error ? (
