@@ -102,7 +102,7 @@ export function DailyActivityReportsPage() {
   const openEdit = (row: DailyActivityReport) => {
     setEditing(row);
     setForm({
-      visit_date: row.visit_date, visit_time: row.visit_time ?? "",
+      visit_date: row.visit_date, visit_time: row.visit_time?.slice(0, 5) ?? "",
       organization_name: row.organization_name, contact_name: row.contact_name ?? "",
       contact_type: row.contact_type, purpose: row.purpose, discussion: row.discussion,
       employee_question: row.employee_question ?? "", audience_feedback: row.audience_feedback ?? "",
