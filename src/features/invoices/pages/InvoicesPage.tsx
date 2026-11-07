@@ -1,3 +1,6 @@
+import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { sortTableRecords } from '../../../utils/date';
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
@@ -14,10 +17,10 @@ import { invoiceStatusLabel } from '../types/invoice';
 const nf = new Intl.NumberFormat('fa-IR');
 const money = (v: number | string) => nf.format(Number(v || 0));
 
-function statusClass(status: InvoiceStatus): string {
-    if (status === 'issued') return 'bg-green-100 text-green-700';
-    if (status === 'cancelled') return 'bg-red-100 text-red-700';
-    return 'bg-gray-100 text-gray-700';
+function statusVariant(status: InvoiceStatus): "neutral" | "success" | "danger" {
+    if (status === "issued") return "success";
+    if (status === "cancelled") return "danger";
+    return "neutral";
 }
 
 export function InvoicesPage() {
@@ -99,22 +102,9 @@ export function InvoicesPage() {
                     <h1 className="text-2xl font-bold text-gray-900">فاکتورها</h1>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={() => void load()}
-                        disabled={loading}
-                        className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-                    >
-                        بروزرسانی
-                    </button>
+                    <Button variant="secondary" onClick={() => void load()} disabled={loading}>بروزرسانی</Button>
                     {canManageInvoices ? (
-                        <button
-                            type="button"
-                            onClick={() => navigate('/invoices/new')}
-                            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-                        >
-                            ثبت فاکتور
-                        </button>
+                        <Button variant="primary" onClick={() => navigate("/invoices/new")}>ثبت فاکتور</Button>
                     ) : null}
                 </div>
             </div>
@@ -125,13 +115,7 @@ export function InvoicesPage() {
                     className="flex items-center justify-between rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
                 >
                     <span>{error}</span>
-                    <button
-                        type="button"
-                        onClick={() => void load()}
-                        className="rounded border border-red-200 px-3 py-1.5"
-                    >
-                        تلاش مجدد
-                    </button>
+                    <Button size="sm" variant="secondary" onClick={() => void load()}>تلاش مجدد</Button>
                 </div>
             ) : null}
 
@@ -162,15 +146,13 @@ export function InvoicesPage() {
                     </label>
                 </div>
                 <div className="ui-filter-actions">
-                    <button type="button" onClick={resetFilters} className="ui-filter-clear">
-                        پاک کردن فیلترها
-                    </button>
+                    <Button size="sm" variant="secondary" onClick={resetFilters}>پاک کردن فیلترها</Button>
                 </div>
             </div>
 
             <div className="text-sm text-gray-500">{nf.format(total)} فاکتور</div>
 
-            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+            <TableContainer>
                 <table className="min-w-[1000px] w-full text-sm">
                     <thead className="bg-gray-50 text-right text-gray-600">
                         <tr>
@@ -208,24 +190,10 @@ export function InvoicesPage() {
                                       <td className="px-5 py-4">{invoice.customer?.name ?? '—'}</td>
                                       <td className="px-5 py-4">{invoice.order?.code ?? '—'}</td>
                                       <td className="px-5 py-4">
-                                          <span
-                                              className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(
-                                                  invoice.status
-                                              )}`}
-                                          >
-                                              {invoiceStatusLabel(invoice.status)}
-                                          </span>
+                                          <StatusBadge variant={statusVariant(invoice.status)}>{invoiceStatusLabel(invoice.status)}</StatusBadge>
                                       </td>
                                       <td className="px-5 py-4">
-                                          <span
-                                              className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                                                  invoice.is_settled
-                                                      ? 'bg-green-100 text-green-700'
-                                                      : 'bg-yellow-100 text-yellow-700'
-                                              }`}
-                                          >
-                                              {invoice.is_settled ? 'تسویه شده' : 'تسویه نشده'}
-                                          </span>
+                                          <StatusBadge variant={invoice.is_settled ? "success" : "warning"}>{invoice.is_settled ? "تسویه شده" : "تسویه نشده"}</StatusBadge>
                                       </td>
                                       <td dir="ltr" className="px-5 py-4 font-medium">
                                           {money(invoice.total_amount)}
