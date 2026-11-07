@@ -17,7 +17,6 @@ export function DataCleanupPage() {
     const [preview, setPreview] = useState<CleanupPreview | null>(null);
     const [history, setHistory] = useState<CleanupRun[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
-    const [reason, setReason] = useState('');
     const [confirmation, setConfirmation] = useState('');
     const [loading, setLoading] = useState(true);
     const [running, setRunning] = useState(false);
@@ -76,14 +75,13 @@ export function DataCleanupPage() {
         );
 
     const runCleanup = async () => {
-        if (!selected.length || reason.trim().length < 5 || confirmation !== 'DELETE') return;
+        if (!selected.length || confirmation !== 'DELETE') return;
         setRunning(true);
         setError(null);
         setSuccess(null);
         try {
             const result = await executeCleanup({
                 categories: selected,
-                reason: reason.trim(),
                 confirmation: 'DELETE',
             });
             const total = Object.values(result.data.deleted_counts).reduce(
@@ -94,7 +92,6 @@ export function DataCleanupPage() {
                 `عملیات شماره ${numberFormat.format(result.data.run_id)} انجام شد؛ ${numberFormat.format(total)} رکورد حذف شد.`
             );
             setSelected([]);
-            setReason('');
             setConfirmation('');
             await refresh();
         } catch (requestError) {
@@ -204,19 +201,6 @@ export function DataCleanupPage() {
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 className="font-bold text-slate-900">تأیید و اجرای پاک‌سازی</h2>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <label className="block md:col-span-2">
-                        <span className="mb-2 block text-sm font-semibold text-slate-700">
-                            دلیل انجام عملیات
-                        </span>
-                        <textarea
-                            value={reason}
-                            onChange={(event) => setReason(event.target.value)}
-                            maxLength={500}
-                            rows={2}
-                            placeholder="مثلاً پاک‌سازی دوره‌ای داده‌های موقت برای کاهش حجم دیتابیس"
-                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
-                        />
-                    </label>
                     <label className="block">
                         <span className="mb-2 block text-sm font-semibold text-slate-700">
                             برای تأیید، عبارت DELETE را وارد کنید
@@ -238,7 +222,6 @@ export function DataCleanupPage() {
                                 loading ||
                                 selected.length === 0 ||
                                 selectedCount === 0 ||
-                                reason.trim().length < 5 ||
                                 confirmation !== 'DELETE'
                             }
                             className="w-full rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
@@ -280,7 +263,6 @@ export function DataCleanupPage() {
                                     اجراکننده: {run.performed_by ?? 'کاربر حذف‌شده'} ·{' '}
                                     {dateFormat(run.started_at)}
                                 </p>
-                                <p className="mt-2 text-sm text-slate-700">دلیل: {run.reason}</p>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     {run.categories.map((key) => (
                                         <span
