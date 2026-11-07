@@ -106,7 +106,7 @@ export function DailyActivityReportsPage() {
       organization_name: row.organization_name, contact_name: row.contact_name ?? "",
       contact_type: row.contact_type, purpose: row.purpose, discussion: row.discussion,
       employee_question: row.employee_question ?? "", audience_feedback: row.audience_feedback ?? "",
-      outcome: row.outcome, result: row.result, edit_reason: "",
+      outcome: row.outcome, result: row.result,
     });
     setFormOpen(true);
     setError(null);
