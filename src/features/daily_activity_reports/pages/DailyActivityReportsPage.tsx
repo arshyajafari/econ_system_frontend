@@ -1,3 +1,6 @@
+import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { normalizeApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
@@ -44,11 +47,11 @@ const resultLabels: Record<ActivityResult, string> = {
     negative: 'منفی',
     follow_up: 'نیازمند پیگیری',
 };
-const resultStyles: Record<ActivityResult, string> = {
-    positive: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-    neutral: 'bg-slate-100 text-slate-700 ring-slate-500/20',
-    negative: 'bg-rose-50 text-rose-700 ring-rose-600/20',
-    follow_up: 'bg-amber-50 text-amber-800 ring-amber-600/20',
+const resultVariants: Record<ActivityResult, "success" | "neutral" | "danger" | "warning"> = {
+    positive: "success",
+    neutral: "neutral",
+    negative: "danger",
+    follow_up: "warning",
 };
 const dateLabel = (value: string) =>
     new Date(`${value}T12:00:00`).toLocaleDateString('fa-IR-u-ca-persian');
@@ -503,11 +506,7 @@ export function DailyActivityReportsPage() {
                                     <div>
                                         <span className="text-xs text-slate-500">نتیجه</span>
                                         <p className="mt-1">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[viewing.result]}`}
-                                            >
-                                                {resultLabels[viewing.result]}
-                                            </span>
+                                            <StatusBadge variant={resultVariants[viewing.result]}>{resultLabels[viewing.result]}</StatusBadge>
                                         </p>
                                     </div>
                                     <div>
@@ -634,11 +633,7 @@ export function DailyActivityReportsPage() {
                                             {row.contact_type === 'phone' ? 'تلفنی' : 'حضوری'}
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[row.result]}`}
-                                            >
-                                                {resultLabels[row.result]}
-                                            </span>
+                                            <StatusBadge variant={resultVariants[row.result]}>{resultLabels[row.result]}</StatusBadge>
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
                                             <div className="flex items-center gap-1.5">
