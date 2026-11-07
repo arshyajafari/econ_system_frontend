@@ -409,6 +409,7 @@ export function DashboardLayout() {
     }
     if (item.to === "/visits") return isAdmin || isAccountant || isScientificVisitor || can("visits.view") || can("samples.view");
     if (item.to === "/dashboard") return isAdmin || isAccountant;
+    if (item.to === "/daily-activity-reports") return can("daily_activity_reports.view_own") || can("daily_activity_reports.view_all");
     if (item.adminOnly) return isAdmin;
     if (item.to === "/catalog") return isAdmin || isAccountant;
     if (item.to === "/scientific-inventory")
