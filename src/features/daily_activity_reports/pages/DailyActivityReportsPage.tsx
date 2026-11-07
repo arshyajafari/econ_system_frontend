@@ -121,9 +121,9 @@ export function DailyActivityReportsPage() {
       const payload = {
         ...form,
         visit_time: form.visit_time || null,
-        contact_name: form.contact_name.trim() || null,
-        employee_question: form.employee_question.trim() || null,
-        audience_feedback: form.audience_feedback.trim() || null,
+        contact_name: (form.contact_name ?? '').trim() || null,
+        employee_question: (form.employee_question ?? '').trim() || null,
+        audience_feedback: (form.audience_feedback ?? '').trim() || null,
       };
       if (editing) {
         await updateDailyActivityReport(editing.id, payload);
