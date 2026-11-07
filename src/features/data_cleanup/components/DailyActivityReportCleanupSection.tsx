@@ -187,7 +187,7 @@ export function DailyActivityReportCleanupSection() {
         </div>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
-        <h2 className="font-bold text-slate-900">سوابق پاک‌سازی گزارش فعالیت</h2>
+        <h2 className="font-bold text-slate-900">سوابق حذف و پاک‌سازی گزارش فعالیت</h2>
         {history.length === 0 ? <p className="py-5 text-sm text-slate-500">هنوز پاک‌سازی‌ای ثبت نشده است.</p> : <div className="mt-3 divide-y divide-slate-100">{history.map((run) => <div key={run.id} className="py-3 text-sm"><div className="flex flex-wrap justify-between gap-2"><strong>عملیات #{faNumber.format(run.id)}</strong><span className="text-xs text-slate-500">{new Date(run.created_at).toLocaleString("fa-IR")}</span></div><p className="mt-1 text-slate-600">تعداد حذف: {faNumber.format(run.deleted_count)} · اجراکننده: {run.performed_by ?? "کاربر حذف‌شده"}</p><p className="mt-1 text-xs text-slate-500">دلیل: {run.reason}</p></div>)}</div>}
       </div>
     </section>
