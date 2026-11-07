@@ -127,6 +127,8 @@ export function AppRoutes() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/data-cleanup" element={<DataCleanupPage />} />
+            <Route path="/data-cleanup/daily-activity-reports" element={<DailyActivityReportArchivePage />} />
+            <Route path="/daily-activity-reports" element={<DailyActivityReportsPage />} />
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/customers/:id/ledger" element={<CustomerLedgerPage />} />
             <Route path="/doctors" element={<DoctorsPage />} />
