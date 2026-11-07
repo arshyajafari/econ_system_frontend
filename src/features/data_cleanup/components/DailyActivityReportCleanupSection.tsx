@@ -200,7 +200,7 @@ export function DailyActivityReportCleanupSection() {
                     {faNumber.format(rows.length)} گزارش در این صفحه
                 </span>
             </div>
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 {loading ? (
                     <p className="p-8 text-center text-sm text-slate-500">در حال دریافت...</p>
                 ) : rows.length === 0 ? (
@@ -230,11 +230,11 @@ export function DailyActivityReportCleanupSection() {
                                         />
                                     </th>
                                     <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">مجموعه / مخاطب</th>
-                                    <th className="px-4 py-3">تاریخ مراجعه</th>
-                                    <th className="px-4 py-3">کارمند</th>
-                                    <th className="px-4 py-3">وضعیت نگهداری</th>
-                                    <th className="px-4 py-3">نتیجه</th>
-                                    <th className="px-4 py-3">عملیات</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">تاریخ مراجعه</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">کارمند</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">وضعیت نگهداری</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">نتیجه</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">عملیات</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
