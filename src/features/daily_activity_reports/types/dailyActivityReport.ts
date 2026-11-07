@@ -24,7 +24,7 @@ export type DailyActivityReport = {
 
 export type DailyActivityReportInput = Omit<
   DailyActivityReport,
-  "id" | "employee" | "is_archived" | "retention_until" | "created_at" | "updated_at"
+  "id" | "employee" | "is_archived" | "retention_until" | "created_at" | "updated_at" | "revisions"
 >;
 
 export type ActivityFilters = {
