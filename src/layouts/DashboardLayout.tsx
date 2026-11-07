@@ -46,6 +46,18 @@ const navigation: NavConfig[] = [
     requiredPermission: "reports.view",
   },
   {
+    label: "گزارش فعالیت روزانه",
+    to: "/daily-activity-reports",
+    icon: "reports",
+    requiredPermission: "daily_activity_reports.view_own",
+  },
+  {
+    label: "پاک‌سازی گزارش‌های فعالیت",
+    to: "/data-cleanup/daily-activity-reports",
+    icon: "cleanup",
+    adminOnly: true,
+  },
+  {
     label: "مشتریان",
     to: "/customers",
     icon: "customers",
