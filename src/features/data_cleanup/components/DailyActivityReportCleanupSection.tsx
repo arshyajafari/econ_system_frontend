@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Pagination } from '../../../components/Pagination';
 import { normalizeApiError } from '../../../api/client';
 import {
     cleanupDailyActivityReports,
@@ -28,13 +29,13 @@ export function DailyActivityReportCleanupSection() {
     const [rows, setRows] = useState<DailyActivityReport[]>([]);
     const [history, setHistory] = useState<ActivityCleanupRun[]>([]);
     const [selected, setSelected] = useState<number[]>([]);
-    const [reason, setReason] = useState('');
     const [confirmation, setConfirmation] = useState('');
     const [viewing, setViewing] = useState<DailyActivityReport | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<DailyActivityReport | null>(null);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [running, setRunning] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -47,13 +48,14 @@ export function DailyActivityReportCleanupSection() {
             const [archive, runs] = await Promise.all([
                 getManagedDailyActivityReports({
                     search: search.trim() || undefined,
-                    per_page: 100,
+                    per_page: 20,
                     page,
                 }),
                 getActivityCleanupHistory(),
             ]);
             setRows(archive.data);
             setLastPage(archive.meta?.last_page ?? 1);
+            setTotal(archive.meta?.total ?? archive.data.length);
             setHistory(runs);
             setSelected([]);
         } catch (e) {
@@ -71,7 +73,7 @@ export function DailyActivityReportCleanupSection() {
                 const [archive, runs] = await Promise.all([
                     getManagedDailyActivityReports({
                         search: search.trim() || undefined,
-                        per_page: 100,
+                        per_page: 20,
                         page,
                     }),
                     getActivityCleanupHistory(),
@@ -79,6 +81,7 @@ export function DailyActivityReportCleanupSection() {
                 if (!active) return;
                 setRows(archive.data);
                 setLastPage(archive.meta?.last_page ?? 1);
+                setTotal(archive.meta?.total ?? archive.data.length);
                 setHistory(runs);
                 setSelected([]);
             } catch (e) {
@@ -105,13 +108,11 @@ export function DailyActivityReportCleanupSection() {
         try {
             const response = await cleanupDailyActivityReports({
                 report_ids: selected,
-                reason: reason.trim(),
                 confirmation: 'DELETE',
             });
             setSuccess(
                 `${faNumber.format(response.data.deleted_count)} گزارش با موفقیت پاک‌سازی شد.`
             );
-            setReason('');
             setConfirmation('');
             await refresh();
         } catch (e) {
@@ -129,7 +130,6 @@ export function DailyActivityReportCleanupSection() {
         try {
             const response = await cleanupDailyActivityReports({
                 report_ids: [deleteTarget.id],
-                reason: 'حذف تکی گزارش از بخش مدیریت',
                 confirmation: 'DELETE',
             });
             setSuccess(`${faNumber.format(response.data.deleted_count)} گزارش حذف شد.`);
@@ -200,7 +200,7 @@ export function DailyActivityReportCleanupSection() {
                     {faNumber.format(rows.length)} گزارش در این صفحه
                 </span>
             </div>
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 {loading ? (
                     <p className="p-8 text-center text-sm text-slate-500">در حال دریافت...</p>
                 ) : rows.length === 0 ? (
@@ -209,10 +209,10 @@ export function DailyActivityReportCleanupSection() {
                     </p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="min-w-[850px] w-full text-right text-sm">
-                            <thead className="bg-slate-50 text-xs font-semibold text-slate-600">
+                        <table className="min-w-full text-right text-sm">
+                            <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
-                                    <th className="w-12 px-4 py-3">
+                                    <th className="w-12 whitespace-nowrap px-4 py-3 font-semibold text-gray-700">
                                         <input
                                             aria-label="انتخاب همه گزارش‌های این صفحه"
                                             type="checkbox"
@@ -229,17 +229,17 @@ export function DailyActivityReportCleanupSection() {
                                             }
                                         />
                                     </th>
-                                    <th className="px-4 py-3">مجموعه / مخاطب</th>
-                                    <th className="px-4 py-3">تاریخ مراجعه</th>
-                                    <th className="px-4 py-3">کارمند</th>
-                                    <th className="px-4 py-3">وضعیت نگهداری</th>
-                                    <th className="px-4 py-3">نتیجه</th>
-                                    <th className="px-4 py-3">عملیات</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">مجموعه / مخاطب</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">تاریخ مراجعه</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">کارمند</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">وضعیت نگهداری</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">نتیجه</th>
+                                    <th className="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">عملیات</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-gray-100">
                                 {rows.map((row) => (
-                                    <tr key={row.id} className="align-top hover:bg-slate-50/70">
+                                    <tr key={row.id} className="hover:bg-gray-50">
                                         <td className="px-4 py-3">
                                             <input
                                                 aria-label={`انتخاب گزارش ${row.id}`}
@@ -309,26 +309,9 @@ export function DailyActivityReportCleanupSection() {
                         </table>
                     </div>
                 )}
-                <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm">
-                    <button
-                        disabled={page <= 1}
-                        onClick={() => setPage((value) => value - 1)}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40"
-                    >
-                        قبلی
-                    </button>
-                    <span className="text-slate-500">
-                        صفحه {faNumber.format(page)} از {faNumber.format(lastPage)}
-                    </span>
-                    <button
-                        disabled={page >= lastPage}
-                        onClick={() => setPage((value) => value + 1)}
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40"
-                    >
-                        بعدی
-                    </button>
-                </div>
+
             </div>
+            <Pagination page={page} lastPage={lastPage} isLoading={loading || running} total={total} perPage={20} onPageChange={setPage} />
             {viewing && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3 md:p-6"
@@ -460,19 +443,6 @@ export function DailyActivityReportCleanupSection() {
             <div className="rounded-xl border border-red-200 bg-white p-4 md:p-5">
                 <h2 className="font-bold text-slate-900">پاک‌سازی نهایی گزارش‌های انتخاب‌شده</h2>
                 <div className="mt-4 grid gap-3 grid-cols-1">
-                    <div>
-                        <label className="space-y-1 text-sm font-semibold text-slate-700 md:col-span-2">
-                            دلیل پاک‌سازی
-                        </label>
-                        <textarea
-                            rows={2}
-                            maxLength={500}
-                            value={reason}
-                            onChange={(e) => setReason(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5"
-                            placeholder="حداقل ۵ نویسه؛ علت انجام عملیات را بنویسید"
-                        />
-                    </div>
                     <div className="grid gap-2 grid-cols-1 md:grid-cols-2">
                         <div>
                             <label className="space-y-1 text-sm font-semibold text-slate-700">
@@ -491,7 +461,6 @@ export function DailyActivityReportCleanupSection() {
                                     running ||
                                     loading ||
                                     selected.length === 0 ||
-                                    reason.trim().length < 5 ||
                                     confirmation !== 'DELETE'
                                 }
                                 onClick={() => void runCleanup()}
@@ -523,7 +492,6 @@ export function DailyActivityReportCleanupSection() {
                                     تعداد حذف: {faNumber.format(run.deleted_count)} · اجراکننده:{' '}
                                     {run.performed_by ?? 'کاربر حذف‌شده'}
                                 </p>
-                                <p className="mt-1 text-xs text-slate-500">دلیل: {run.reason}</p>
                             </div>
                         ))}
                     </div>

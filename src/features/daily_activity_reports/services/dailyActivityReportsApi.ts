@@ -44,7 +44,7 @@ export async function getManagedDailyActivityReports(params: Pick<ActivityFilter
 export async function exportManagedDailyActivityReports() {
   return download("/daily-activity-reports/export", { archive: true }, "daily-activity-reports-for-cleanup.xlsx");
 }
-export async function cleanupDailyActivityReports(payload: { report_ids: number[]; reason: string; confirmation: "DELETE" }) {
+export async function cleanupDailyActivityReports(payload: { report_ids: number[]; confirmation: "DELETE" }) {
   const response = await apiClient.post<{ message: string; data: { deleted_count: number } }>("/daily-activity-reports/archive/cleanup", payload);
   return response.data;
 }
