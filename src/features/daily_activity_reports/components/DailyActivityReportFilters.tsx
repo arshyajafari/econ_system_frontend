@@ -30,7 +30,7 @@ export function DailyActivityReportFilters({
 }: DailyActivityReportFiltersProps) {
   return (
     <section className="ui-filter-panel" aria-label="فیلتر گزارش‌های فعالیت">
-      <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+      <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6">
         <div className="ui-filter-field lg:col-span-2">
           <label htmlFor="daily-activity-report-search" className="ui-filter-label">
             جستجو
@@ -49,6 +49,7 @@ export function DailyActivityReportFilters({
             از تاریخ
           </label>
           <JalaliDateInput
+            id="daily-activity-report-from"
             value={from}
             onChange={onFromChange}
             placeholder="از تاریخ"
@@ -61,6 +62,7 @@ export function DailyActivityReportFilters({
             تا تاریخ
           </label>
           <JalaliDateInput
+            id="daily-activity-report-to"
             value={to}
             onChange={onToChange}
             placeholder="تا تاریخ"
