@@ -23,9 +23,6 @@ const DashboardPage = lazy(() =>
 const DailyActivityReportsPage = lazy(() =>
   import("../../features/daily_activity_reports/pages/DailyActivityReportsPage").then((module) => ({ default: module.DailyActivityReportsPage })),
 );
-const DailyActivityReportArchivePage = lazy(() =>
-  import("../../features/daily_activity_reports/pages/DailyActivityReportArchivePage").then((module) => ({ default: module.DailyActivityReportArchivePage })),
-);
 const DataCleanupPage = lazy(() =>
   import("../../features/data_cleanup/pages/DataCleanupPage").then((module) => ({
     default: module.DataCleanupPage,
@@ -127,7 +124,6 @@ export function AppRoutes() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/data-cleanup" element={<DataCleanupPage />} />
-            <Route path="/data-cleanup/daily-activity-reports" element={<DailyActivityReportArchivePage />} />
             <Route path="/daily-activity-reports" element={<DailyActivityReportsPage />} />
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/customers/:id/ledger" element={<CustomerLedgerPage />} />
