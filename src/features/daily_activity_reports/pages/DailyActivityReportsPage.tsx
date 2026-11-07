@@ -3,6 +3,8 @@ import { normalizeApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import {
   createDailyActivityReport,
+  deleteDailyActivityReport,
+  getDailyActivityReport,
   exportDailyActivityReports,
   getDailyActivityReports,
   updateDailyActivityReport,
@@ -25,13 +27,17 @@ const emptyForm = (): FormState => ({
 const resultLabels: Record<ActivityResult, string> = {
   positive: "مثبت", neutral: "خنثی", negative: "منفی", follow_up: "نیازمند پیگیری",
 };
-const dateLabel = (value: string) =>
+const resultStyles: Record<ActivityResult, string> = { positive: "bg-emerald-50 text-emerald-700 ring-emerald-600/20", neutral: "bg-slate-100 text-slate-700 ring-slate-500/20", negative: "bg-rose-50 text-rose-700 ring-rose-600/20", follow_up: "bg-amber-50 text-amber-800 ring-amber-600/20" };\nconst dateLabel = (value: string) =>
   new Date(`${value}T12:00:00`).toLocaleDateString("fa-IR-u-ca-persian");
 
 export function DailyActivityReportsPage() {
   const [rows, setRows] = useState<DailyActivityReport[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editing, setEditing] = useState<DailyActivityReport | null>(null);
+  const [viewing, setViewing] = useState<DailyActivityReport | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DailyActivityReport | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [from, setFrom] = useState("");
@@ -110,6 +116,37 @@ export function DailyActivityReportsPage() {
     });
     setFormOpen(true);
     setError(null);
+  };
+
+  const openView = async (row: DailyActivityReport) => {
+    setViewLoading(true);
+    setViewing(row);
+    try {
+      const detail = await getDailyActivityReport(row.id);
+      setViewing(detail);
+    } catch (e) {
+      setError(normalizeApiError(e).message);
+      setViewing(null);
+    } finally {
+      setViewLoading(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      await deleteDailyActivityReport(deleteTarget.id);
+      setSuccess("گزارش فعالیت با موفقیت حذف شد.");
+      setDeleteTarget(null);
+      await refresh();
+    } catch (e) {
+      setError(normalizeApiError(e).message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const submit = async (event: FormEvent) => {
@@ -202,6 +239,22 @@ export function DailyActivityReportsPage() {
         <select value={result} onChange={(e) => { setPage(1); setResult(e.target.value as ActivityResult | ""); }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm"><option value="">همه نتایج</option><option value="positive">مثبت</option><option value="neutral">خنثی</option><option value="negative">منفی</option><option value="follow_up">نیازمند پیگیری</option></select>
       </div>
 
+      {viewing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3 md:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setViewing(null); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="daily-report-detail-title" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl md:p-7">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 id="daily-report-detail-title" className="text-lg font-bold text-slate-900">جزئیات گزارش فعالیت</h2><p className="mt-1 text-sm text-slate-500">{viewing.organization_name} · {dateLabel(viewing.visit_date)}</p></div><button type="button" onClick={() => setViewing(null)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600">بستن</button></div>
+            {viewLoading ? <p className="py-10 text-center text-sm text-slate-500">در حال دریافت جزئیات...</p> : <div className="mt-5 space-y-4 text-sm">
+              <div className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-3"><div><span className="text-xs text-slate-500">کارمند</span><p className="mt-1 font-semibold text-slate-800">{viewing.employee.name}</p></div><div><span className="text-xs text-slate-500">مخاطب</span><p className="mt-1 font-semibold text-slate-800">{viewing.contact_name || "—"}</p></div><div><span className="text-xs text-slate-500">نوع ارتباط</span><p className="mt-1 font-semibold text-slate-800">{viewing.contact_type === "phone" ? "تلفنی" : "حضوری"}</p></div><div><span className="text-xs text-slate-500">ساعت</span><p className="mt-1 font-semibold text-slate-800">{viewing.visit_time || "ثبت نشده"}</p></div><div><span className="text-xs text-slate-500">نتیجه</span><p className="mt-1"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[viewing.result]}`}>{resultLabels[viewing.result]}</span></p></div><div><span className="text-xs text-slate-500">تاریخ مراجعه</span><p className="mt-1 font-semibold text-slate-800">{dateLabel(viewing.visit_date)}</p></div></div>
+              {([["هدف از مراجعه", viewing.purpose], ["شرح مذاکرات", viewing.discussion], ["سؤال یا موضوع مطرح‌شده توسط کارمند", viewing.employee_question], ["بازخورد مخاطب", viewing.audience_feedback], ["نتیجه و جمع‌بندی", viewing.outcome]] as Array<[string, string | null | undefined]>).map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 p-4"><h3 className="mb-2 font-bold text-slate-800">{label}</h3><p className="whitespace-pre-wrap leading-7 text-slate-600">{value?.trim() || "موردی ثبت نشده است."}</p></div>)}
+            </div>}
+          </section>
+        </div>
+      )}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <section role="alertdialog" aria-modal="true" className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl"><h2 className="font-bold text-slate-900">حذف گزارش فعالیت</h2><p className="mt-2 text-sm leading-7 text-slate-600">آیا از حذف گزارش «{deleteTarget.organization_name}» در تاریخ {dateLabel(deleteTarget.visit_date)} مطمئن هستید؟ این عملیات قابل بازگشت نیست.</p><div className="mt-5 flex justify-end gap-2"><button type="button" disabled={deleting} onClick={() => setDeleteTarget(null)} className="rounded-lg border border-slate-200 px-4 py-2 text-sm">انصراف</button><button type="button" disabled={deleting} onClick={() => void confirmDelete()} className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{deleting ? "در حال حذف..." : "حذف گزارش"}</button></div></section>
+        </div>
+      )}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 text-sm"><strong className="text-slate-800">فهرست گزارش‌های فعالیت</strong><span className="text-slate-500">{new Intl.NumberFormat("fa-IR").format(total)} مورد</span></div>
         {loading ? <p className="p-8 text-center text-sm text-slate-500">در حال دریافت گزارش‌ها...</p> : rows.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">گزارشی برای نمایش وجود ندارد.</p> : (
@@ -212,9 +265,9 @@ export function DailyActivityReportsPage() {
                 <td className="whitespace-nowrap px-4 py-3 text-slate-600">{dateLabel(row.visit_date)}{row.visit_time ? <span className="block text-xs text-slate-400">{row.visit_time}</span> : null}</td>
                 <td className="max-w-56 px-4 py-3"><strong className="block text-slate-800">{row.organization_name}</strong>{row.contact_name ? <span className="mt-1 block text-xs text-slate-500">{row.contact_name}</span> : null}</td>
                 <td className="whitespace-nowrap px-4 py-3 text-slate-600">{row.employee.name}</td><td className="whitespace-nowrap px-4 py-3 text-slate-600">{row.contact_type === "phone" ? "تلفنی" : "حضوری"}</td>
-                <td className="whitespace-nowrap px-4 py-3"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700">{resultLabels[row.result]}</span></td>
+                <td className="whitespace-nowrap px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[row.result]}`}>{resultLabels[row.result]}</span></td>
                 <td className="max-w-72 px-4 py-3"><p className="line-clamp-2 text-slate-600">{row.purpose} — {row.outcome}</p></td>
-                <td className="whitespace-nowrap px-4 py-3"><button type="button" onClick={() => openEdit(row)} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">ویرایش</button></td>
+                <td className="whitespace-nowrap px-4 py-3"><div className="flex items-center gap-1.5"><button type="button" onClick={() => void openView(row)} className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">مشاهده</button><button type="button" onClick={() => openEdit(row)} className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">ویرایش</button><button type="button" onClick={() => setDeleteTarget(row)} className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100">حذف</button></div></td>
               </tr>)}</tbody>
             </table>
           </div>
