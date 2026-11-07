@@ -78,9 +78,9 @@ export function PaymentFilters({
                 </div>
             </div>
             <div className="ui-filter-actions">
-                <button type="button" onClick={onClear} className="ui-filter-clear">
+                <Button type="button" size="sm" variant="secondary" onClick={onClear}>
                     پاک کردن فیلترها
-                </button>
+                </Button>
             </div>
         </div>
     );
