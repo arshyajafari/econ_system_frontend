@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { normalizeApiError } from '../../../api/client';
+import { DailyActivityReportCleanupSection } from '../components/DailyActivityReportCleanupSection';
 import {
     executeCleanup,
     getCleanupHistory,
@@ -310,6 +311,7 @@ export function DataCleanupPage() {
                     </div>
                 )}
             </div>
+            <DailyActivityReportCleanupSection />
         </section>
     );
 }
