@@ -3,7 +3,6 @@ import type { ActivityCleanupRun, ActivityFilters, DailyActivityReport, DailyAct
 export type { ActivityCleanupRun, ActivityFilters, ActivityResult, ContactType, DailyActivityReport, DailyActivityReportInput } from "../types/dailyActivityReport";
 
 type Collection<T> = { data: T[]; meta?: { current_page: number; last_page: number; total: number } };
-export type ActivityFilters = { page?: number; per_page?: number; search?: string; from?: string; to?: string; contact_type?: ContactType | ""; result?: ActivityResult | ""; employee_id?: string };
 export async function getDailyActivityReports(params: ActivityFilters = {}) {
   const response = await apiClient.get<Collection<DailyActivityReport>>("/daily-activity-reports", { params });
   return response.data;
