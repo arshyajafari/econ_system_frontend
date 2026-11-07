@@ -213,6 +213,8 @@ export function DailyActivityReportsPage() {
               </div>
               <p className="text-sm text-slate-700"><strong>هدف:</strong> {row.purpose}</p>
               <p className="whitespace-pre-wrap text-sm text-slate-600"><strong>مذاکرات:</strong> {row.discussion}</p>
+              {row.employee_question && <p className="whitespace-pre-wrap text-sm text-slate-600"><strong>سؤال کارمند:</strong> {row.employee_question}</p>}
+              {row.audience_feedback && <p className="whitespace-pre-wrap text-sm text-slate-600"><strong>بازخورد مخاطب:</strong> {row.audience_feedback}</p>}
               <p className="whitespace-pre-wrap text-sm text-slate-600"><strong>نتیجه:</strong> {row.outcome}</p>
             </article>)}
           </div>
