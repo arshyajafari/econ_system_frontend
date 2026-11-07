@@ -1,3 +1,5 @@
+import { Button } from "../design-system/components/Button";
+
 type PaginationProps = {
   page: number;
   lastPage: number;
@@ -41,19 +43,19 @@ export function Pagination({ page, lastPage, isLoading = false, total, onPageCha
       </div>
 
       <div dir="rtl" className="flex items-center justify-center gap-1.5">
-        <button type="button" disabled={safePage <= 1 || isLoading} onClick={() => onPageChange(Math.max(1, safePage - 1))} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40" aria-label="صفحه قبلی">قبلی</button>
+        <Button size="sm" variant="secondary" disabled={safePage <= 1 || isLoading} onClick={() => onPageChange(Math.max(1, safePage - 1))} aria-label="صفحه قبلی">قبلی</Button>
 
         {items.map((item) =>
           typeof item === "number" ? (
-            <button key={item} type="button" disabled={isLoading} aria-current={item === safePage ? "page" : undefined} onClick={() => onPageChange(item)} className={item === safePage ? "min-w-9 rounded-lg bg-gray-900 px-2.5 py-2 text-xs font-bold text-white" : "min-w-9 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-40"}>
+            <Button key={item} size="sm" variant={item === safePage ? "primary" : "secondary"} disabled={isLoading} aria-current={item === safePage ? "page" : undefined} onClick={() => onPageChange(item)} className="min-w-9 px-2.5">
               {numberFormatter.format(item)}
-            </button>
+            </Button>
           ) : (
             <span key={item} className="px-1.5 text-sm text-gray-400" aria-hidden="true">…</span>
           ),
         )}
 
-        <button type="button" disabled={safePage >= effectiveLastPage || isLoading} onClick={() => onPageChange(Math.min(effectiveLastPage, safePage + 1))} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40" aria-label="صفحه بعدی">بعدی</button>
+        <Button size="sm" variant="secondary" disabled={safePage >= effectiveLastPage || isLoading} onClick={() => onPageChange(Math.min(effectiveLastPage, safePage + 1))} aria-label="صفحه بعدی">بعدی</Button>
       </div>
     </nav>
   );
