@@ -52,7 +52,7 @@ export function DailyActivityReportsPage() {
     try {
       const response = await getDailyActivityReports({
         page, per_page: 20, search: search.trim() || undefined,
-        contact_type: contactType, result,
+        from: from || undefined, to: to || undefined, contact_type: contactType, result,
       });
       setRows(response.data);
       setLastPage(response.meta?.last_page ?? 1);
@@ -129,8 +129,7 @@ export function DailyActivityReportsPage() {
         await updateDailyActivityReport(editing.id, payload);
         setSuccess("گزارش با ثبت سابقه ویرایش به‌روزرسانی شد.");
       } else {
-        const { edit_reason: _editReason, ...createPayload } = payload;
-        await createDailyActivityReport(createPayload);
+        await createDailyActivityReport(payload);
         setSuccess("گزارش فعالیت با موفقیت ثبت شد.");
       }
       setFormOpen(false);
