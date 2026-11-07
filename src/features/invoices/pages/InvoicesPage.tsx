@@ -231,7 +231,7 @@ export function InvoicesPage() {
                             : null}
                     </tbody>
                 </table>
-            </div>
+            </TableContainer>
 
             {
                 <Pagination
