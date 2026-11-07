@@ -13,6 +13,8 @@ export function TableContainer({
   children,
   className = "",
   tabIndex = 0,
+  role = "region",
+  "aria-label": ariaLabel = "جدول داده‌ها",
   ...props
 }: TableContainerProps) {
   return (
@@ -20,6 +22,8 @@ export function TableContainer({
       {...props}
       className={["ui-table-container", className].filter(Boolean).join(" ")}
       tabIndex={tabIndex}
+      role={role}
+      aria-label={ariaLabel}
     >
       {children}
     </div>
