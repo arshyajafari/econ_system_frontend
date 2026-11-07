@@ -30,12 +30,12 @@ async function download(path: string, params: Record<string, unknown>, filename:
 export function exportDailyActivityReports(params: ActivityFilters = {}) {
   return download("/daily-activity-reports/export", params as Record<string, unknown>, "daily-activity-reports.xlsx");
 }
-export async function getArchivedDailyActivityReports(params: Pick<ActivityFilters, "page" | "per_page" | "search"> = {}) {
+export async function getManagedDailyActivityReports(params: Pick<ActivityFilters, "page" | "per_page" | "search"> = {}) {
   const response = await apiClient.get<Collection<DailyActivityReport>>("/daily-activity-reports/archive", { params });
   return response.data;
 }
-export async function exportArchivedDailyActivityReports() {
-  return download("/daily-activity-reports/export", { archive: true }, "archived-daily-activity-reports.xlsx");
+export async function exportManagedDailyActivityReports() {
+  return download("/daily-activity-reports/export", { archive: true }, "daily-activity-reports-for-cleanup.xlsx");
 }
 export async function cleanupDailyActivityReports(payload: { report_ids: number[]; reason: string; confirmation: "DELETE" }) {
   const response = await apiClient.post<{ message: string; data: { deleted_count: number } }>("/daily-activity-reports/archive/cleanup", payload);
