@@ -20,7 +20,7 @@ type DeliveriesTableProps = {
   onDelete: (delivery: Delivery) => void;
   onAction: (delivery: Delivery, action: DeliveryAction) => void;
   onHandoff: (delivery: Delivery) => void;
-  formatDate: (value: string) => string;
+  formatDate: (value: string | null) => string;
 };
 
 export function DeliveriesTable({
