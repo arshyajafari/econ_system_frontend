@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getEmployeeLocationLive, type EmployeeLocation } from '../api/employeeLocations';
+import { getEmployeeLocationLive, type EmployeeLocation } from '../services/employeeLocationsApi';
 
 type LeafletMap = {
     remove(): void;
