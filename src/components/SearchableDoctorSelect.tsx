@@ -125,6 +125,7 @@ export function SearchableDoctorSelect({
     <div ref={rootRef} className="relative">
       <div
         data-open={isOpen}
+        data-disabled={disabled}
         className="ui-searchable-select flex h-[42px] min-h-[42px] items-center border bg-white transition"
       >
         <input
