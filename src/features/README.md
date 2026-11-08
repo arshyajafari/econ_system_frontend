@@ -26,3 +26,16 @@ Keep small, simple page-only markup in the page. As a page grows, extract cohesi
 ## Existing exceptions
 
 Auth context/provider and storage modules remain at the auth feature root because they are feature entry points and shared auth infrastructure, not page components. Small features may legitimately contain only `pages/`, `services/`, and `types/` until a substantial feature component is needed.
+
+## Extracted feature UI examples
+
+The following larger page sections are kept in focused feature components while their state, permissions, API calls, and workflow decisions remain in the owning page:
+
+- `deliveries/components/DeliveriesTable.tsx`: delivery rows and action affordances.
+- `daily_activity_reports/components/DailyActivityReportDetailsModal.tsx`: read-only report details.
+- `scientific_inventory/components/ScientificInventoryModals.tsx`: edit and delete confirmation dialogs.
+- `catalog/components/BrandCatalogList.tsx` and `CategoryCatalogList.tsx`: brand and category list rendering.
+- `notifications/components/NotificationList.tsx`: notification inbox and pagination.
+- `expenses/components/ExpensesTable.tsx`: expense table rendering.
+
+These components are presentational boundaries: API calls, permissions, form state, and business rules remain in their page or feature service. Prefer this pattern for future extractions.
