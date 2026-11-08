@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { Button } from "../../../design-system/components/Button";
 import type { DailyActivityReport, ActivityResult } from "../services/dailyActivityReportsApi";
 
 type BadgeVariant = ComponentProps<typeof StatusBadge>["variant"];
@@ -26,7 +27,7 @@ export function DailyActivityReportDetailsModal({
             <h2 id="daily-report-detail-title" className="text-lg font-bold text-slate-900">جزئیات گزارش فعالیت</h2>
             <p className="mt-1 text-sm text-slate-500">{report.organization_name} · {dateLabel(report.visit_date)}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600">بستن</button>
+          <Button variant="secondary" size="md" type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600">بستن</Button>
         </div>
         {loading ? (
           <p className="py-10 text-center text-sm text-slate-500">در حال دریافت جزئیات...</p>
