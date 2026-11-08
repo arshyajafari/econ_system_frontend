@@ -94,7 +94,7 @@ export function SearchableOrderSelect({
 
   return (
     <div ref={rootRef} className="relative">
-      <div className={`flex min-h-[44px] items-center rounded-xl border bg-white shadow-sm ${isOpen ? "border-gray-900 ring-4 ring-gray-900/5" : "border-gray-200"}`}>
+      <div data-open={isOpen} className="ui-searchable-select flex h-[42px] min-h-[42px] items-center border bg-white transition">
         <input
           ref={inputRef}
           value={displayValue}
@@ -113,7 +113,7 @@ export function SearchableOrderSelect({
             setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          className="min-w-0 flex-1 border-0 bg-transparent px-3.5 py-2.5 text-sm outline-none focus:ring-0"
+          className="ui-searchable-select__input min-w-0 flex-1 text-sm outline-none focus:ring-0"
         />
         {selectedOrder ? (
           <button type="button" tabIndex={-1} disabled={disabled} onMouseDown={(event) => event.preventDefault()} onClick={clear} className="px-2 text-gray-400 hover:text-gray-700" aria-label="پاک کردن سفارش">×</button>
