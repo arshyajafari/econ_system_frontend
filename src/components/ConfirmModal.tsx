@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Button } from "../design-system/components/Button";
 
 type ConfirmModalProps = {
   open: boolean;
@@ -40,11 +41,6 @@ export function ConfirmModal({
   }, [isLoading, onCancel, open]);
 
   if (!open) return null;
-
-  const confirmClass =
-    variant === "danger"
-      ? "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
-      : "bg-gray-900 text-white hover:bg-gray-800 focus-visible:ring-gray-500";
 
   return (
     <div
@@ -97,24 +93,24 @@ export function ConfirmModal({
           </div>
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-start">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="md"
               onClick={onCancel}
               disabled={isLoading}
-              className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {cancelLabel}
-            </button>
+            </Button>
 
-            <button
-              type="button"
+            <Button
+              variant={variant === "danger" ? "dangerSolid" : "primary"}
+              size="md"
               onClick={onConfirm}
-              disabled={isLoading}
+              loading={isLoading}
               autoFocus
-              className={`rounded-xl px-4 py-2.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${confirmClass}`}
             >
               {isLoading ? "در حال انجام..." : confirmLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

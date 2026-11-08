@@ -1,3 +1,5 @@
+import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { PaymentStatusActions } from './PaymentStatusActions';
 import type { Payment, PaymentStatusAction } from '../types/payment';
 import { getPaymentMethodLabel, getPaymentStatusLabel } from '../types/payment';
@@ -21,14 +23,14 @@ function formatNumber(value: number) {
     return numberFormatter.format(value);
 }
 
-function statusClass(status: Payment['status']): string {
+function statusVariant(status: Payment["status"]): "warning" | "success" | "danger" {
     switch (status) {
-        case 'pending':
-            return 'bg-yellow-100 text-yellow-700';
-        case 'confirmed':
-            return 'bg-green-100 text-green-700';
-        case 'cancelled':
-            return 'bg-red-100 text-red-700';
+        case "pending":
+            return "warning";
+        case "confirmed":
+            return "success";
+        case "cancelled":
+            return "danger";
     }
 }
 
@@ -141,34 +143,16 @@ export function PaymentTable({
                                     ) : null}
                                 </td>
                                 <td className="px-4 py-4 align-top">
-                                    <span
-                                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(payment.status)}`}
-                                    >
-                                        {getPaymentStatusLabel(payment.status)}
-                                    </span>
+                                    <StatusBadge variant={statusVariant(payment.status)}>{getPaymentStatusLabel(payment.status)}</StatusBadge>
                                 </td>
                                 <td className="px-4 py-4 align-top text-gray-600">
                                     {formatJalaliDate(payment.payment_date)}
                                 </td>
                                 <td className="px-4 py-4 align-top">
                                     <div className="flex flex-wrap items-center gap-1.5">
-                                        <button
-                                            type="button"
-                                            disabled={pendingPaymentId === payment.id}
-                                            onClick={() => onView(payment)}
-                                            className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                                        >
-                                            مشاهده
-                                        </button>
+                                        <Button size="sm" variant="view" disabled={pendingPaymentId === payment.id} onClick={() => onView(payment)}>مشاهده</Button>
                                         {canEdit && payment.status === 'pending' ? (
-                                            <button
-                                                type="button"
-                                                disabled={pendingPaymentId === payment.id}
-                                                onClick={() => onEdit(payment)}
-                                                className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                                            >
-                                                ویرایش
-                                            </button>
+                                            <Button size="sm" variant="edit" disabled={pendingPaymentId === payment.id} onClick={() => onEdit(payment)}>ویرایش</Button>
                                         ) : null}
                                         <PaymentStatusActions
                                             payment={payment}

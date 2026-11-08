@@ -1,3 +1,4 @@
+import { Button } from "../../../design-system/components/Button";
 import type { Payment, PaymentStatusAction } from '../types/payment';
 
 type PaymentStatusActionsProps = {
@@ -22,25 +23,25 @@ export function PaymentStatusActions({
     return (
         <div className="flex flex-wrap items-center gap-1.5">
             {canConfirm ? (
-                <button
-                    type="button"
+                <Button
+                    size="sm"
+                    variant="success"
                     disabled={disabled}
                     onClick={() => onAction('confirm')}
-                    className="rounded-lg border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     تأیید پرداخت
-                </button>
+                </Button>
             ) : null}
 
             {canCancel ? (
-                <button
-                    type="button"
+                <Button
+                    size="sm"
+                    variant="danger"
                     disabled={disabled}
                     onClick={() => onAction('cancel')}
-                    className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     لغو پرداخت
-                </button>
+                </Button>
             ) : null}
         </div>
     );

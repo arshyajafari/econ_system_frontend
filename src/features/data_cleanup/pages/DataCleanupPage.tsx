@@ -1,3 +1,5 @@
+import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { normalizeApiError } from '../../../api/client';
 import { DailyActivityReportCleanupSection } from '../components/DailyActivityReportCleanupSection';
@@ -110,14 +112,7 @@ export function DataCleanupPage() {
                         پاک‌سازی کنترل‌شده اطلاعات موقت و منقضی‌شده
                     </p>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => void refresh()}
-                    disabled={loading || running}
-                    className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                >
-                    به‌روزرسانی
-                </button>
+                <Button variant="secondary" onClick={() => void refresh()} disabled={loading || running}>به‌روزرسانی</Button>
             </header>
 
             {error && (
@@ -214,20 +209,21 @@ export function DataCleanupPage() {
                         />
                     </label>
                     <div className="flex items-end">
-                        <button
-                            type="button"
+                        <Button
+                            variant="dangerSolid"
+                            size="lg"
+                            className="w-full"
                             onClick={() => void runCleanup()}
+                            loading={running}
                             disabled={
-                                running ||
                                 loading ||
                                 selected.length === 0 ||
                                 selectedCount === 0 ||
-                                confirmation !== 'DELETE'
+                                confirmation !== "DELETE"
                             }
-                            className="w-full rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
                         >
-                            {running ? 'در حال اجرای عملیات...' : 'اجرای پاک‌سازی انتخاب‌شده'}
-                        </button>
+                            {running ? "در حال اجرای عملیات..." : "اجرای پاک‌سازی انتخاب‌شده"}
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -249,15 +245,13 @@ export function DataCleanupPage() {
                                     <strong className="text-sm text-slate-800">
                                         عملیات #{numberFormat.format(run.id)}
                                     </strong>
-                                    <span
-                                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${run.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : run.status === 'failed' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}
-                                    >
-                                        {run.status === 'completed'
-                                            ? 'موفق'
-                                            : run.status === 'failed'
-                                              ? 'ناموفق'
-                                              : 'در حال اجرا'}
-                                    </span>
+                                    <StatusBadge variant={run.status === "completed" ? "success" : run.status === "failed" ? "danger" : "warning"}>
+                                        {run.status === "completed"
+                                            ? "موفق"
+                                            : run.status === "failed"
+                                              ? "ناموفق"
+                                              : "در حال اجرا"}
+                                    </StatusBadge>
                                 </div>
                                 <p className="mt-2 text-xs text-slate-500">
                                     اجراکننده: {run.performed_by ?? 'کاربر حذف‌شده'} ·{' '}

@@ -1,3 +1,4 @@
+import { Button } from "../../../design-system/components/Button";
 import { PAYMENT_METHOD_OPTIONS, PAYMENT_STATUS_OPTIONS } from '../types/payment';
 
 import type { PaymentMethod, PaymentStatus } from '../types/payment';
@@ -77,9 +78,9 @@ export function PaymentFilters({
                 </div>
             </div>
             <div className="ui-filter-actions">
-                <button type="button" onClick={onClear} className="ui-filter-clear">
+                <Button type="button" size="sm" variant="secondary" onClick={onClear}>
                     پاک کردن فیلترها
-                </button>
+                </Button>
             </div>
         </div>
     );

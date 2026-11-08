@@ -1,3 +1,6 @@
+import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { normalizeApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
@@ -44,11 +47,11 @@ const resultLabels: Record<ActivityResult, string> = {
     negative: 'منفی',
     follow_up: 'نیازمند پیگیری',
 };
-const resultStyles: Record<ActivityResult, string> = {
-    positive: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-    neutral: 'bg-slate-100 text-slate-700 ring-slate-500/20',
-    negative: 'bg-rose-50 text-rose-700 ring-rose-600/20',
-    follow_up: 'bg-amber-50 text-amber-800 ring-amber-600/20',
+const resultVariants: Record<ActivityResult, "success" | "neutral" | "danger" | "warning"> = {
+    positive: "success",
+    neutral: "neutral",
+    negative: "danger",
+    follow_up: "warning",
 };
 const dateLabel = (value: string) =>
     new Date(`${value}T12:00:00`).toLocaleDateString('fa-IR-u-ca-persian');
@@ -239,18 +242,12 @@ export function DailyActivityReportsPage() {
                     <h1 className="text-2xl font-bold text-slate-900">گزارش فعالیت روزانه</h1>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    <button
-                        onClick={() => void exportRows()}
-                        className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                    >
+                    <Button type="button" variant="secondary" onClick={() => void exportRows()}>
                         خروجی Excel
-                    </button>
-                    <button
-                        onClick={openCreate}
-                        className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
-                    >
+                    </Button>
+                    <Button type="button" variant="primary" onClick={openCreate}>
                         ثبت گزارش جدید
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -503,11 +500,7 @@ export function DailyActivityReportsPage() {
                                     <div>
                                         <span className="text-xs text-slate-500">نتیجه</span>
                                         <p className="mt-1">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[viewing.result]}`}
-                                            >
-                                                {resultLabels[viewing.result]}
-                                            </span>
+                                            <StatusBadge variant={resultVariants[viewing.result]}>{resultLabels[viewing.result]}</StatusBadge>
                                         </p>
                                     </div>
                                     <div>
@@ -594,7 +587,7 @@ export function DailyActivityReportsPage() {
                         گزارشی برای نمایش وجود ندارد.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <TableContainer className="ui-table-container--embedded">
                         <table className="min-w-full text-right text-sm">
                             <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
@@ -634,42 +627,20 @@ export function DailyActivityReportsPage() {
                                             {row.contact_type === 'phone' ? 'تلفنی' : 'حضوری'}
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
-                                            <span
-                                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${resultStyles[row.result]}`}
-                                            >
-                                                {resultLabels[row.result]}
-                                            </span>
+                                            <StatusBadge variant={resultVariants[row.result]}>{resultLabels[row.result]}</StatusBadge>
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
                                             <div className="flex items-center gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => void openView(row)}
-                                                    className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
-                                                >
-                                                    مشاهده
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openEdit(row)}
-                                                    className="ui-btn-edit rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                                >
-                                                    ویرایش
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setDeleteTarget(row)}
-                                                    className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-                                                >
-                                                    حذف
-                                                </button>
+                                                <Button size="sm" variant="view" type="button" onClick={() => void openView(row)}>مشاهده</Button>
+                                                <Button size="sm" variant="edit" type="button" onClick={() => openEdit(row)}>ویرایش</Button>
+                                                <Button size="sm" variant="danger" type="button" onClick={() => setDeleteTarget(row)}>حذف</Button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </TableContainer>
                 )}
                 
             </div>

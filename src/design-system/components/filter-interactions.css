@@ -1,0 +1,28 @@
+/* Keep filter controls above decorative layers and reliably editable on touch devices. */
+.ui-filter-panel {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.ui-filter-panel .ui-filter-field {
+  position: relative;
+  min-width: 0;
+}
+
+.ui-filter-panel input:not([type="checkbox"]):not([type="radio"]),
+.ui-filter-panel select,
+.ui-filter-panel textarea {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.ui-filter-panel input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: text;
+  caret-color: currentColor;
+}
