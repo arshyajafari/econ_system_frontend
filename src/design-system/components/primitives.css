@@ -213,3 +213,16 @@
   box-shadow: none !important;
   outline: none !important;
 }
+
+
+/* Every text control uses the same corner radius, regardless of its page or
+   Tailwind utility class. Searchable-select inner inputs remain borderless. */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: var(--ds-radius-control) !important;
+}
+
+.ui-searchable-select.ui-searchable-select > input {
+  border-radius: 0 !important;
+}
