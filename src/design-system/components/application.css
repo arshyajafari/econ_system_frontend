@@ -172,3 +172,38 @@ main section[class*="space-y-"] form[class*="rounded-"],
 .ui-filter-panel .ui-filter-field .ui-searchable-select {
   border-radius: var(--ds-radius-control) !important;
 }
+
+/* Final guard for searchable controls: global form and Tailwind focus rules must
+   never paint a second frame or ring on the inner text input. The wrapper owns
+   the complete border and focus treatment. */
+#root .ui-searchable-select > input.ui-searchable-select__input,
+#root .ui-searchable-select > input.ui-searchable-select__input:hover,
+#root .ui-searchable-select > input.ui-searchable-select__input:focus,
+#root .ui-searchable-select > input.ui-searchable-select__input:focus-visible,
+#root .ui-searchable-select > input.ui-searchable-select__input:active,
+#root .ui-filter-panel .ui-searchable-select > input.ui-searchable-select__input,
+#root .ui-filter-panel .ui-searchable-select > input.ui-searchable-select__input:focus,
+#root .ui-filter-panel .ui-searchable-select > input.ui-searchable-select__input:focus-visible {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+}
+
+#root .ui-searchable-select > input.ui-searchable-select__input:focus,
+#root .ui-searchable-select > input.ui-searchable-select__input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
