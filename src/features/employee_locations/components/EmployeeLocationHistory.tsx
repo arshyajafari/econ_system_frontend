@@ -7,7 +7,7 @@ import {
     getEmployeeLocationHistory,
     type EmployeeLocation,
     type EmployeeLocationDailySummary,
-} from '../api/employeeLocations';
+} from '../services/employeeLocationsApi';
 
 const MAX_GAP_MS = 5 * 60_000;
 const STOP_GAP_MS = 3 * 60_000;
