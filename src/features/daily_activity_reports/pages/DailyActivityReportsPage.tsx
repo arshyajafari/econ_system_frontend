@@ -2,6 +2,7 @@ import { Button } from "../../../design-system/components/Button";
 import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { normalizeApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { Pagination } from '../../../components/Pagination';
@@ -66,6 +67,7 @@ export function DailyActivityReportsPage() {
     const [deleting, setDeleting] = useState(false);
     const [formOpen, setFormOpen] = useState(false);
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebouncedValue(search, 350);
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
     const [contactType, setContactType] = useState<ContactType | ''>('');
@@ -99,7 +101,7 @@ export function DailyActivityReportsPage() {
         } finally {
             setLoading(false);
         }
-    }, [page, search, from, to, contactType, result]);
+    }, [page, debouncedSearch, from, to, contactType, result]);
 
     useEffect(() => {
         let active = true;
@@ -109,7 +111,7 @@ export function DailyActivityReportsPage() {
                 const response = await getDailyActivityReports({
                     page,
                     per_page: 20,
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     from: from || undefined,
                     to: to || undefined,
                     contact_type: contactType,
