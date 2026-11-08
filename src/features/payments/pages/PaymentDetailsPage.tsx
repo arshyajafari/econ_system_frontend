@@ -1,4 +1,5 @@
 import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { Button } from "../../../design-system/components/Button";
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
@@ -106,13 +107,13 @@ export function PaymentDetailsPage() {
                     className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <span>{error}</span>
-                    <button
+                    <Button variant="secondary"
                         type="button"
                         onClick={() => void loadPayment()}
                         className="rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100"
                     >
                         تلاش مجدد
-                    </button>
+                    </Button>
                 </div>
             ) : null}
             <div className="grid gap-4">

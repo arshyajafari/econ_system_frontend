@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { Pagination } from '../../../components/Pagination';
 import { normalizeApiError } from '../../../api/client';
 import {
@@ -162,13 +164,13 @@ export function DailyActivityReportCleanupSection() {
                         کنید.
                     </p>
                 </div>
-                <button
+                <Button variant="secondary"
                     onClick={() => void exportArchive()}
                     disabled={rows.length === 0}
                     className="rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-40"
                 >
                     خروجی Excel همه گزارش‌ها
-                </button>
+                </Button>
             </header>
             {error && (
                 <div
@@ -208,8 +210,8 @@ export function DailyActivityReportCleanupSection() {
                         گزارشی برای بررسی یا حذف وجود ندارد.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full text-right text-sm">
+                    <TableContainer className="ui-table-container--embedded" aria-label="گزارش‌های فعالیت روزانه">
+<table className="min-w-full text-right text-sm">
                             <thead className="border-b border-gray-200 bg-gray-50">
                                 <tr>
                                     <th className="w-12 whitespace-nowrap px-4 py-3 font-semibold text-gray-700">
@@ -287,27 +289,27 @@ export function DailyActivityReportCleanupSection() {
                                         </td>
                                         <td className="whitespace-nowrap px-4 py-3">
                                             <div className="flex items-center gap-1.5">
-                                                <button
+                                                <Button variant="view"
                                                     type="button"
                                                     onClick={() => setViewing(row)}
                                                     className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
                                                 >
                                                     مشاهده
-                                                </button>
-                                                <button
+                                                </Button>
+                                                <Button variant="danger"
                                                     type="button"
                                                     onClick={() => setDeleteTarget(row)}
                                                     className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
                                                 >
                                                     حذف
-                                                </button>
+                                                </Button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+</TableContainer>
                 )}
 
             </div>
@@ -338,13 +340,13 @@ export function DailyActivityReportCleanupSection() {
                                     {viewing.organization_name} · {jalali(viewing.visit_date)}
                                 </p>
                             </div>
-                            <button
+                            <Button variant="secondary"
                                 type="button"
                                 onClick={() => setViewing(null)}
                                 className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600"
                             >
                                 بستن
-                            </button>
+                            </Button>
                         </div>
                         <div className="mt-5 space-y-4 text-sm">
                             <div className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -420,22 +422,22 @@ export function DailyActivityReportCleanupSection() {
                             سوابق مدیریت ثبت می‌شود.
                         </p>
                         <div className="mt-5 flex justify-end gap-2">
-                            <button
+                            <Button variant="secondary"
                                 type="button"
                                 disabled={running}
                                 onClick={() => setDeleteTarget(null)}
                                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="dangerSolid"
                                 type="button"
                                 disabled={running}
                                 onClick={() => void deleteOne()}
                                 className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                             >
                                 {running ? 'در حال حذف...' : 'حذف گزارش'}
-                            </button>
+                            </Button>
                         </div>
                     </section>
                 </div>
@@ -456,7 +458,7 @@ export function DailyActivityReportCleanupSection() {
                             />
                         </div>
                         <div className="flex items-end">
-                            <button
+                            <Button variant="dangerSolid"
                                 disabled={
                                     running ||
                                     loading ||
@@ -469,7 +471,7 @@ export function DailyActivityReportCleanupSection() {
                                 {running
                                     ? 'در حال پاک‌سازی...'
                                     : `حذف دائمی ${faNumber.format(selected.length)} گزارش انتخاب‌شده`}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

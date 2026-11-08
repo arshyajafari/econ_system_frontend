@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
@@ -7,7 +9,7 @@ import {
     getEmployeeWorkSessionLocations,
     type EmployeeLocation,
     type EmployeeWorkSession,
-} from '../api/employeeLocations';
+} from '../services/employeeLocationsApi';
 
 type LeafletMap = {
     remove(): void;
@@ -318,14 +320,14 @@ export function EmployeeWorkSessionsPanel() {
                         className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
                         placeholder="۱۴۰۵/۰۸/۱۰"
                     />
-                    <button
+                    <Button size="sm" variant="secondary"
                         type="button"
                         onClick={() => setRefreshKey((value) => value + 1)}
                         disabled={loading}
                         className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50"
                     >
                         بروزرسانی
-                    </button>
+                    </Button>
                 </div>
             </div>
             {error ? (
@@ -341,8 +343,8 @@ export function EmployeeWorkSessionsPanel() {
             ) : sessions.length === 0 ? (
                 <p className="p-5 text-sm text-gray-500">برای این تاریخ مأموریتی ثبت نشده است.</p>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[760px] text-right text-sm">
+                <TableContainer className="ui-table-container--embedded" aria-label="سوابق مأموریت کارکنان">
+<table className="w-full min-w-[760px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500">
                             <tr>
                                 <th className="px-4 py-3 font-medium">کارمند</th>
@@ -410,15 +412,15 @@ export function EmployeeWorkSessionsPanel() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex flex-wrap gap-2">
-                                            <button
+                                            <Button size="sm" variant="primary"
                                                 type="button"
                                                 onClick={() => setSelectedSession(session)}
                                                 className={`rounded-lg px-3 py-1.5 text-xs font-medium ${selectedSession?.id === session.id ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}`}
                                             >
                                                 نمایش روی نقشه
-                                            </button>
+                                            </Button>
                                             {session.status === 'in_progress' ? (
-                                                <button
+                                                <Button size="sm" variant="warning"
                                                     type="button"
                                                     onClick={() => {
                                                         setCorrectionSession(session);
@@ -427,7 +429,7 @@ export function EmployeeWorkSessionsPanel() {
                                                     className="rounded-lg px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50"
                                                 >
                                                     اصلاح مأموریت ناقص
-                                                </button>
+                                                </Button>
                                             ) : null}
                                         </div>
                                     </td>
@@ -435,7 +437,7 @@ export function EmployeeWorkSessionsPanel() {
                             ))}
                         </tbody>
                     </table>
-                </div>
+</TableContainer>
             )}
             {correctionSession ? (
                 <div className="m-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
@@ -458,22 +460,22 @@ export function EmployeeWorkSessionsPanel() {
                         />
                     </label>
                     <div className="mt-3 flex gap-2">
-                        <button
+                        <Button variant="warning"
                             type="button"
                             onClick={() => void submitCorrection()}
                             disabled={savingCorrection || correctionReason.trim().length < 5}
                             className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                         >
                             {savingCorrection ? 'در حال ثبت...' : 'ثبت اصلاح و پایان مأموریت'}
-                        </button>
-                        <button
+                        </Button>
+                        <Button variant="secondary"
                             type="button"
                             onClick={() => setCorrectionSession(null)}
                             disabled={savingCorrection}
                             className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700"
                         >
                             انصراف
-                        </button>
+                        </Button>
                     </div>
                 </div>
             ) : null}

@@ -1,4 +1,5 @@
 import { FormattedNumberInput } from '../../../components/FormattedNumberInput';
+import { Button } from "../../../design-system/components/Button";
 import { SearchableProductSelect } from '../../../components/SearchableProductSelect';
 import type { OrderItemFormData, OrderProductOption } from '../types/order';
 
@@ -114,14 +115,14 @@ export function OrderItemsEditor({ items, products, disabled = false, onChange }
                                         </span>
                                     ) : null}
                                 </div>
-                                <button
+                                <Button variant="danger"
                                     type="button"
                                     onClick={() => removeItem(index)}
                                     disabled={disabled || items.length === 1}
                                     className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-30"
                                 >
                                     حذف
-                                </button>
+                                </Button>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-4">
@@ -262,14 +263,14 @@ export function OrderItemsEditor({ items, products, disabled = false, onChange }
                 })}
 
                 <div className="flex w-full justify-start">
-                    <button
+                    <Button variant="primary"
                         type="button"
                         onClick={addItem}
                         disabled={disabled}
                         className="w-full rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 disabled:opacity-50 sm:w-auto"
                     >
                         + افزودن محصول
-                    </button>
+                    </Button>
                 </div>
             </div>
         </section>

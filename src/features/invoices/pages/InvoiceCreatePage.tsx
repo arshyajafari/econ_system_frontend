@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { BackButton } from '../../../components/BackButton';
@@ -88,14 +89,14 @@ export function InvoiceCreatePage() {
                             </p>
                         ) : null}
                         <div className="mt-5 flex gap-2">
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 onClick={() => void submit()}
                                 disabled={!orderId || busy}
                                 className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {busy ? 'در حال ایجاد...' : 'ایجاد فاکتور'}
-                            </button>
+                            </Button>
                         </div>
                     </>
                 )}

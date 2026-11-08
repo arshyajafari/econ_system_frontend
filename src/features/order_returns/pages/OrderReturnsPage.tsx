@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 
 import { Link } from "react-router-dom";
 import { useAuth } from "../../auth";
@@ -112,12 +113,12 @@ export function OrderReturnsPage() {
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       void loadOrderReturns();
-    }, 0);
+    }, search.trim() ? 350 : 0);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [loadOrderReturns]);
+  }, [loadOrderReturns, search]);
 
   return (
     <section className="space-y-6 p-4 md:p-6">
@@ -202,9 +203,9 @@ searchCustomers={searchCustomers}
           </div>
         </div>
         <div className="ui-filter-actions">
-          <button type="button" onClick={resetFilters} className="ui-filter-clear">
+          <Button variant="secondary" size="md" type="button" onClick={resetFilters} className="ui-filter-clear">
             پاک کردن فیلترها
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -215,7 +216,7 @@ searchCustomers={searchCustomers}
         >
           <span>{error}</span>
 
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => {
               void loadOrderReturns();
@@ -223,7 +224,7 @@ searchCustomers={searchCustomers}
             className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
           >
             تلاش مجدد
-          </button>
+          </Button>
         </div>
       ) : null}
 

@@ -1,4 +1,5 @@
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
+import { Button } from "../../../design-system/components/Button";
 
 type CustomerLedgerFiltersProps = {
   from: string;
@@ -46,22 +47,25 @@ export function CustomerLedgerFilters({
         </div>
       </div>
       <div className="ui-filter-actions">
-        <button
+        <Button
           type="button"
+          variant="primary"
           onClick={onApply}
           disabled={isLoading}
-          className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          loading={isLoading}
         >
           {isLoading ? "در حال دریافت..." : "اعمال فیلتر"}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={onReset}
           disabled={isLoading}
-          className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-60"
+          className="ui-filter-clear"
         >
           پاک کردن فیلترها
-        </button>
+        </Button>
       </div>
     </div>
   );

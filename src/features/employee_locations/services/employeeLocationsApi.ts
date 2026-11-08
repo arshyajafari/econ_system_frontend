@@ -49,7 +49,6 @@ export async function getEmployeeLocationDailySummary(employeeId: string): Promi
   return response.data;
 }
 
-
 export async function getEmployeeLocationLive(
   employeeId: string,
   after?: string | null
@@ -59,7 +58,6 @@ export async function getEmployeeLocationLive(
   const response = await apiClient.get<EmployeeLocation[]>(`/employees/locations/live?${params.toString()}`);
   return response.data;
 }
-
 
 export type EmployeeWorkSession = {
   id: string;
@@ -122,7 +120,6 @@ export async function correctEmployeeWorkSession(sessionId: string, reason: stri
   );
   return response.data.data;
 }
-
 
 export async function getMyDailyLocationCheckin(): Promise<EmployeeLocation | null> {
   const response = await apiClient.get<{ data: EmployeeLocation | null }>(

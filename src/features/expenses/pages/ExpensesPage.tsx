@@ -1,4 +1,4 @@
-import { sortTableRecords } from "../../../utils/date";
+import { Button } from "../../../design-system/components/Button";
 import {
   useCallback,
   useEffect,
@@ -24,6 +24,7 @@ import {
   getExpenseCategoryLabel,
 } from "../types/expense";
 import type { Expense, ExpenseFormData } from "../types/expense";
+import { ExpensesTable } from "../components/ExpensesTable";
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 const dateFormatter = new Intl.DateTimeFormat("fa-IR");
@@ -242,22 +243,22 @@ export function ExpensesPage() {
           <h1 className="text-2xl font-bold text-gray-900">هزینه‌ها</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => void load()}
             disabled={loading}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
-          </button>
+          </Button>
           {isManager ? (
-            <button
+            <Button variant="primary" size="md"
               type="button"
               onClick={openCreate}
               className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
             >
               ثبت هزینه
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>
@@ -285,14 +286,14 @@ export function ExpensesPage() {
                 هزینه‌ها مستقل از فاکتور و پرداخت مشتری ثبت می‌شوند.
               </p>
             </div>
-            <button
+            <Button variant="secondary" size="md"
               type="button"
               onClick={closeForm}
               disabled={saving}
               className="text-sm text-gray-500 hover:text-gray-900"
             >
               بستن
-            </button>
+            </Button>
           </div>
 
           {formError ? (
@@ -429,21 +430,21 @@ export function ExpensesPage() {
           </div>
 
           <div className="mt-5 flex gap-2">
-            <button
+            <Button variant="primary" size="md"
               type="submit"
               disabled={saving}
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
             >
               {saving ? "در حال ذخیره..." : "ذخیره هزینه"}
-            </button>
-            <button
+            </Button>
+            <Button variant="secondary" size="md"
               type="button"
               onClick={closeForm}
               disabled={saving}
               className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               انصراف
-            </button>
+            </Button>
           </div>
         </form>
       ) : null}
@@ -478,7 +479,7 @@ export function ExpensesPage() {
           </label>
         </div>
         <div className="ui-filter-actions">
-          <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
+          <Button variant="secondary" size="md" type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</Button>
         </div>
       </div>
 
@@ -487,94 +488,18 @@ export function ExpensesPage() {
         <span>مجموع این صفحه: {numberFormatter.format(pageTotal)}</span>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-[1050px] w-full text-sm">
-          <thead className="bg-gray-50 text-right text-gray-600">
-            <tr>
-              <th className="px-5 py-3 font-medium">عنوان</th>
-              <th className="px-5 py-3 font-medium">دسته‌بندی</th>
-              <th className="px-5 py-3 font-medium">مبلغ</th>
-              <th className="px-5 py-3 font-medium">تاریخ</th>
-              <th className="px-5 py-3 font-medium">مسئول هزینه</th>
-              <th className="px-5 py-3 font-medium">عملیات</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-5 py-12 text-center text-gray-500"
-                >
-                  در حال دریافت هزینه‌ها...
-                </td>
-              </tr>
-            ) : null}
-            {!loading && expenses.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-5 py-12 text-center text-gray-500"
-                >
-                  هزینه‌ای پیدا نشد.
-                </td>
-              </tr>
-            ) : null}
-            {!loading
-              ? sortTableRecords(expenses).map((expense) => (
-                  <tr key={expense.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-900">
-                        {expense.title}
-                      </div>
-                      {expense.description ? (
-                        <div className="mt-1 max-w-xs truncate text-xs text-gray-500">
-                          {expense.description}
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-5 py-4">
-                      {getExpenseCategoryLabel(expense.category)}
-                    </td>
-                    <td dir="ltr" className="px-5 py-4 font-semibold">
-                      {numberFormatter.format(Number(expense.amount || 0))}
-                    </td>
-                    <td className="px-5 py-4">
-                      {formatDate(expense.expense_date)}
-                    </td>
-                    <td className="px-5 py-4">
-                      {expense.employee?.name ?? "—"}
-                    </td>
-                    <td className="px-5 py-4 text-left">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(expense)}
-                          disabled={!isManager || deletingId !== null}
-                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                        >
-                          ویرایش
-                        </button>
-                        {isAdmin ? (
-                          <button
-                            type="button"
-                            onClick={() => void handleDelete(expense)}
-                            disabled={deletingId !== null}
-                            className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                          >
-                            {deletingId === expense.id
-                              ? "در حال حذف..."
-                              : "حذف"}
-                          </button>
-                        ) : null}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              : null}
-          </tbody>
-        </table>
-      </div>
+      <ExpensesTable
+        expenses={expenses}
+        loading={loading}
+        isManager={isManager}
+        isAdmin={isAdmin}
+        deletingId={deletingId}
+        onEdit={openEdit}
+        onDelete={(expense) => void handleDelete(expense)}
+        formatAmount={(amount) => numberFormatter.format(Number(amount || 0))}
+        formatDate={formatDate}
+        getCategoryLabel={getExpenseCategoryLabel}
+      />
 
       {
         <Pagination

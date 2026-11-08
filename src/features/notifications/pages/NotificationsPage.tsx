@@ -1,9 +1,9 @@
-import { sortTableRecords } from "../../../utils/date";
+import { Button } from "../../../design-system/components/Button";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Pagination } from "../../../components/Pagination";
 import { normalizeApiError } from "../../../api/client";
 import { formatJalaliDateTime } from "../../../utils/date";
 import { ConfirmModal } from "../../../components/ConfirmModal";
+import { NotificationList } from "../components/NotificationList";
 import { useAuth } from "../../auth";
 import {
   deleteSystemMessage,
@@ -16,7 +16,7 @@ import {
   type NotificationRecipients,
   type SendSystemMessagePayload,
   type SystemNotification,
-} from "../api/notifications";
+} from "../services/notificationsApi";
 const priorityLabels: Record<SendSystemMessagePayload["priority"], string> = {
   low: "کم",
   normal: "عادی",
@@ -223,7 +223,7 @@ export function NotificationsPage() {
               پیام‌ها و اعلان‌ها
             </h1>
           </div>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => void markAllRead()}
             disabled={
@@ -232,7 +232,7 @@ export function NotificationsPage() {
             className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
           >
             علامت همه به‌عنوان خوانده‌شده
-          </button>
+          </Button>
         </div>
 
         {error ? (
@@ -271,7 +271,7 @@ export function NotificationsPage() {
                   };
 
                   return (
-                    <button
+                    <Button variant="secondary" size="md"
                       key={target}
                       type="button"
                       onClick={() =>
@@ -292,7 +292,7 @@ export function NotificationsPage() {
                             ? "انتخاب یک یا چند کاربر"
                             : "انتخاب پوزیشن کاری دریافت‌کننده"}
                       </span>
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -432,134 +432,44 @@ export function NotificationsPage() {
                 <span className="text-xs text-slate-400">
                   گیرندگان: {selectedRecipientLabel}
                 </span>
-                <button
+                <Button variant="primary" size="md"
                   type="submit"
                   disabled={actionLoading || !canSubmit}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
                 >
                   {actionLoading ? "در حال ارسال..." : "ارسال پیام"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
         ) : null}
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-            <h2 className="font-bold text-slate-900">صندوق پیام‌ها</h2>
-            <button
-              type="button"
-              onClick={() => void loadNotifications(page)}
-              disabled={loading || actionLoading}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="بروزرسانی پیام‌ها"
-            >
-              بروزرسانی
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="p-8 text-center text-sm text-slate-500">
-              در حال دریافت پیام‌ها...
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="p-10 text-center text-sm text-slate-500">
-              پیامی برای نمایش وجود ندارد.
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {sortTableRecords(notifications).map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`block w-full p-5 text-right transition hover:bg-slate-50 ${notification.is_read ? "bg-white" : "bg-blue-50/40"}`}
-                  onClick={() => void markRead(notification)}
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {!notification.is_read ? (
-                          <span
-                            className="h-2 w-2 rounded-full bg-blue-600"
-                            aria-label="خوانده نشده"
-                          />
-                        ) : null}
-                        {notification.is_sent ? (
-                          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
-                            ارسالی
-                          </span>
-                        ) : null}
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${priorityClass(notification.priority)}`}
-                        >
-                          {priorityLabels[notification.priority]}
-                        </span>
-                        {canManageMessages ? (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
-                            مخاطب: {targetSummary(notification)}
-                          </span>
-                        ) : null}
-                      </div>
-                      <div className="mt-2.5">
-                        <h3
-                          className={`text-sm ${notification.is_read ? "font-semibold text-slate-800" : "font-bold text-slate-900"}`}
-                        >
-                          {notification.title}
-                        </h3>
-                        <p className="mt-1 whitespace-pre-wrap text-sm leading-7 text-slate-600">
-                          {notification.body}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-2">
-                      <time className="text-xs text-slate-400">
-                        {formatJalaliDateTime(notification.created_at)}
-                      </time>
-                      {canManageMessages && notification.can_manage ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setEditing(notification);
-                              setForm({
-                                target_type: "all",
-                                title: notification.title,
-                                body: notification.body,
-                                priority: notification.priority,
-                              });
-                            }}
-                            className="ui-btn-edit rounded-lg border px-2 py-1 text-xs"
-                          >
-                            ویرایش
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setDeleteTarget(notification);
-                            }}
-                            className="ui-btn-delete rounded-lg border px-2 py-1 text-xs"
-                          >
-                            حذف
-                          </button>
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <Pagination
-            page={page}
-            lastPage={lastPage}
-            isLoading={loading}
-            total={total}
-            onPageChange={(nextPage) => void loadNotifications(nextPage)}
-          />
-        </div>
+        <NotificationList
+          notifications={notifications}
+          loading={loading}
+          actionLoading={actionLoading}
+          canManageMessages={canManageMessages}
+          page={page}
+          lastPage={lastPage}
+          total={total}
+          onRefresh={() => void loadNotifications(page)}
+          onPageChange={(nextPage) => void loadNotifications(nextPage)}
+          onMarkRead={(notification) => void markRead(notification)}
+          onEdit={(notification) => {
+            setEditing(notification);
+            setForm({
+              target_type: "all",
+              title: notification.title,
+              body: notification.body,
+              priority: notification.priority,
+            });
+          }}
+          onDelete={(notification) => setDeleteTarget(notification)}
+          targetSummary={targetSummary}
+          priorityLabel={(priority) => priorityLabels[priority]}
+          priorityClass={priorityClass}
+          formatDate={formatJalaliDateTime}
+        />
       </section>
     </>
   );

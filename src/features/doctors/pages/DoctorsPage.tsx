@@ -1,4 +1,6 @@
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
@@ -224,7 +226,7 @@ export function DoctorsPage() {
           <h1 className="text-2xl font-bold text-gray-900">پزشکان</h1>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => {
               void loadDoctors();
@@ -233,15 +235,15 @@ export function DoctorsPage() {
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
-          </button>
+          </Button>
           {canCreateDoctor ? (
-            <button
+            <Button variant="primary" size="md"
               type="button"
               onClick={openCreateForm}
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
             >
               پزشک جدید
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>
@@ -253,7 +255,7 @@ export function DoctorsPage() {
           className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
         >
           <span>{error}</span>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => {
               void loadDoctors();
@@ -261,7 +263,7 @@ export function DoctorsPage() {
             className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
           >
             تلاش مجدد
-          </button>
+          </Button>
         </div>
       ) : null}
 
@@ -299,7 +301,7 @@ export function DoctorsPage() {
           </label>
         </div>
         <div className="ui-filter-actions">
-          <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
+          <Button variant="secondary" size="md" type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</Button>
         </div>
       </div>
 
@@ -310,8 +312,8 @@ export function DoctorsPage() {
         ) : null}
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-full text-right text-sm">
+      <TableContainer aria-label="جدول پزشکان">
+<table className="min-w-full text-right text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="px-4 py-3 font-medium">کد</th>
@@ -397,17 +399,17 @@ export function DoctorsPage() {
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex gap-2">
                       {canUpdateDoctor ? (
-                        <button
+                        <Button variant="edit" size="sm"
                           type="button"
                           onClick={() => openEditForm(doctor)}
                           disabled={Boolean(pendingDeleteId)}
                           className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                         >
                           ویرایش
-                        </button>
+                        </Button>
                       ) : null}
                       {isAdmin && (
-                        <button
+                        <Button variant="danger" size="sm"
                           type="button"
                           onClick={() => setDeleteTarget(doctor)}
                           disabled={
@@ -419,7 +421,7 @@ export function DoctorsPage() {
                           {pendingDeleteId === doctor.id
                             ? "در حال حذف..."
                             : "حذف"}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -428,7 +430,7 @@ export function DoctorsPage() {
             )}
           </tbody>
         </table>
-      </div>
+</TableContainer>
 
       <ConfirmModal
         open={deleteTarget !== null}

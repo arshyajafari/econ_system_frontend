@@ -1,5 +1,8 @@
 import { sortTableRecords } from '../../../utils/date';
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
 import { useAuth } from '../../auth';
 import { ApiError } from '../../../api/client';
@@ -51,6 +54,7 @@ export function InventoryPage() {
         [selected, setSelected] = useState<InventoryBatch | null>(null),
         [editing, setEditing] = useState<InventoryBatch | null>(null),
         [adjustmentTarget, setAdjustmentTarget] = useState<InventoryBatch | null>(null);
+    const debouncedSearch = useDebouncedValue(search, 350);
     useEffect(() => {
         let dead = false;
         const run = async () => {
@@ -58,7 +62,7 @@ export function InventoryPage() {
             setError(null);
             try {
                 const response = await getInventory({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     expired: expired === '' ? undefined : expired === 'true',
                     sort: '-created_at',
                     page,
@@ -79,7 +83,7 @@ export function InventoryPage() {
         return () => {
             dead = true;
         };
-    }, [expired, page, refreshKey, search]);
+    }, [expired, page, refreshKey, debouncedSearch]);
     useEffect(() => {
         getProducts({ per_page: 100 })
             .then((response) => setProducts(response.data))
@@ -270,7 +274,8 @@ export function InventoryPage() {
                                 className="rounded-lg border px-3 py-2"
                             />
                         </div>
-                        <button
+                        <Button variant="primary"
+                            type="submit"
                             disabled={
                                 saving ||
                                 !form.product_id ||
@@ -280,7 +285,7 @@ export function InventoryPage() {
                             className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                         >
                             ثبت ورود موجودی
-                        </button>
+                        </Button>
                     </form>
                 ) : null}
                 <div className="ui-filter-panel">
@@ -312,7 +317,7 @@ export function InventoryPage() {
                         </label>
                     </div>
                     <div className="ui-filter-actions justify-between">
-                        <button
+                        <Button variant="secondary"
                             type="button"
                             onClick={() => {
                                 setSearch('');
@@ -322,19 +327,19 @@ export function InventoryPage() {
                             className="ui-filter-clear"
                         >
                             پاک کردن فیلترها
-                        </button>
-                        <button
+                        </Button>
+                        <Button variant="secondary"
                             type="button"
                             disabled={loading}
                             onClick={() => setRefreshKey((current) => current + 1)}
                             className="ui-filter-clear disabled:opacity-50"
                         >
                             بروزرسانی
-                        </button>
+                        </Button>
                     </div>
                 </div>
-                <div className="overflow-x-auto rounded-xl border bg-white">
-                    <table className="min-w-full text-right text-sm">
+                <TableContainer aria-label="جدول موجودی">
+<table className="min-w-full text-right text-sm">
                         <thead className="bg-gray-50">
                             <tr>
                                 {[
@@ -405,39 +410,39 @@ export function InventoryPage() {
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex flex-wrap items-center gap-1.5">
-                                                <button
+                                                <Button size="sm" variant="view"
                                                     type="button"
                                                     onClick={() => void view(item)}
                                                     className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                 >
                                                     مشاهده
-                                                </button>
+                                                </Button>
                                                 {canManageInventory ? (
-                                                    <button
+                                                    <Button size="sm" variant="edit"
                                                         type="button"
                                                         onClick={() => startEdit(item)}
                                                         className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                     >
                                                         ویرایش
-                                                    </button>
+                                                    </Button>
                                                 ) : null}
                                                 {isAdmin ? (
-                                                    <button
+                                                    <Button size="sm" variant="warning"
                                                         type="button"
                                                         onClick={() => setAdjustmentTarget(item)}
                                                         className="rounded-lg border border-amber-300 px-2.5 py-1.5 text-xs font-medium text-amber-800"
                                                     >
                                                         اصلاح موجودی
-                                                    </button>
+                                                    </Button>
                                                 ) : null}
                                                 {isAdmin ? (
-                                                    <button
+                                                    <Button size="sm" variant="danger"
                                                         type="button"
                                                         onClick={() => setDeleteTarget(item.id)}
                                                         className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                     >
                                                         حذف
-                                                    </button>
+                                                    </Button>
                                                 ) : null}
                                             </div>
                                         </td>
@@ -446,19 +451,19 @@ export function InventoryPage() {
                             )}
                         </tbody>
                     </table>
-                </div>
+</TableContainer>
                 {selected && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                         <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
                             <div className="flex items-center justify-between border-b pb-4">
                                 <h2 className="text-lg font-bold">جزئیات موجودی</h2>
-                                <button
+                                <Button variant="secondary"
                                     type="button"
                                     onClick={() => setSelected(null)}
                                     className="rounded-lg border px-3 py-1.5"
                                 >
                                     بستن
-                                </button>
+                                </Button>
                             </div>
                             <div className="grid gap-3 py-5 md:grid-cols-2">
                                 <div>
@@ -523,13 +528,13 @@ export function InventoryPage() {
                         >
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-bold">ویرایش موجودی</h2>
-                                <button
+                                <Button variant="secondary"
                                     type="button"
                                     onClick={() => setEditing(null)}
                                     className="rounded-lg border px-3 py-1.5"
                                 >
                                     بستن
-                                </button>
+                                </Button>
                             </div>
                             <div className="text-sm text-gray-500">
                                 {editing.product?.title ?? '—'} — موجودی فعلی: {editing.quantity}
@@ -556,12 +561,13 @@ export function InventoryPage() {
                                 placeholder="توضیحات"
                                 className="min-h-24 w-full rounded-lg border px-3 py-2"
                             />
-                            <button
+                            <Button variant="success"
+                                type="submit"
                                 disabled={saving}
                                 className="rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 disabled:opacity-60"
                             >
                                 ذخیره تغییرات
-                            </button>
+                            </Button>
                         </form>
                     </div>
                 )}

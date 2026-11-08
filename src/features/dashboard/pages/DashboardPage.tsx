@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from "../../../api/client";
 import { useAuth } from "../../auth";
 import { DashboardRecentSection } from "../components/DashboardRecentSection";
@@ -64,7 +65,8 @@ export function DashboardPage() {
             امیدواریم امروز روز خوبی داشته باشید، {user?.employee.full_name}.
           </p>
         </div>
-        <button
+        <Button
+          variant="primary"
           type="button"
           onClick={() => {
             void loadDashboard();
@@ -73,7 +75,7 @@ export function DashboardPage() {
           className="self-start rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? "در حال بروزرسانی..." : "بروزرسانی اطلاعات"}
-        </button>
+        </Button>
       </div>
 
       {isLoading && !dashboard ? (
@@ -85,7 +87,7 @@ export function DashboardPage() {
       ) : error && !dashboard ? (
         <div className="flex min-h-60 flex-col items-center justify-center gap-4 rounded-2xl border border-red-100 bg-white p-6 text-center shadow-sm">
           <p className="text-sm text-red-600">{error}</p>
-          <button
+          <Button
             type="button"
             onClick={() => {
               void loadDashboard();
@@ -93,7 +95,7 @@ export function DashboardPage() {
             className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
             تلاش مجدد
-          </button>
+          </Button>
         </div>
       ) : dashboard ? (
         <>

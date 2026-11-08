@@ -1,4 +1,5 @@
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
+import { Button } from "../../../design-system/components/Button";
 import type { ActivityResult, ContactType } from '../services/dailyActivityReportsApi';
 
 type DailyActivityReportFiltersProps = {
@@ -108,9 +109,9 @@ export function DailyActivityReportFilters({
             </div>
 
             <div className="ui-filter-actions">
-                <button type="button" onClick={onClear} className="ui-filter-clear">
+                <Button type="button" variant="secondary" size="sm" onClick={onClear} className="ui-filter-clear">
                     پاک کردن فیلترها
-                </button>
+                </Button>
             </div>
         </section>
     );

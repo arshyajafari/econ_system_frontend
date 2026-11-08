@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { formatJalaliDate } from "../../../utils/date";
@@ -95,13 +96,14 @@ export function ReportsPage() {
         </label>
         </div>
         <div className="ui-filter-actions justify-between">
-          <button
+          <Button variant="primary"
+            type="submit"
             disabled={loading || !from || !to}
             className="whitespace-nowrap rounded-lg bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50"
           >
             {loading ? "در حال دریافت..." : "نمایش گزارش"}
-          </button>
-          <button
+          </Button>
+          <Button variant="secondary"
             type="button"
             disabled={loading}
             onClick={() => {
@@ -113,7 +115,7 @@ export function ReportsPage() {
             className="ui-filter-clear disabled:cursor-not-allowed disabled:opacity-50"
           >
             پاک کردن فیلترها
-          </button>
+          </Button>
         </div>
       </form>
 

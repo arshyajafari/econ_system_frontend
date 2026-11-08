@@ -1,3 +1,4 @@
+import { Button } from "../../../design-system/components/Button";
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Pagination } from "../../../components/Pagination";
@@ -258,25 +259,10 @@ export function CustomersPage() {
         </div>
 
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              void loadCustomers();
-            }}
-            disabled={isLoading}
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-          >
-            بروزرسانی
-          </button>
+          <Button variant="secondary" onClick={() => void loadCustomers()} disabled={isLoading}>بروزرسانی</Button>
 
           {canCreateCustomer ? (
-            <button
-              type="button"
-              onClick={openCreateForm}
-              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              مشتری جدید
-            </button>
+            <Button variant="primary" onClick={openCreateForm}>مشتری جدید</Button>
           ) : null}
         </div>
       </div>
@@ -289,15 +275,7 @@ export function CustomersPage() {
         >
           <span>{error}</span>
 
-          <button
-            type="button"
-            onClick={() => {
-              void loadCustomers();
-            }}
-            className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
-          >
-            تلاش مجدد
-          </button>
+          <Button size="sm" variant="secondary" onClick={() => void loadCustomers()}>تلاش مجدد</Button>
         </div>
       ) : null}
 

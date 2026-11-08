@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Button } from "../../../design-system/components/Button";
+import { FormField } from "../../../design-system/components/FormField";
 import { ApiError } from "../../../api/client";
 import { adjustInventory } from "../services/inventoryApi";
 import type { InventoryBatch } from "../types/inventory";
@@ -59,14 +61,14 @@ export function InventoryAdjustmentModal({
           <h2 id="inventory-adjustment-title" className="text-lg font-bold">
             اصلاح موجودی
           </h2>
-          <button
+          <Button variant="secondary"
             type="button"
             disabled={saving}
             onClick={onClose}
             className="rounded-lg border px-3 py-1.5"
           >
             بستن
-          </button>
+          </Button>
         </div>
 
         <p className="text-sm text-gray-600">
@@ -82,10 +84,7 @@ export function InventoryAdjustmentModal({
           </p>
         )}
 
-        <div>
-          <label htmlFor="inventory-adjustment-type" className="mb-1 block text-sm font-medium">
-            نوع اصلاح
-          </label>
+        <FormField id="inventory-adjustment-type" label="نوع اصلاح">
           <select
             id="inventory-adjustment-type"
             value={type}
@@ -96,12 +95,9 @@ export function InventoryAdjustmentModal({
             <option value="increase">افزایش موجودی</option>
             <option value="decrease">کاهش موجودی</option>
           </select>
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="inventory-adjustment-quantity" className="mb-1 block text-sm font-medium">
-            تعداد
-          </label>
+        <FormField id="inventory-adjustment-quantity" label="تعداد" required>
           <input
             id="inventory-adjustment-quantity"
             type="number"
@@ -118,12 +114,9 @@ export function InventoryAdjustmentModal({
               حداکثر کاهش مجاز: {batch.available_quantity} (موجودی قابل استفاده، بدون اقلام رزروشده)
             </p>
           )}
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="inventory-adjustment-reason" className="mb-1 block text-sm font-medium">
-            علت اصلاح
-          </label>
+        <FormField id="inventory-adjustment-reason" label="علت اصلاح" required>
           <input
             id="inventory-adjustment-reason"
             required
@@ -134,12 +127,9 @@ export function InventoryAdjustmentModal({
             className="w-full rounded-lg border px-3 py-2"
             placeholder="مثلاً مغایرت شمارش فیزیکی"
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="inventory-adjustment-description" className="mb-1 block text-sm font-medium">
-            توضیحات تکمیلی (اختیاری)
-          </label>
+        <FormField id="inventory-adjustment-description" label="توضیحات تکمیلی (اختیاری)">
           <textarea
             id="inventory-adjustment-description"
             maxLength={2000}
@@ -148,15 +138,15 @@ export function InventoryAdjustmentModal({
             onChange={(event) => setDescription(event.target.value)}
             className="min-h-20 w-full rounded-lg border px-3 py-2"
           />
-        </div>
+        </FormField>
 
-        <button
+        <Button variant="primary"
           type="submit"
           disabled={saving || quantity < 1 || !reason.trim() || (type === "decrease" && quantity > batch.available_quantity)}
           className="rounded-lg bg-gray-900 px-4 py-2 font-medium text-white disabled:opacity-60"
         >
           {saving ? "در حال ثبت..." : "ثبت اصلاح و گردش انبار"}
-        </button>
+        </Button>
       </form>
     </div>
   );

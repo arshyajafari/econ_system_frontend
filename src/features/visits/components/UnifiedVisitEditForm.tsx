@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import type { VisitSample } from '../types/visit';
 import type { Visit, VisitFormData } from '../types/visit';
@@ -84,14 +85,14 @@ export function UnifiedVisitEditForm({
                         اطلاعات ویزیت و همه نمونه‌های مرتبط را از همین فرم ویرایش کنید.
                     </p>
                 </div>
-                <button
+                <Button variant="secondary"
                     type="button"
                     onClick={onCancel}
                     disabled={isSubmitting}
                     className="rounded-lg border bg-white px-4 py-2 text-sm"
                 >
                     انصراف
-                </button>
+                </Button>
             </header>
 
             <section className="rounded-xl border bg-white p-4">
@@ -212,7 +213,7 @@ export function UnifiedVisitEditForm({
                 </div>
             ) : null}
             <div className="flex flex-wrap gap-2">
-                <button
+                <Button variant="primary"
                     type="submit"
                     disabled={
                         isSubmitting ||
@@ -228,15 +229,15 @@ export function UnifiedVisitEditForm({
                     className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                 >
                     {isSubmitting ? 'در حال ذخیره...' : 'ذخیره همه تغییرات'}
-                </button>
-                <button
+                </Button>
+                <Button variant="secondary"
                     type="button"
                     onClick={onCancel}
                     disabled={isSubmitting}
                     className="rounded-lg border bg-white px-5 py-2.5 text-sm"
                 >
                     انصراف
-                </button>
+                </Button>
             </div>
         </form>
     );

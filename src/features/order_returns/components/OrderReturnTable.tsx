@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import React from "react";
 import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
@@ -81,9 +83,8 @@ export function OrderReturnTable({
       </div>
     );
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="overflow-x-auto">
-        <table className="min-w-[1050px] w-full text-sm">
+    <TableContainer aria-label="order_returns">
+<table className="min-w-[1050px] w-full text-sm">
           <thead className="bg-gray-50 text-right text-gray-600">
             <tr>
               {[
@@ -153,7 +154,7 @@ export function OrderReturnTable({
                 </td>
                 <td className="px-5 py-4">
                   <div className="flex flex-wrap gap-2">
-                    <button
+                    <Button variant="view" size="sm"
                       type="button"
                       className="ui-btn-view rounded border px-2 py-1 text-xs"
                       onClick={() =>
@@ -161,11 +162,11 @@ export function OrderReturnTable({
                       }
                     >
                       مشاهده
-                    </button>
+                    </Button>
                     {canReceiveReturn &&
                     !orderReturn.delivered_at &&
                     orderReturn.status !== "cancelled" ? (
-                      <button
+                      <Button variant="success" size="sm"
                         type="button"
                         disabled={receivingId === orderReturn.id}
                         className="ui-btn-success rounded border px-2 py-1 text-xs"
@@ -190,7 +191,7 @@ export function OrderReturnTable({
                         {receivingId === orderReturn.id
                           ? "در حال ثبت..."
                           : "تحویل"}
-                      </button>
+                      </Button>
                     ) : null}
                   </div>
                 </td>
@@ -198,7 +199,6 @@ export function OrderReturnTable({
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
+</TableContainer>
   );
 }

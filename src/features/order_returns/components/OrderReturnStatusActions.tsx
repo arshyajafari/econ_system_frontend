@@ -1,4 +1,5 @@
 import type { OrderReturn, OrderReturnStatus } from "../types/orderReturn";
+import { Button } from "../../../design-system/components/Button";
 
 type OrderReturnAction = "submit" | "confirm" | "complete" | "cancel";
 
@@ -49,8 +50,9 @@ export function OrderReturnStatusActions({
         const isDanger = action === "cancel";
         const isPrimary = action === "complete" || action === "confirm";
         return (
-          <button
+          <Button
             key={action}
+            variant={isDanger ? "danger" : isPrimary ? "primary" : "view"}
             type="button"
             disabled={disabled}
             onClick={() => onAction(action)}
@@ -65,7 +67,7 @@ export function OrderReturnStatusActions({
             ].join(" ")}
           >
             {actionLabels[action]}
-          </button>
+          </Button>
         );
       })}
     </div>

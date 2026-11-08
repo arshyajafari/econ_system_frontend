@@ -5,6 +5,7 @@ import "./index.css";
 import "./design-system/components/button.css";
 import "./design-system/components/primitives.css";
 import "./design-system/components/filter-interactions.css";
+import "./design-system/components/application.css";
 import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(

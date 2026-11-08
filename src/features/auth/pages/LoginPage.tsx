@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import type { FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -131,13 +132,14 @@ export function LoginPage() {
             </p>
           ) : null}
 
-          <button
+          <Button
+            variant="primary"
             type="submit"
             disabled={isBusy}
             className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "در حال ورود..." : "ورود"}
-          </button>
+          </Button>
         </form>
       </section>
     </main>

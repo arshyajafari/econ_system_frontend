@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from '../../../api/client';
 import {
     endMyWorkSession,
@@ -6,7 +7,7 @@ import {
     sendMyLocation,
     startMyWorkSession,
     type EmployeeWorkSession,
-} from '../api/employeeLocations';
+} from '../services/employeeLocationsApi';
 
 type Action = 'start' | 'end';
 
@@ -286,11 +287,13 @@ export function EmployeeLocationShare() {
                     </div>
                 </div>
             ) : null}
-            <button
+            <Button
+                variant={started ? "dangerSolid" : "primary"}
+                loading={loading || busy}
                 type="button"
                 onClick={() => void submit(started ? 'end' : 'start')}
                 disabled={loading || busy}
-                className={`mt-3 w-full rounded-lg px-3 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 ${started ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className="mt-3 w-full"
             >
                 {loading
                     ? 'در حال بررسی وضعیت...'
@@ -301,7 +304,7 @@ export function EmployeeLocationShare() {
                         : session
                           ? 'شروع مأموریت بعدی'
                           : 'شروع مأموریت'}
-            </button>
+            </Button>
             {message ? (
                 <p role="status" className="mt-2 text-xs leading-5 text-slate-600">
                     {message}

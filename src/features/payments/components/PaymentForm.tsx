@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import type { FormEvent } from 'react';
 import { ApiError } from '../../../api/client';
 import { FormattedNumberInput } from '../../../components/FormattedNumberInput';
@@ -369,7 +370,7 @@ export function PaymentForm({
                     />
 
                     <div className="mt-2 flex gap-2">
-                        <button
+                        <Button variant="secondary"
                             type="button"
                             disabled={isSubmitting || !customerId}
                             onClick={() => {
@@ -385,8 +386,8 @@ export function PaymentForm({
                             }
                         >
                             مبلغ ریالی
-                        </button>
-                        <button
+                        </Button>
+                        <Button variant="secondary"
                             type="button"
                             disabled={isSubmitting || !customerId}
                             onClick={() => {
@@ -411,7 +412,7 @@ export function PaymentForm({
                             }
                         >
                             درصد
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -531,7 +532,7 @@ export function PaymentForm({
             </div>
 
             <div className="mt-5 flex gap-2">
-                <button
+                <Button variant="primary"
                     type="submit"
                     disabled={
                         isSubmitting ||
@@ -545,15 +546,15 @@ export function PaymentForm({
                     className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {isSubmitting ? 'در حال ذخیره...' : 'ذخیره پرداخت'}
-                </button>
-                <button
+                </Button>
+                <Button variant="secondary"
                     type="button"
                     disabled={isSubmitting}
                     onClick={onCancel}
                     className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
                 >
                     انصراف
-                </button>
+                </Button>
             </div>
         </form>
     );

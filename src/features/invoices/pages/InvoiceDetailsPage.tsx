@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { useNavigate, useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
@@ -122,7 +124,7 @@ export function InvoiceDetailsPage() {
                     invoice.status === 'issued' &&
                     invoice.order?.status === 'completed' &&
                     invoice.order?.id ? (
-                        <button
+                        <Button variant="warning" size="md"
                             type="button"
                             onClick={() =>
                                 navigate(
@@ -132,40 +134,40 @@ export function InvoiceDetailsPage() {
                             className="ui-btn-warning rounded-lg border px-4 py-2 text-sm"
                         >
                             ثبت مرجوعی
-                        </button>
+                        </Button>
                     ) : null}
                     {invoice.status === 'draft' ? (
                         <>
-                            <button
+                            <Button variant="edit" size="md"
                                 type="button"
                                 disabled={busy}
                                 onClick={() => void editDraft()}
                                 className="ui-btn-edit rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
                             >
                                 ویرایش مبلغ
-                            </button>
+                            </Button>
                             {isAdmin ? (
-                                <button
+                                <Button variant="primary" size="md"
                                     type="button"
                                     disabled={busy}
                                     onClick={() => void action('issue')}
                                     className="ui-btn-primary rounded-lg border px-4 py-2 mx-1 text-sm disabled:opacity-50"
                                 >
                                     صدور فاکتور
-                                </button>
+                                </Button>
                             ) : (
                                 <span className="rounded-lg bg-yellow-50 px-4 py-2 text-sm text-yellow-700">
                                     در انتظار تأیید مدیر
                                 </span>
                             )}
-                            <button
+                            <Button variant="danger" size="md"
                                 type="button"
                                 disabled={busy}
                                 onClick={() => void action('cancel')}
                                 className="ui-btn-delete rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
                             >
                                 لغو
-                            </button>
+                            </Button>
                         </>
                     ) : null}
                 </div>
@@ -197,8 +199,8 @@ export function InvoiceDetailsPage() {
                     </div>
                 </div>
             </div>
-            <div className="overflow-x-auto rounded-xl border bg-white">
-                <table className="min-w-[750px] w-full text-sm">
+            <TableContainer aria-label="اقلام فاکتور">
+<table className="min-w-[750px] w-full text-sm">
                     <thead className="bg-gray-50 text-right text-gray-600">
                         <tr>
                             <th className="px-5 py-3">محصول</th>
@@ -258,7 +260,7 @@ export function InvoiceDetailsPage() {
                         </tr>
                     </tfoot>
                 </table>
-            </div>
+</TableContainer>
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl border bg-white p-5">
                     <h2 className="font-semibold">خلاصه مبلغ</h2>

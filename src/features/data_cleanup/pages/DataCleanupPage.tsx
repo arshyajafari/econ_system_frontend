@@ -9,7 +9,7 @@ import {
     getCleanupPreview,
     type CleanupPreview,
     type CleanupRun,
-} from '../api/dataCleanup';
+} from '../services/dataCleanupApi';
 
 const numberFormat = new Intl.NumberFormat('fa-IR');
 const dateFormat = (value: string | null) =>

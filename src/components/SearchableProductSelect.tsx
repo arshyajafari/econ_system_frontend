@@ -116,12 +116,9 @@ export function SearchableProductSelect({
   return (
     <div ref={rootRef} className="relative">
       <div
-        className={
-          "flex min-h-[44px] items-center rounded-xl border bg-white shadow-sm transition " +
-          (isOpen
-            ? "border-gray-900 ring-4 ring-gray-900/5"
-            : "border-gray-200")
-      }
+        data-open={isOpen}
+        data-disabled={disabled}
+        className="ui-searchable-select flex h-[42px] min-h-[42px] items-center border bg-white transition"
       >
         <input
           ref={inputRef}
@@ -143,7 +140,7 @@ export function SearchableProductSelect({
             setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          className="min-w-0 flex-1 border-0 bg-transparent px-3.5 py-2.5 text-sm text-gray-900 outline-none ring-0 placeholder:text-gray-400 focus:border-0 focus:ring-0"
+          className="ui-searchable-select__input min-w-0 flex-1 text-sm text-gray-900 outline-none ring-0 placeholder:text-gray-400 focus:border-0 focus:ring-0"
         />
         <button
           type="button"

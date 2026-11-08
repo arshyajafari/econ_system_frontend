@@ -1,4 +1,5 @@
 import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { PaymentStatusActions } from './PaymentStatusActions';
 import type { Payment, PaymentStatusAction } from '../types/payment';
@@ -78,8 +79,8 @@ export function PaymentTable({
 
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div className="overflow-x-auto">
-                <table className="min-w-[1150px] w-full text-sm">
+            <TableContainer className="ui-table-container--embedded" aria-label="جدول پرداخت‌ها">
+<table className="min-w-[1150px] w-full text-sm">
                     <thead className="bg-gray-50 text-right text-gray-600">
                         <tr>
                             {[
@@ -167,7 +168,7 @@ export function PaymentTable({
                         ))}
                     </tbody>
                 </table>
-            </div>
+</TableContainer>
             {isLoading && payments.length > 0 ? (
                 <div className="border-t border-gray-100 px-4 py-3 text-xs text-gray-500">
                     در حال بروزرسانی...

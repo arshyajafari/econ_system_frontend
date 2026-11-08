@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
+import { Button } from "../../../design-system/components/Button";
 import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { ImageUploadField } from "../../../components/ImageUploadField";
+import { BrandCatalogList } from "../components/BrandCatalogList";
+import { CategoryCatalogList } from "../components/CategoryCatalogList";
 import { ConfirmModal } from "../../../components/ConfirmModal";
 import { Pagination } from "../../../components/Pagination";
 import {
@@ -67,6 +71,8 @@ export function CatalogPage() {
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [brandSearch, setBrandSearch] = useState("");
   const [categorySearch, setCategorySearch] = useState("");
+  const debouncedBrandSearch = useDebouncedValue(brandSearch, 350);
+  const debouncedCategorySearch = useDebouncedValue(categorySearch, 350);
   const [brandForm, setBrandForm] = useState<BrandFormData>(emptyBrand);
   const [categoryForm, setCategoryForm] =
     useState<CategoryFormData>(emptyCategory);
@@ -86,12 +92,12 @@ export function CatalogPage() {
     try {
       const [b, c] = await Promise.all([
         getBrands({
-          search: brandSearch.trim() || undefined,
+          search: debouncedBrandSearch.trim() || undefined,
           page: brandPage,
           per_page: 20,
         }),
         getCategories({
-          search: categorySearch.trim() || undefined,
+          search: debouncedCategorySearch.trim() || undefined,
           page: categoryPage,
           per_page: 20,
         }),
@@ -112,7 +118,7 @@ export function CatalogPage() {
     } finally {
       setLoading(false);
     }
-  }, [brandPage, brandSearch, categoryPage, categorySearch]);
+  }, [brandPage, debouncedBrandSearch, categoryPage, debouncedCategorySearch]);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
@@ -206,14 +212,14 @@ export function CatalogPage() {
               </h1>
             </div>
           </div>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             disabled={loading}
             onClick={() => void load()}
             className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
           >
             بروزرسانی
-          </button>
+          </Button>
         </header>
         {error && (
           <div
@@ -310,21 +316,21 @@ export function CatalogPage() {
                 />
               </label>
               <div className="w-full flex flex-wrap gap-2 pt-4">
-                <button
+                <Button variant="primary" type="submit"
                   disabled={saving || !canEdit}
                   className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingBrand ? "ذخیره تغییرات" : "افزودن برند"}
-                </button>
+                </Button>
                 {editingBrand && (
-                  <button
+                  <Button variant="secondary" size="md"
                     type="button"
                     disabled={saving}
                     onClick={cancelBrandEdit}
                     className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     انصراف
-                  </button>
+                  </Button>
                 )}
               </div>
             </form>
@@ -340,95 +346,25 @@ export function CatalogPage() {
                 className={inputClass}
               />
             </div>
-            <div className="divide-y border-t border-gray-100">
-              {loading ? (
-                <p className="p-6 text-center text-sm text-gray-500">
-                  در حال دریافت…
-                </p>
-              ) : filteredBrands.length === 0 ? (
-                <p className="p-6 text-center text-sm text-gray-500">
-                  برندی پیدا نشد.
-                </p>
-              ) : (
-                filteredBrands.map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-100 bg-gray-50 text-xs text-gray-400">
-                        {b.logo ? (
-                          <img
-                            src={b.logo}
-                            alt=""
-                            className="h-full w-full object-contain"
-                          />
-                        ) : (
-                          "—"
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="truncate font-medium text-gray-900">
-                          {b.title}
-                        </div>
-                        <div className="mt-1 text-xs text-gray-500">
-                          {b.code} · {b.is_active ? "فعال" : "غیرفعال"}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!canEdit) return;
-                          setEditingBrand(b.id);
-                          setBrandForm({
-                            title: b.title,
-                            logo: b.logo ?? "",
-                            logo_file: null,
-                            sort_order: b.sort_order,
-                            is_active: b.is_active,
-                            description: b.description ?? "",
-                          });
-                        }}
-                        className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                      >
-                        ویرایش
-                      </button>
-                      {isAdmin ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            void changeBrandActivity(b.id, !b.is_active)
-                              .then(load)
-                              .catch((x: unknown) =>
-                                setError(
-                                  x instanceof ApiError
-                                    ? x.message
-                                    : "خطا در تغییر وضعیت برند.",
-                                ),
-                              )
-                          }
-                          className="ui-btn-disable rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                          disabled={!isAdmin}
-                        >
-                          {b.is_active ? "غیرفعال" : "فعال"}
-                        </button>
-                      ) : null}
-                      {isAdmin ? (
-                        <button
-                          type="button"
-                          onClick={() => void removeBrand(b)}
-                          className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                        >
-                          حذف
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <BrandCatalogList
+              brands={filteredBrands}
+              loading={loading}
+              canEdit={canEdit}
+              isAdmin={isAdmin}
+              onEdit={(brand) => {
+                setEditingBrand(brand.id);
+                setBrandForm({
+                  title: brand.title,
+                  logo: brand.logo ?? "",
+                  logo_file: null,
+                  sort_order: brand.sort_order,
+                  is_active: brand.is_active,
+                  description: brand.description ?? "",
+                });
+              }}
+              onToggleActive={(brand) => void changeBrandActivity(brand.id, !brand.is_active).then(load).catch((error: unknown) => setError(error instanceof ApiError ? error.message : "خطا در تغییر وضعیت برند."))}
+              onDelete={(brand) => void removeBrand(brand)}
+            />
           </div>
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-100 bg-gray-50/70 px-5 py-4">
@@ -537,21 +473,21 @@ export function CatalogPage() {
                 />
               </div>
               <div className="w-full flex flex-wrap gap-2 border-gray-100 pt-4">
-                <button
+                <Button variant="primary" type="submit"
                   disabled={saving || !canEdit}
                   className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingCategory ? "ذخیره تغییرات" : "افزودن دسته‌بندی"}
-                </button>
+                </Button>
                 {editingCategory && (
-                  <button
+                  <Button variant="secondary" size="md"
                     type="button"
                     disabled={saving}
                     onClick={cancelCategoryEdit}
                     className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     انصراف
-                  </button>
+                  </Button>
                 )}
               </div>
             </form>
@@ -566,87 +502,25 @@ export function CatalogPage() {
                 className={inputClass}
               />
             </div>
-            <div className="divide-y border-t border-gray-100">
-              {loading ? (
-                <p className="p-6 text-center text-sm text-gray-500">
-                  در حال دریافت…
-                </p>
-              ) : filteredCategories.length === 0 ? (
-                <p className="p-6 text-center text-sm text-gray-500">
-                  دسته‌بندی‌ای پیدا نشد.
-                </p>
-              ) : (
-                filteredCategories.map((c) => {
-                  const parent = categories.find((p) => p.id === c.parent_id);
-                  return (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 p-4 transition hover:bg-gray-50/70"
-                    >
-                      <div className="min-w-0">
-                        <div className="truncate font-medium text-gray-900">
-                          {c.title}
-                        </div>
-                        <div className="mt-1 text-xs text-gray-500">
-                          {c.code}
-                          {parent
-                            ? ` · والد: ${parent.title}`
-                            : " · ریشه"} · {c.is_active ? "فعال" : "غیرفعال"}
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (!canEdit) return;
-                            setEditingCategory(c.id);
-                            setCategoryForm({
-                              title: c.title,
-                              parent_id: c.parent_id ?? "",
-                              sort_order: c.sort_order,
-                              is_active: c.is_active,
-                              description: c.description ?? "",
-                            });
-                          }}
-                          className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                        >
-                          ویرایش
-                        </button>
-                        {isAdmin ? (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              void changeCategoryActivity(c.id, !c.is_active)
-                                .then(load)
-                                .catch((x: unknown) =>
-                                  setError(
-                                    x instanceof ApiError
-                                      ? x.message
-                                      : "خطا در تغییر وضعیت دسته‌بندی.",
-                                  ),
-                                )
-                            }
-                            className="ui-btn-disable rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                            disabled={!isAdmin}
-                          >
-                            {c.is_active ? "غیرفعال" : "فعال"}
-                          </button>
-                        ) : null}
-                        {isAdmin ? (
-                          <button
-                            type="button"
-                            onClick={() => void removeCategory(c)}
-                            className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                          >
-                            حذف
-                          </button>
-                        ) : null}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+            <CategoryCatalogList
+              categories={filteredCategories}
+              allCategories={categories}
+              loading={loading}
+              canEdit={canEdit}
+              isAdmin={isAdmin}
+              onEdit={(category) => {
+                setEditingCategory(category.id);
+                setCategoryForm({
+                  title: category.title,
+                  parent_id: category.parent_id ?? "",
+                  sort_order: category.sort_order,
+                  is_active: category.is_active,
+                  description: category.description ?? "",
+                });
+              }}
+              onToggleActive={(category) => void changeCategoryActivity(category.id, !category.is_active).then(load).catch((error: unknown) => setError(error instanceof ApiError ? error.message : "خطا در تغییر وضعیت دسته‌بندی."))}
+              onDelete={(category) => void removeCategory(category)}
+            />
           </div>
         </div>
         <Pagination

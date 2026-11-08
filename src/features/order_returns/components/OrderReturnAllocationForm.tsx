@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 
 import { ApiError } from "../../../api/client";
 
@@ -233,8 +235,8 @@ export function OrderReturnAllocationForm({
           برای این محصول موجودی قابل تخصیص پیدا نشد.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-[760px] w-full text-sm">
+        <TableContainer className="ui-table-container--embedded" aria-label="بچ‌های قابل تخصیص">
+<table className="min-w-[760px] w-full text-sm">
             <thead className="bg-gray-50 text-right text-gray-600">
               <tr>
                 <th className="px-4 py-3 font-medium">بچ</th>
@@ -284,7 +286,7 @@ export function OrderReturnAllocationForm({
               })}
             </tbody>
           </table>
-        </div>
+</TableContainer>
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -301,7 +303,7 @@ export function OrderReturnAllocationForm({
           ) : null}
         </div>
 
-        <button
+        <Button variant="primary"
           type="button"
           disabled={
             disabled || isSaving || allocatedQuantity !== requiredQuantity
@@ -312,7 +314,7 @@ export function OrderReturnAllocationForm({
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSaving ? "در حال ذخیره..." : "ذخیره تخصیص"}
-        </button>
+        </Button>
       </div>
     </div>
   );

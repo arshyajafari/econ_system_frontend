@@ -1,5 +1,6 @@
-import { sortTableRecords } from '../../../utils/date';
+import { Button } from "../../../design-system/components/Button";
 import { useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
@@ -21,6 +22,7 @@ import {
 import { DELIVERY_STATUS_OPTIONS, getDeliveryStatusLabel } from '../types/delivery';
 import type { Delivery, DeliveryFormData, DeliveryStatus } from '../types/delivery';
 import type { DeliveryOrderSource } from '../services/deliveriesApi';
+import { DeliveriesTable } from "../components/DeliveriesTable";
 
 const empty: DeliveryFormData = {
     order_id: '',
@@ -69,6 +71,8 @@ export function DeliveriesPage() {
             action: 'prepare' | 'ship' | 'cancel';
         } | null>(null);
 
+    const debouncedSearch = useDebouncedValue(search, 350);
+
     const load = async () => {
         setLoading(true);
         setError(null);
@@ -97,7 +101,7 @@ export function DeliveriesPage() {
             setError(null);
             try {
                 const r = await getDeliveries({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     status: status || undefined,
                     sort: '-created_at',
                     page,
@@ -118,7 +122,7 @@ export function DeliveriesPage() {
         return () => {
             dead = true;
         };
-    }, [page, search, status]);
+    }, [page, debouncedSearch, status]);
     useEffect(() => {
         if (!canManageForm) return;
 
@@ -236,7 +240,7 @@ export function DeliveriesPage() {
                     <h1 className="text-2xl font-bold">ارسال‌ها</h1>
                 </div>
                 {canManageForm ? (
-                    <button
+                    <Button variant="primary" size="md"
                         type="button"
                         onClick={() => {
                             setEditing(null);
@@ -245,7 +249,7 @@ export function DeliveriesPage() {
                         className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                     >
                         ارسال جدید
-                    </button>
+                    </Button>
                 ) : null}
             </header>
             {error && (
@@ -295,14 +299,14 @@ export function DeliveriesPage() {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <button
+                        <Button variant="primary" type="submit"
                             disabled={saving}
                             className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                         >
                             {editing ? 'ذخیره تغییرات' : 'ثبت ارسال'}
-                        </button>
+                        </Button>
                         {editing && (
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={saving}
                                 onClick={() => {
@@ -312,7 +316,7 @@ export function DeliveriesPage() {
                                 className="rounded-lg border px-4 py-2"
                             >
                                 انصراف
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </form>
@@ -349,7 +353,7 @@ export function DeliveriesPage() {
                     </label>
                 </div>
                 <div className="ui-filter-actions justify-between">
-                    <button
+                    <Button variant="secondary" size="md"
                         type="button"
                         onClick={() => {
                             setSearch('');
@@ -359,209 +363,38 @@ export function DeliveriesPage() {
                         className="ui-filter-clear"
                     >
                         پاک کردن فیلترها
-                    </button>
-                    <button type="button" onClick={() => void load()} className="ui-filter-clear">
+                    </Button>
+                    <Button variant="secondary" size="md" type="button" onClick={() => void load()} className="ui-filter-clear">
                         بروزرسانی
-                    </button>
+                    </Button>
                 </div>
             </div>
             <div className="text-sm text-gray-500">
                 {new Intl.NumberFormat('fa-IR').format(total)} ارسال
             </div>
-            <div className="overflow-x-auto rounded-xl border bg-white">
-                <table className="min-w-full text-right text-sm">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            {['سفارش', 'گیرنده', 'کارمند', 'وضعیت', 'زمان', 'عملیات'].map((x) => (
-                                <th key={x} className="px-4 py-3">
-                                    {x}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                        {loading && !items.length ? (
-                            <tr>
-                                <td colSpan={6} className="p-10 text-center">
-                                    در حال دریافت…
-                                </td>
-                            </tr>
-                        ) : !items.length ? (
-                            <tr>
-                                <td colSpan={6} className="p-10 text-center">
-                                    ارسالی پیدا نشد.
-                                </td>
-                            </tr>
-                        ) : (
-                            sortTableRecords(items).map((d) => (
-                                <tr key={d.id}>
-                                    <td className="px-4 py-3">
-                                        {d.order?.code ?? '—'}
-                                        <div className="text-xs text-gray-500">
-                                            {d.customer?.name ?? ''}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {d.recipient_name || 'در انتظار ثبت گیرنده'}
-                                        <div className="text-xs text-gray-500">
-                                            {d.recipient_phone ?? '—'}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">{d.employee?.name ?? '—'}</td>
-                                    <td className="px-4 py-3">
-                                        <span
-                                            className={`ui-status-pill ${getStatusClass(d.status)}`}
-                                        >
-                                            {getDeliveryStatusLabel(d.status)}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {formatJalaliDateTime(
-                                            d.delivered_at ??
-                                                d.shipped_at ??
-                                                d.prepared_at ??
-                                                d.created_at
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex flex-wrap items-center gap-1.5">
-                                            {canOperate ? (
-                                                <>
-                                                    <button
-                                                        type="button"
-                                                        disabled={detailsLoading}
-                                                        onClick={() => void openDetails(d)}
-                                                        className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
-                                                    >
-                                                        مشاهده
-                                                    </button>
-                                                    {d.status === 'pending' && (
-                                                        <>
-                                                            {isAdmin ? (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => startEdit(d)}
-                                                                    className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                                >
-                                                                    ویرایش
-                                                                </button>
-                                                            ) : null}
-                                                            {isAdmin ? (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        setDeleteTarget(d)
-                                                                    }
-                                                                    disabled={actionId === d.id}
-                                                                    className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
-                                                                >
-                                                                    حذف
-                                                                </button>
-                                                            ) : null}
-                                                            {canApproveDelivery ? (
-                                                                <button
-                                                                    type="button"
-                                                                    disabled={actionId === d.id}
-                                                                    onClick={() =>
-                                                                        setActionTarget({
-                                                                            delivery: d,
-                                                                            action: 'prepare',
-                                                                        })
-                                                                    }
-                                                                    className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                                >
-                                                                    آماده‌سازی
-                                                                </button>
-                                                            ) : null}
-                                                            {canApproveDelivery ? (
-                                                                <button
-                                                                    type="button"
-                                                                    disabled={actionId === d.id}
-                                                                    onClick={() =>
-                                                                        setActionTarget({
-                                                                            delivery: d,
-                                                                            action: 'cancel',
-                                                                        })
-                                                                    }
-                                                                    className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                                >
-                                                                    لغو
-                                                                </button>
-                                                            ) : null}
-                                                        </>
-                                                    )}
-                                                    {d.status === 'preparing' &&
-                                                        canApproveDelivery && (
-                                                            <>
-                                                                <button
-                                                                    type="button"
-                                                                    disabled={actionId === d.id}
-                                                                    onClick={() =>
-                                                                        setActionTarget({
-                                                                            delivery: d,
-                                                                            action: 'ship',
-                                                                        })
-                                                                    }
-                                                                    className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                                >
-                                                                    ارسال شد
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    disabled={actionId === d.id}
-                                                                    onClick={() =>
-                                                                        setActionTarget({
-                                                                            delivery: d,
-                                                                            action: 'cancel',
-                                                                        })
-                                                                    }
-                                                                    className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                                >
-                                                                    لغو
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                    {d.status === 'shipped' &&
-                                                        (isDeliveryOperator || isAdmin) && (
-                                                            <button
-                                                                type="button"
-                                                                disabled={actionId === d.id}
-                                                                onClick={() => {
-                                                                    setHandoffTarget(d);
-                                                                    setHandoffName(
-                                                                        d.recipient_name ?? ''
-                                                                    );
-                                                                    setHandoffPhone(
-                                                                        d.recipient_phone ??
-                                                                            d.customer?.phone ??
-                                                                            ''
-                                                                    );
-                                                                    setHandoffAddress(
-                                                                        d.address ?? ''
-                                                                    );
-                                                                    setHandoffDescription(
-                                                                        d.description ?? ''
-                                                                    );
-                                                                }}
-                                                                className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
-                                                            >
-                                                                تکمیل شد
-                                                            </button>
-                                                        )}
-                                                </>
-                                            ) : (
-                                                <span className="text-xs text-gray-400">
-                                                    فقط ادمین یا مسئول تحویل مجاز به ثبت تحویل نهایی است
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <DeliveriesTable
+                items={items}
+                loading={loading}
+                canOperate={canOperate}
+                isAdmin={isAdmin}
+                isDeliveryOperator={isDeliveryOperator}
+                canApproveDelivery={canApproveDelivery}
+                detailsLoading={detailsLoading}
+                actionId={actionId}
+                getStatusClass={getStatusClass}
+                onOpenDetails={(delivery) => void openDetails(delivery)}
+                onEdit={startEdit}
+                onDelete={setDeleteTarget}
+                onAction={(delivery, action) => setActionTarget({ delivery, action })}
+                onHandoff={(delivery) => {
+                    setHandoffTarget(delivery);
+                    setHandoffName(delivery.recipient_name ?? "");
+                    setHandoffPhone(delivery.recipient_phone ?? delivery.customer?.phone ?? "");
+                    setHandoffAddress(delivery.address ?? "");
+                    setHandoffDescription(delivery.description ?? "");
+                }}
+                formatDate={formatJalaliDateTime}
+            />
             {
                 <Pagination
                     page={page}
@@ -591,13 +424,13 @@ export function DeliveriesPage() {
                                     {selectedDelivery.order?.code ?? 'بدون سفارش'}
                                 </p>
                             </div>
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 onClick={() => setSelectedDelivery(null)}
                                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 بستن
-                            </button>
+                            </Button>
                         </div>
                         <div className="grid gap-4 p-5 md:grid-cols-2">
                             <div className="rounded-xl bg-gray-50 p-4">
@@ -791,21 +624,21 @@ export function DeliveriesPage() {
                             </label>
                         </div>
                         <div className="flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={actionId !== null}
                                 onClick={() => setHandoffTarget(null)}
                                 className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="primary" size="md"
                                 type="submit"
                                 disabled={actionId !== null || !handoffName.trim()}
                                 className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {actionId ? 'در حال ثبت...' : 'تأیید تحویل'}
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
