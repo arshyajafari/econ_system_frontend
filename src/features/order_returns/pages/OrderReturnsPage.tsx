@@ -113,12 +113,12 @@ export function OrderReturnsPage() {
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       void loadOrderReturns();
-    }, 0);
+    }, search.trim() ? 350 : 0);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [loadOrderReturns]);
+  }, [loadOrderReturns, search]);
 
   return (
     <section className="space-y-6 p-4 md:p-6">
