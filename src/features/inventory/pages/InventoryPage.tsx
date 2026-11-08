@@ -2,6 +2,7 @@ import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
 import { useAuth } from '../../auth';
 import { ApiError } from '../../../api/client';
@@ -53,6 +54,7 @@ export function InventoryPage() {
         [selected, setSelected] = useState<InventoryBatch | null>(null),
         [editing, setEditing] = useState<InventoryBatch | null>(null),
         [adjustmentTarget, setAdjustmentTarget] = useState<InventoryBatch | null>(null);
+    const debouncedSearch = useDebouncedValue(search, 350);
     useEffect(() => {
         let dead = false;
         const run = async () => {
@@ -60,7 +62,7 @@ export function InventoryPage() {
             setError(null);
             try {
                 const response = await getInventory({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     expired: expired === '' ? undefined : expired === 'true',
                     sort: '-created_at',
                     page,
@@ -81,7 +83,7 @@ export function InventoryPage() {
         return () => {
             dead = true;
         };
-    }, [expired, page, refreshKey, search]);
+    }, [expired, page, refreshKey, debouncedSearch]);
     useEffect(() => {
         getProducts({ per_page: 100 })
             .then((response) => setProducts(response.data))
