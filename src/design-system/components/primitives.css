@@ -226,3 +226,75 @@ textarea {
 .ui-searchable-select.ui-searchable-select > input {
   border-radius: 0 !important;
 }
+
+
+/* Searchable combobox: the wrapper is the only visible control surface. */
+.ui-searchable-select {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ds-control-height);
+  min-height: var(--ds-control-height);
+  overflow: visible;
+  border: 1px solid var(--ds-color-border-strong) !important;
+  border-radius: var(--ds-radius-control) !important;
+  background: var(--ds-color-surface) !important;
+  box-shadow: none !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.ui-searchable-select:hover:not(:has(input:disabled)) {
+  border-color: var(--ds-color-border-strong) !important;
+}
+
+.ui-searchable-select:focus-within,
+.ui-searchable-select[data-open="true"] {
+  border-color: var(--ds-color-primary) !important;
+  box-shadow: 0 0 0 3px var(--ds-color-focus) !important;
+  outline: none !important;
+}
+
+.ui-searchable-select > .ui-searchable-select__input {
+  box-sizing: border-box !important;
+  display: block !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--ds-color-text) !important;
+  line-height: normal !important;
+}
+
+.ui-searchable-select > .ui-searchable-select__input:focus,
+.ui-searchable-select > .ui-searchable-select__input:focus-visible,
+.ui-searchable-select > .ui-searchable-select__input:active {
+  height: 100% !important;
+  min-height: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.ui-searchable-select > button {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-searchable-select:has(input:disabled) {
+  cursor: not-allowed;
+  background: var(--ds-color-surface-subtle) !important;
+  opacity: 0.7;
+}
