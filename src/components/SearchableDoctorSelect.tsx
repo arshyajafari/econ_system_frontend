@@ -124,7 +124,7 @@ export function SearchableDoctorSelect({
   return (
     <div ref={rootRef} className="relative">
       <div
-        className={`flex min-h-[44px] items-center rounded-xl border bg-white shadow-sm transition ${isOpen ? "border-gray-900 ring-4 ring-gray-900/5" : "border-gray-200"}`}
+        className={`ui-searchable-select flex min-h-[42px] items-center rounded-[10px] border bg-white shadow-sm transition ${isOpen ? "border-gray-900 ring-4 ring-gray-900/5" : "border-gray-200"}`}
       >
         <input
           ref={inputRef}
