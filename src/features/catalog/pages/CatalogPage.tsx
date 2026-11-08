@@ -521,7 +521,6 @@ export function CatalogPage() {
               onToggleActive={(category) => void changeCategoryActivity(category.id, !category.is_active).then(load).catch((error: unknown) => setError(error instanceof ApiError ? error.message : "خطا در تغییر وضعیت دسته‌بندی."))}
               onDelete={(category) => void removeCategory(category)}
             />
-            </div>
           </div>
         </div>
         <Pagination
