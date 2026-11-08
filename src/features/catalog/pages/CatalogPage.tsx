@@ -365,7 +365,6 @@ export function CatalogPage() {
               onToggleActive={(brand) => void changeBrandActivity(brand.id, !brand.is_active).then(load).catch((error: unknown) => setError(error instanceof ApiError ? error.message : "خطا در تغییر وضعیت برند."))}
               onDelete={(brand) => void removeBrand(brand)}
             />
-            </div>
           </div>
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-100 bg-gray-50/70 px-5 py-4">
