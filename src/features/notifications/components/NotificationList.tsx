@@ -19,7 +19,7 @@ type NotificationListProps = {
   targetSummary: (notification: SystemNotification) => string;
   priorityLabel: (priority: SendSystemMessagePayload["priority"]) => string;
   priorityClass: (priority: SystemNotification["priority"]) => string;
-  formatDate: (value: string) => string;
+  formatDate: (value: string | null) => string;
 };
 
 export function NotificationList({
