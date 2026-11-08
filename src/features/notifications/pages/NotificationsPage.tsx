@@ -17,7 +17,7 @@ import {
   type NotificationRecipients,
   type SendSystemMessagePayload,
   type SystemNotification,
-} from "../api/notifications";
+} from "../services/notificationsApi";
 const priorityLabels: Record<SendSystemMessagePayload["priority"], string> = {
   low: "کم",
   normal: "عادی",
