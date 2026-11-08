@@ -1,5 +1,6 @@
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
+import { sortTableRecords } from "../../../utils/date";
 import type { Expense } from "../types/expense";
 
 type ExpensesTableProps = {
@@ -48,7 +49,7 @@ export function ExpensesTable({
             <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-500">هزینه‌ای پیدا نشد.</td></tr>
           ) : null}
           {!loading
-            ? expenses.map((expense) => (
+            ? sortTableRecords(expenses).map((expense) => (
                 <tr key={expense.id} className="hover:bg-gray-50">
                   <td className="px-5 py-4">
                     <div className="font-medium text-gray-900">{expense.title}</div>
