@@ -134,3 +134,41 @@ main section[class*="space-y-"] form[class*="rounded-"],
     flex: 1 1 auto;
   }
 }
+
+
+/* Filter controls share one radius and a consistent label-to-control rhythm. */
+.ui-filter-panel .ui-filter-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ui-filter-panel .ui-filter-field > label,
+.ui-filter-panel .ui-filter-label {
+  display: block;
+  margin: 0;
+  color: var(--ds-color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.ui-filter-panel .ui-filter-field > input:not([type="checkbox"]):not([type="radio"]),
+.ui-filter-panel .ui-filter-field > select,
+.ui-filter-panel .ui-filter-field > textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ds-control-height);
+  border-radius: var(--ds-radius-control) !important;
+}
+
+.ui-filter-panel .ui-filter-field > .relative {
+  width: 100%;
+  min-width: 0;
+}
+
+.ui-filter-panel .ui-filter-field .ui-searchable-select {
+  border-radius: var(--ds-radius-control) !important;
+}
