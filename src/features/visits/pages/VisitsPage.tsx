@@ -62,7 +62,7 @@ export function VisitsPage() {
             setError(null);
             try {
                 const r = await getVisits({
-                    search: debouncedSearch.trim() || undefined,
+                    search: search.trim() || undefined,
                     doctor_id: doctorId || undefined,
                     status: status || undefined,
                     visit_from: from || undefined,
@@ -89,7 +89,7 @@ export function VisitsPage() {
             setError(null);
             try {
                 const r = await getVisits({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     doctor_id: doctorId || undefined,
                     status: status || undefined,
                     visit_from: from || undefined,
