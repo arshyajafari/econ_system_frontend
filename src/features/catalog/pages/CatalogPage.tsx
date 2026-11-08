@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
 import { ImageUploadField } from "../../../components/ImageUploadField";
@@ -206,14 +207,14 @@ export function CatalogPage() {
               </h1>
             </div>
           </div>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             disabled={loading}
             onClick={() => void load()}
             className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
           >
             بروزرسانی
-          </button>
+          </Button>
         </header>
         {error && (
           <div
@@ -310,21 +311,21 @@ export function CatalogPage() {
                 />
               </label>
               <div className="w-full flex flex-wrap gap-2 pt-4">
-                <button
+                <Button variant="primary" type="submit"
                   disabled={saving || !canEdit}
                   className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingBrand ? "ذخیره تغییرات" : "افزودن برند"}
-                </button>
+                </Button>
                 {editingBrand && (
-                  <button
+                  <Button variant="secondary" size="md"
                     type="button"
                     disabled={saving}
                     onClick={cancelBrandEdit}
                     className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     انصراف
-                  </button>
+                  </Button>
                 )}
               </div>
             </form>
@@ -377,7 +378,7 @@ export function CatalogPage() {
                       </div>
                     </div>
                     <div className="flex shrink-0 gap-1.5">
-                      <button
+                      <Button variant="edit" size="sm"
                         type="button"
                         onClick={() => {
                           if (!canEdit) return;
@@ -394,9 +395,9 @@ export function CatalogPage() {
                         className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                       >
                         ویرایش
-                      </button>
+                      </Button>
                       {isAdmin ? (
-                        <button
+                        <Button variant="warning" size="sm"
                           type="button"
                           onClick={() =>
                             void changeBrandActivity(b.id, !b.is_active)
@@ -413,16 +414,16 @@ export function CatalogPage() {
                           disabled={!isAdmin}
                         >
                           {b.is_active ? "غیرفعال" : "فعال"}
-                        </button>
+                        </Button>
                       ) : null}
                       {isAdmin ? (
-                        <button
+                        <Button variant="danger" size="sm"
                           type="button"
                           onClick={() => void removeBrand(b)}
                           className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                         >
                           حذف
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                   </div>
@@ -537,21 +538,21 @@ export function CatalogPage() {
                 />
               </div>
               <div className="w-full flex flex-wrap gap-2 border-gray-100 pt-4">
-                <button
+                <Button variant="primary" type="submit"
                   disabled={saving || !canEdit}
                   className="w-full rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 disabled:opacity-50"
                 >
                   {editingCategory ? "ذخیره تغییرات" : "افزودن دسته‌بندی"}
-                </button>
+                </Button>
                 {editingCategory && (
-                  <button
+                  <Button variant="secondary" size="md"
                     type="button"
                     disabled={saving}
                     onClick={cancelCategoryEdit}
                     className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                   >
                     انصراف
-                  </button>
+                  </Button>
                 )}
               </div>
             </form>
@@ -595,7 +596,7 @@ export function CatalogPage() {
                         </div>
                       </div>
                       <div className="flex shrink-0 gap-1.5">
-                        <button
+                        <Button variant="edit" size="sm"
                           type="button"
                           onClick={() => {
                             if (!canEdit) return;
@@ -611,9 +612,9 @@ export function CatalogPage() {
                           className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                         >
                           ویرایش
-                        </button>
+                        </Button>
                         {isAdmin ? (
-                          <button
+                          <Button variant="warning" size="sm"
                             type="button"
                             onClick={() =>
                               void changeCategoryActivity(c.id, !c.is_active)
@@ -630,16 +631,16 @@ export function CatalogPage() {
                             disabled={!isAdmin}
                           >
                             {c.is_active ? "غیرفعال" : "فعال"}
-                          </button>
+                          </Button>
                         ) : null}
                         {isAdmin ? (
-                          <button
+                          <Button variant="danger" size="sm"
                             type="button"
                             onClick={() => void removeCategory(c)}
                             className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                           >
                             حذف
-                          </button>
+                          </Button>
                         ) : null}
                       </div>
                     </div>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import { Pagination } from "../../../components/Pagination";
 
 import { useNavigate } from "react-router-dom";
@@ -201,22 +202,22 @@ export function PaymentsPage() {
           <h1 className="text-2xl font-bold text-gray-900">پرداخت‌ها</h1>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             disabled={isLoading}
             onClick={() => void loadPayments()}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
-          </button>
-          <button
+          </Button>
+          <Button variant="primary" size="md"
             type="button"
             disabled={!canCreate}
             onClick={openCreateForm}
             className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             پرداخت جدید
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -226,13 +227,13 @@ export function PaymentsPage() {
           className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
         >
           <span>{error}</span>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => void loadPayments()}
             className="rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100"
           >
             تلاش مجدد
-          </button>
+          </Button>
         </div>
       ) : null}
 

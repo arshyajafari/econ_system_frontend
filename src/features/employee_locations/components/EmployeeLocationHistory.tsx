@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from '../../../api/client';
 import {
     getEmployeeLocationDailySummary,
@@ -266,7 +268,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                 ))}
             </svg>
             <div className="absolute right-2 top-2 z-10 flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow" aria-label="کنترل بزرگ‌نمایی نقشه">
-                <button
+                <Button size="sm" variant="secondary"
                     type="button"
                     onClick={() => setZoomOffset((value) => Math.min(4, value + 1))}
                     disabled={zoomOffset >= 4 || map.zoom >= 19}
@@ -275,9 +277,9 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                     title="بزرگ‌نمایی"
                 >
                     +
-                </button>
+                </Button>
                 <div className="h-px bg-gray-200" />
-                <button
+                <Button size="sm" variant="secondary"
                     type="button"
                     onClick={() => setZoomOffset((value) => Math.max(-4, value - 1))}
                     disabled={zoomOffset <= -4 || map.zoom <= 3}
@@ -286,9 +288,9 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                     title="کوچک‌نمایی"
                 >
                     −
-                </button>
+                </Button>
                 <div className="h-px bg-gray-200" />
-                <button
+                <Button size="sm" variant="secondary"
                     type="button"
                     onClick={() => setZoomOffset(0)}
                     disabled={zoomOffset === 0}
@@ -297,7 +299,7 @@ function RouteMap({ points }: { points: EmployeeLocation[] }) {
                     title="بازنشانی"
                 >
                     بازنشانی
-                </button>
+                </Button>
             </div>
             <div className="absolute bottom-2 left-2 rounded bg-white/95 px-2 py-1 text-[10px] text-gray-600 shadow">
                 © OpenStreetMap · بزرگ‌نمایی {map.zoom}
@@ -454,14 +456,14 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                     </div>
                     <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2">
                         <span className="text-xs text-gray-600">نقشه مسیر روز انتخاب‌شده</span>
-                        <button
+                        <Button size="sm" variant="secondary"
                             type="button"
                             onClick={() => setMapVisible((visible) => !visible)}
                             aria-expanded={mapVisible}
                             className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
                             {mapVisible ? 'بستن نقشه' : 'نمایش نقشه'}
-                        </button>
+                        </Button>
                     </div>
                     {mapVisible ? <RouteMap key={points.map(timestamp).join(',')} points={points} /> : null}
                 </>
@@ -481,8 +483,8 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                         {summaryError}
                     </p>
                 ) : null}
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[520px] text-right text-sm">
+                <TableContainer className="ui-table-container--embedded" aria-label="سوابق موقعیت مکانی">
+<table className="w-full min-w-[520px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500">
                             <tr>
                                 <th scope="col" className="px-4 py-3 font-medium">
@@ -531,7 +533,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                                             {item.points_count.toLocaleString('fa-IR')}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <button
+                                            <Button size="sm" variant="secondary"
                                                 type="button"
                                                 onClick={() => {
                                                     setDate(item.date);
@@ -542,7 +544,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                                                 className="rounded-lg px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-50 disabled:opacity-50"
                                             >
                                                 نمایش مسیر
-                                            </button>
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))}
@@ -568,7 +570,7 @@ export function EmployeeLocationHistory({ employeeId, employeeName }: Props) {
                             ) : null}
                         </tbody>
                     </table>
-                </div>
+</TableContainer>
                 <div className="border-t border-gray-100 px-4 py-3 text-xs leading-5 text-gray-500">
                     سوابق مکانی قدیمی‌تر از ۳۲ روز پس از اجرای پاک‌سازی مدیریت‌شده حذف می‌شوند.
                 </div>

@@ -1,4 +1,5 @@
 import { sortTableRecords } from "../../../utils/date";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "../../../api/client";
 import { getEmployees } from "../services/employeesApi";
@@ -64,8 +65,8 @@ export function EmployeeBankingPage() {
           {error}
         </div>
       ) : null}
-      <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
-        <table className="min-w-full text-right text-sm">
+      <TableContainer aria-label="اطلاعات بانکی کارکنان">
+<table className="min-w-full text-right text-sm">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-3">کارمند</th>
@@ -141,7 +142,7 @@ export function EmployeeBankingPage() {
             )}
           </tbody>
         </table>
-      </div>
+</TableContainer>
     </section>
   );
 }

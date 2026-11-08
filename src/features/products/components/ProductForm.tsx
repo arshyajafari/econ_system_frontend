@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { cloneElement, isValidElement, useId, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
+import { FormField } from "../../../design-system/components/FormField";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import type {
@@ -201,7 +203,8 @@ export function ProductForm({
             </select>
           </Field>
         </div>
-        <Field label="تصویر محصول">
+        <div className="ui-form-field">
+          <span className="ui-form-field__label">تصویر محصول</span>
           <ImageUploadField
             label=""
             value={form.image}
@@ -209,7 +212,7 @@ export function ProductForm({
             disabled={isSubmitting}
             onFileChange={(file) => update("image_file", file)}
           />
-        </Field>
+        </div>
         <Field label="توضیحات">
           <textarea
             value={form.description}
@@ -220,15 +223,15 @@ export function ProductForm({
           />
         </Field>
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
+          <Button variant="secondary"
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             انصراف
-          </button>
-          <button
+          </Button>
+          <Button variant="primary"
             type="submit"
             disabled={
               isSubmitting ||
@@ -245,7 +248,7 @@ export function ProductForm({
               : product
                 ? "ذخیره تغییرات"
                 : "ثبت محصول"}
-          </button>
+          </Button>
         </div>
       </form>
     </section>
@@ -261,13 +264,14 @@ function Field({
   required?: boolean;
   children: React.ReactNode;
 }) {
+  const id = useId();
+  const control = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+    : children;
+
   return (
-    <div>
-      <label className="mb-2 block text-sm font-medium text-gray-700">
-        {label}
-        {required ? <span className="mr-1 text-red-600">*</span> : null}
-      </label>
-      {children}
-    </div>
+    <FormField id={id} label={label} required={required}>
+      {control}
+    </FormField>
   );
 }

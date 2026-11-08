@@ -1,4 +1,6 @@
 import { formatJalaliDateTime } from '../../../utils/date';
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { getVisitStatusLabel, type Visit } from '../types/visit';
 
 type Props = {
@@ -33,13 +35,13 @@ export function VisitDetailsModal({ visit, onClose }: Props) {
                             جزئیات ویزیت
                         </h2>
                     </div>
-                    <button
+                    <Button variant="secondary"
                         type="button"
                         onClick={onClose}
                         className="rounded-lg border px-3 py-2 text-sm"
                     >
                         بستن
-                    </button>
+                    </Button>
                 </header>
 
                 <dl className="grid gap-3 sm:grid-cols-2">
@@ -80,8 +82,8 @@ export function VisitDetailsModal({ visit, onClose }: Props) {
                             نمونه‌ای برای این ویزیت ثبت نشده است.
                         </p>
                     ) : (
-                        <div className="overflow-x-auto rounded-lg border">
-                            <table className="min-w-full text-right text-sm">
+                        <TableContainer className="ui-table-container--embedded" aria-label="نمونه‌های ویزیت">
+<table className="min-w-full text-right text-sm">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-3 py-2">محصول</th>
@@ -109,7 +111,7 @@ export function VisitDetailsModal({ visit, onClose }: Props) {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+</TableContainer>
                     )}
                 </section>
             </section>

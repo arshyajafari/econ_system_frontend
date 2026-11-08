@@ -1,4 +1,5 @@
 import type { ProductBrand, ProductCategory, ProductStatus } from '../types/product';
+import { Button } from "../../../design-system/components/Button";
 import { PRODUCT_STATUS_OPTIONS } from '../types/product';
 
 type ProductFiltersProps = {
@@ -49,10 +50,10 @@ export function ProductFilters({
                     />
                 </div>
 
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="product-brand"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         برند
                     </label>
@@ -73,10 +74,10 @@ export function ProductFilters({
                     </select>
                 </div>
 
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="product-category"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         دسته‌بندی
                     </label>
@@ -97,10 +98,10 @@ export function ProductFilters({
                     </select>
                 </div>
 
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="product-status"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         وضعیت
                     </label>
@@ -125,13 +126,15 @@ export function ProductFilters({
             </div>
 
             <div className="ui-filter-actions">
-                <button
+                <Button
                     type="button"
+                    variant="secondary"
+                    size="sm"
                     onClick={onClear}
                     className="ui-filter-clear"
                 >
                     پاک کردن فیلترها
-                </button>
+                </Button>
             </div>
         </section>
     );

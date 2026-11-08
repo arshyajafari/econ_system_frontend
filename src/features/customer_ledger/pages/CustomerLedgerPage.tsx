@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { BackButton } from '../../../components/BackButton';
+import { Button } from '../../../design-system/components/Button';
 import { CustomerLedgerFilters } from '../components/CustomerLedgerFilters';
 import { CustomerLedgerSummary } from '../components/CustomerLedgerSummary';
 import { CustomerLedgerTable } from '../components/CustomerLedgerTable';
@@ -80,14 +81,15 @@ export function CustomerLedgerPage() {
                     </p>
                 </div>
                 <div className="w-full flex justify-end">
-                    <button
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={() => void loadLedger()}
                         disabled={isLoading}
                         className="shrink-0 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 md:px-4 md:py-2.5"
                     >
                         بروزرسانی
-                    </button>
+                    </Button>
                 </div>
             </div>
             {filterError ? (
@@ -105,13 +107,14 @@ export function CustomerLedgerPage() {
                     className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <span>{error}</span>
-                    <button
+                    <Button
+                        variant="danger"
                         type="button"
                         onClick={() => void loadLedger()}
                         className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
                     >
                         تلاش مجدد
-                    </button>
+                    </Button>
                 </div>
             ) : null}
             <CustomerLedgerFilters

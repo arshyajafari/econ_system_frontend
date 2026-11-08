@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
 import { getEmployeeDailyLocationCheckins, type EmployeeLocation } from "../api/employeeLocations";
@@ -50,13 +52,13 @@ export function EmployeeDailyLocationCheckinsPanel() {
         <div className="flex items-center gap-2">
           <label className="text-xs text-gray-500" htmlFor="daily-location-date">تاریخ</label>
           <JalaliDateInput id="daily-location-date" value={date} onChange={setDate} className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="۱۴۰۵/۰۸/۱۴" />
-          <button type="button" onClick={() => { setLoadedDate(null); setRefreshKey((value) => value + 1); }} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</button>
+          <Button size="sm" variant="secondary" type="button" onClick={() => { setLoadedDate(null); setRefreshKey((value) => value + 1); }} disabled={loading} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50">بروزرسانی</Button>
         </div>
       </div>
       {error ? <p role="alert" className="m-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
       {loading ? <p className="p-5 text-sm text-gray-500">در حال دریافت اطلاعات...</p> : rows.length === 0 ? <p className="p-5 text-sm text-gray-500">برای این تاریخ موقعیت روزانه‌ای ثبت نشده است.</p> : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px] text-right text-sm">
+        <TableContainer className="ui-table-container--embedded" aria-label="ثبت موقعیت روزانه">
+<table className="w-full min-w-[700px] text-right text-sm">
             <thead className="bg-gray-50 text-xs text-gray-500"><tr>
               <th className="px-4 py-3 font-medium">کارمند</th><th className="px-4 py-3 font-medium">زمان ثبت</th><th className="px-4 py-3 font-medium">دقت GPS</th><th className="px-4 py-3 font-medium">مختصات</th><th className="px-4 py-3 font-medium">نقشه</th>
             </tr></thead>
@@ -70,7 +72,7 @@ export function EmployeeDailyLocationCheckinsPanel() {
               </tr>)}
             </tbody>
           </table>
-        </div>
+</TableContainer>
       )}
     </section>
   );

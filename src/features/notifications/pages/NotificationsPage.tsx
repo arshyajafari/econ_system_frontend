@@ -1,4 +1,5 @@
 import { sortTableRecords } from "../../../utils/date";
+import { Button } from "../../../design-system/components/Button";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { normalizeApiError } from "../../../api/client";
@@ -223,7 +224,7 @@ export function NotificationsPage() {
               پیام‌ها و اعلان‌ها
             </h1>
           </div>
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => void markAllRead()}
             disabled={
@@ -232,7 +233,7 @@ export function NotificationsPage() {
             className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
           >
             علامت همه به‌عنوان خوانده‌شده
-          </button>
+          </Button>
         </div>
 
         {error ? (
@@ -271,7 +272,7 @@ export function NotificationsPage() {
                   };
 
                   return (
-                    <button
+                    <Button variant="secondary" size="md"
                       key={target}
                       type="button"
                       onClick={() =>
@@ -292,7 +293,7 @@ export function NotificationsPage() {
                             ? "انتخاب یک یا چند کاربر"
                             : "انتخاب پوزیشن کاری دریافت‌کننده"}
                       </span>
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -432,13 +433,13 @@ export function NotificationsPage() {
                 <span className="text-xs text-slate-400">
                   گیرندگان: {selectedRecipientLabel}
                 </span>
-                <button
+                <Button variant="primary" size="md"
                   type="submit"
                   disabled={actionLoading || !canSubmit}
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
                 >
                   {actionLoading ? "در حال ارسال..." : "ارسال پیام"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -447,7 +448,7 @@ export function NotificationsPage() {
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
             <h2 className="font-bold text-slate-900">صندوق پیام‌ها</h2>
-            <button
+            <Button variant="secondary" size="md"
               type="button"
               onClick={() => void loadNotifications(page)}
               disabled={loading || actionLoading}
@@ -455,7 +456,7 @@ export function NotificationsPage() {
               aria-label="بروزرسانی پیام‌ها"
             >
               بروزرسانی
-            </button>
+            </Button>
           </div>
 
           {loading ? (
@@ -517,7 +518,7 @@ export function NotificationsPage() {
                       </time>
                       {canManageMessages && notification.can_manage ? (
                         <>
-                          <button
+                          <Button variant="edit" size="md"
                             type="button"
                             onClick={(event) => {
                               event.stopPropagation();
@@ -532,8 +533,8 @@ export function NotificationsPage() {
                             className="ui-btn-edit rounded-lg border px-2 py-1 text-xs"
                           >
                             ویرایش
-                          </button>
-                          <button
+                          </Button>
+                          <Button variant="danger" size="md"
                             type="button"
                             onClick={(event) => {
                               event.stopPropagation();
@@ -542,7 +543,7 @@ export function NotificationsPage() {
                             className="ui-btn-delete rounded-lg border px-2 py-1 text-xs"
                           >
                             حذف
-                          </button>
+                          </Button>
                         </>
                       ) : null}
                     </div>

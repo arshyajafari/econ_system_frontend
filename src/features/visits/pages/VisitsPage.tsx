@@ -1,4 +1,5 @@
 import { sortTableRecords } from '../../../utils/date';
+import { Button } from "../../../design-system/components/Button";
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
@@ -240,15 +241,15 @@ export function VisitsPage() {
                         <h1 className="text-2xl font-bold">بازدیدها</h1>
                     </div>
                     <div className="flex gap-2">
-                        <button
+                        <Button variant="secondary" size="md"
                             type="button"
                             onClick={() => void load()}
                             disabled={loading}
                             className="rounded-lg border px-4 py-2"
                         >
                             بروزرسانی
-                        </button>
-                        <button
+                        </Button>
+                        <Button variant="primary" size="md"
                             type="button"
                             onClick={() => {
                                 setEditing(null);
@@ -259,7 +260,7 @@ export function VisitsPage() {
                             className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                         >
                             بازدید جدید
-                        </button>
+                        </Button>
                     </div>
                 </header>
 
@@ -384,9 +385,9 @@ export function VisitsPage() {
                             )}{' '}
                             نمونه در این صفحه
                         </span>
-                        <button type="button" className="ui-filter-clear" onClick={reset}>
+                        <Button variant="secondary" size="md" type="button" className="ui-filter-clear" onClick={reset}>
                             پاک کردن فیلترها
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -485,17 +486,17 @@ export function VisitsPage() {
                                             <td className="px-4 py-3 align-top">
                                                 <div className="flex flex-wrap gap-2">
                                                     {index === 0 && (
-                                                        <button
+                                                        <Button variant="view" size="sm"
                                                             type="button"
                                                             onClick={() => setViewing(v)}
                                                             className="ui-btn-view rounded border px-2 py-1 text-xs"
                                                         >
                                                             مشاهده
-                                                        </button>
+                                                        </Button>
                                                     )}
                                                     {index === 0 && v.status === 'draft' && (
                                                         <>
-                                                            <button
+                                                            <Button variant="edit" size="sm"
                                                                 type="button"
                                                                 onClick={() => {
                                                                     void editVisit(v);
@@ -503,8 +504,8 @@ export function VisitsPage() {
                                                                 className="ui-btn-edit rounded border px-2 py-1 text-xs"
                                                             >
                                                                 ویرایش
-                                                            </button>
-                                                            <button
+                                                            </Button>
+                                                            <Button variant="success" size="sm"
                                                                 type="button"
                                                                 disabled={actionId === v.id}
                                                                 onClick={() =>
@@ -516,8 +517,8 @@ export function VisitsPage() {
                                                                 className="ui-btn-success rounded border px-2 py-1 text-xs"
                                                             >
                                                                 تکمیل
-                                                            </button>
-                                                            <button
+                                                            </Button>
+                                                            <Button variant="danger" size="sm"
                                                                 type="button"
                                                                 disabled={actionId === v.id}
                                                                 onClick={() =>
@@ -529,18 +530,18 @@ export function VisitsPage() {
                                                                 className="ui-btn-delete rounded border px-2 py-1 text-xs"
                                                             >
                                                                 لغو
-                                                            </button>
+                                                            </Button>
                                                         </>
                                                     )}
                                                     {index === 0 && isAdmin && (
-                                                        <button
+                                                        <Button variant="danger" size="sm"
                                                             type="button"
                                                             disabled={actionId === v.id}
                                                             onClick={() => setDeleteTarget(v)}
                                                             className="ui-btn-delete rounded border px-2 py-1 text-xs"
                                                         >
                                                             حذف
-                                                        </button>
+                                                        </Button>
                                                     )}
                                                 </div>
                                             </td>

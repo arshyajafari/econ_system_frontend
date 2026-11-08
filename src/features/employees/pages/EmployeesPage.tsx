@@ -1,4 +1,6 @@
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import { sortTableRecords } from '../../../utils/date';
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
@@ -153,7 +155,7 @@ export function EmployeesPage() {
                     <h1 className="text-2xl font-bold text-gray-900">کارکنان</h1>
                 </div>
                 <div className="flex gap-2">
-                    <button
+                    <Button variant="secondary" size="md"
                         type="button"
                         onClick={() => {
                             void load();
@@ -162,15 +164,15 @@ export function EmployeesPage() {
                         className="rounded-lg border px-4 py-2.5 text-sm disabled:opacity-60"
                     >
                         بروزرسانی
-                    </button>
+                    </Button>
                     {isAdmin ? (
-                        <button
+                        <Button variant="primary" size="md"
                             type="button"
                             onClick={create}
                             className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white"
                         >
                             کارمند جدید
-                        </button>
+                        </Button>
                     ) : null}
                 </div>
             </div>
@@ -231,14 +233,14 @@ export function EmployeesPage() {
                     </label>
                 </div>
                 <div className="ui-filter-actions">
-                    <button type="button" onClick={reset} className="ui-filter-clear">پاک کردن فیلترها</button>
+                    <Button variant="secondary" size="md" type="button" onClick={reset} className="ui-filter-clear">پاک کردن فیلترها</Button>
                 </div>
             </div>
             <div className="text-sm text-gray-500">
                 {new Intl.NumberFormat('fa-IR').format(total)} کارمند
             </div>
-            <div className="overflow-x-auto rounded-xl border bg-white">
-                <table className="min-w-full text-right text-sm">
+            <TableContainer aria-label="جدول کارکنان">
+<table className="min-w-full text-right text-sm">
                     <thead className="bg-gray-50">
                         <tr>
                             {[
@@ -340,22 +342,22 @@ export function EmployeesPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex gap-2">
-                                            <button
+                                            <Button variant="edit" size="sm"
                                                 type="button"
                                                 disabled={Boolean(busyId)}
                                                 onClick={() => edit(item)}
                                                 className="ui-btn-edit rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                                             >
                                                 ویرایش
-                                            </button>
-                                            <button
+                                            </Button>
+                                            <Button variant="danger" size="sm"
                                                 type="button"
                                                 disabled={busyId === item.id}
                                                 onClick={() => requestDelete(item)}
                                                 className="ui-btn-delete rounded-md border px-3 py-1.5 text-xs"
                                             >
                                                 حذف
-                                            </button>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>
@@ -363,7 +365,7 @@ export function EmployeesPage() {
                         )}
                     </tbody>
                 </table>
-            </div>
+</TableContainer>
             <ConfirmModal
                 open={deleteTarget !== null}
                 title="حذف کارمند"

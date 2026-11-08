@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import { ApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
@@ -264,14 +265,14 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                         اضافه کنید.
                     </p>
                 </div>
-                <button
+                <Button variant="secondary"
                     type="button"
                     onClick={onCancel}
                     disabled={saving}
                     className="rounded-lg border bg-white px-4 py-2 text-sm"
                 >
                     بستن فرم
-                </button>
+                </Button>
             </header>
 
             {doctorFormOpen ? (
@@ -292,7 +293,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                 <section className="rounded-xl border bg-white p-4">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                         <h3 className="font-semibold">۱. انتخاب پزشک</h3>
-                        <button
+                        <Button variant="secondary"
                             type="button"
                             disabled={saving || Boolean(savedVisit)}
                             onClick={() => {
@@ -302,7 +303,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                             className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-50"
                         >
                             + پزشک جدید
-                        </button>
+                        </Button>
                     </div>
                     <SearchableDoctorSelect
                         value={doctor?.id ?? ''}
@@ -528,14 +529,14 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 </span>
                                             ) : null}
                                             {!isScientificVisitor ? (
-                                                <button
+                                                <Button variant="danger"
                                                     type="button"
                                                     onClick={() => removeSample(sample.key)}
                                                     disabled={saving || sample.saved}
                                                     className="rounded-lg border px-3 py-2 text-sm text-red-700 disabled:opacity-40"
                                                 >
                                                     حذف
-                                                </button>
+                                                </Button>
                                             ) : null}
                                         </div>
                                     </div>
@@ -558,7 +559,7 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     </div>
                 ) : null}
                 <div className="flex flex-wrap gap-2">
-                    <button
+                    <Button variant="primary"
                         type="submit"
                         disabled={saving || doctorFormOpen || productsLoading}
                         className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
@@ -568,15 +569,15 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                             : savedVisit
                             ? 'ادامه ثبت سمپل‌های باقی‌مانده'
                             : 'ثبت ویزیت و سمپل‌ها'}
-                    </button>
-                    <button
+                    </Button>
+                    <Button variant="secondary"
                         type="button"
                         onClick={onCancel}
                         disabled={saving}
                         className="rounded-lg border bg-white px-5 py-2.5 text-sm"
                     >
                         انصراف
-                    </button>
+                    </Button>
                 </div>
             </form>
         </section>

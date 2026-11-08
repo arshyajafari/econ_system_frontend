@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react';
+import { Button } from "../../../design-system/components/Button";
 import { useState } from 'react';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
@@ -100,20 +101,21 @@ export function VisitForm({
                 </div>
             )}
             <div className="flex gap-2">
-                <button
+                <Button variant="primary"
+                    type="submit"
                     disabled={isSubmitting}
                     className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                 >
                     {isSubmitting ? 'در حال ذخیره…' : visit ? 'ذخیره تغییرات' : 'ثبت بازدید'}
-                </button>
-                <button
+                </Button>
+                <Button variant="secondary"
                     type="button"
                     disabled={isSubmitting}
                     onClick={onCancel}
                     className="rounded-lg border px-4 py-2"
                 >
                     انصراف
-                </button>
+                </Button>
             </div>
         </form>
     );

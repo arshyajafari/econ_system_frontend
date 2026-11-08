@@ -1,4 +1,6 @@
 import { sortTableRecords } from '../../../utils/date';
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -329,7 +331,8 @@ export function ScientificVisitorInventoryPage() {
                         </p>
                     ) : null}
 
-                    <button
+                    <Button variant="primary"
+                        type="submit"
                         disabled={
                             saving ||
                             !employeeId ||
@@ -341,12 +344,12 @@ export function ScientificVisitorInventoryPage() {
                         className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
                     >
                         {saving ? 'در حال ثبت...' : 'تحویل محصول'}
-                    </button>
+                    </Button>
                 </form>
             ) : null}
 
-            <div className="overflow-x-auto rounded-xl border bg-white">
-                <table className="min-w-full text-right text-sm">
+            <TableContainer aria-label="جدول موجودی علمی">
+<table className="min-w-full text-right text-sm">
                     <thead className="bg-gray-50">
                         <tr>
                             {(isManager
@@ -434,17 +437,17 @@ export function ScientificVisitorInventoryPage() {
                                                         سابقه تاریخی؛ عملیات محدود
                                                     </span>
                                                 ) : (
-                                                    <button
+                                                    <Button variant="edit"
                                                         type="button"
                                                         onClick={() => openEdit(item)}
                                                         disabled={saving}
                                                         className="ui-btn-edit rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                     >
                                                         ویرایش
-                                                    </button>
+                                                    </Button>
                                                 )}
                                                 {!item.is_legacy ? (
-                                                    <button
+                                                    <Button variant="danger"
                                                         type="button"
                                                         onClick={() => setDeleteTarget(item)}
                                                         disabled={saving}
@@ -452,7 +455,7 @@ export function ScientificVisitorInventoryPage() {
                                                         className="ui-btn-delete rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
                                                     >
                                                         حذف
-                                                    </button>
+                                                    </Button>
                                                 ) : null}
                                             </div>
                                         </td>
@@ -462,7 +465,7 @@ export function ScientificVisitorInventoryPage() {
                         )}
                     </tbody>
                 </table>
-            </div>
+</TableContainer>
 
             {editingItem ? (
                 <div
@@ -532,21 +535,21 @@ export function ScientificVisitorInventoryPage() {
                         </label>
 
                         <div className="flex justify-end gap-2 mt-2.5">
-                            <button
+                            <Button variant="secondary"
                                 type="button"
                                 onClick={closeEdit}
                                 disabled={saving}
                                 className="rounded-lg border px-4 py-2"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="primary"
                                 type="submit"
                                 disabled={saving}
                                 className="rounded-lg bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
                             >
                                 {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
@@ -574,22 +577,22 @@ export function ScientificVisitorInventoryPage() {
                             </p>
                         </div>
                         <div className="flex justify-end gap-2">
-                            <button
+                            <Button variant="secondary"
                                 type="button"
                                 onClick={() => setDeleteTarget(null)}
                                 disabled={saving}
                                 className="ui-btn-secondary rounded-lg border px-4 py-2 disabled:opacity-50"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="danger"
                                 type="button"
                                 onClick={() => void confirmDelete()}
                                 disabled={saving}
                                 className="ui-btn-delete rounded-lg border px-4 py-2 disabled:opacity-50"
                             >
                                 {saving ? 'در حال حذف...' : 'حذف موجودی'}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

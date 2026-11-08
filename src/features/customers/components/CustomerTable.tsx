@@ -1,3 +1,5 @@
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { sortTableRecords } from "../../../utils/date";
 import type { Customer, CustomerStatus } from "../types/customer";
 
@@ -60,8 +62,7 @@ export function CustomerTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="overflow-x-auto">
+    <TableContainer>
         <table className="min-w-full text-right text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
@@ -149,35 +150,20 @@ export function CustomerTable({
 
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => onViewLedger(customer)}
-                        disabled={isPending}
-                        className="ui-btn-view rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
-                      >
+                      <Button size="sm" variant="view" onClick={() => onViewLedger(customer)} disabled={isPending}>
                         حساب
-                      </button>
+                      </Button>
 
                       {canEdit ? (
-                        <button
-                          type="button"
-                          onClick={() => onEdit(customer)}
-                          disabled={isPending}
-                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
-                        >
+                        <Button size="sm" variant="edit" onClick={() => onEdit(customer)} disabled={isPending}>
                           ویرایش
-                        </button>
+                        </Button>
                       ) : null}
 
                       {isAdmin ? (
-                        <button
-                          type="button"
-                          onClick={() => onDelete(customer)}
-                          disabled={isPending}
-                          className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
-                        >
+                        <Button size="sm" variant="danger" onClick={() => onDelete(customer)} disabled={isPending} loading={isDeletePending}>
                           {isDeletePending ? "در حال حذف..." : "حذف"}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                   </td>
@@ -186,7 +172,6 @@ export function CustomerTable({
             })}
           </tbody>
         </table>
-      </div>
-    </div>
+      </TableContainer>
   );
 }

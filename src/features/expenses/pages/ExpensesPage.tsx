@@ -1,4 +1,6 @@
 import { sortTableRecords } from "../../../utils/date";
+import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from "../../../design-system/components/Button";
 import {
   useCallback,
   useEffect,
@@ -242,22 +244,22 @@ export function ExpensesPage() {
           <h1 className="text-2xl font-bold text-gray-900">هزینه‌ها</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => void load()}
             disabled={loading}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
-          </button>
+          </Button>
           {isManager ? (
-            <button
+            <Button variant="primary" size="md"
               type="button"
               onClick={openCreate}
               className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
             >
               ثبت هزینه
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>
@@ -285,14 +287,14 @@ export function ExpensesPage() {
                 هزینه‌ها مستقل از فاکتور و پرداخت مشتری ثبت می‌شوند.
               </p>
             </div>
-            <button
+            <Button variant="secondary" size="md"
               type="button"
               onClick={closeForm}
               disabled={saving}
               className="text-sm text-gray-500 hover:text-gray-900"
             >
               بستن
-            </button>
+            </Button>
           </div>
 
           {formError ? (
@@ -429,21 +431,21 @@ export function ExpensesPage() {
           </div>
 
           <div className="mt-5 flex gap-2">
-            <button
+            <Button variant="primary" size="md"
               type="submit"
               disabled={saving}
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-60"
             >
               {saving ? "در حال ذخیره..." : "ذخیره هزینه"}
-            </button>
-            <button
+            </Button>
+            <Button variant="secondary" size="md"
               type="button"
               onClick={closeForm}
               disabled={saving}
               className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               انصراف
-            </button>
+            </Button>
           </div>
         </form>
       ) : null}
@@ -478,7 +480,7 @@ export function ExpensesPage() {
           </label>
         </div>
         <div className="ui-filter-actions">
-          <button type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</button>
+          <Button variant="secondary" size="md" type="button" onClick={resetFilters} className="ui-filter-clear">پاک کردن فیلترها</Button>
         </div>
       </div>
 
@@ -487,8 +489,8 @@ export function ExpensesPage() {
         <span>مجموع این صفحه: {numberFormatter.format(pageTotal)}</span>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="min-w-[1050px] w-full text-sm">
+      <TableContainer aria-label="جدول هزینه‌ها">
+<table className="min-w-[1050px] w-full text-sm">
           <thead className="bg-gray-50 text-right text-gray-600">
             <tr>
               <th className="px-5 py-3 font-medium">عنوان</th>
@@ -547,16 +549,16 @@ export function ExpensesPage() {
                     </td>
                     <td className="px-5 py-4 text-left">
                       <div className="flex justify-end gap-2">
-                        <button
+                        <Button variant="edit" size="sm"
                           type="button"
                           onClick={() => openEdit(expense)}
                           disabled={!isManager || deletingId !== null}
                           className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                         >
                           ویرایش
-                        </button>
+                        </Button>
                         {isAdmin ? (
-                          <button
+                          <Button variant="danger" size="sm"
                             type="button"
                             onClick={() => void handleDelete(expense)}
                             disabled={deletingId !== null}
@@ -565,7 +567,7 @@ export function ExpensesPage() {
                             {deletingId === expense.id
                               ? "در حال حذف..."
                               : "حذف"}
-                          </button>
+                          </Button>
                         ) : null}
                       </div>
                     </td>
@@ -574,7 +576,7 @@ export function ExpensesPage() {
               : null}
           </tbody>
         </table>
-      </div>
+</TableContainer>
 
       {
         <Pagination

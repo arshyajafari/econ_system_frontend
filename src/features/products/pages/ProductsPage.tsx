@@ -1,4 +1,5 @@
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
+import { Button } from "../../../design-system/components/Button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 import { useAuth } from "../../auth";
@@ -297,7 +298,7 @@ export function ProductsPage() {
         </div>
 
         <div className="flex gap-2">
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => {
               void loadProducts();
@@ -306,10 +307,10 @@ export function ProductsPage() {
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
-          </button>
+          </Button>
 
           {canEdit ? (
-            <button
+            <Button variant="primary" size="md"
               type="button"
               onClick={openCreateForm}
               disabled={
@@ -320,7 +321,7 @@ export function ProductsPage() {
               className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               محصول جدید
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>
@@ -333,7 +334,7 @@ export function ProductsPage() {
         >
           <span>{error}</span>
 
-          <button
+          <Button variant="secondary" size="md"
             type="button"
             onClick={() => {
               void Promise.all([loadProducts(), loadLookups()]);
@@ -341,7 +342,7 @@ export function ProductsPage() {
             className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
           >
             تلاش مجدد
-          </button>
+          </Button>
         </div>
       ) : null}
 

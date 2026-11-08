@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from "../../../design-system/components/TableContainer";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { ApiError } from '../../../api/client';
@@ -140,13 +142,13 @@ export function OrderDetailsPage() {
                 </div>
                 {order.status === 'completed' ? (
                     <div className="w-full flex justify-end">
-                        <button
+                        <Button variant="primary"
                             type="button"
                             onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)}
                             className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                         >
                             ثبت مرجوعی
-                        </button>
+                        </Button>
                     </div>
                 ) : null}
             </div>
@@ -157,13 +159,13 @@ export function OrderDetailsPage() {
                     className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <span>{error}</span>
-                    <button
+                    <Button variant="secondary"
                         type="button"
                         onClick={() => void loadOrder()}
                         className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
                     >
                         تلاش مجدد
-                    </button>
+                    </Button>
                 </div>
             ) : null}
             <div className="grid gap-4 md:grid-cols-2">
@@ -243,8 +245,8 @@ export function OrderDetailsPage() {
                         </span>
                     </div>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="min-w-[1250px] w-full text-sm">
+                <TableContainer className="ui-table-container--embedded" aria-label="اقلام سفارش">
+<table className="min-w-[1250px] w-full text-sm">
                         <thead className="bg-gray-50 text-right text-gray-600">
                             <tr>
                                 <th className="px-5 py-3 font-medium">محصول</th>
@@ -380,7 +382,7 @@ export function OrderDetailsPage() {
                             </tr>
                         </tfoot>
                     </table>
-                </div>
+</TableContainer>
             </div>
             <ConfirmModal
                 open={cancelOpen}

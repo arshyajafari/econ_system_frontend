@@ -1,4 +1,5 @@
 import type { Order, OrderStatusAction } from "../types/order";
+import { Button } from "../../../design-system/components/Button";
 
 type OrderStatusActionsProps = {
   order: Order;
@@ -74,15 +75,16 @@ export function OrderStatusActions({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {actions.map((item) => (
-        <button
+        <Button
           key={item.action}
+          variant={item.action === "cancel" ? "danger" : item.action === "confirm" || item.action === "complete" ? "success" : "primary"}
           type="button"
           disabled={disabled}
           onClick={() => onAction(item.action)}
           className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 ${item.className}`}
         >
           {item.label}
-        </button>
+        </Button>
       ))}
     </div>
   );

@@ -1,4 +1,5 @@
 import { sortTableRecords } from '../../../utils/date';
+import { Button } from "../../../design-system/components/Button";
 import { useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
@@ -236,7 +237,7 @@ export function DeliveriesPage() {
                     <h1 className="text-2xl font-bold">ارسال‌ها</h1>
                 </div>
                 {canManageForm ? (
-                    <button
+                    <Button variant="primary" size="md"
                         type="button"
                         onClick={() => {
                             setEditing(null);
@@ -245,7 +246,7 @@ export function DeliveriesPage() {
                         className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                     >
                         ارسال جدید
-                    </button>
+                    </Button>
                 ) : null}
             </header>
             {error && (
@@ -295,14 +296,14 @@ export function DeliveriesPage() {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <button
+                        <Button variant="primary" type="submit"
                             disabled={saving}
                             className="rounded-lg bg-gray-900 px-4 py-2 text-white"
                         >
                             {editing ? 'ذخیره تغییرات' : 'ثبت ارسال'}
-                        </button>
+                        </Button>
                         {editing && (
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={saving}
                                 onClick={() => {
@@ -312,7 +313,7 @@ export function DeliveriesPage() {
                                 className="rounded-lg border px-4 py-2"
                             >
                                 انصراف
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </form>
@@ -349,7 +350,7 @@ export function DeliveriesPage() {
                     </label>
                 </div>
                 <div className="ui-filter-actions justify-between">
-                    <button
+                    <Button variant="secondary" size="md"
                         type="button"
                         onClick={() => {
                             setSearch('');
@@ -359,10 +360,10 @@ export function DeliveriesPage() {
                         className="ui-filter-clear"
                     >
                         پاک کردن فیلترها
-                    </button>
-                    <button type="button" onClick={() => void load()} className="ui-filter-clear">
+                    </Button>
+                    <Button variant="secondary" size="md" type="button" onClick={() => void load()} className="ui-filter-clear">
                         بروزرسانی
-                    </button>
+                    </Button>
                 </div>
             </div>
             <div className="text-sm text-gray-500">
@@ -427,27 +428,27 @@ export function DeliveriesPage() {
                                         <div className="flex flex-wrap items-center gap-1.5">
                                             {canOperate ? (
                                                 <>
-                                                    <button
+                                                    <Button variant="view" size="sm"
                                                         type="button"
                                                         disabled={detailsLoading}
                                                         onClick={() => void openDetails(d)}
                                                         className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
                                                     >
                                                         مشاهده
-                                                    </button>
+                                                    </Button>
                                                     {d.status === 'pending' && (
                                                         <>
                                                             {isAdmin ? (
-                                                                <button
+                                                                <Button variant="edit" size="sm"
                                                                     type="button"
                                                                     onClick={() => startEdit(d)}
                                                                     className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                                 >
                                                                     ویرایش
-                                                                </button>
+                                                                </Button>
                                                             ) : null}
                                                             {isAdmin ? (
-                                                                <button
+                                                                <Button variant="danger" size="sm"
                                                                     type="button"
                                                                     onClick={() =>
                                                                         setDeleteTarget(d)
@@ -456,10 +457,10 @@ export function DeliveriesPage() {
                                                                     className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-60"
                                                                 >
                                                                     حذف
-                                                                </button>
+                                                                </Button>
                                                             ) : null}
                                                             {canApproveDelivery ? (
-                                                                <button
+                                                                <Button variant="success" size="sm"
                                                                     type="button"
                                                                     disabled={actionId === d.id}
                                                                     onClick={() =>
@@ -471,10 +472,10 @@ export function DeliveriesPage() {
                                                                     className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                                 >
                                                                     آماده‌سازی
-                                                                </button>
+                                                                </Button>
                                                             ) : null}
                                                             {canApproveDelivery ? (
-                                                                <button
+                                                                <Button variant="danger" size="sm"
                                                                     type="button"
                                                                     disabled={actionId === d.id}
                                                                     onClick={() =>
@@ -486,14 +487,14 @@ export function DeliveriesPage() {
                                                                     className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                                 >
                                                                     لغو
-                                                                </button>
+                                                                </Button>
                                                             ) : null}
                                                         </>
                                                     )}
                                                     {d.status === 'preparing' &&
                                                         canApproveDelivery && (
                                                             <>
-                                                                <button
+                                                                <Button variant="success" size="sm"
                                                                     type="button"
                                                                     disabled={actionId === d.id}
                                                                     onClick={() =>
@@ -505,8 +506,8 @@ export function DeliveriesPage() {
                                                                     className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                                 >
                                                                     ارسال شد
-                                                                </button>
-                                                                <button
+                                                                </Button>
+                                                                <Button variant="danger" size="sm"
                                                                     type="button"
                                                                     disabled={actionId === d.id}
                                                                     onClick={() =>
@@ -518,12 +519,12 @@ export function DeliveriesPage() {
                                                                     className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                                 >
                                                                     لغو
-                                                                </button>
+                                                                </Button>
                                                             </>
                                                         )}
                                                     {d.status === 'shipped' &&
                                                         (isDeliveryOperator || isAdmin) && (
-                                                            <button
+                                                            <Button variant="success" size="sm"
                                                                 type="button"
                                                                 disabled={actionId === d.id}
                                                                 onClick={() => {
@@ -546,7 +547,7 @@ export function DeliveriesPage() {
                                                                 className="ui-btn-success rounded-lg border px-2.5 py-1.5 text-xs font-medium"
                                                             >
                                                                 تکمیل شد
-                                                            </button>
+                                                            </Button>
                                                         )}
                                                 </>
                                             ) : (
@@ -591,13 +592,13 @@ export function DeliveriesPage() {
                                     {selectedDelivery.order?.code ?? 'بدون سفارش'}
                                 </p>
                             </div>
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 onClick={() => setSelectedDelivery(null)}
                                 className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                             >
                                 بستن
-                            </button>
+                            </Button>
                         </div>
                         <div className="grid gap-4 p-5 md:grid-cols-2">
                             <div className="rounded-xl bg-gray-50 p-4">
@@ -791,21 +792,21 @@ export function DeliveriesPage() {
                             </label>
                         </div>
                         <div className="flex flex-col-reverse gap-2 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={actionId !== null}
                                 onClick={() => setHandoffTarget(null)}
                                 className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="primary" size="md"
                                 type="submit"
                                 disabled={actionId !== null || !handoffName.trim()}
                                 className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {actionId ? 'در حال ثبت...' : 'تأیید تحویل'}
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>

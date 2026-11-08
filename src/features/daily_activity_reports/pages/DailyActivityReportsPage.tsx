@@ -379,19 +379,19 @@ export function DailyActivityReportsPage() {
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <button
+                        <Button variant="secondary" size="md"
                             type="button"
                             onClick={() => setFormOpen(false)}
                             className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm"
                         >
                             انصراف
-                        </button>
-                        <button
+                        </Button>
+                        <Button variant="primary" type="submit"
                             disabled={saving}
                             className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"
                         >
                             {saving ? 'در حال ذخیره...' : editing ? 'ذخیره تغییرات' : 'ثبت گزارش'}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             )}
@@ -458,13 +458,13 @@ export function DailyActivityReportsPage() {
                                     {viewing.organization_name} · {dateLabel(viewing.visit_date)}
                                 </p>
                             </div>
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 onClick={() => setViewing(null)}
                                 className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600"
                             >
                                 بستن
-                            </button>
+                            </Button>
                         </div>
                         {viewLoading ? (
                             <p className="py-10 text-center text-sm text-slate-500">
@@ -551,22 +551,22 @@ export function DailyActivityReportsPage() {
                             نیست.
                         </p>
                         <div className="mt-5 flex justify-end gap-2">
-                            <button
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={deleting}
                                 onClick={() => setDeleteTarget(null)}
                                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm"
                             >
                                 انصراف
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="secondary" size="md"
                                 type="button"
                                 disabled={deleting}
                                 onClick={() => void confirmDelete()}
                                 className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                             >
                                 {deleting ? 'در حال حذف...' : 'حذف گزارش'}
-                            </button>
+                            </Button>
                         </div>
                     </section>
                 </div>

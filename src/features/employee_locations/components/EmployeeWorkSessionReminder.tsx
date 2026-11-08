@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "../../../design-system/components/Button";
 import { getMyWorkSession } from "../api/employeeLocations";
 
 type ReminderKind = "start" | "end";
@@ -109,33 +110,33 @@ export function EmployeeWorkSessionReminder({
               : "برای ثبت دقیق زمان و موقعیت شروع فعالیت، لطفاً مأموریت کاری خود را در سامانه آغاز کنید."}
           </p>
         </div>
-        <button
+        <Button size="sm" variant="secondary"
           type="button"
           aria-label="بستن یادآوری"
           onClick={() => setReminder(null)}
           className="rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-100"
         >
           ×
-        </button>
+        </Button>
       </div>
       <div className="mt-3 flex gap-2">
-        <button
+        <Button variant="primary"
           type="button"
           onClick={() => {
             setReminder(null);
             onOpenTracker();
           }}
-          className="flex-1 rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+          className="flex-1"
         >
           نمایش بخش ثبت مأموریت
-        </button>
-        <button
+        </Button>
+        <Button variant="secondary"
           type="button"
           onClick={() => setReminder(null)}
           className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
         >
           فعلاً نه
-        </button>
+        </Button>
       </div>
       {isEnding ? (
         <p className="mt-2 text-[11px] leading-5 text-slate-500">

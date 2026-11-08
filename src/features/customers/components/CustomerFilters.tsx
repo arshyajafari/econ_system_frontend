@@ -1,3 +1,4 @@
+import { Button } from "../../../design-system/components/Button";
 import type { CustomerStatus, CustomerType } from "../types/customer";
 
 type CustomerFiltersProps = {
@@ -61,10 +62,10 @@ export function CustomerFilters({
           />
         </div>
 
-        <div>
-          <label
+        <div className="ui-filter-field">
+<label
             htmlFor="customer-type"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="ui-filter-label"
           >
             نوع مشتری
           </label>
@@ -87,10 +88,10 @@ export function CustomerFilters({
           </select>
         </div>
 
-        <div>
-          <label
+        <div className="ui-filter-field">
+<label
             htmlFor="customer-status"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="ui-filter-label"
           >
             وضعیت
           </label>
@@ -115,13 +116,15 @@ export function CustomerFilters({
       </div>
 
       <div className="ui-filter-actions">
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={onClear}
           className="ui-filter-clear"
         >
           پاک کردن فیلترها
-        </button>
+        </Button>
       </div>
     </section>
   );

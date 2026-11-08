@@ -1,4 +1,5 @@
 import { SearchableCustomerSelect } from '../../../components/SearchableCustomerSelect';
+import { Button } from "../../../design-system/components/Button";
 import { searchCustomers } from '../../customers/services/customersApi';
 import type { OrderEmployeeOption, OrderStatus } from '../types/order';
 import { ORDER_STATUS_OPTIONS } from '../types/order';
@@ -34,8 +35,8 @@ export function OrderFilters({
     return (
         <section className="ui-filter-panel">
             <div className="ui-filter-grid grid-cols-1 md:grid-cols-2">
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="order-search"
                         className="ui-filter-label"
                     >
@@ -52,10 +53,10 @@ export function OrderFilters({
                     />
                 </div>
 
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="order-status"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         وضعیت
                     </label>
@@ -76,8 +77,8 @@ export function OrderFilters({
                     </select>
                 </div>
 
-                <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">مشتری</label>
+                <div className="ui-filter-field">
+<label className="ui-filter-label">مشتری</label>
                     <SearchableCustomerSelect
                         value={customerId}
                         searchCustomers={searchCustomers}
@@ -86,10 +87,10 @@ export function OrderFilters({
                     />
                 </div>
 
-                <div>
-                    <label
+                <div className="ui-filter-field">
+<label
                         htmlFor="order-sales-employee"
-                        className="mb-2 block text-sm font-medium text-gray-700"
+                        className="ui-filter-label"
                     >
                         کارشناس فروش
                     </label>
@@ -112,13 +113,15 @@ export function OrderFilters({
             </div>
 
             <div className="ui-filter-actions">
-                <button
+                <Button
                     type="button"
+                    variant="secondary"
+                    size="sm"
                     onClick={onClear}
                     className="ui-filter-clear"
                 >
                     پاک کردن فیلترها
-                </button>
+                </Button>
             </div>
         </section>
     );

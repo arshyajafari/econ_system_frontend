@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getMyDailyLocationPointCount } from "../api/employeeLocations";
+import { Button } from "../../../design-system/components/Button";
 
 type Props = {
   onOpenTracker: () => void;
@@ -47,6 +48,7 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
     : isUnknown
       ? "وضعیت نامشخص"
       : (pointsCount ?? 0).toLocaleString("fa-IR") + " نقطه امروز";
+  const toneVariant = hasPoints ? "success" : isUnknown ? "secondary" : "warning";
   const toneClass = hasPoints
     ? {
         button: "border-emerald-200 bg-gradient-to-l from-emerald-50 to-white text-emerald-900 focus:ring-emerald-100",
@@ -66,12 +68,14 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
         };
 
   return (
-    <button
+    <Button
+      variant={toneVariant}
+      size="md"
       type="button"
       onClick={onOpenTracker}
       aria-label={"وضعیت ثبت موقعیت امروز: " + countLabel + ". باز کردن بخش ثبت مأموریت"}
       title="برای مشاهده وضعیت و ثبت مأموریت کلیک کنید"
-      className={"group flex min-h-10 max-w-[136px] shrink-0 items-center gap-1.5 rounded-lg border px-2 py-1.5 text-right shadow-sm transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 sm:min-h-11 sm:max-w-none sm:gap-2 sm:rounded-xl sm:px-3 sm:py-2 sm:focus:ring-4 " + toneClass.button}
+      className="group max-w-[136px] shrink-0 justify-start gap-1.5 text-right shadow-sm transition-all hover:shadow-md focus:ring-2 focus:ring-offset-1 sm:max-w-none sm:gap-2 sm:focus:ring-4"
     >
       <span className={"relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9 " + toneClass.icon}>
         <svg viewBox="0 0 24 24" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -87,6 +91,6 @@ export function EmployeeDailyLocationReminder({ onOpenTracker }: Props) {
         </span>
       </span>
       <span className="mr-0.5 hidden text-base leading-none opacity-60 transition-transform group-hover:-translate-x-0.5 sm:block" aria-hidden="true">‹</span>
-    </button>
+    </Button>
   );
 }
