@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "../../../design-system/components/Button";
-import { getMyWorkSession } from "../api/employeeLocations";
+import { getMyWorkSession } from "../services/employeeLocationsApi";
 
 type ReminderKind = "start" | "end";
 
