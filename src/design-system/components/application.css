@@ -207,3 +207,61 @@ main section[class*="space-y-"] form[class*="rounded-"],
   outline: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* Responsive page-header contract: consistent title/action alignment on
+   phones and tablets without changing desktop layouts or page behavior. */
+@media (max-width: 767px) {
+  main section[class*="space-y-"] > :first-child:has(h1) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 12px;
+    row-gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  main section[class*="space-y-"] > :first-child:has(h1) > :first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+    text-align: right;
+  }
+
+  main section[class*="space-y-"] > :first-child:has(h1) > :first-child h1 {
+    margin: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  main section[class*="space-y-"] > :first-child:has(h1) > :nth-child(2):has(button) {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  /* A single action stays opposite the title on the same line. */
+  main section[class*="space-y-"] > :first-child:has(h1) > :nth-child(2):has(button):not(:has(button:nth-of-type(2))) {
+    width: auto;
+    margin-inline-start: auto;
+  }
+
+  /* Multiple actions move together to their own row beneath the title. */
+  main section[class*="space-y-"] > :first-child:has(h1) > :nth-child(2):has(button:nth-of-type(2)) {
+    flex: 1 0 100%;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  main section[class*="space-y-"] > :first-child:has(h1) > :nth-child(2):has(button:nth-of-type(2)) > button {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+  }
+}
