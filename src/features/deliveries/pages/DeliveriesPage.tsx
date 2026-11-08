@@ -1,6 +1,7 @@
 import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
@@ -70,6 +71,8 @@ export function DeliveriesPage() {
             action: 'prepare' | 'ship' | 'cancel';
         } | null>(null);
 
+    const debouncedSearch = useDebouncedValue(search, 350);
+
     const load = async () => {
         setLoading(true);
         setError(null);
@@ -98,7 +101,7 @@ export function DeliveriesPage() {
             setError(null);
             try {
                 const r = await getDeliveries({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     status: status || undefined,
                     sort: '-created_at',
                     page,
@@ -119,7 +122,7 @@ export function DeliveriesPage() {
         return () => {
             dead = true;
         };
-    }, [page, search, status]);
+    }, [page, debouncedSearch, status]);
     useEffect(() => {
         if (!canManageForm) return;
 
