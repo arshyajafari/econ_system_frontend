@@ -3,7 +3,7 @@ import { TableContainer } from "../../../design-system/components/TableContainer
 import { Button } from "../../../design-system/components/Button";
 import { ApiError } from "../../../api/client";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { getEmployeeDailyLocationCheckins, type EmployeeLocation } from "../api/employeeLocations";
+import { getEmployeeDailyLocationCheckins, type EmployeeLocation } from "../services/employeeLocationsApi";
 
 function todayInTehran(): string {
   const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
