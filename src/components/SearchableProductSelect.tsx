@@ -116,9 +116,9 @@ export function SearchableProductSelect({
   return (
     <div ref={rootRef} className="relative">
       <div
-        className={
-          "ui-searchable-select flex h-[42px] min-h-[42px] items-center border bg-white transition"
-      }
+        data-open={isOpen}
+        data-disabled={disabled}
+        className="ui-searchable-select flex h-[42px] min-h-[42px] items-center border bg-white transition"
       >
         <input
           ref={inputRef}
