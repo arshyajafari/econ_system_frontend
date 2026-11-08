@@ -1,6 +1,7 @@
 import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
+import { ScientificInventoryModals } from "../components/ScientificInventoryModals";
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
