@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { getUnreadNotificationCount } from "../features/notifications/api/notifications";
+import { getUnreadNotificationCount } from "../features/notifications/services/notificationsApi";
 import { useAuth } from "../features/auth";
 import { EmployeeLocationShare } from "../features/employee_locations/components/EmployeeLocationShare";
 import { EmployeeDailyLocationReminder } from "../features/employee_locations/components/EmployeeDailyLocationReminder";
