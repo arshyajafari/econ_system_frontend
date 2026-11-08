@@ -9,7 +9,7 @@ import {
     getEmployeeWorkSessionLocations,
     type EmployeeLocation,
     type EmployeeWorkSession,
-} from '../api/employeeLocations';
+} from '../services/employeeLocationsApi';
 
 type LeafletMap = {
     remove(): void;
