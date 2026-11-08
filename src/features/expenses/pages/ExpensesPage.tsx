@@ -1,4 +1,3 @@
-import { sortTableRecords } from "../../../utils/date";
 import { Button } from "../../../design-system/components/Button";
 import {
   useCallback,
