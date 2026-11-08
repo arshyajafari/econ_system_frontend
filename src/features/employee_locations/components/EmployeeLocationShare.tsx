@@ -7,7 +7,7 @@ import {
     sendMyLocation,
     startMyWorkSession,
     type EmployeeWorkSession,
-} from '../api/employeeLocations';
+} from '../services/employeeLocationsApi';
 
 type Action = 'start' | 'end';
 
