@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import { Button } from "../../../design-system/components/Button";
 import { useAuth } from "../../auth";
 import { ApiError } from "../../../api/client";
@@ -68,6 +69,8 @@ export function CatalogPage() {
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [brandSearch, setBrandSearch] = useState("");
   const [categorySearch, setCategorySearch] = useState("");
+  const debouncedBrandSearch = useDebouncedValue(brandSearch, 350);
+  const debouncedCategorySearch = useDebouncedValue(categorySearch, 350);
   const [brandForm, setBrandForm] = useState<BrandFormData>(emptyBrand);
   const [categoryForm, setCategoryForm] =
     useState<CategoryFormData>(emptyCategory);
@@ -87,12 +90,12 @@ export function CatalogPage() {
     try {
       const [b, c] = await Promise.all([
         getBrands({
-          search: brandSearch.trim() || undefined,
+          search: debouncedBrandSearch.trim() || undefined,
           page: brandPage,
           per_page: 20,
         }),
         getCategories({
-          search: categorySearch.trim() || undefined,
+          search: debouncedCategorySearch.trim() || undefined,
           page: categoryPage,
           per_page: 20,
         }),
@@ -113,7 +116,7 @@ export function CatalogPage() {
     } finally {
       setLoading(false);
     }
-  }, [brandPage, brandSearch, categoryPage, categorySearch]);
+  }, [brandPage, debouncedBrandSearch, categoryPage, debouncedCategorySearch]);
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
