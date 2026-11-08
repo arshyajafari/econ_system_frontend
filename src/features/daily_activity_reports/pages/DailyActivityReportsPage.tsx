@@ -1,11 +1,13 @@
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
+import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { normalizeApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { Pagination } from '../../../components/Pagination';
 import { DailyActivityReportFilters } from '../components/DailyActivityReportFilters';
+import { DailyActivityReportDetailsModal } from '../components/DailyActivityReportDetailsModal';
 import {
     createDailyActivityReport,
     deleteDailyActivityReport,
