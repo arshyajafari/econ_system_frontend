@@ -1,5 +1,4 @@
 import { sortTableRecords } from "../../../utils/date";
-import { TableContainer } from "../../../design-system/components/TableContainer";
 import { Button } from "../../../design-system/components/Button";
 import {
   useCallback,
@@ -26,6 +25,7 @@ import {
   getExpenseCategoryLabel,
 } from "../types/expense";
 import type { Expense, ExpenseFormData } from "../types/expense";
+import { ExpensesTable } from "../components/ExpensesTable";
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 const dateFormatter = new Intl.DateTimeFormat("fa-IR");
@@ -489,94 +489,18 @@ export function ExpensesPage() {
         <span>مجموع این صفحه: {numberFormatter.format(pageTotal)}</span>
       </div>
 
-      <TableContainer aria-label="جدول هزینه‌ها">
-<table className="min-w-[1050px] w-full text-sm">
-          <thead className="bg-gray-50 text-right text-gray-600">
-            <tr>
-              <th className="px-5 py-3 font-medium">عنوان</th>
-              <th className="px-5 py-3 font-medium">دسته‌بندی</th>
-              <th className="px-5 py-3 font-medium">مبلغ</th>
-              <th className="px-5 py-3 font-medium">تاریخ</th>
-              <th className="px-5 py-3 font-medium">مسئول هزینه</th>
-              <th className="px-5 py-3 font-medium">عملیات</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-5 py-12 text-center text-gray-500"
-                >
-                  در حال دریافت هزینه‌ها...
-                </td>
-              </tr>
-            ) : null}
-            {!loading && expenses.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-5 py-12 text-center text-gray-500"
-                >
-                  هزینه‌ای پیدا نشد.
-                </td>
-              </tr>
-            ) : null}
-            {!loading
-              ? sortTableRecords(expenses).map((expense) => (
-                  <tr key={expense.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-900">
-                        {expense.title}
-                      </div>
-                      {expense.description ? (
-                        <div className="mt-1 max-w-xs truncate text-xs text-gray-500">
-                          {expense.description}
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-5 py-4">
-                      {getExpenseCategoryLabel(expense.category)}
-                    </td>
-                    <td dir="ltr" className="px-5 py-4 font-semibold">
-                      {numberFormatter.format(Number(expense.amount || 0))}
-                    </td>
-                    <td className="px-5 py-4">
-                      {formatDate(expense.expense_date)}
-                    </td>
-                    <td className="px-5 py-4">
-                      {expense.employee?.name ?? "—"}
-                    </td>
-                    <td className="px-5 py-4 text-left">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="edit" size="sm"
-                          type="button"
-                          onClick={() => openEdit(expense)}
-                          disabled={!isManager || deletingId !== null}
-                          className="ui-btn-edit rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                        >
-                          ویرایش
-                        </Button>
-                        {isAdmin ? (
-                          <Button variant="danger" size="sm"
-                            type="button"
-                            onClick={() => void handleDelete(expense)}
-                            disabled={deletingId !== null}
-                            className="ui-btn-delete rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                          >
-                            {deletingId === expense.id
-                              ? "در حال حذف..."
-                              : "حذف"}
-                          </Button>
-                        ) : null}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              : null}
-          </tbody>
-        </table>
-</TableContainer>
+      <ExpensesTable
+        expenses={expenses}
+        loading={loading}
+        isManager={isManager}
+        isAdmin={isAdmin}
+        deletingId={deletingId}
+        onEdit={openEdit}
+        onDelete={(expense) => void handleDelete(expense)}
+        formatAmount={(amount) => numberFormatter.format(Number(amount || 0))}
+        formatDate={formatDate}
+        getCategoryLabel={getExpenseCategoryLabel}
+      />
 
       {
         <Pagination
