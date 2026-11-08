@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getMyDailyLocationPointCount } from "../api/employeeLocations";
+import { getMyDailyLocationPointCount } from "../services/employeeLocationsApi";
 import { Button } from "../../../design-system/components/Button";
 
 type Props = {
