@@ -144,3 +144,54 @@
     border-bottom: 0;
   }
 }
+
+
+/* Detail pages place the heading inside a nested metadata block and keep
+   their primary action in a sibling wrapper. Normalize that structure too. */
+@media (max-width: 1023px) {
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto !important;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:last-child {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    width: auto !important;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:last-child button {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 100%;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1):has(> div:last-child button:nth-of-type(2)) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1):has(> div:last-child button:nth-of-type(2)) > div:last-child {
+    align-self: flex-end;
+    width: 100% !important;
+    justify-content: flex-start;
+  }
+}
