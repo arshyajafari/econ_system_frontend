@@ -101,7 +101,7 @@ export function DailyActivityReportsPage() {
         } finally {
             setLoading(false);
         }
-    }, [page, debouncedSearch, from, to, contactType, result]);
+    }, [page, search, from, to, contactType, result]);
 
     useEffect(() => {
         let active = true;
@@ -131,7 +131,7 @@ export function DailyActivityReportsPage() {
         return () => {
             active = false;
         };
-    }, [page, search, from, to, contactType, result]);
+    }, [page, debouncedSearch, from, to, contactType, result]);
 
     const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
         setForm((current) => ({ ...current, [key]: value }));
