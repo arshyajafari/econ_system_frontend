@@ -1,6 +1,7 @@
 import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { useCallback, useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
@@ -54,13 +55,14 @@ export function VisitsPage() {
             action: 'complete' | 'cancel';
         } | null>(null),
         [deleteTarget, setDeleteTarget] = useState<Visit | null>(null);
+    const debouncedSearch = useDebouncedValue(search, 350);
     const load = useCallback(
         async (p?: Partial<VisitListParams>) => {
             setLoading(true);
             setError(null);
             try {
                 const r = await getVisits({
-                    search: search.trim() || undefined,
+                    search: debouncedSearch.trim() || undefined,
                     doctor_id: doctorId || undefined,
                     status: status || undefined,
                     visit_from: from || undefined,
@@ -112,7 +114,7 @@ export function VisitsPage() {
         return () => {
             cancelled = true;
         };
-    }, [doctorId, from, page, search, status, to]);
+    }, [doctorId, from, page, debouncedSearch, status, to]);
     const reset = () => {
         setSearch('');
         setDoctorId('');
