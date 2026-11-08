@@ -1,0 +1,136 @@
+/* Application-level visual rhythm. These styles enhance the existing UI
+   without changing component behavior, business semantics, or status colors. */
+
+main section[class*="space-y-"] {
+  width: 100%;
+  max-width: var(--ds-page-max-width);
+  min-width: 0;
+  margin-inline: auto;
+}
+
+main section[class*="space-y-"] > header:first-child {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ds-color-border);
+}
+
+main section[class*="space-y-"] > header:first-child h1,
+main section[class*="space-y-"] > div:first-child h1 {
+  color: var(--ds-color-text);
+  font-size: clamp(1.35rem, 1.15rem + 0.55vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.35;
+}
+
+.ui-filter-panel {
+  padding: 20px !important;
+  border: 1px solid var(--ds-color-border) !important;
+  border-radius: var(--ds-radius-card) !important;
+  background: var(--ds-color-surface) !important;
+  box-shadow: var(--ds-shadow-card) !important;
+}
+
+.ui-filter-grid {
+  gap: 16px;
+}
+
+.ui-filter-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top-color: var(--ds-color-border);
+}
+
+.ui-filter-label,
+.ui-form-field__label {
+  color: var(--ds-color-text-secondary);
+  font-weight: 650;
+}
+
+.ui-filter-panel input:not([type="checkbox"]):not([type="radio"]),
+.ui-filter-panel select,
+.ui-filter-panel textarea,
+.ui-form-field > input:not([type="checkbox"]):not([type="radio"]),
+.ui-form-field > select,
+.ui-form-field > textarea {
+  min-height: var(--ds-control-height);
+  border-color: var(--ds-color-border-strong) !important;
+  border-radius: var(--ds-radius-control) !important;
+  background: var(--ds-color-surface) !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.ui-filter-panel input:focus,
+.ui-filter-panel select:focus,
+.ui-filter-panel textarea:focus,
+.ui-form-field > input:focus,
+.ui-form-field > select:focus,
+.ui-form-field > textarea:focus {
+  border-color: var(--ds-color-primary) !important;
+  box-shadow: 0 0 0 3px var(--ds-color-focus) !important;
+  outline: none;
+}
+
+.ui-table-container,
+main section[class*="space-y-"] .overflow-x-auto {
+  border: 1px solid var(--ds-color-border) !important;
+  border-radius: var(--ds-radius-card) !important;
+  background: var(--ds-color-surface);
+  box-shadow: var(--ds-shadow-card);
+}
+
+.ui-table-container > table th,
+main section[class*="space-y-"] .overflow-x-auto table th {
+  padding: 14px 16px;
+  background: var(--ds-color-surface-subtle);
+  color: var(--ds-color-text-secondary) !important;
+  font-size: 0.775rem;
+  font-weight: 750;
+}
+
+.ui-table-container > table td,
+main section[class*="space-y-"] .overflow-x-auto table td {
+  padding: 13px 16px;
+  border-top: 1px solid #edf1f6 !important;
+}
+
+.ui-table-container > table tbody tr:nth-child(even),
+main section[class*="space-y-"] .overflow-x-auto table tbody tr:nth-child(even) {
+  background: #fcfdff;
+}
+
+.ui-table-container > table tbody tr:hover,
+main section[class*="space-y-"] .overflow-x-auto table tbody tr:hover {
+  background: var(--ds-color-primary-soft) !important;
+}
+
+nav[aria-label="صفحه‌بندی"] {
+  border-color: var(--ds-color-border) !important;
+  border-radius: var(--ds-radius-card) !important;
+  box-shadow: var(--ds-shadow-card);
+}
+
+main section[class*="space-y-"] form[class*="rounded-"],
+[role="dialog"] form[class*="rounded-"] {
+  border-color: var(--ds-color-border) !important;
+  border-radius: var(--ds-radius-card) !important;
+  box-shadow: var(--ds-shadow-card);
+}
+
+@media (max-width: 639px) {
+  .ui-filter-panel {
+    padding: 14px !important;
+  }
+
+  .ui-filter-grid {
+    gap: 12px;
+  }
+
+  .ui-filter-actions {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .ui-filter-actions button {
+    flex: 1 1 auto;
+  }
+}
