@@ -105,15 +105,23 @@ export function DataCleanupPage() {
 
     return (
         <section className="space-y-6 p-4 md:p-6" dir="rtl">
-            <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">مدیریت و پاک‌سازی اطلاعات</h1>
-                    <p className="mt-1 text-sm text-slate-500">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                    <h1 className="text-2xl font-bold text-gray-900">مدیریت و پاک‌سازی اطلاعات</h1>
+                    <p className="mt-1 text-sm text-gray-500">
                         پاک‌سازی کنترل‌شده اطلاعات موقت و منقضی‌شده
                     </p>
                 </div>
-                <Button variant="secondary" onClick={() => void refresh()} disabled={loading || running}>به‌روزرسانی</Button>
-            </header>
+                <div className="flex gap-2">
+                    <Button
+                        variant="secondary"
+                        onClick={() => void refresh()}
+                        disabled={loading || running}
+                    >
+                        به‌روزرسانی
+                    </Button>
+                </div>
+            </div>
 
             {error && (
                 <div role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
