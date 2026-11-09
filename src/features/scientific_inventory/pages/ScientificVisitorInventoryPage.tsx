@@ -254,7 +254,7 @@ export function ScientificVisitorInventoryPage() {
                         onClick={() => setRefreshKey((value) => value + 1)}>
                         بروزرسانی
                     </Button>
-                    {isManager && !isFormOpen ? (
+                    {isManager ? (
                         <Button variant="primary" type="button" onClick={() => setIsFormOpen(true)}>
                             تحویل جدید
                         </Button>
