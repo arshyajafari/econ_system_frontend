@@ -226,22 +226,16 @@ export function DoctorsPage() {
           <h1 className="text-2xl font-bold text-gray-900">پزشکان</h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" size="md"
+          <Button
+            variant="secondary"
             type="button"
-            onClick={() => {
-              void loadDoctors();
-            }}
+            onClick={() => void loadDoctors()}
             disabled={isLoading}
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
           >
             بروزرسانی
           </Button>
           {canCreateDoctor ? (
-            <Button variant="primary" size="md"
-              type="button"
-              onClick={openCreateForm}
-              className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-            >
+            <Button variant="primary" type="button" onClick={openCreateForm}>
               پزشک جدید
             </Button>
           ) : null}
