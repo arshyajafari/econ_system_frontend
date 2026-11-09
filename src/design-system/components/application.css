@@ -207,3 +207,201 @@ main section[class*="space-y-"] form[class*="rounded-"],
   outline: 0 !important;
   box-shadow: none !important;
 }
+
+/* Responsive page-header contract.
+   At mobile/tablet widths a single action shares the title row. When a page
+   has multiple actions, the title occupies its own row and actions form a
+   compact, right-aligned group below it. Desktop layout remains untouched. */
+@media (max-width: 1023px) {
+  main section[class*="space-y-"] > header:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1),
+  main section[class*="space-y-"] > div:first-child:has(> h1) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+
+  main section[class*="space-y-"] > header:first-child > div:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > div:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> h1) > h1 {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  main section[class*="space-y-"] > header:first-child > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> h1) > div:last-child {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    width: auto;
+  }
+
+  /* Two or more header actions intentionally move below the title. */
+  main section[class*="space-y-"] > header:first-child:has(> div:last-child > button:nth-of-type(2)),
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> div:last-child > button:nth-of-type(2)),
+  main section[class*="space-y-"] > div:first-child:has(> h1):has(> div:last-child > button:nth-of-type(2)) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  main section[class*="space-y-"] > header:first-child:has(> div:last-child > button:nth-of-type(2)) > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> div:last-child > button:nth-of-type(2)) > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> h1):has(> div:last-child > button:nth-of-type(2)) > div:last-child {
+    align-self: flex-end;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Header actions keep their natural size; a local w-full utility must not
+     stretch one action across the entire viewport. */
+  main section[class*="space-y-"] > header:first-child > div:last-child > button,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > div:last-child > button,
+  main section[class*="space-y-"] > div:first-child:has(> h1) > div:last-child > button {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 100%;
+  }
+
+  main section[class*="space-y-"] > header:first-child h1,
+  main section[class*="space-y-"] > div:first-child h1 {
+    margin: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+}
+
+@media (max-width: 639px) {
+  main section[class*="space-y-"] > header:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1),
+  main section[class*="space-y-"] > div:first-child:has(> h1) {
+    gap: 10px;
+  }
+
+  main section[class*="space-y-"] > header:first-child > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > div:last-child,
+  main section[class*="space-y-"] > div:first-child:has(> h1) > div:last-child {
+    gap: 8px;
+  }
+}
+
+
+/* Support pages whose header actions are direct siblings rather than wrapped
+   in an actions container (for example Catalog, Dashboard and Deliveries). */
+@media (max-width: 1023px) {
+  main section[class*="space-y-"] > header:first-child:has(> button),
+  main section[class*="space-y-"] > header:first-child:has(> a),
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> button),
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> a) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+
+  main section[class*="space-y-"] > header:first-child:has(> button) > div:first-child,
+  main section[class*="space-y-"] > header:first-child:has(> a) > div:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> button) > div:first-child,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> a) > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  main section[class*="space-y-"] > header:first-child > button,
+  main section[class*="space-y-"] > header:first-child > a,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > button,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1) > a {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 100%;
+  }
+
+  main section[class*="space-y-"] > header:first-child:has(> button:nth-of-type(2)),
+  main section[class*="space-y-"] > header:first-child:has(> a:nth-of-type(2)),
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> button:nth-of-type(2)),
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> a:nth-of-type(2)) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  main section[class*="space-y-"] > header:first-child:has(> button:nth-of-type(2)) > button,
+  main section[class*="space-y-"] > header:first-child:has(> a:nth-of-type(2)) > a,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> button:nth-of-type(2)) > button,
+  main section[class*="space-y-"] > div:first-child:has(> div > h1):has(> a:nth-of-type(2)) > a {
+    align-self: flex-end;
+  }
+
+  /* A title-only block with a back link is intentionally not converted into
+     a horizontal action header. */
+  main section[class*="space-y-"] > div:first-child:has(> h1):not(:has(> button)):not(:has(> a)) {
+    display: block;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+
+/* Detail pages place the heading inside a nested metadata block and keep
+   their primary action in a sibling wrapper. Normalize that structure too. */
+@media (max-width: 1023px) {
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ds-color-border);
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto !important;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:last-child {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    width: auto !important;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1) > div:last-child button {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 100%;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1):has(> div:last-child button:nth-of-type(2)) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  main section[class*="space-y-"] > div:first-child:has(> div > div > h1):has(> div:last-child button:nth-of-type(2)) > div:last-child {
+    align-self: flex-end;
+    width: 100% !important;
+    justify-content: flex-start;
+  }
+}
