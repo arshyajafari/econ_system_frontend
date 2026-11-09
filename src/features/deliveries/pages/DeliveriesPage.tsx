@@ -244,9 +244,11 @@ export function DeliveriesPage() {
                 </div>
                 {canManageForm ? (
                     <Button variant="primary" type="button" onClick={() => {
-                        setEditing(null);
-                        setForm(empty);
-                        setIsFormOpen(true);
+                        if (!isFormOpen) {
+                            setEditing(null);
+                            setForm(empty);
+                            setIsFormOpen(true);
+                        }
                     }}>
                         ارسال جدید
                     </Button>
