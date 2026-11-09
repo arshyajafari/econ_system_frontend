@@ -242,7 +242,7 @@ export function DeliveriesPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">ارسال‌ها</h1>
                 </div>
-                {canManageForm && !isFormOpen ? (
+                {canManageForm ? (
                     <Button variant="primary" type="button" onClick={() => {
                         setEditing(null);
                         setForm(empty);
