@@ -50,6 +50,7 @@ export function InventoryPage() {
         [loading, setLoading] = useState(true),
         [error, setError] = useState<string | null>(null),
         [form, setForm] = useState(empty),
+        [isFormOpen, setIsFormOpen] = useState(false),
         [saving, setSaving] = useState(false),
         [selected, setSelected] = useState<InventoryBatch | null>(null),
         [editing, setEditing] = useState<InventoryBatch | null>(null),
@@ -133,6 +134,7 @@ export function InventoryPage() {
         try {
             await receiveInventory(form);
             setForm(empty);
+            setIsFormOpen(false);
             setPage(1);
             setRefreshKey((current) => current + 1);
         } catch (e: unknown) {
@@ -167,15 +169,23 @@ export function InventoryPage() {
                 }}
             />
             <section className="space-y-5 p-4 md:p-6">
-                <header>
-                    <h1 className="text-2xl font-bold">موجودی</h1>
+                <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-2xl font-bold text-gray-900">موجودی</h1>
+                    {canManageInventory && !isFormOpen ? (
+                        <Button variant="primary" type="button" onClick={() => {
+                            setForm(empty);
+                            setIsFormOpen(true);
+                        }}>
+                            ورود موجودی جدید
+                        </Button>
+                    ) : null}
                 </header>
                 {error && (
                     <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
                         {error}
                     </div>
                 )}
-                {canManageInventory ? (
+                {canManageInventory && isFormOpen ? (
                     <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
                         <div className="grid gap-3 md:grid-cols-3">
                             <SearchableProductSelect
@@ -272,6 +282,7 @@ export function InventoryPage() {
                                 />
                             </div>
                         </div>
+                        <div className="flex flex-wrap gap-2">
                         <Button
                             variant="primary"
                             type="submit"
@@ -285,6 +296,11 @@ export function InventoryPage() {
                         >
                             ثبت ورود موجودی
                         </Button>
+                        <Button variant="secondary" type="button" disabled={saving}
+                            onClick={() => setIsFormOpen(false)}>
+                            انصراف
+                        </Button>
+                        </div>
                     </form>
                 ) : null}
                 <div className="ui-filter-panel">
