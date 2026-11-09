@@ -202,9 +202,13 @@ searchCustomers={searchCustomers}
             />
           </div>
         </div>
-        <div className="ui-filter-actions">
-          <Button variant="secondary" size="md" type="button" onClick={resetFilters} className="ui-filter-clear">
+        <div className="ui-filter-actions justify-between">
+          <Button variant="secondary" type="button" onClick={resetFilters} className="ui-filter-clear">
             پاک کردن فیلترها
+          </Button>
+          <Button variant="secondary" type="button" disabled={isLoading}
+            onClick={() => void loadOrderReturns()} className="ui-filter-clear">
+            بروزرسانی
           </Button>
         </div>
       </div>
