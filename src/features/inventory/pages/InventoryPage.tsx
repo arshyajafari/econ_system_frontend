@@ -171,7 +171,7 @@ export function InventoryPage() {
             <section className="space-y-5 p-4 md:p-6">
                 <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h1 className="text-2xl font-bold text-gray-900">موجودی</h1>
-                    {canManageInventory && !isFormOpen ? (
+                    {canManageInventory ? (
                         <Button variant="primary" type="button" onClick={() => {
                             setForm(empty);
                             setIsFormOpen(true);
