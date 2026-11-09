@@ -127,14 +127,20 @@ export function OrderReturnsPage() {
           <h1 className="text-2xl font-bold text-gray-900">مرجوعی سفارش‌ها</h1>
         </div>
 
-        {canCreateReturn ? (
-          <Link
-            to="/order-returns/new"
-            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            ثبت مرجوعی جدید
-          </Link>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="secondary" type="button" disabled={isLoading}
+            onClick={() => void loadOrderReturns()}>
+            بروزرسانی
+          </Button>
+          {canCreateReturn ? (
+            <Link
+              to="/order-returns/new"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              ثبت مرجوعی جدید
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       <div className="ui-filter-panel">
@@ -205,10 +211,6 @@ searchCustomers={searchCustomers}
         <div className="ui-filter-actions justify-between">
           <Button variant="secondary" type="button" onClick={resetFilters} className="ui-filter-clear">
             پاک کردن فیلترها
-          </Button>
-          <Button variant="secondary" type="button" disabled={isLoading}
-            onClick={() => void loadOrderReturns()} className="ui-filter-clear">
-            بروزرسانی
           </Button>
         </div>
       </div>
