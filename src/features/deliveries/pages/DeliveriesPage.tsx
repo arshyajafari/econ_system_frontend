@@ -57,6 +57,7 @@ export function DeliveriesPage() {
         [saving, setSaving] = useState(false),
         [actionId, setActionId] = useState<string | null>(null),
         [form, setForm] = useState<DeliveryFormData>(empty),
+        [isFormOpen, setIsFormOpen] = useState(false),
         [editing, setEditing] = useState<Delivery | null>(null),
         [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null),
         [deleteTarget, setDeleteTarget] = useState<Delivery | null>(null),
@@ -153,6 +154,7 @@ export function DeliveriesPage() {
             }
             setForm(empty);
             setEditing(null);
+            setIsFormOpen(false);
         } catch (e: unknown) {
             setError(e instanceof ApiError ? e.message : 'خطا در ذخیره ارسال.');
         } finally {
@@ -222,6 +224,7 @@ export function DeliveriesPage() {
 
     const startEdit = (d: Delivery) => {
         setEditing(d);
+        setIsFormOpen(true);
         setForm({
             order_id: d.order?.id ?? '',
             recipient_name: d.recipient_name ?? '',
@@ -235,29 +238,33 @@ export function DeliveriesPage() {
 
     return (
         <section className="space-y-5 p-4 md:p-6">
-            <header className="flex justify-between">
+            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold">ارسال‌ها</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">ارسال‌ها</h1>
                 </div>
-                {canManageForm ? (
-                    <Button variant="primary" size="md"
-                        type="button"
-                        onClick={() => {
-                            setEditing(null);
-                            setForm(empty);
-                        }}
-                        className="rounded-lg bg-gray-900 px-4 py-2 text-white"
-                    >
-                        ارسال جدید
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="secondary" size="md" type="button" onClick={() => void load()}>
+                        بروزرسانی
                     </Button>
-                ) : null}
+                    {canManageForm ? (
+                        <Button variant="primary" type="button" onClick={() => {
+                            if (!isFormOpen) {
+                                setEditing(null);
+                                setForm(empty);
+                                setIsFormOpen(true);
+                            }
+                        }}>
+                            ارسال جدید
+                        </Button>
+                    ) : null}
+                </div>
             </header>
             {error && (
                 <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
                     {error}
                 </div>
             )}
-            {canManageForm ? (
+            {canManageForm && isFormOpen ? (
                 <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
                     <div className="grid gap-3 md:grid-cols-3">
                         <div>
@@ -305,19 +312,15 @@ export function DeliveriesPage() {
                         >
                             {editing ? 'ذخیره تغییرات' : 'ثبت ارسال'}
                         </Button>
-                        {editing && (
-                            <Button variant="secondary" size="md"
-                                type="button"
-                                disabled={saving}
-                                onClick={() => {
-                                    setEditing(null);
-                                    setForm(empty);
-                                }}
-                                className="rounded-lg border px-4 py-2"
-                            >
-                                انصراف
-                            </Button>
-                        )}
+                        <Button variant="secondary" type="button" disabled={saving}
+                            onClick={() => {
+                                setEditing(null);
+                                setForm(empty);
+                                setIsFormOpen(false);
+                            }}
+                        >
+                            انصراف
+                        </Button>
                     </div>
                 </form>
             ) : null}
@@ -363,9 +366,6 @@ export function DeliveriesPage() {
                         className="ui-filter-clear"
                     >
                         پاک کردن فیلترها
-                    </Button>
-                    <Button variant="secondary" size="md" type="button" onClick={() => void load()} className="ui-filter-clear">
-                        بروزرسانی
                     </Button>
                 </div>
             </div>

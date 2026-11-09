@@ -52,6 +52,10 @@ export function ScientificVisitorInventoryPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [filterEmployeeId, setFilterEmployeeId] = useState('');
+    const [filterProductId, setFilterProductId] = useState('');
+    const [filterProducts, setFilterProducts] = useState<Array<{ id: string; code: string; title: string }>>([]);
 
     useEffect(() => {
         let cancelled = false;
@@ -63,6 +67,8 @@ export function ScientificVisitorInventoryPage() {
                     page,
                     per_page: 20,
                     sort: '-last_received_at',
+                    ...(isManager && filterEmployeeId ? { employee_id: filterEmployeeId } : {}),
+                    ...(filterProductId ? { product_id: filterProductId } : {}),
                 });
                 if (!cancelled) {
                     setItems(response.data);
@@ -85,12 +91,31 @@ export function ScientificVisitorInventoryPage() {
         return () => {
             cancelled = true;
         };
-    }, [page, refreshKey, isScientificVisitor]);
+    }, [page, refreshKey, isScientificVisitor, isManager, filterEmployeeId, filterProductId]);
 
     useEffect(() => {
-        if (!isManager) return;
-
         let cancelled = false;
+        if (!isManager) {
+            getInventory({ sort: '-created_at', per_page: 100 })
+                .then((response) => {
+                    if (cancelled) return;
+                    const products = new Map<string, { id: string; code: string; title: string }>();
+                    response.data.forEach((batch) => {
+                        if (batch.product && !products.has(batch.product.id)) {
+                            products.set(batch.product.id, {
+                                id: batch.product.id,
+                                code: batch.product.code,
+                                title: batch.product.title,
+                            });
+                        }
+                    });
+                    setFilterProducts(Array.from(products.values()));
+                })
+                .catch((err: unknown) => {
+                    if (!cancelled) setError(err instanceof ApiError ? err.message : 'خطا در دریافت فهرست محصولات.');
+                });
+            return () => { cancelled = true; };
+        }
         Promise.all([
             getEmployees({
                 activity_type: 'scientific_visitor',
@@ -102,6 +127,17 @@ export function ScientificVisitorInventoryPage() {
             .then(([employeeResponse, inventoryResponse]) => {
                 if (cancelled) return;
                 setEmployees(employeeResponse.data);
+                const products = new Map<string, { id: string; code: string; title: string }>();
+                inventoryResponse.data.forEach((batch) => {
+                    if (batch.product && !products.has(batch.product.id)) {
+                        products.set(batch.product.id, {
+                            id: batch.product.id,
+                            code: batch.product.code,
+                            title: batch.product.title,
+                        });
+                    }
+                });
+                setFilterProducts(Array.from(products.values()));
                 setBatches(
                     inventoryResponse.data.filter(
                         (batch) => batch.available_quantity > 0 && !batch.is_expired
@@ -164,6 +200,7 @@ export function ScientificVisitorInventoryPage() {
             setQuantity(1);
             setDescription('');
             setBatchId('');
+            setIsFormOpen(false);
             setRefreshKey((value) => value + 1);
         } catch (err: unknown) {
             setError(err instanceof ApiError ? err.message : 'خطا در تحویل محصول به ویزیتور علمی.');
@@ -245,8 +282,19 @@ export function ScientificVisitorInventoryPage() {
 
     return (
         <section className="space-y-5 p-4 md:p-6">
-            <header>
-                <h1 className="text-2xl font-bold">موجودی ویزیتور علمی</h1>
+            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <h1 className="text-2xl font-bold text-gray-900">موجودی ویزیتور علمی</h1>
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" type="button" disabled={loading}
+                        onClick={() => setRefreshKey((value) => value + 1)}>
+                        بروزرسانی
+                    </Button>
+                    {isManager ? (
+                        <Button variant="primary" type="button" onClick={() => setIsFormOpen(true)}>
+                            تحویل جدید
+                        </Button>
+                    ) : null}
+                </div>
             </header>
 
             {error ? (
@@ -255,7 +303,7 @@ export function ScientificVisitorInventoryPage() {
                 </div>
             ) : null}
 
-            {isManager ? (
+            {isManager && isFormOpen ? (
                 <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                         <select
@@ -332,6 +380,7 @@ export function ScientificVisitorInventoryPage() {
                         </p>
                     ) : null}
 
+                    <div className="flex flex-wrap gap-2">
                     <Button variant="primary"
                         type="submit"
                         disabled={
@@ -346,8 +395,68 @@ export function ScientificVisitorInventoryPage() {
                     >
                         {saving ? 'در حال ثبت...' : 'تحویل محصول'}
                     </Button>
+                    <Button variant="secondary" type="button" disabled={saving}
+                        onClick={() => setIsFormOpen(false)}>
+                        انصراف
+                    </Button>
+                    </div>
                 </form>
             ) : null}
+
+            <div className="ui-filter-panel">
+                <div className={`ui-filter-grid ${isManager ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                    {isManager ? (
+                        <label className="ui-filter-field">
+                            <span className="ui-filter-label">ویزیتور علمی</span>
+                            <select
+                                value={filterEmployeeId}
+                                onChange={(event) => {
+                                    setFilterEmployeeId(event.target.value);
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">همه ویزیتورها</option>
+                                {employees.map((employee) => (
+                                    <option key={employee.id} value={employee.id}>
+                                        {employee.code} — {employee.first_name} {employee.last_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    ) : null}
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">نام محصول</span>
+                        <select
+                            value={filterProductId}
+                            onChange={(event) => {
+                                setFilterProductId(event.target.value);
+                                setPage(1);
+                            }}
+                        >
+                            <option value="">همه محصولات</option>
+                            {filterProducts.map((product) => (
+                                <option key={product.id} value={product.id}>
+                                    {product.title} — {product.code}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+                <div className="ui-filter-actions justify-between">
+                    <Button
+                        variant="secondary"
+                        type="button"
+                        className="ui-filter-clear"
+                        onClick={() => {
+                            setFilterEmployeeId('');
+                            setFilterProductId('');
+                            setPage(1);
+                        }}
+                    >
+                        پاک کردن فیلترها
+                    </Button>
+                </div>
+            </div>
 
             <TableContainer aria-label="جدول موجودی علمی">
 <table className="min-w-full text-right text-sm">
