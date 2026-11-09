@@ -1,5 +1,5 @@
-import { Button } from "../../../design-system/components/Button";
-import { StatusBadge } from "../../../design-system/components/StatusBadge";
+import { Button } from '../../../design-system/components/Button';
+import { StatusBadge } from '../../../design-system/components/StatusBadge';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { normalizeApiError } from '../../../api/client';
 import { DailyActivityReportCleanupSection } from '../components/DailyActivityReportCleanupSection';
@@ -105,15 +105,24 @@ export function DataCleanupPage() {
 
     return (
         <section className="space-y-6 p-4 md:p-6" dir="rtl">
-            <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">مدیریت و پاک‌سازی اطلاعات</h1>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="w-full">
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-2xl">
+                        مدیریت و پاک‌سازی اطلاعات
+                    </h1>
                     <p className="mt-1 text-sm text-slate-500">
                         پاک‌سازی کنترل‌شده اطلاعات موقت و منقضی‌شده
                     </p>
                 </div>
-                <Button variant="secondary" onClick={() => void refresh()} disabled={loading || running}>به‌روزرسانی</Button>
-            </header>
+                <Button
+                    variant="secondary"
+                    onClick={() => void refresh()}
+                    disabled={loading || running}
+                    className="self-start rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                >
+                    به‌روزرسانی
+                </Button>
+            </div>
 
             {error && (
                 <div role="alert" className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
@@ -219,10 +228,10 @@ export function DataCleanupPage() {
                                 loading ||
                                 selected.length === 0 ||
                                 selectedCount === 0 ||
-                                confirmation !== "DELETE"
+                                confirmation !== 'DELETE'
                             }
                         >
-                            {running ? "در حال اجرای عملیات..." : "اجرای پاک‌سازی انتخاب‌شده"}
+                            {running ? 'در حال اجرای عملیات...' : 'اجرای پاک‌سازی انتخاب‌شده'}
                         </Button>
                     </div>
                 </div>
@@ -245,12 +254,20 @@ export function DataCleanupPage() {
                                     <strong className="text-sm text-slate-800">
                                         عملیات #{numberFormat.format(run.id)}
                                     </strong>
-                                    <StatusBadge variant={run.status === "completed" ? "success" : run.status === "failed" ? "danger" : "warning"}>
-                                        {run.status === "completed"
-                                            ? "موفق"
-                                            : run.status === "failed"
-                                              ? "ناموفق"
-                                              : "در حال اجرا"}
+                                    <StatusBadge
+                                        variant={
+                                            run.status === 'completed'
+                                                ? 'success'
+                                                : run.status === 'failed'
+                                                  ? 'danger'
+                                                  : 'warning'
+                                        }
+                                    >
+                                        {run.status === 'completed'
+                                            ? 'موفق'
+                                            : run.status === 'failed'
+                                              ? 'ناموفق'
+                                              : 'در حال اجرا'}
                                     </StatusBadge>
                                 </div>
                                 <p className="mt-2 text-xs text-slate-500">
@@ -273,7 +290,10 @@ export function DataCleanupPage() {
                                                 key="device_tokens"
                                                 className="rounded-lg bg-slate-100 px-2 py-1 text-xs text-slate-600"
                                             >
-                                                توکن‌های مرتبط: {numberFormat.format(run.deleted_counts.device_tokens)}
+                                                توکن‌های مرتبط:{' '}
+                                                {numberFormat.format(
+                                                    run.deleted_counts.device_tokens
+                                                )}
                                             </span>
                                         )}
                                 </div>
