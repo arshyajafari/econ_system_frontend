@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from "../../../design-system/components/Button";
+import { Button } from '../../../design-system/components/Button';
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { BackButton } from '../../../components/BackButton';
@@ -63,7 +63,7 @@ export function InvoiceCreatePage() {
                     {error}
                 </div>
             ) : null}
-            <div className="max-w-2xl rounded-xl border border-gray-200 bg-white p-6">
+            <div className="w-full rounded-xl border border-gray-200 bg-white p-6">
                 {loading ? (
                     <div className="text-sm text-gray-500">در حال دریافت سفارش‌ها...</div>
                 ) : (
@@ -89,7 +89,9 @@ export function InvoiceCreatePage() {
                             </p>
                         ) : null}
                         <div className="mt-5 flex gap-2">
-                            <Button variant="secondary" size="md"
+                            <Button
+                                variant="secondary"
+                                size="md"
                                 type="button"
                                 onClick={() => void submit()}
                                 disabled={!orderId || busy}

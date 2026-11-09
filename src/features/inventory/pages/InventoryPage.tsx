@@ -1,6 +1,6 @@
 import { sortTableRecords } from '../../../utils/date';
-import { Button } from "../../../design-system/components/Button";
-import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from '../../../design-system/components/Button';
+import { TableContainer } from '../../../design-system/components/TableContainer';
 import { useEffect, useState } from 'react';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Pagination } from '../../../components/Pagination';
@@ -231,50 +231,49 @@ export function InventoryPage() {
                                 className="rounded-lg border px-3 py-2"
                                 placeholder="تاریخ انقضا"
                             />
-                            <div className="grid grid-cols-2 gap-2">
-                                <JalaliDateInput
-                                    disabled={saving}
-                                    value={receivedDate}
-                                    onChange={(value) =>
-                                        setForm({
-                                            ...form,
-                                            received_at: value
-                                                ? `${value}T${receivedTime || '00:00'}`
-                                                : '',
-                                        })
-                                    }
-                                    className="rounded-lg border px-3 py-2"
-                                    placeholder="تاریخ ورود"
-                                />
+                            <JalaliDateInput
+                                disabled={saving}
+                                value={receivedDate}
+                                onChange={(value) =>
+                                    setForm({
+                                        ...form,
+                                        received_at: value
+                                            ? `${value}T${receivedTime || '00:00'}`
+                                            : '',
+                                    })
+                                }
+                                className="rounded-lg border px-3 py-2"
+                                placeholder="تاریخ ورود"
+                            />
+                            <input
+                                type="time"
+                                disabled={saving}
+                                value={receivedTime}
+                                onChange={(event) =>
+                                    setForm({
+                                        ...form,
+                                        received_at: receivedDate
+                                            ? `${receivedDate}T${event.target.value}`
+                                            : '',
+                                    })
+                                }
+                                className="rounded-lg border px-3 py-2"
+                                aria-label="ساعت ورود"
+                            />
+                            <div className="md:col-span-2">
                                 <input
-                                    type="time"
                                     disabled={saving}
-                                    value={receivedTime}
+                                    value={form.description}
                                     onChange={(event) =>
-                                        setForm({
-                                            ...form,
-                                            received_at: receivedDate
-                                                ? `${receivedDate}T${event.target.value}`
-                                                : '',
-                                        })
+                                        setForm({ ...form, description: event.target.value })
                                     }
+                                    placeholder="توضیحات"
                                     className="rounded-lg border px-3 py-2"
-                                    aria-label="ساعت ورود"
                                 />
                             </div>
                         </div>
-                        <div className="grid gap-3 grid-cols-1">
-                            <input
-                                disabled={saving}
-                                value={form.description}
-                                onChange={(event) =>
-                                    setForm({ ...form, description: event.target.value })
-                                }
-                                placeholder="توضیحات"
-                                className="rounded-lg border px-3 py-2"
-                            />
-                        </div>
-                        <Button variant="primary"
+                        <Button
+                            variant="primary"
                             type="submit"
                             disabled={
                                 saving ||
@@ -317,7 +316,8 @@ export function InventoryPage() {
                         </label>
                     </div>
                     <div className="ui-filter-actions justify-between">
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             onClick={() => {
                                 setSearch('');
@@ -328,7 +328,8 @@ export function InventoryPage() {
                         >
                             پاک کردن فیلترها
                         </Button>
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             disabled={loading}
                             onClick={() => setRefreshKey((current) => current + 1)}
@@ -339,7 +340,7 @@ export function InventoryPage() {
                     </div>
                 </div>
                 <TableContainer aria-label="جدول موجودی">
-<table className="min-w-full text-right text-sm">
+                    <table className="min-w-full text-right text-sm">
                         <thead className="bg-gray-50">
                             <tr>
                                 {[
@@ -410,7 +411,9 @@ export function InventoryPage() {
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex flex-wrap items-center gap-1.5">
-                                                <Button size="sm" variant="view"
+                                                <Button
+                                                    size="sm"
+                                                    variant="view"
                                                     type="button"
                                                     onClick={() => void view(item)}
                                                     className="ui-btn-view rounded-lg border px-2.5 py-1.5 text-xs font-medium"
@@ -418,7 +421,9 @@ export function InventoryPage() {
                                                     مشاهده
                                                 </Button>
                                                 {canManageInventory ? (
-                                                    <Button size="sm" variant="edit"
+                                                    <Button
+                                                        size="sm"
+                                                        variant="edit"
                                                         type="button"
                                                         onClick={() => startEdit(item)}
                                                         className="ui-btn-edit rounded-lg border px-2.5 py-1.5 text-xs font-medium"
@@ -427,7 +432,9 @@ export function InventoryPage() {
                                                     </Button>
                                                 ) : null}
                                                 {isAdmin ? (
-                                                    <Button size="sm" variant="warning"
+                                                    <Button
+                                                        size="sm"
+                                                        variant="warning"
                                                         type="button"
                                                         onClick={() => setAdjustmentTarget(item)}
                                                         className="rounded-lg border border-amber-300 px-2.5 py-1.5 text-xs font-medium text-amber-800"
@@ -436,7 +443,9 @@ export function InventoryPage() {
                                                     </Button>
                                                 ) : null}
                                                 {isAdmin ? (
-                                                    <Button size="sm" variant="danger"
+                                                    <Button
+                                                        size="sm"
+                                                        variant="danger"
                                                         type="button"
                                                         onClick={() => setDeleteTarget(item.id)}
                                                         className="ui-btn-delete rounded-lg border px-2.5 py-1.5 text-xs font-medium"
@@ -451,13 +460,14 @@ export function InventoryPage() {
                             )}
                         </tbody>
                     </table>
-</TableContainer>
+                </TableContainer>
                 {selected && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                         <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
                             <div className="flex items-center justify-between border-b pb-4">
                                 <h2 className="text-lg font-bold">جزئیات موجودی</h2>
-                                <Button variant="secondary"
+                                <Button
+                                    variant="secondary"
                                     type="button"
                                     onClick={() => setSelected(null)}
                                     className="rounded-lg border px-3 py-1.5"
@@ -528,7 +538,8 @@ export function InventoryPage() {
                         >
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-bold">ویرایش موجودی</h2>
-                                <Button variant="secondary"
+                                <Button
+                                    variant="secondary"
                                     type="button"
                                     onClick={() => setEditing(null)}
                                     className="rounded-lg border px-3 py-1.5"
@@ -561,7 +572,8 @@ export function InventoryPage() {
                                 placeholder="توضیحات"
                                 className="min-h-24 w-full rounded-lg border px-3 py-2"
                             />
-                            <Button variant="success"
+                            <Button
+                                variant="success"
                                 type="submit"
                                 disabled={saving}
                                 className="rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 disabled:opacity-60"
