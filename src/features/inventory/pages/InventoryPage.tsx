@@ -173,8 +173,10 @@ export function InventoryPage() {
                     <h1 className="text-2xl font-bold text-gray-900">موجودی</h1>
                     {canManageInventory ? (
                         <Button variant="primary" type="button" onClick={() => {
-                            setForm(empty);
-                            setIsFormOpen(true);
+                            if (!isFormOpen) {
+                                setForm(empty);
+                                setIsFormOpen(true);
+                            }
                         }}>
                             ورود موجودی جدید
                         </Button>
