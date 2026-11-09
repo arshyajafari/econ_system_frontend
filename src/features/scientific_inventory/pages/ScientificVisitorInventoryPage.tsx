@@ -52,6 +52,7 @@ export function ScientificVisitorInventoryPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isFormOpen, setIsFormOpen] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -164,6 +165,7 @@ export function ScientificVisitorInventoryPage() {
             setQuantity(1);
             setDescription('');
             setBatchId('');
+            setIsFormOpen(false);
             setRefreshKey((value) => value + 1);
         } catch (err: unknown) {
             setError(err instanceof ApiError ? err.message : 'خطا در تحویل محصول به ویزیتور علمی.');
@@ -245,8 +247,19 @@ export function ScientificVisitorInventoryPage() {
 
     return (
         <section className="space-y-5 p-4 md:p-6">
-            <header>
-                <h1 className="text-2xl font-bold">موجودی ویزیتور علمی</h1>
+            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <h1 className="text-2xl font-bold text-gray-900">موجودی ویزیتور علمی</h1>
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" type="button" disabled={loading}
+                        onClick={() => setRefreshKey((value) => value + 1)}>
+                        بروزرسانی
+                    </Button>
+                    {isManager && !isFormOpen ? (
+                        <Button variant="primary" type="button" onClick={() => setIsFormOpen(true)}>
+                            تحویل جدید
+                        </Button>
+                    ) : null}
+                </div>
             </header>
 
             {error ? (
@@ -255,7 +268,7 @@ export function ScientificVisitorInventoryPage() {
                 </div>
             ) : null}
 
-            {isManager ? (
+            {isManager && isFormOpen ? (
                 <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
                     <div className="grid gap-3 md:grid-cols-2">
                         <select
@@ -332,6 +345,7 @@ export function ScientificVisitorInventoryPage() {
                         </p>
                     ) : null}
 
+                    <div className="flex flex-wrap gap-2">
                     <Button variant="primary"
                         type="submit"
                         disabled={
@@ -346,6 +360,11 @@ export function ScientificVisitorInventoryPage() {
                     >
                         {saving ? 'در حال ثبت...' : 'تحویل محصول'}
                     </Button>
+                    <Button variant="secondary" type="button" disabled={saving}
+                        onClick={() => setIsFormOpen(false)}>
+                        انصراف
+                    </Button>
+                    </div>
                 </form>
             ) : null}
 
