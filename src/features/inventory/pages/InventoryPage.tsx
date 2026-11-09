@@ -171,16 +171,22 @@ export function InventoryPage() {
             <section className="space-y-5 p-4 md:p-6">
                 <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h1 className="text-2xl font-bold text-gray-900">موجودی</h1>
-                    {canManageInventory ? (
-                        <Button variant="primary" type="button" onClick={() => {
-                            if (!isFormOpen) {
-                                setForm(empty);
-                                setIsFormOpen(true);
-                            }
-                        }}>
-                            ورود موجودی جدید
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Button variant="secondary" type="button" disabled={loading}
+                            onClick={() => setRefreshKey((current) => current + 1)}>
+                            بروزرسانی
                         </Button>
-                    ) : null}
+                        {canManageInventory ? (
+                            <Button variant="primary" type="button" onClick={() => {
+                                if (!isFormOpen) {
+                                    setForm(empty);
+                                    setIsFormOpen(true);
+                                }
+                            }}>
+                                ورود موجودی جدید
+                            </Button>
+                        ) : null}
+                    </div>
                 </header>
                 {error && (
                     <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
@@ -345,15 +351,6 @@ export function InventoryPage() {
                             className="ui-filter-clear"
                         >
                             پاک کردن فیلترها
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            type="button"
-                            disabled={loading}
-                            onClick={() => setRefreshKey((current) => current + 1)}
-                            className="ui-filter-clear disabled:opacity-50"
-                        >
-                            بروزرسانی
                         </Button>
                     </div>
                 </div>
