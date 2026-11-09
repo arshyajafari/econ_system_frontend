@@ -242,17 +242,22 @@ export function DeliveriesPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">ارسال‌ها</h1>
                 </div>
-                {canManageForm ? (
-                    <Button variant="primary" type="button" onClick={() => {
-                        if (!isFormOpen) {
-                            setEditing(null);
-                            setForm(empty);
-                            setIsFormOpen(true);
-                        }
-                    }}>
-                        ارسال جدید
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="secondary" size="md" type="button" onClick={() => void load()}>
+                        بروزرسانی
                     </Button>
-                ) : null}
+                    {canManageForm ? (
+                        <Button variant="primary" type="button" onClick={() => {
+                            if (!isFormOpen) {
+                                setEditing(null);
+                                setForm(empty);
+                                setIsFormOpen(true);
+                            }
+                        }}>
+                            ارسال جدید
+                        </Button>
+                    ) : null}
+                </div>
             </header>
             {error && (
                 <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
@@ -361,9 +366,6 @@ export function DeliveriesPage() {
                         className="ui-filter-clear"
                     >
                         پاک کردن فیلترها
-                    </Button>
-                    <Button variant="secondary" size="md" type="button" onClick={() => void load()} className="ui-filter-clear">
-                        بروزرسانی
                     </Button>
                 </div>
             </div>
