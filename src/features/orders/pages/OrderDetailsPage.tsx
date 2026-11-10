@@ -125,27 +125,33 @@ export function OrderDetailsPage() {
     const finalAmount = getOrderFinalAmount(order);
     return (
         <section className="space-y-6 p-4 md:p-6">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                <div className="min-w-0 flex-1">
+            <div className="flex w-full flex-col items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 md:p-5">
+                <div className="w-full">
                     <BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" />
-                    <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
-                        <h1 className="min-w-0 break-words text-2xl font-bold text-gray-900">سفارش {order.code}</h1>
-                        <span
-                            className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(order.status)}`}
-                        >
-                            {getOrderStatusLabel(order.status)}
-                        </span>
-                    </div>
-                    <p className="mt-1 break-words text-sm text-gray-500">
-                        ثبت شده در {formatDate(order.created_at)}
+                </div>
+                <div className="w-full min-w-0">
+                    <h1 className="break-words text-xl font-bold leading-8 text-gray-900 md:text-2xl">
+                        سفارش {order.code}
+                    </h1>
+                </div>
+                <div className="w-full">
+                    <span
+                        className={`inline-flex max-w-full rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClass(order.status)}`}
+                    >
+                        {getOrderStatusLabel(order.status)}
+                    </span>
+                </div>
+                <div className="w-full border-t border-gray-100 pt-3">
+                    <p className="break-words text-sm leading-6 text-gray-500">
+                        تاریخ ثبت سفارش: {formatDate(order.created_at)}
                     </p>
                 </div>
                 {order.status === 'completed' ? (
-                    <div className="flex w-full justify-start xl:w-auto xl:justify-end">
+                    <div className="w-full pt-1">
                         <Button variant="primary"
                             type="button"
                             onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)}
-                            className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 xl:w-auto"
+                            className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 md:w-auto"
                         >
                             ثبت مرجوعی
                         </Button>
