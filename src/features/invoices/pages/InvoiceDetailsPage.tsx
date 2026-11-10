@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { TableContainer } from "../../../design-system/components/TableContainer";
-import { Button } from "../../../design-system/components/Button";
+import { TableContainer } from '../../../design-system/components/TableContainer';
+import { Button } from '../../../design-system/components/Button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
 import { BackButton } from '../../../components/BackButton';
 import { cancelInvoice, getInvoice, issueInvoice, updateInvoice } from '../services/invoicesApi';
 import type { Invoice } from '../types/invoice';
-import { invoiceStatusLabel } from '../types/invoice';
+import { invoiceStatusLabel, getInvoiceStatusClass } from '../types/invoice';
 const nf = new Intl.NumberFormat('fa-IR');
 const money = (v: number | string) => nf.format(Number(v || 0));
 export function InvoiceDetailsPage() {
@@ -112,9 +112,13 @@ export function InvoiceDetailsPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
                 <div className="w-full">
                     <BackButton fallbackTo="/invoices" label="بازگشت به فاکتورها" />
-                    <div className="mt-3 flex flex-col gap-3">
-                        <h1 className="text-2xl font-bold text-gray-900">فاکتور {invoice.code}</h1>
-                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium">
+                    <div className="w-full flex min-w-0 mt-3">
+                        <h1 className="break-words text-xl font-bold leading-8 text-gray-900 md:text-2xl">
+                            فاکتور {invoice.code}
+                        </h1>
+                        <span
+                            className={`inline-flex rounded-full mx-2 px-3 py-1.5 text-xs font-medium ${getInvoiceStatusClass(invoice.status)}`}
+                        >
                             {invoiceStatusLabel(invoice.status)}
                         </span>
                     </div>
@@ -124,7 +128,9 @@ export function InvoiceDetailsPage() {
                     invoice.status === 'issued' &&
                     invoice.order?.status === 'completed' &&
                     invoice.order?.id ? (
-                        <Button variant="warning" size="md"
+                        <Button
+                            variant="warning"
+                            size="md"
                             type="button"
                             onClick={() =>
                                 navigate(
@@ -138,7 +144,9 @@ export function InvoiceDetailsPage() {
                     ) : null}
                     {invoice.status === 'draft' ? (
                         <>
-                            <Button variant="edit" size="md"
+                            <Button
+                                variant="edit"
+                                size="md"
                                 type="button"
                                 disabled={busy}
                                 onClick={() => void editDraft()}
@@ -147,7 +155,9 @@ export function InvoiceDetailsPage() {
                                 ویرایش مبلغ
                             </Button>
                             {isAdmin ? (
-                                <Button variant="primary" size="md"
+                                <Button
+                                    variant="primary"
+                                    size="md"
                                     type="button"
                                     disabled={busy}
                                     onClick={() => void action('issue')}
@@ -160,7 +170,9 @@ export function InvoiceDetailsPage() {
                                     در انتظار تأیید مدیر
                                 </span>
                             )}
-                            <Button variant="danger" size="md"
+                            <Button
+                                variant="danger"
+                                size="md"
                                 type="button"
                                 disabled={busy}
                                 onClick={() => void action('cancel')}
@@ -200,7 +212,7 @@ export function InvoiceDetailsPage() {
                 </div>
             </div>
             <TableContainer aria-label="اقلام فاکتور">
-<table className="min-w-[750px] w-full text-sm">
+                <table className="min-w-[750px] w-full text-sm">
                     <thead className="bg-gray-50 text-right text-gray-600">
                         <tr>
                             <th className="px-5 py-3">محصول</th>
@@ -260,7 +272,7 @@ export function InvoiceDetailsPage() {
                         </tr>
                     </tfoot>
                 </table>
-</TableContainer>
+            </TableContainer>
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl border bg-white p-5">
                     <h2 className="font-semibold">خلاصه مبلغ</h2>
