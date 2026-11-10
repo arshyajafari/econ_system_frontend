@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Button } from "../../../design-system/components/Button";
+import { Button } from '../../../design-system/components/Button';
 import { ApiError } from '../../../api/client';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
@@ -10,7 +10,13 @@ import { SearchableProductSelect } from '../../../components/SearchableProductSe
 import { DoctorForm } from '../../doctors/components/DoctorForm';
 import { createDoctor } from '../../doctors/services/doctorsApi';
 import type { DoctorFormData } from '../../doctors/types/doctor';
-import { createVisit, createVisitSample, createVisitWithSample, getVisitDoctors, getVisitSampleProducts } from '../services/visitsApi';
+import {
+    createVisit,
+    createVisitSample,
+    createVisitWithSample,
+    getVisitDoctors,
+    getVisitSampleProducts,
+} from '../services/visitsApi';
 import type { Visit, VisitFormData, VisitSampleFormData, VisitSampleProduct } from '../types/visit';
 
 type DraftSample = {
@@ -258,21 +264,9 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
     return (
         <section className="space-y-5 rounded-2xl border border-gray-200 bg-gray-50 p-4 md:p-6">
             <header className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+                <div className="w-full">
                     <h2 className="text-xl font-bold text-gray-900">ثبت ویزیت</h2>
-                    <p className="mt-1 text-sm text-gray-500">
-                        ابتدا پزشک و اطلاعات ویزیت را وارد کنید؛ سپس محصولات تحویلی را به ویزیت
-                        اضافه کنید.
-                    </p>
                 </div>
-                <Button variant="secondary"
-                    type="button"
-                    onClick={onCancel}
-                    disabled={saving}
-                    className="rounded-lg border bg-white px-4 py-2 text-sm"
-                >
-                    بستن فرم
-                </Button>
             </header>
 
             {doctorFormOpen ? (
@@ -293,7 +287,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                 <section className="rounded-xl border bg-white p-4">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                         <h3 className="font-semibold">۱. انتخاب پزشک</h3>
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             disabled={saving || Boolean(savedVisit)}
                             onClick={() => {
@@ -529,7 +524,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                 </span>
                                             ) : null}
                                             {!isScientificVisitor ? (
-                                                <Button variant="danger"
+                                                <Button
+                                                    variant="danger"
                                                     type="button"
                                                     onClick={() => removeSample(sample.key)}
                                                     disabled={saving || sample.saved}
@@ -559,7 +555,8 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                     </div>
                 ) : null}
                 <div className="flex flex-wrap gap-2">
-                    <Button variant="primary"
+                    <Button
+                        variant="primary"
                         type="submit"
                         disabled={saving || doctorFormOpen || productsLoading}
                         className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
@@ -567,10 +564,11 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                         {saving
                             ? 'در حال ثبت...'
                             : savedVisit
-                            ? 'ادامه ثبت سمپل‌های باقی‌مانده'
-                            : 'ثبت ویزیت و سمپل‌ها'}
+                              ? 'ادامه ثبت سمپل‌های باقی‌مانده'
+                              : 'ثبت ویزیت و سمپل‌ها'}
                     </Button>
-                    <Button variant="secondary"
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={onCancel}
                         disabled={saving}

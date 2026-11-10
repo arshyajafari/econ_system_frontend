@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from "../../../design-system/components/Button";
-import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Button } from '../../../design-system/components/Button';
+import { TableContainer } from '../../../design-system/components/TableContainer';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { ApiError } from '../../../api/client';
@@ -125,30 +125,29 @@ export function OrderDetailsPage() {
     const finalAmount = getOrderFinalAmount(order);
     return (
         <section className="space-y-6 p-4 md:p-6">
-            <div className="flex w-full flex-col items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 md:p-5">
+            <div className="flex w-full flex-col items-start gap-3">
                 <div className="w-full">
                     <BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" />
                 </div>
-                <div className="w-full min-w-0">
+                <div className="w-full flex min-w-0">
                     <h1 className="break-words text-xl font-bold leading-8 text-gray-900 md:text-2xl">
                         سفارش {order.code}
                     </h1>
-                </div>
-                <div className="w-full">
                     <span
-                        className={`inline-flex max-w-full rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClass(order.status)}`}
+                        className={`inline-flex rounded-full mx-2 px-3 py-1.5 text-xs font-medium ${getStatusClass(order.status)}`}
                     >
                         {getOrderStatusLabel(order.status)}
                     </span>
                 </div>
-                <div className="w-full border-t border-gray-100 pt-3">
+                <div className="w-full border-t border-gray-100">
                     <p className="break-words text-sm leading-6 text-gray-500">
                         تاریخ ثبت سفارش: {formatDate(order.created_at)}
                     </p>
                 </div>
                 {order.status === 'completed' ? (
                     <div className="w-full pt-1">
-                        <Button variant="primary"
+                        <Button
+                            variant="primary"
                             type="button"
                             onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)}
                             className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 md:w-auto"
@@ -165,7 +164,8 @@ export function OrderDetailsPage() {
                     className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <span>{error}</span>
-                    <Button variant="secondary"
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={() => void loadOrder()}
                         className="self-start rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100 sm:self-auto"
@@ -252,7 +252,7 @@ export function OrderDetailsPage() {
                     </div>
                 </div>
                 <TableContainer className="ui-table-container--embedded" aria-label="اقلام سفارش">
-<table className="min-w-[1250px] w-full text-sm">
+                    <table className="min-w-[1250px] w-full text-sm">
                         <thead className="bg-gray-50 text-right text-gray-600">
                             <tr>
                                 <th className="px-5 py-3 font-medium">محصول</th>
@@ -388,7 +388,7 @@ export function OrderDetailsPage() {
                             </tr>
                         </tfoot>
                     </table>
-</TableContainer>
+                </TableContainer>
             </div>
             <ConfirmModal
                 open={cancelOpen}
