@@ -125,27 +125,27 @@ export function OrderDetailsPage() {
     const finalAmount = getOrderFinalAmount(order);
     return (
         <section className="space-y-6 p-4 md:p-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
-                <div className="w-full">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                <div className="min-w-0 flex-1">
                     <BackButton fallbackTo="/orders" label="بازگشت به سفارش‌ها" />
-                    <div className="mt-3 flex flex-wrap items-center gap-3">
-                        <h1 className="text-2xl font-bold text-gray-900">سفارش {order.code}</h1>
+                    <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+                        <h1 className="min-w-0 break-words text-2xl font-bold text-gray-900">سفارش {order.code}</h1>
                         <span
-                            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(order.status)}`}
+                            className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-medium ${getStatusClass(order.status)}`}
                         >
                             {getOrderStatusLabel(order.status)}
                         </span>
                     </div>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 break-words text-sm text-gray-500">
                         ثبت شده در {formatDate(order.created_at)}
                     </p>
                 </div>
                 {order.status === 'completed' ? (
-                    <div className="w-full flex justify-end">
+                    <div className="flex w-full justify-start xl:w-auto xl:justify-end">
                         <Button variant="primary"
                             type="button"
                             onClick={() => navigate(`/order-returns/new?order_id=${order.id}`)}
-                            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                            className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 xl:w-auto"
                         >
                             ثبت مرجوعی
                         </Button>
