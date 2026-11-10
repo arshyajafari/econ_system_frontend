@@ -1,4 +1,3 @@
-import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { ScientificInventoryModals } from "../components/ScientificInventoryModals";
@@ -500,7 +499,7 @@ export function ScientificVisitorInventoryPage() {
                                 </td>
                             </tr>
                         ) : (
-                            sortTableRecords(items).map((item) => (
+                            items.map((item) => (
                                 <tr key={item.id}>
                                     {isManager ? (
                                         <td className="px-4 py-3">

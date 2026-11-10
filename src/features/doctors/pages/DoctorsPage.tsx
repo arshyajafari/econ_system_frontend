@@ -1,7 +1,6 @@
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { Button } from "../../../design-system/components/Button";
-import { sortTableRecords } from "../../../utils/date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 
@@ -339,7 +338,7 @@ export function DoctorsPage() {
                 </td>
               </tr>
             ) : (
-              sortTableRecords(doctors).map((doctor) => (
+              doctors.map((doctor) => (
                 <tr key={doctor.id} className="hover:bg-gray-50">
                   <td
                     dir="ltr"

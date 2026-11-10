@@ -1,4 +1,3 @@
-import { sortTableRecords } from '../../../utils/date';
 import { Button } from "../../../design-system/components/Button";
 import { useCallback, useEffect, useState } from 'react';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
@@ -427,7 +426,7 @@ export function VisitsPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                sortTableRecords(visits).flatMap((v) => {
+                                visits.flatMap((v) => {
                                     const visitSamples = v.samples?.length ? v.samples : [null];
                                     return visitSamples.map((sample, index) => (
                                         <tr key={`${v.id}-${sample?.id ?? 'no-sample'}`}>

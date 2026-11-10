@@ -1,7 +1,6 @@
 import { Button } from "../../../design-system/components/Button";
 import { StatusBadge } from "../../../design-system/components/StatusBadge";
 import { TableContainer } from "../../../design-system/components/TableContainer";
-import { sortTableRecords } from '../../../utils/date';
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
 import { useNavigate } from 'react-router-dom';
@@ -182,7 +181,7 @@ export function InvoicesPage() {
                             </tr>
                         ) : null}
                         {!loading
-                            ? sortTableRecords(invoices).map((invoice) => (
+                            ? invoices.map((invoice) => (
                                   <tr key={invoice.id} className="hover:bg-gray-50">
                                       <td className="px-5 py-4 font-medium text-gray-900">
                                           {invoice.code}

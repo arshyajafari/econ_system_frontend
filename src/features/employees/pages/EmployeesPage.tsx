@@ -1,7 +1,6 @@
 import { useUrlSearchAndPage } from "../../../hooks/useUrlSearchAndPage";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { Button } from "../../../design-system/components/Button";
-import { sortTableRecords } from '../../../utils/date';
 import { useCallback, useEffect, useState } from 'react';
 import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
@@ -274,7 +273,7 @@ export function EmployeesPage() {
                                 </td>
                             </tr>
                         ) : (
-                            sortTableRecords(items).map((item) => (
+                            items.map((item) => (
                                 <tr key={item.id}>
                                     <td dir="ltr" className="px-4 py-3">
                                         {item.code}
