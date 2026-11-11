@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   gregorianStringToJalali,
   gregorianToJalali,
@@ -82,6 +83,7 @@ export function JalaliDateInput({
   placeholder = "۱۴۰۵/۰۶/۲۳",
 }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
   const calendarId = useId();
   const [draft, setDraft] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -97,7 +99,10 @@ export function JalaliDateInput({
     if (!isOpen) return;
 
     function handlePointerDown(event: MouseEvent) {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
+      if (
+        !wrapperRef.current?.contains(event.target as Node) &&
+        !calendarRef.current?.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -214,12 +219,20 @@ export function JalaliDateInput({
         </button>
       </div>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/25 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsOpen(false);
+          }}
+        >
+        <div
+          ref={calendarRef}
           id={calendarId}
           role="dialog"
+          aria-modal="true"
           aria-label="تقویم جلالی"
-          className="absolute left-0 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-3 shadow-xl"
+          className="relative max-h-[min(90dvh,36rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <button
@@ -306,6 +319,8 @@ export function JalaliDateInput({
             </button>
           </div>
         </div>
+        </div>,
+        document.body
       )}
     </div>
   );
