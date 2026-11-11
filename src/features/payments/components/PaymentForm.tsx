@@ -413,6 +413,29 @@ export function PaymentForm({
                             درصد
                         </Button>
                     </div>
+                    <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700">
+                        <div className="flex items-center justify-between gap-3">
+                            <span>مبلغ مبنا (قبل از تخفیف)</span>
+                            <span className="font-medium tabular-nums" dir="ltr">
+                                {numberFormatter.format(Number(baseAmount || 0))}
+                            </span>
+                        </div>
+                        <div className="mt-1 flex items-center justify-between gap-3">
+                            <span>تخفیف محاسبه‌شده</span>
+                            <span className="font-medium tabular-nums" dir="ltr">
+                                {numberFormatter.format(effectiveDiscountAmount)}
+                            </span>
+                        </div>
+                        <div className="mt-1 flex items-center justify-between gap-3 border-t border-gray-200 pt-1.5 font-semibold text-gray-900">
+                            <span>مبلغ نهایی پرداخت</span>
+                            <span className="tabular-nums" dir="ltr">
+                                {numberFormatter.format(finalAmount)}
+                            </span>
+                        </div>
+                        <p className="mt-1 text-[11px] text-gray-500">
+                            مجموع مبلغ پرداخت و تخفیف، به همین میزان از بدهی مشتری کسر خواهد شد.
+                        </p>
+                    </div>
                 </div>
 
                 {method === 'cheque' ? (
