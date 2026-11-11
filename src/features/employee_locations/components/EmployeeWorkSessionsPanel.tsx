@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { TableContainer } from "../../../design-system/components/TableContainer";
+import { Pagination } from '../../../components/Pagination';
+import { getEmployees } from '../../employees/services/employeesApi';
+import type { Employee } from '../../employees/types/employee';
 import { Button } from "../../../design-system/components/Button";
 import { ApiError } from '../../../api/client';
-import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import {
     correctEmployeeWorkSession,
     getEmployeeWorkSessions,
@@ -31,16 +33,11 @@ type LeafletApi = {
 };
 
 const EMPTY_ROUTE_POINTS: EmployeeLocation[] = [];
+const SESSIONS_PER_PAGE = 25;
 
-function localDate(): string {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Tehran',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).formatToParts(new Date());
-    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-    return `${values.year}-${values.month}-${values.day}`;
+function formatWorkDate(value: string): string {
+    const date = new Date(`${value}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('fa-IR');
 }
 function time(value: string | null): string {
     if (!value) return '—';
@@ -57,11 +54,14 @@ function formatDuration(seconds: number): string {
 }
 
 export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }) {
-    const [date, setDate] = useState(localDate);
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
-    const [loadedDate, setLoadedDate] = useState<string | null>(null);
-    const [loadedRefreshKey, setLoadedRefreshKey] = useState(-1);
-    const loading = loadedDate !== date || loadedRefreshKey !== refreshKey;
+    const [employeeOptions, setEmployeeOptions] = useState<Employee[]>([]);
+    const [employeesLoading, setEmployeesLoading] = useState(true);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedSession, setSelectedSession] = useState<EmployeeWorkSession | null>(null);
     const [routeState, setRouteState] = useState<{
@@ -85,34 +85,75 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
 
     useEffect(() => {
         let cancelled = false;
-        getEmployeeWorkSessions(date)
-            .then((value) => {
+        async function loadEmployees() {
+            setEmployeesLoading(true);
+            try {
+                const firstPage = await getEmployees({ page: 1, per_page: 100 });
+                const allEmployees = [...firstPage.data];
+                for (let currentPage = 2; currentPage <= firstPage.meta.last_page; currentPage += 1) {
+                    const nextPage = await getEmployees({ page: currentPage, per_page: 100 });
+                    allEmployees.push(...nextPage.data);
+                }
                 if (!cancelled) {
-                    setSessions(value);
-                    setSelectedSession((current) =>
-                        current ? value.find((item) => item.id === current.id) ?? null : null
+                    setEmployeeOptions(
+                        allEmployees.sort((first, second) =>
+                            `${first.first_name} ${first.last_name}`.localeCompare(
+                                `${second.first_name} ${second.last_name}`,
+                                'fa'
+                            )
+                        )
                     );
-                    setError(null);
+                }
+            } catch (cause: unknown) {
+                if (!cancelled) {
+                    setError(cause instanceof ApiError ? cause.message : 'دریافت فهرست کارکنان ناموفق بود.');
+                }
+            } finally {
+                if (!cancelled) setEmployeesLoading(false);
+            }
+        }
+        void loadEmployees();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+        getEmployeeWorkSessions({
+            employeeId: selectedEmployeeId || undefined,
+            page,
+            perPage: SESSIONS_PER_PAGE,
+        })
+            .then((response) => {
+                if (!cancelled) {
+                    setSessions(response.data);
+                    setLastPage(response.meta.last_page);
+                    setTotal(response.meta.total);
+                    setSelectedSession((current) =>
+                        current ? response.data.find((item) => item.id === current.id) ?? null : null
+                    );
                 }
             })
             .catch((cause: unknown) => {
-                if (!cancelled)
+                if (!cancelled) {
+                    setSessions([]);
                     setError(
                         cause instanceof ApiError
                             ? cause.message
                             : 'دریافت سوابق مأموریت ناموفق بود.'
                     );
+                }
             })
             .finally(() => {
-                if (!cancelled) {
-                    setLoadedDate(date);
-                    setLoadedRefreshKey(refreshKey);
-                }
+                if (!cancelled) setLoading(false);
             });
         return () => {
             cancelled = true;
         };
-    }, [date, refreshKey]);
+    }, [selectedEmployeeId, page, refreshKey]);
 
     useEffect(() => {
         const sessionId = selectedSession?.id;
@@ -200,7 +241,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
         }).addTo(map);
         mapRef.current = map;
         markersRef.current = L.layerGroup().addTo(map);
-        map.setView([35.7, 51.4], 5);
+        map.setView([36.45, 52.55], 8);
         const resize = window.setTimeout(() => map.invalidateSize(), 150);
         return () => {
             window.clearTimeout(resize);
@@ -312,18 +353,37 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                         برای دیدن موقعیت مکانی هر ماموریت، دکمه نمایش نقشه را بزنید.
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <label className="text-xs text-gray-500" htmlFor="work-session-date">
-                        تاریخ
+                <p className="text-xs text-gray-500">
+                    نمایش سوابق تمام دوره‌ها؛ برای محدود کردن نتایج، کارمند موردنظر را انتخاب کنید.
+                </p>
+            </div>
+            <div className="ui-filter-panel">
+                <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    <label className="ui-filter-field">
+                        <span className="ui-filter-label">فیلتر بر اساس کارمند</span>
+                        <select
+                            value={selectedEmployeeId}
+                            disabled={employeesLoading}
+                            onChange={(event) => {
+                                setSelectedEmployeeId(event.target.value);
+                                setPage(1);
+                                setSelectedSession(null);
+                            }}
+                        >
+                            <option value="">
+                                {employeesLoading ? 'در حال دریافت کارکنان...' : 'همه کارکنان'}
+                            </option>
+                            {employeeOptions.map((employee) => (
+                                <option key={employee.id} value={employee.id}>
+                                    {employee.first_name} {employee.last_name} — {employee.code}
+                                </option>
+                            ))}
+                        </select>
                     </label>
-                    <JalaliDateInput
-                        id="work-session-date"
-                        value={date}
-                        onChange={setDate}
-                        className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                        placeholder="۱۴۰۵/۰۸/۱۰"
-                    />
                 </div>
+            </div>
+            <div className="px-4 text-xs text-gray-500">
+                {total.toLocaleString('fa-IR')} مأموریت ثبت‌شده
             </div>
             {error ? (
                 <div
@@ -334,14 +394,17 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 </div>
             ) : null}
             {loading ? (
-                <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق...</p>
+                <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق مأموریت‌ها...</p>
             ) : sessions.length === 0 ? (
-                <p className="p-5 text-sm text-gray-500">برای این تاریخ مأموریتی ثبت نشده است.</p>
+                <p className="p-5 text-sm text-gray-500">
+                    {selectedEmployeeId ? 'برای این کارمند مأموریتی ثبت نشده است.' : 'هنوز مأموریتی ثبت نشده است.'}
+                </p>
             ) : (
                 <TableContainer className="ui-table-container--embedded" aria-label="سوابق مأموریت کارکنان">
 <table className="w-full min-w-[760px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500">
                             <tr>
+                                <th className="px-4 py-3 font-medium">تاریخ مأموریت</th>
                                 <th className="px-4 py-3 font-medium">کارمند</th>
                                 <th className="px-4 py-3 font-medium">شرح مأموریت</th>
                                 <th className="px-4 py-3 font-medium">شروع / دقت GPS</th>
@@ -359,6 +422,9 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                                         selectedSession?.id === session.id ? 'bg-blue-50/70' : ''
                                     }
                                 >
+                                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                                        {formatWorkDate(session.work_date)}
+                                    </td>
                                     <td className="px-4 py-3 font-medium text-gray-900">
                                         {session.employee_name}
                                     </td>
@@ -434,6 +500,19 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     </table>
 </TableContainer>
             )}
+            <div className="px-4 pb-4">
+                <Pagination
+                    page={page}
+                    lastPage={lastPage}
+                    total={total}
+                    perPage={SESSIONS_PER_PAGE}
+                    isLoading={loading}
+                    onPageChange={(nextPage) => {
+                        setPage(nextPage);
+                        setSelectedSession(null);
+                    }}
+                />
+            </div>
             {correctionSession ? (
                 <div className="m-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
                     <h3 className="text-sm font-semibold text-amber-900">
