@@ -121,34 +121,6 @@ export async function correctEmployeeWorkSession(sessionId: string, reason: stri
   return response.data.data;
 }
 
-export async function getMyDailyLocationCheckin(): Promise<EmployeeLocation | null> {
-  const response = await apiClient.get<{ data: EmployeeLocation | null }>(
-    "/employees/locations/check-ins/me"
-  );
-  return response.data.data;
-}
-
-export async function sendMyDailyLocationCheckin(payload: {
-  latitude: number;
-  longitude: number;
-  accuracy?: number;
-  client_operation_id: string;
-}): Promise<EmployeeLocation> {
-  const response = await apiClient.post<{ data: EmployeeLocation }>(
-    "/employees/locations/check-ins/me",
-    payload
-  );
-  return response.data.data;
-}
-
-export async function getEmployeeDailyLocationCheckins(date: string): Promise<EmployeeLocation[]> {
-  const params = new URLSearchParams({ date });
-  const response = await apiClient.get<EmployeeLocation[]>(
-    `/employees/locations/check-ins?${params.toString()}`
-  );
-  return response.data;
-}
-
 export type MyDailyLocationPointCount = {
   date: string;
   points_count: number;
