@@ -56,10 +56,9 @@ function formatDuration(seconds: number): string {
         : `${minutes.toLocaleString('fa-IR')} دقیقه`;
 }
 
-export function EmployeeWorkSessionsPanel() {
+export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }) {
     const [date, setDate] = useState(localDate);
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
-    const [refreshKey, setRefreshKey] = useState(0);
     const [loadedDate, setLoadedDate] = useState<string | null>(null);
     const loading = loadedDate !== date;
     const [error, setError] = useState<string | null>(null);
@@ -85,6 +84,7 @@ export function EmployeeWorkSessionsPanel() {
 
     useEffect(() => {
         let cancelled = false;
+        setLoadedDate(null);
         getEmployeeWorkSessions(date)
             .then((value) => {
                 if (!cancelled) {
@@ -320,14 +320,6 @@ export function EmployeeWorkSessionsPanel() {
                         className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
                         placeholder="۱۴۰۵/۰۸/۱۰"
                     />
-                    <Button size="sm" variant="secondary"
-                        type="button"
-                        onClick={() => setRefreshKey((value) => value + 1)}
-                        disabled={loading}
-                        className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 disabled:opacity-50"
-                    >
-                        بروزرسانی
-                    </Button>
                 </div>
             </div>
             {error ? (
