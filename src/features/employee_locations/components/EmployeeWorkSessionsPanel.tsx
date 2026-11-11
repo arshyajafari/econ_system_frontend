@@ -4,6 +4,7 @@ import { Pagination } from '../../../components/Pagination';
 import { getEmployees } from '../../employees/services/employeesApi';
 import type { Employee } from '../../employees/types/employee';
 import { Button } from "../../../design-system/components/Button";
+import { JalaliDateInput } from '../../../../components/JalaliDateInput';
 import { ApiError } from '../../../api/client';
 import {
     correctEmployeeWorkSession,
@@ -59,6 +60,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
     const [employeesLoading, setEmployeesLoading] = useState(true);
     const [employeeError, setEmployeeError] = useState<string | null>(null);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [total, setTotal] = useState(0);
@@ -125,6 +127,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
         setError(null);
         getEmployeeWorkSessions({
             employeeId: selectedEmployeeId || undefined,
+            date: selectedDate || undefined,
             page,
             perPage: SESSIONS_PER_PAGE,
         })
@@ -154,7 +157,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
         return () => {
             cancelled = true;
         };
-    }, [selectedEmployeeId, page, refreshKey]);
+    }, [selectedEmployeeId, selectedDate, page, refreshKey]);
 
     useEffect(() => {
         const sessionId = selectedSession?.id;
@@ -361,10 +364,43 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     نمایش سوابق تمام دوره‌ها؛ برای محدود کردن نتایج، کارمند موردنظر را انتخاب کنید.
                 </p>
             </div>
-            <div className="ui-filter-panel">
-                <div className="ui-filter-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    <label className="ui-filter-field">
-                        <span className="ui-filter-label">فیلتر بر اساس کارمند</span>
+            <div className="mx-4 my-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm sm:p-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 5h16M7 12h10m-7 7h4" />
+                                <circle cx="8" cy="5" r="1.5" fill="currentColor" stroke="none" />
+                                <circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                                <circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 className="text-sm font-semibold text-slate-800">فیلتر سوابق</h3>
+                            <p className="mt-0.5 text-xs text-slate-500">سوابق را بر اساس کارمند یا یک روز مشخص محدود کنید.</p>
+                        </div>
+                    </div>
+                    {(selectedEmployeeId || selectedDate) ? (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSelectedEmployeeId('');
+                                setSelectedDate('');
+                                setPage(1);
+                                setSelectedSession(null);
+                                setCorrectionSession(null);
+                            }}
+                            className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-white hover:text-blue-700"
+                        >
+                            پاک کردن فیلترها
+                        </button>
+                    ) : (
+                        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200">همه سوابق</span>
+                    )}
+                </div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <label className="block min-w-0">
+                        <span className="mb-1.5 block text-xs font-medium text-slate-600">کارمند</span>
                         <select
                             value={selectedEmployeeId}
                             disabled={employeesLoading}
@@ -374,6 +410,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                                 setSelectedSession(null);
                                 setCorrectionSession(null);
                             }}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 disabled:bg-slate-50"
                         >
                             <option value="">
                                 {employeesLoading ? 'در حال دریافت کارکنان...' : 'همه کارکنان'}
@@ -385,6 +422,21 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                             ))}
                         </select>
                     </label>
+                    <div className="min-w-0">
+                        <label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="work-session-filter-date">تاریخ مأموریت</label>
+                        <JalaliDateInput
+                            id="work-session-filter-date"
+                            value={selectedDate}
+                            onChange={(value) => {
+                                setSelectedDate(value);
+                                setPage(1);
+                                setSelectedSession(null);
+                                setCorrectionSession(null);
+                            }}
+                            placeholder="انتخاب یک روز"
+                            className="rounded-xl border border-slate-200 bg-white py-2.5 pr-3 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10"
+                        />
+                    </div>
                 </div>
             </div>
             {employeeError ? (
@@ -392,8 +444,14 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     {employeeError}
                 </div>
             ) : null}
-            <div className="px-4 text-xs text-gray-500">
-                {total.toLocaleString('fa-IR')} مأموریت ثبت‌شده
+            <div className="flex flex-wrap items-center justify-between gap-2 px-4 pb-2 text-xs text-slate-500">
+                <span>{total.toLocaleString('fa-IR')} مأموریت ثبت‌شده</span>
+                {(selectedEmployeeId || selectedDate) ? (
+                    <span className="text-slate-400">
+                        {selectedDate ? `تاریخ: ${formatWorkDate(selectedDate)}` : 'تمام تاریخ‌ها'}
+                        {selectedEmployeeId ? ' · فیلتر کارمند فعال' : ''}
+                    </span>
+                ) : null}
             </div>
             {error ? (
                 <div
