@@ -94,10 +94,23 @@ export async function endMyWorkSession(payload: {
   return response.data.data;
 }
 
-export async function getEmployeeWorkSessions(date?: string): Promise<EmployeeWorkSession[]> {
-  const params = date ? `?date=${encodeURIComponent(date)}` : "";
-  const response = await apiClient.get<{ data: EmployeeWorkSession[] }>(`/employees/locations/work-sessions${params}`);
-  return response.data.data;
+export async function getEmployeeWorkSessions(filters: {
+  employeeId?: string;
+  page?: number;
+  perPage?: number;
+} = {}): Promise<{
+  data: EmployeeWorkSession[];
+  meta: { current_page: number; last_page: number; per_page: number; total: number };
+}> {
+  const params = new URLSearchParams();
+  if (filters.employeeId) params.set('employee_id', filters.employeeId);
+  params.set('page', String(filters.page ?? 1));
+  params.set('per_page', String(filters.perPage ?? 25));
+  const response = await apiClient.get<{
+    data: EmployeeWorkSession[];
+    meta: { current_page: number; last_page: number; per_page: number; total: number };
+  }>(`/employees/locations/work-sessions?${params.toString()}`);
+  return response.data;
 }
 
 export async function getEmployeeWorkSessionLocations(
