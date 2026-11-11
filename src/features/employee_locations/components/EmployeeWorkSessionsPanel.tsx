@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { TableContainer } from "../../../design-system/components/TableContainer";
+import { TableContainer } from '../../../design-system/components/TableContainer';
 import { Pagination } from '../../../components/Pagination';
 import { getEmployees } from '../../employees/services/employeesApi';
 import type { Employee } from '../../employees/types/employee';
-import { Button } from "../../../design-system/components/Button";
+import { Button } from '../../../design-system/components/Button';
 import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { ApiError } from '../../../api/client';
 import {
@@ -93,7 +93,11 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
             try {
                 const firstPage = await getEmployees({ page: 1, per_page: 100 });
                 const allEmployees = [...firstPage.data];
-                for (let currentPage = 2; currentPage <= firstPage.meta.last_page; currentPage += 1) {
+                for (
+                    let currentPage = 2;
+                    currentPage <= firstPage.meta.last_page;
+                    currentPage += 1
+                ) {
                     const nextPage = await getEmployees({ page: currentPage, per_page: 100 });
                     allEmployees.push(...nextPage.data);
                 }
@@ -109,7 +113,11 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 }
             } catch (cause: unknown) {
                 if (!cancelled) {
-                    setEmployeeError(cause instanceof ApiError ? cause.message : 'دریافت فهرست کارکنان ناموفق بود.');
+                    setEmployeeError(
+                        cause instanceof ApiError
+                            ? cause.message
+                            : 'دریافت فهرست کارکنان ناموفق بود.'
+                    );
                 }
             } finally {
                 if (!cancelled) setEmployeesLoading(false);
@@ -137,7 +145,9 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     setLastPage(response.meta.last_page);
                     setTotal(response.meta.total);
                     setSelectedSession((current) =>
-                        current ? response.data.find((item) => item.id === current.id) ?? null : null
+                        current
+                            ? (response.data.find((item) => item.id === current.id) ?? null)
+                            : null
                     );
                 }
             })
@@ -192,8 +202,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 if (lastPoint?.captured_at) cursor = lastPoint.captured_at;
 
                 setRouteState((current) => {
-                    const existing =
-                        current?.sessionId === sessionId ? current.points : [];
+                    const existing = current?.sessionId === sessionId ? current.points : [];
                     const merged = new Map(existing.map((point) => [point.id, point]));
                     additions.forEach((point) => merged.set(point.id, point));
                     return {
@@ -233,7 +242,6 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
             if (timer !== null) window.clearTimeout(timer);
         };
     }, [selectedSession?.id, selectedSession?.status, refreshKey]);
-
 
     useEffect(() => {
         const L = (window as Window & { L?: LeafletApi }).L;
@@ -356,51 +364,14 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-4">
                 <div>
                     <h2 className="font-semibold text-gray-900">سوابق مأموریت‌ها</h2>
-                    <p className="mt-1 text-xs text-gray-500">
-                        برای دیدن موقعیت مکانی هر ماموریت، دکمه نمایش نقشه را بزنید.
-                    </p>
                 </div>
-                <p className="text-xs text-gray-500">
-                    نمایش سوابق تمام دوره‌ها؛ برای محدود کردن نتایج، کارمند موردنظر را انتخاب کنید.
-                </p>
             </div>
-            <div className="mx-4 my-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm sm:p-5">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 5h16M7 12h10m-7 7h4" />
-                                <circle cx="8" cy="5" r="1.5" fill="currentColor" stroke="none" />
-                                <circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" />
-                                <circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none" />
-                            </svg>
-                        </span>
-                        <div>
-                            <h3 className="text-sm font-semibold text-slate-800">فیلتر سوابق</h3>
-                            <p className="mt-0.5 text-xs text-slate-500">سوابق را بر اساس کارمند یا یک روز مشخص محدود کنید.</p>
-                        </div>
-                    </div>
-                    {(selectedEmployeeId || selectedDate) ? (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSelectedEmployeeId('');
-                                setSelectedDate('');
-                                setPage(1);
-                                setSelectedSession(null);
-                                setCorrectionSession(null);
-                            }}
-                            className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-white hover:text-blue-700"
-                        >
-                            پاک کردن فیلترها
-                        </button>
-                    ) : (
-                        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200">همه سوابق</span>
-                    )}
-                </div>
+            <div className="p-4 sm:p-5">
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <label className="block min-w-0">
-                        <span className="mb-1.5 block text-xs font-medium text-slate-600">کارمند</span>
+                        <span className="mb-1.5 block text-xs font-medium text-slate-600">
+                            کارمند
+                        </span>
                         <select
                             value={selectedEmployeeId}
                             disabled={employeesLoading}
@@ -423,7 +394,12 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                         </select>
                     </label>
                     <div className="min-w-0">
-                        <label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="work-session-filter-date">تاریخ مأموریت</label>
+                        <label
+                            className="mb-1.5 block text-xs font-medium text-slate-600"
+                            htmlFor="work-session-filter-date"
+                        >
+                            تاریخ مأموریت
+                        </label>
                         <JalaliDateInput
                             id="work-session-filter-date"
                             value={selectedDate}
@@ -438,21 +414,32 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                         />
                     </div>
                 </div>
+                <div className="ui-filter-actions">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                            setSelectedEmployeeId('');
+                            setSelectedDate('');
+                            setPage(1);
+                            setSelectedSession(null);
+                            setCorrectionSession(null);
+                        }}
+                        className="ui-filter-clear"
+                    >
+                        پاک کردن فیلترها
+                    </Button>
+                </div>
             </div>
             {employeeError ? (
-                <div role="alert" className="mx-4 mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                <div
+                    role="alert"
+                    className="mx-4 mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700"
+                >
                     {employeeError}
                 </div>
             ) : null}
-            <div className="flex flex-wrap items-center justify-between gap-2 px-4 pb-2 text-xs text-slate-500">
-                <span>{total.toLocaleString('fa-IR')} مأموریت ثبت‌شده</span>
-                {(selectedEmployeeId || selectedDate) ? (
-                    <span className="text-slate-400">
-                        {selectedDate ? `تاریخ: ${formatWorkDate(selectedDate)}` : 'تمام تاریخ‌ها'}
-                        {selectedEmployeeId ? ' · فیلتر کارمند فعال' : ''}
-                    </span>
-                ) : null}
-            </div>
             {error ? (
                 <div
                     role="alert"
@@ -465,11 +452,16 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 <p className="p-5 text-sm text-gray-500">در حال دریافت سوابق مأموریت‌ها...</p>
             ) : sessions.length === 0 ? (
                 <p className="p-5 text-sm text-gray-500">
-                    {selectedEmployeeId ? 'برای این کارمند مأموریتی ثبت نشده است.' : 'هنوز مأموریتی ثبت نشده است.'}
+                    {selectedEmployeeId
+                        ? 'برای این کارمند مأموریتی ثبت نشده است.'
+                        : 'هنوز مأموریتی ثبت نشده است.'}
                 </p>
             ) : (
-                <TableContainer className="ui-table-container--embedded" aria-label="سوابق مأموریت کارکنان">
-<table className="w-full min-w-[760px] text-right text-sm">
+                <TableContainer
+                    className="ui-table-container--embedded"
+                    aria-label="سوابق مأموریت کارکنان"
+                >
+                    <table className="w-full min-w-[760px] text-right text-sm">
                         <thead className="bg-gray-50 text-xs text-gray-500">
                             <tr>
                                 <th className="px-4 py-3 font-medium">تاریخ مأموریت</th>
@@ -541,7 +533,9 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex flex-wrap gap-2">
-                                            <Button size="sm" variant="primary"
+                                            <Button
+                                                size="sm"
+                                                variant="primary"
                                                 type="button"
                                                 onClick={() => setSelectedSession(session)}
                                                 className={`rounded-lg px-3 py-1.5 text-xs font-medium ${selectedSession?.id === session.id ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}`}
@@ -549,7 +543,9 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                                                 نمایش روی نقشه
                                             </Button>
                                             {session.status === 'in_progress' ? (
-                                                <Button size="sm" variant="warning"
+                                                <Button
+                                                    size="sm"
+                                                    variant="warning"
                                                     type="button"
                                                     onClick={() => {
                                                         setCorrectionSession(session);
@@ -566,7 +562,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                             ))}
                         </tbody>
                     </table>
-</TableContainer>
+                </TableContainer>
             )}
             <div className="px-4 pb-4">
                 <Pagination
@@ -603,7 +599,8 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                         />
                     </label>
                     <div className="mt-3 flex gap-2">
-                        <Button variant="warning"
+                        <Button
+                            variant="warning"
                             type="button"
                             onClick={() => void submitCorrection()}
                             disabled={savingCorrection || correctionReason.trim().length < 5}
@@ -611,7 +608,8 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                         >
                             {savingCorrection ? 'در حال ثبت...' : 'ثبت اصلاح و پایان مأموریت'}
                         </Button>
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             onClick={() => setCorrectionSession(null)}
                             disabled={savingCorrection}
@@ -634,7 +632,10 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 </div>
             ) : null}
             <div className="relative isolate z-0">
-                <div ref={mapElement} className="relative z-0 h-[300px] w-full bg-slate-100 sm:h-[380px]" />
+                <div
+                    ref={mapElement}
+                    className="relative z-0 h-[300px] w-full bg-slate-100 sm:h-[380px]"
+                />
                 {selectedSession ? (
                     <div className="absolute bottom-3 right-3 z-10 rounded-lg border border-gray-200 bg-white/95 px-3 py-2 text-xs shadow">
                         <span className="ml-3 text-emerald-700">● شروع</span>
