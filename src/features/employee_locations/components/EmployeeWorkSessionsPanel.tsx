@@ -57,6 +57,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
     const [employeeOptions, setEmployeeOptions] = useState<Employee[]>([]);
     const [employeesLoading, setEmployeesLoading] = useState(true);
+    const [employeeError, setEmployeeError] = useState<string | null>(null);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -106,7 +107,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                 }
             } catch (cause: unknown) {
                 if (!cancelled) {
-                    setError(cause instanceof ApiError ? cause.message : 'دریافت فهرست کارکنان ناموفق بود.');
+                    setEmployeeError(cause instanceof ApiError ? cause.message : 'دریافت فهرست کارکنان ناموفق بود.');
                 }
             } finally {
                 if (!cancelled) setEmployeesLoading(false);
@@ -257,7 +258,10 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
         const layer = markersRef.current;
         if (!map || !L || !layer) return;
         layer.clearLayers();
-        if (!selectedSession) return;
+        if (!selectedSession) {
+            map.setView([36.45, 52.55], 8);
+            return;
+        }
 
         const start = [selectedSession.start.latitude, selectedSession.start.longitude];
         const end = selectedSession.end
@@ -368,6 +372,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                                 setSelectedEmployeeId(event.target.value);
                                 setPage(1);
                                 setSelectedSession(null);
+                                setCorrectionSession(null);
                             }}
                         >
                             <option value="">
@@ -382,6 +387,11 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     </label>
                 </div>
             </div>
+            {employeeError ? (
+                <div role="alert" className="mx-4 mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                    {employeeError}
+                </div>
+            ) : null}
             <div className="px-4 text-xs text-gray-500">
                 {total.toLocaleString('fa-IR')} مأموریت ثبت‌شده
             </div>
@@ -510,6 +520,7 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     onPageChange={(nextPage) => {
                         setPage(nextPage);
                         setSelectedSession(null);
+                        setCorrectionSession(null);
                     }}
                 />
             </div>
