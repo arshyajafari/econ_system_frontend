@@ -1,5 +1,5 @@
-import { StatusBadge } from "../../../design-system/components/StatusBadge";
-import { Button } from "../../../design-system/components/Button";
+import { StatusBadge } from '../../../design-system/components/StatusBadge';
+import { Button } from '../../../design-system/components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
@@ -18,14 +18,14 @@ function formatDate(value: string | null): string {
     if (Number.isNaN(date.getTime())) return '—';
     return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' }).format(date);
 }
-function statusVariant(status: Payment["status"]): "warning" | "success" | "danger" {
+function statusVariant(status: Payment['status']): 'warning' | 'success' | 'danger' {
     switch (status) {
-        case "pending":
-            return "warning";
-        case "confirmed":
-            return "success";
-        case "cancelled":
-            return "danger";
+        case 'pending':
+            return 'warning';
+        case 'confirmed':
+            return 'success';
+        case 'cancelled':
+            return 'danger';
     }
 }
 export function PaymentDetailsPage() {
@@ -98,7 +98,9 @@ export function PaymentDetailsPage() {
                 <BackButton fallbackTo="/payments" label="بازگشت به پرداخت‌ها" />
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                     <h1 className="text-2xl font-bold text-gray-900">پرداخت</h1>
-                    <StatusBadge variant={statusVariant(payment.status)}>{getPaymentStatusLabel(payment.status)}</StatusBadge>
+                    <StatusBadge variant={statusVariant(payment.status)}>
+                        {getPaymentStatusLabel(payment.status)}
+                    </StatusBadge>
                 </div>
             </div>
             {error ? (
@@ -107,7 +109,8 @@ export function PaymentDetailsPage() {
                     className="flex flex-col gap-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <span>{error}</span>
-                    <Button variant="secondary"
+                    <Button
+                        variant="secondary"
                         type="button"
                         onClick={() => void loadPayment()}
                         className="rounded-lg border border-red-200 px-3 py-1.5 font-medium hover:bg-red-100"
@@ -120,12 +123,10 @@ export function PaymentDetailsPage() {
                 <div className="rounded-xl border border-gray-200 bg-white p-5">
                     <h2 className="text-sm font-semibold text-gray-900">اطلاعات مشتری</h2>
                     <div className="mt-4 space-y-3 text-sm">
-                        <div className="flex justify-between gap-4">
-                            <span className="text-gray-500">نام</span>
+                        <div>
                             <span className="font-medium">{payment.customer?.name ?? '—'}</span>
                         </div>
-                        <div className="flex justify-between gap-4">
-                            <span className="text-gray-500">کد</span>
+                        <div>
                             <span>{payment.customer?.code ?? '—'}</span>
                         </div>
                     </div>
@@ -135,7 +136,7 @@ export function PaymentDetailsPage() {
                 <h2 className="text-sm font-semibold text-gray-900">جزئیات پرداخت</h2>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <div>
-                        <span className="text-xs text-gray-500">مبلغ پرداختی (پس از تخفیف)</span>
+                        <span className="text-xs text-gray-500">مبلغ پرداختی</span>
                         <div dir="rtl" className="mt-1 text-lg font-bold">
                             {formatNumber(Number(payment.amount || 0))}
                         </div>
@@ -149,7 +150,10 @@ export function PaymentDetailsPage() {
                     <div>
                         <span className="text-xs text-gray-500">مجموع کاهش بدهی</span>
                         <div dir="rtl" className="mt-1 font-bold text-emerald-700">
-                            {formatNumber(Number(payment.amount || 0) + Number(payment.settlement_discount_amount || 0))}
+                            {formatNumber(
+                                Number(payment.amount || 0) +
+                                    Number(payment.settlement_discount_amount || 0)
+                            )}
                         </div>
                     </div>
                     <div>

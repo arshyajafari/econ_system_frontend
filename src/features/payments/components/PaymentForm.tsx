@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from "../../../design-system/components/Button";
+import { Button } from '../../../design-system/components/Button';
 import type { FormEvent } from 'react';
 import { ApiError } from '../../../api/client';
 import { FormattedNumberInput } from '../../../components/FormattedNumberInput';
@@ -166,7 +166,9 @@ export function PaymentForm({
             return;
         }
         if (numericDiscount >= numericBaseAmount) {
-            setValidationError('تخفیف تسویه باید کمتر از مبلغ مبنا باشد تا مبلغ پرداخت نهایی بیشتر از صفر بماند.');
+            setValidationError(
+                'تخفیف تسویه باید کمتر از مبلغ مبنا باشد تا مبلغ پرداخت نهایی بیشتر از صفر بماند.'
+            );
             return;
         }
         if (discountMode === 'percent' && Number(discountInput || 0) > 100) {
@@ -174,7 +176,9 @@ export function PaymentForm({
             return;
         }
         if (customerBalance !== null && numericBaseAmount > customerBalance + 0.009) {
-            setValidationError('مبلغ مبنا به‌همراه تخفیف نمی‌تواند بیشتر از مانده قابل پرداخت باشد.');
+            setValidationError(
+                'مبلغ مبنا به‌همراه تخفیف نمی‌تواند بیشتر از مانده قابل پرداخت باشد.'
+            );
             return;
         }
         if (method === 'cheque') {
@@ -300,7 +304,9 @@ export function PaymentForm({
                             const requestedFinalAmount = Number(value || 0);
                             const percentage = Number(discountInput || 0);
                             if (discountMode === 'percent' && percentage >= 100) {
-                                setValidationError('برای ثبت پرداخت، درصد تخفیف باید کمتر از ۱۰۰ باشد.');
+                                setValidationError(
+                                    'برای ثبت پرداخت، درصد تخفیف باید کمتر از ۱۰۰ باشد.'
+                                );
                                 return;
                             }
 
@@ -347,9 +353,6 @@ export function PaymentForm({
                             )}
                         </div>
                     ) : null}
-                    <p className="mt-1.5 text-xs text-gray-500">
-                        مبلغ نمایش‌داده‌شده، مبلغ نهایی دریافتی پس از کسر تخفیف است.
-                    </p>
                 </div>
 
                 <div>
@@ -373,7 +376,8 @@ export function PaymentForm({
                     />
 
                     <div className="mt-2 flex gap-2">
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             disabled={isSubmitting || !customerId}
                             onClick={() => {
@@ -390,7 +394,8 @@ export function PaymentForm({
                         >
                             مبلغ ریالی
                         </Button>
-                        <Button variant="secondary"
+                        <Button
+                            variant="secondary"
                             type="button"
                             disabled={isSubmitting || !customerId}
                             onClick={() => {
@@ -416,8 +421,14 @@ export function PaymentForm({
                         >
                             درصد
                         </Button>
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700 flex items-center justify-between gap-3">
+                            <span>مبلغ نهایی</span>
+                            <span className="font-medium tabular-nums" dir="ltr">
+                                {numberFormatter.format(Number(baseAmount || 0))}
+                            </span>
+                        </div>
                     </div>
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700">
+                    {/* <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700">
                         <div className="flex items-center justify-between gap-3">
                             <span>مبلغ مبنا (قبل از تخفیف)</span>
                             <span className="font-medium tabular-nums" dir="ltr">
@@ -439,7 +450,7 @@ export function PaymentForm({
                         <p className="mt-1 text-[11px] text-gray-500">
                             مجموع مبلغ پرداخت و تخفیف، به همین میزان از بدهی مشتری کسر خواهد شد.
                         </p>
-                    </div>
+                    </div> */}
                 </div>
 
                 {method === 'cheque' ? (
@@ -558,7 +569,8 @@ export function PaymentForm({
             </div>
 
             <div className="mt-5 flex gap-2">
-                <Button variant="primary"
+                <Button
+                    variant="primary"
                     type="submit"
                     disabled={
                         isSubmitting ||
@@ -573,7 +585,8 @@ export function PaymentForm({
                 >
                     {isSubmitting ? 'در حال ذخیره...' : 'ذخیره پرداخت'}
                 </Button>
-                <Button variant="secondary"
+                <Button
+                    variant="secondary"
                     type="button"
                     disabled={isSubmitting}
                     onClick={onCancel}
