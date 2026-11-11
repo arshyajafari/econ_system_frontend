@@ -4,7 +4,7 @@ import { Pagination } from '../../../components/Pagination';
 import { getEmployees } from '../../employees/services/employeesApi';
 import type { Employee } from '../../employees/types/employee';
 import { Button } from "../../../design-system/components/Button";
-import { JalaliDateInput } from '../../../../components/JalaliDateInput';
+import { JalaliDateInput } from '../../../components/JalaliDateInput';
 import { ApiError } from '../../../api/client';
 import {
     correctEmployeeWorkSession,
