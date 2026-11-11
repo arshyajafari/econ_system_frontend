@@ -39,7 +39,12 @@ export function PaymentForm({
               }
             : null
     );
-    const [amount, setAmount] = useState(payment ? String(payment.amount) : '');
+    // Debt reduction before discount; the visible amount is the net payment.
+    const [baseAmount, setBaseAmount] = useState(() =>
+        payment
+            ? String(Number(payment.amount || 0) + Number(payment.settlement_discount_amount || 0))
+            : ''
+    );
     const [customerBalance, setCustomerBalance] = useState<number | null>(null);
     const [previousBalance, setPreviousBalance] = useState<number | null>(null);
     const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -52,8 +57,12 @@ export function PaymentForm({
     const [validationError, setValidationError] = useState<string | null>(null);
     const effectiveDiscountAmount =
         discountMode === 'percent'
-            ? Math.round((((customerBalance ?? 0) * Number(discountInput || 0)) / 100) * 100) / 100
+            ? Math.round(((Number(baseAmount || 0) * Number(discountInput || 0)) / 100) * 100) / 100
             : Number(discountInput || 0);
+    const finalAmount = Math.max(
+        0,
+        Math.round((Number(baseAmount || 0) - effectiveDiscountAmount) * 100) / 100
+    );
     const [referenceNumber, setReferenceNumber] = useState(
         payment?.method === 'cheque'
             ? (payment.cheque_details?.number ?? payment.reference_number ?? '')
@@ -95,7 +104,7 @@ export function PaymentForm({
                 setPreviousBalance(balance.previousBalance);
 
                 if (!payment) {
-                    setAmount(balance.payableBalance > 0 ? String(balance.payableBalance) : '');
+                    setBaseAmount(balance.payableBalance > 0 ? String(balance.payableBalance) : '');
                     setDiscountInput('0');
                 }
             } catch (requestError: unknown) {
@@ -103,7 +112,7 @@ export function PaymentForm({
 
                 setCustomerBalance(null);
                 setPreviousBalance(null);
-                if (!payment) setAmount('');
+                if (!payment) setBaseAmount('');
                 setBalanceError(
                     requestError instanceof ApiError && requestError.message
                         ? requestError.message
@@ -126,7 +135,7 @@ export function PaymentForm({
         setCustomerId(nextCustomerId);
         setCustomerBalance(null);
         setPreviousBalance(null);
-        setAmount('');
+        setBaseAmount('');
         setDiscountInput('0');
         setBalanceError(null);
         setIsLoadingBalance(false);
@@ -135,7 +144,8 @@ export function PaymentForm({
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const numericAmount = Number(amount);
+        const numericBaseAmount = Number(baseAmount);
+        const numericAmount = finalAmount;
         const numericDiscount = effectiveDiscountAmount;
         setValidationError(null);
 
@@ -143,8 +153,12 @@ export function PaymentForm({
             setValidationError('ابتدا مشتری را انتخاب کنید.');
             return;
         }
+        if (!Number.isFinite(numericBaseAmount) || numericBaseAmount <= 0) {
+            setValidationError('مبلغ مبنای پرداخت باید بیشتر از صفر باشد.');
+            return;
+        }
         if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-            setValidationError('مبلغ پرداخت باید بیشتر از صفر باشد.');
+            setValidationError('مبلغ پرداخت پس از کسر تخفیف باید بیشتر از صفر باشد.');
             return;
         }
         if (!Number.isFinite(numericDiscount) || numericDiscount < 0) {
@@ -155,12 +169,8 @@ export function PaymentForm({
             setValidationError('درصد تخفیف نمی‌تواند بیشتر از ۱۰۰ باشد.');
             return;
         }
-        if (customerBalance !== null && numericDiscount > customerBalance) {
-            setValidationError('تخفیف تسویه نمی‌تواند بیشتر از مانده قابل پرداخت باشد.');
-            return;
-        }
-        if (customerBalance !== null && numericAmount + numericDiscount > customerBalance + 0.009) {
-            setValidationError('مجموع مبلغ پرداخت و تخفیف تسویه بیشتر از مانده قابل پرداخت است.');
+        if (customerBalance !== null && numericBaseAmount > customerBalance + 0.009) {
+            setValidationError('مبلغ مبنا به‌همراه تخفیف نمی‌تواند بیشتر از مانده قابل پرداخت باشد.');
             return;
         }
         if (method === 'cheque') {
@@ -185,7 +195,7 @@ export function PaymentForm({
         onSubmit({
             customer_id: customerId,
             method,
-            amount: amount.trim(),
+            amount: String(numericAmount),
             settlement_discount_amount: String(numericDiscount),
             reference_number: referenceNumber,
             cheque_due_date: chequeDueDate,
@@ -266,31 +276,41 @@ export function PaymentForm({
                 </div>
 
                 <div>
-                    <label className="mb-1.5 block text-sm font-medium text-gray-700">مبلغ</label>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                        مبلغ پرداخت (پس از تخفیف)
+                    </label>
                     <FormattedNumberInput
                         required
                         min="0.01"
                         step="0.01"
                         dir="ltr"
                         disabled={isSubmitting || isLoadingBalance || !customerId}
-                        value={amount}
+                        value={baseAmount ? String(finalAmount) : ''}
                         onValueChange={(value) => {
-                            const numericValue = Number(value || 0);
-                            const maxAmount =
-                                customerBalance === null
-                                    ? null
-                                    : Math.max(
-                                          0,
-                                          Math.round(
-                                              (customerBalance - effectiveDiscountAmount) * 100
-                                          ) / 100
-                                      );
-                            if (maxAmount !== null && numericValue > maxAmount) {
-                                setAmount(String(maxAmount));
+                            setValidationError(null);
+                            if (!value) {
+                                setBaseAmount('');
                                 return;
                             }
-                            setAmount(value);
-                            setValidationError(null);
+
+                            const requestedFinalAmount = Number(value || 0);
+                            const percentage = Number(discountInput || 0);
+                            if (discountMode === 'percent' && percentage >= 100) {
+                                setValidationError('برای ثبت پرداخت، درصد تخفیف باید کمتر از ۱۰۰ باشد.');
+                                return;
+                            }
+
+                            // Reconstruct the pre-discount base from the desired net payment.
+                            const requestedBaseAmount =
+                                discountMode === 'percent'
+                                    ? requestedFinalAmount / (1 - percentage / 100)
+                                    : requestedFinalAmount + effectiveDiscountAmount;
+                            const safeBaseAmount = Math.round(requestedBaseAmount * 100) / 100;
+                            const nextBaseAmount =
+                                customerBalance === null
+                                    ? safeBaseAmount
+                                    : Math.min(safeBaseAmount, customerBalance);
+                            setBaseAmount(String(nextBaseAmount));
                         }}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
                         placeholder="مثلاً 1,500,000"
@@ -323,6 +343,9 @@ export function PaymentForm({
                             )}
                         </div>
                     ) : null}
+                    <p className="mt-1.5 text-xs text-gray-500">
+                        مبلغ نمایش‌داده‌شده، مبلغ نهایی دریافتی پس از کسر تخفیف است.
+                    </p>
                 </div>
 
                 <div>
@@ -340,30 +363,6 @@ export function PaymentForm({
                         onValueChange={(value) => {
                             setDiscountInput(value);
                             setValidationError(null);
-                            const nextDiscount =
-                                discountMode === 'percent'
-                                    ? Math.round(
-                                          (((customerBalance ?? 0) * Number(value || 0)) / 100) *
-                                              100
-                                      ) / 100
-                                    : Number(value || 0);
-                            const currentAmount = Number(amount || 0);
-                            if (
-                                customerBalance !== null &&
-                                (Math.abs(
-                                    currentAmount + effectiveDiscountAmount - customerBalance
-                                ) < 0.02 ||
-                                    !amount)
-                            ) {
-                                setAmount(
-                                    String(
-                                        Math.max(
-                                            0,
-                                            Math.round((customerBalance - nextDiscount) * 100) / 100
-                                        )
-                                    )
-                                );
-                            }
                         }}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-right"
                         placeholder={discountMode === 'percent' ? 'مثلاً 3.2' : 'مثلاً 4,650,000'}
@@ -393,10 +392,10 @@ export function PaymentForm({
                             onClick={() => {
                                 setDiscountMode('percent');
                                 setDiscountInput(
-                                    customerBalance && customerBalance > 0
+                                    Number(baseAmount) > 0
                                         ? String(
                                               Math.round(
-                                                  (effectiveDiscountAmount / customerBalance) *
+                                                  (effectiveDiscountAmount / Number(baseAmount)) *
                                                       10000000000
                                               ) / 100000000
                                           )
