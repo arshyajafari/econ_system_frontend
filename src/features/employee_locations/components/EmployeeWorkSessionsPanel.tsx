@@ -60,7 +60,8 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
     const [date, setDate] = useState(localDate);
     const [sessions, setSessions] = useState<EmployeeWorkSession[]>([]);
     const [loadedDate, setLoadedDate] = useState<string | null>(null);
-    const loading = loadedDate !== date;
+    const [loadedRefreshKey, setLoadedRefreshKey] = useState(-1);
+    const loading = loadedDate !== date || loadedRefreshKey !== refreshKey;
     const [error, setError] = useState<string | null>(null);
     const [selectedSession, setSelectedSession] = useState<EmployeeWorkSession | null>(null);
     const [routeState, setRouteState] = useState<{
@@ -84,7 +85,6 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
 
     useEffect(() => {
         let cancelled = false;
-        setLoadedDate(null);
         getEmployeeWorkSessions(date)
             .then((value) => {
                 if (!cancelled) {
@@ -104,7 +104,10 @@ export function EmployeeWorkSessionsPanel({ refreshKey }: { refreshKey: number }
                     );
             })
             .finally(() => {
-                if (!cancelled) setLoadedDate(date);
+                if (!cancelled) {
+                    setLoadedDate(date);
+                    setLoadedRefreshKey(refreshKey);
+                }
             });
         return () => {
             cancelled = true;
