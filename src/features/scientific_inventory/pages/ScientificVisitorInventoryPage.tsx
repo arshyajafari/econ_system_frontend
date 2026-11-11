@@ -15,6 +15,7 @@ import {
     assignScientificInventory,
     deleteScientificInventory,
     deleteScientificInventoryTransfer,
+    getScientificInventory,
     getScientificInventoryTransfers,
     updateScientificInventory,
     updateScientificInventoryTransfer,
@@ -95,23 +96,25 @@ export function ScientificVisitorInventoryPage() {
     useEffect(() => {
         let cancelled = false;
         if (!isManager) {
-            getInventory({ sort: '-created_at', per_page: 100 })
+            // Employees must not query the main warehouse inventory: they only
+            // have access to their own scientific-visitor inventory.
+            getScientificInventory({ sort: '-last_received_at', per_page: 100 })
                 .then((response) => {
                     if (cancelled) return;
                     const products = new Map<string, { id: string; code: string; title: string }>();
-                    response.data.forEach((batch) => {
-                        if (batch.product && !products.has(batch.product.id)) {
-                            products.set(batch.product.id, {
-                                id: batch.product.id,
-                                code: batch.product.code,
-                                title: batch.product.title,
+                    response.data.forEach((item) => {
+                        if (item.product && !products.has(item.product.id)) {
+                            products.set(item.product.id, {
+                                id: item.product.id,
+                                code: item.product.code,
+                                title: item.product.title,
                             });
                         }
                     });
                     setFilterProducts(Array.from(products.values()));
                 })
                 .catch((err: unknown) => {
-                    if (!cancelled) setError(err instanceof ApiError ? err.message : 'خطا در دریافت فهرست محصولات.');
+                    if (!cancelled) setError(err instanceof ApiError ? err.message : 'خطا در دریافت فهرست محصولات موجودی علمی.');
                 });
             return () => { cancelled = true; };
         }
