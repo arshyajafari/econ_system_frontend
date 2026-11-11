@@ -96,6 +96,7 @@ export async function endMyWorkSession(payload: {
 
 export async function getEmployeeWorkSessions(filters: {
   employeeId?: string;
+  date?: string;
   page?: number;
   perPage?: number;
 } = {}): Promise<{
@@ -104,6 +105,7 @@ export async function getEmployeeWorkSessions(filters: {
 }> {
   const params = new URLSearchParams();
   if (filters.employeeId) params.set('employee_id', filters.employeeId);
+  if (filters.date) params.set('date', filters.date);
   params.set('page', String(filters.page ?? 1));
   params.set('per_page', String(filters.perPage ?? 25));
   const response = await apiClient.get<{
