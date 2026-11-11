@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useAuth } from '../../auth';
+import { Button } from '../../../design-system/components/Button';
 import { EmployeeWorkSessionsPanel } from '../components/EmployeeWorkSessionsPanel';
 
 export function EmployeeLocationsPage() {
     const { user } = useAuth();
+    const [refreshKey, setRefreshKey] = useState(0);
     const isAdmin = user?.roles.includes('admin') ?? false;
 
     if (!isAdmin) {
@@ -17,7 +20,17 @@ export function EmployeeLocationsPage() {
 
     return (
         <section className="space-y-4 bg-gray-50/40 p-3 md:p-6">
-            <header>
+            <header className="space-y-2">
+                <div className="flex justify-start">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setRefreshKey((value) => value + 1)}
+                    >
+                        بروزرسانی
+                    </Button>
+                </div>
                 <h1 className="text-xl font-semibold tracking-tight text-gray-900 md:text-2xl">
                     موقعیت کارکنان
                 </h1>
@@ -25,7 +38,7 @@ export function EmployeeLocationsPage() {
                     مشاهده محل شروع و پایان مأموریت‌ها روی نقشه
                 </p>
             </header>
-            <EmployeeWorkSessionsPanel />
+            <EmployeeWorkSessionsPanel refreshKey={refreshKey} />
         </section>
     );
 }
