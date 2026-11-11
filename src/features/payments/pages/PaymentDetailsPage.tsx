@@ -135,9 +135,21 @@ export function PaymentDetailsPage() {
                 <h2 className="text-sm font-semibold text-gray-900">جزئیات پرداخت</h2>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <div>
-                        <span className="text-xs text-gray-500">مبلغ</span>
+                        <span className="text-xs text-gray-500">مبلغ پرداختی (پس از تخفیف)</span>
                         <div dir="rtl" className="mt-1 text-lg font-bold">
                             {formatNumber(Number(payment.amount || 0))}
+                        </div>
+                    </div>
+                    <div>
+                        <span className="text-xs text-gray-500">تخفیف تسویه</span>
+                        <div dir="rtl" className="mt-1 font-medium">
+                            {formatNumber(Number(payment.settlement_discount_amount || 0))}
+                        </div>
+                    </div>
+                    <div>
+                        <span className="text-xs text-gray-500">مجموع کاهش بدهی</span>
+                        <div dir="rtl" className="mt-1 font-bold text-emerald-700">
+                            {formatNumber(Number(payment.amount || 0) + Number(payment.settlement_discount_amount || 0))}
                         </div>
                     </div>
                     <div>
