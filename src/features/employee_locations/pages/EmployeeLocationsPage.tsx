@@ -1,6 +1,5 @@
 import { useAuth } from '../../auth';
 import { EmployeeWorkSessionsPanel } from '../components/EmployeeWorkSessionsPanel';
-import { EmployeeDailyLocationCheckinsPanel } from '../components/EmployeeDailyLocationCheckinsPanel';
 
 export function EmployeeLocationsPage() {
     const { user } = useAuth();
@@ -27,7 +26,6 @@ export function EmployeeLocationsPage() {
                 </p>
             </header>
             <EmployeeWorkSessionsPanel />
-            <EmployeeDailyLocationCheckinsPanel />
         </section>
     );
 }
