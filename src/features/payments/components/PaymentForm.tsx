@@ -165,6 +165,10 @@ export function PaymentForm({
             setValidationError('مبلغ تخفیف تسویه معتبر نیست.');
             return;
         }
+        if (numericDiscount >= numericBaseAmount) {
+            setValidationError('تخفیف تسویه باید کمتر از مبلغ مبنا باشد تا مبلغ پرداخت نهایی بیشتر از صفر بماند.');
+            return;
+        }
         if (discountMode === 'percent' && Number(discountInput || 0) > 100) {
             setValidationError('درصد تخفیف نمی‌تواند بیشتر از ۱۰۰ باشد.');
             return;
