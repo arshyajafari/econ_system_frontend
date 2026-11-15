@@ -13,8 +13,8 @@ function sortTransactionsOldestFirst(
   transactions: CustomerLedgerTransaction[],
 ): CustomerLedgerTransaction[] {
   return [...transactions].sort((a, b) => {
-    const timeA = Date.parse(a.transaction_at);
-    const timeB = Date.parse(b.transaction_at);
+    const timeA = Date.parse(a.transaction_at ?? "");
+    const timeB = Date.parse(b.transaction_at ?? "");
     const validA = Number.isFinite(timeA);
     const validB = Number.isFinite(timeB);
 
