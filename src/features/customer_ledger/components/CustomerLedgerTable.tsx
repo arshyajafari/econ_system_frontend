@@ -9,6 +9,22 @@ type CustomerLedgerTableProps = {
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
+function sortTransactionsOldestFirst(
+  transactions: CustomerLedgerTransaction[],
+): CustomerLedgerTransaction[] {
+  return [...transactions].sort((a, b) => {
+    const timeA = Date.parse(a.transaction_at);
+    const timeB = Date.parse(b.transaction_at);
+    const validA = Number.isFinite(timeA);
+    const validB = Number.isFinite(timeB);
+
+    if (!validA && !validB) return 0;
+    if (!validA) return 1;
+    if (!validB) return -1;
+    return timeA - timeB;
+  });
+}
+
 const sourceLabels = {
   invoice: "فاکتور",
   payment: "پرداخت",
@@ -91,7 +107,7 @@ export function CustomerLedgerTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {transactions.map((transaction) => (
+            {sortTransactionsOldestFirst(transactions).map((transaction) => (
               <tr key={transaction.id} className="hover:bg-gray-50">
                 <td className="whitespace-nowrap px-4 py-3 text-gray-600">
                   {formatJalaliDateTime(transaction.transaction_at)}
