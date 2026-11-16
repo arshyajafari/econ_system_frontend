@@ -10,7 +10,7 @@ import { Pagination } from "../../../components/Pagination";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
-import { getEmployees } from "../../employees/services/employeesApi";
+import { getAllEmployees } from "../../employees/services/employeesApi";
 import type { Employee } from "../../employees/types/employee";
 import { useAuth } from "../../auth";
 import {
@@ -118,11 +118,8 @@ export function ExpensesPage() {
     let cancelled = false;
     async function loadEmployees() {
       try {
-        const response = await getEmployees({
-          status: "active",
-          per_page: 100,
-        });
-        if (!cancelled) setEmployees(response.data);
+        const response = await getAllEmployees({ status: "active" });
+        if (!cancelled) setEmployees(response);
       } catch {
         // Payer filtering is optional; the expense list remains usable.
       }
