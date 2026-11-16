@@ -42,8 +42,22 @@ export async function createVisitSample(data: VisitSampleFormData): Promise<Visi
 
 export async function getVisitSampleProducts(isScientificVisitor = false): Promise<VisitSampleProduct[]> {
   if (isScientificVisitor) {
-    const response = await getScientificInventory({ available_only: true, per_page: 100, sort: "-last_received_at" });
-    return response.data
+    const allItems = [];
+    let page = 1;
+    let lastPage = 1;
+    do {
+      const response = await getScientificInventory({
+        available_only: true,
+        per_page: 100,
+        page,
+        sort: "-last_received_at",
+      });
+      allItems.push(...response.data);
+      lastPage = response.meta.last_page;
+      page += 1;
+    } while (page <= lastPage && page <= 1000);
+
+    return allItems
       .filter((item) => Boolean(item.product?.id) && item.available_quantity > 0)
       .map((item) => ({
         id: item.product!.id,
@@ -53,10 +67,19 @@ export async function getVisitSampleProducts(isScientificVisitor = false): Promi
       }));
   }
 
-  const response = await apiClient.get<ProductListResponse>("/products", {
-    params: { status: "active", per_page: 100 },
-  });
-  return response.data.data.map(({ id, code, title, available_quantity }) => ({
+  const allProducts = [];
+  let page = 1;
+  let lastPage = 1;
+  do {
+    const response = await apiClient.get<ProductListResponse>("/products", {
+      params: { status: "active", per_page: 100, page },
+    });
+    allProducts.push(...response.data.data);
+    lastPage = response.data.meta.last_page;
+    page += 1;
+  } while (page <= lastPage && page <= 1000);
+
+  return allProducts.map(({ id, code, title, available_quantity }) => ({
     id,
     code,
     title,
