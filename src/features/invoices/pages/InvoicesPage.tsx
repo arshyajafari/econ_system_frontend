@@ -8,7 +8,6 @@ import { ApiError } from '../../../api/client';
 import { formatJalaliDate } from '../../../utils/date';
 import { searchCustomers } from '../../customers/services/customersApi';
 import { SearchableCustomerSelect } from '../../../components/SearchableCustomerSelect';
-import type { Customer } from '../../customers/types/customer';
 import { getInvoices } from '../services/invoicesApi';
 import { useAuth } from '../../auth';
 import type { Invoice, InvoiceListParams, InvoiceStatus } from '../types/invoice';
