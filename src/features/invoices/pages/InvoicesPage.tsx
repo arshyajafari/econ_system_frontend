@@ -6,7 +6,8 @@ import { Pagination } from '../../../components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { formatJalaliDate } from '../../../utils/date';
-import { getCustomers } from '../../customers/services/customersApi';
+import { searchCustomers } from '../../customers/services/customersApi';
+import { SearchableCustomerSelect } from '../../../components/SearchableCustomerSelect';
 import type { Customer } from '../../customers/types/customer';
 import { getInvoices } from '../services/invoicesApi';
 import { useAuth } from '../../auth';
@@ -31,7 +32,6 @@ export function InvoicesPage() {
             ['admin', 'accountant', 'sales visitor', 'delivery operator'].includes(role)
         ) ?? false;
     const [invoices, setInvoices] = useState<Invoice[]>([]);
-    const [customers, setCustomers] = useState<Customer[]>([]);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState<InvoiceStatus | ''>('');
     const [settled, setSettled] = useState<'' | 'true' | 'false'>('');
@@ -41,22 +41,6 @@ export function InvoicesPage() {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        let cancelled = false;
-        async function loadCustomers() {
-            try {
-                const response = await getCustomers({ per_page: 100 });
-                if (!cancelled) setCustomers(response.data);
-            } catch {
-                // Customer filtering is optional; invoice loading remains available.
-            }
-        }
-        void loadCustomers();
-        return () => {
-            cancelled = true;
-        };
-    }, []);
 
     const resetFilters = () => {
         setSearch('');
@@ -126,10 +110,12 @@ export function InvoicesPage() {
                     </label>
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">مشتری</span>
-                        <select value={customerId} onChange={(e) => { setCustomerId(e.target.value); setPage(1); }}>
-                            <option value="">همه مشتریان</option>
-                            {customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.customer_name}{customer.code ? ` — ${customer.code}` : ''}</option>)}
-                        </select>
+                        <SearchableCustomerSelect
+                            value={customerId}
+                            searchCustomers={searchCustomers}
+                            onChange={(customer) => { setCustomerId(customer?.id ?? ''); setPage(1); }}
+                            placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
+                        />
                     </label>
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">وضعیت فاکتور</span>
