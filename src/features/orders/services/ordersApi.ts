@@ -28,15 +28,13 @@ type ProductListResponse = { data: OrderProductOption[]; meta?: { last_page?: nu
 async function fetchAllLookupPages<T>(
   fetchPage: (page: number) => Promise<{ data: T[]; meta?: { last_page?: number } }>,
 ): Promise<T[]> {
-  const results: T[] = [];
-  let page = 1;
-  let lastPage = 1;
-  do {
+  const firstPage = await fetchPage(1);
+  const results = [...firstPage.data];
+  const lastPage = Math.min(firstPage.meta?.last_page ?? 1, 1000);
+  for (let page = 2; page <= lastPage; page += 1) {
     const response = await fetchPage(page);
     results.push(...response.data);
-    lastPage = response.meta?.last_page ?? page;
-    page += 1;
-  } while (page <= lastPage && page <= 1000);
+  }
   return results;
 }
 
