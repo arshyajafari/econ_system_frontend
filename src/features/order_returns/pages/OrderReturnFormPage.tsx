@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../../design-system/components/Button";
 import { TableContainer } from "../../../design-system/components/TableContainer";
 import { FormField } from "../../../design-system/components/FormField";
@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ApiError } from "../../../api/client";
 import { BackButton } from "../../../components/BackButton";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableOrderSelect } from "../../../components/SearchableOrderSelect";
 import {
   createOrderReturn,
   getOrderReturn,
@@ -28,7 +29,6 @@ export function OrderReturnFormPage() {
   const orderId = searchParams.get("order_id");
   const returnId = searchParams.get("return_id");
   const [order, setOrder] = useState<Order | null>(null);
-  const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState(orderId ?? "");
   const [existingReturn, setExistingReturn] = useState<OrderReturn | null>(
     null,
@@ -40,6 +40,18 @@ export function OrderReturnFormPage() {
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchOrders = useCallback(async (query: string): Promise<Order[]> => {
+    try {
+      return await getReturnableOrders(query);
+    } catch (requestError: unknown) {
+      setError(
+        requestError instanceof ApiError && requestError.message
+          ? requestError.message
+          : "خطا در جستجوی سفارش‌های قابل مرجوعی.",
+      );
+      return [];
+    }
+  }, []);
   async function loadOrder(id: string) {
     setIsLoadingOrder(true);
     setError(null);
@@ -98,15 +110,6 @@ export function OrderReturnFormPage() {
             setSelectedOrderId(loadedOrder.id);
             if (loadedOrder.status !== "completed")
               setError("مرجوعی فقط برای سفارش دارای فاکتور صادرشده و تحویل تأییدشده امکان‌پذیر است.");
-          }
-        } else {
-          const response = await getReturnableOrders();
-          if (!cancelled) {
-            setAvailableOrders(response);
-            if (!response.length)
-              setError(
-                "هیچ سفارش دارای فاکتور صادرشده، تحویل تأییدشده و کالای قابل مرجوعی وجود ندارد.",
-              );
           }
         }
       } catch (error: unknown) {
@@ -223,31 +226,24 @@ export function OrderReturnFormPage() {
           {error}
         </div>
       ) : null}
-      {!existingReturn && !orderId && !order && availableOrders.length > 0 ? (
+      {!existingReturn && !orderId && !order ? (
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <FormField id="return-order" label="سفارش دارای فاکتور صادرشده و تحویل تأییدشده">
-<select
-            id="return-order"
-            value={selectedOrderId}
-            onChange={(event) => {
-              const id = event.target.value;
-              setSelectedOrderId(id);
-              if (id) void loadOrder(id);
-            }}
-            disabled={isLoadingOrder || isSaving}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-500"
-          >
-            <option value="">انتخاب سفارش برای مرجوعی</option>
-            {availableOrders.map((availableOrder) => (
-              <option key={availableOrder.id} value={availableOrder.id}>
-                {availableOrder.code} —{" "}
-                {availableOrder.customer?.customer_name ?? "مشتری نامشخص"}
-              </option>
-            ))}
-          </select>
-</FormField>
+            <SearchableOrderSelect
+              value={selectedOrderId}
+              selectedOrder={order}
+              searchOrders={searchOrders}
+              disabled={isLoadingOrder || isSaving}
+              onChange={(selected) => {
+                const id = selected?.id ?? "";
+                setSelectedOrderId(id);
+                if (id) void loadOrder(id);
+              }}
+              placeholder="جستجو بر اساس کد سفارش یا نام مشتری..."
+            />
+          </FormField>
           <p className="mt-2 text-xs text-gray-500">
-            فقط سفارش‌های دارای فاکتور صادرشده و تحویل تأییدشده که هنوز کالای قابل مرجوعی دارند نمایش داده می‌شوند.
+            برای دیدن سفارش‌های بیشتر، کد سفارش یا نام مشتری را جستجو کنید. فقط سفارش‌های واجد شرایط مرجوعی نمایش داده می‌شوند.
           </p>
         </div>
       ) : null}
