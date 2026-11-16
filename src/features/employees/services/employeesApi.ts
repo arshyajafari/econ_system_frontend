@@ -3,15 +3,13 @@ import type { Employee, EmployeeFormData, EmployeeListParams, EmployeeListRespon
 
 export async function getEmployees(params: EmployeeListParams = {}): Promise<EmployeeListResponse> { const response = await apiClient.get<EmployeeListResponse>("/employees", { params }); return response.data; }
 export async function getAllEmployees(params: EmployeeListParams = {}): Promise<Employee[]> {
-  const results: Employee[] = [];
-  let page = 1;
-  let lastPage = 1;
-  do {
+  const firstPage = await getEmployees({ ...params, page: 1, per_page: 100 });
+  const results = [...firstPage.data];
+  const lastPage = Math.min(firstPage.meta?.last_page ?? 1, 1000);
+  for (let page = 2; page <= lastPage; page += 1) {
     const response = await getEmployees({ ...params, page, per_page: 100 });
     results.push(...response.data);
-    lastPage = response.meta?.last_page ?? page;
-    page += 1;
-  } while (page <= lastPage && page <= 1000);
+  }
   return results;
 }
 export async function getEmployee(id: string): Promise<Employee> { const response = await apiClient.get<Employee>(`/employees/${id}`); return response.data; }
