@@ -58,12 +58,16 @@ export function SearchableOptionSelect({ value, options, onChange, placeholder =
         }}
         onChange={(event) => { setQuery(event.target.value); setOpen(true); }}
         onKeyDown={(event) => {
-          if (event.key === "Escape") { setOpen(false); setQuery(""); }
-          else if (event.key === "Enter" && filteredOptions.length === 1) {
-            event.preventDefault();
-            onChange(filteredOptions[0].value);
-            setQuery("");
+          if (event.key === "Escape") {
             setOpen(false);
+            setQuery("");
+          } else if (event.key === "Enter" && open) {
+            event.preventDefault();
+            if (filteredOptions.length === 1) {
+              onChange(filteredOptions[0].value);
+              setQuery("");
+              setOpen(false);
+            }
           }
         }}
         placeholder={placeholder}
