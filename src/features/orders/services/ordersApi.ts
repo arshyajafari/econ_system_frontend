@@ -21,7 +21,7 @@ type OrderApiPayload = {
   offer_description?: string;
   items: OrderApiItem[];
 };
-type CustomerListResponse = { data: OrderCustomerOption[] };
+type CustomerListResponse = { data: OrderCustomerOption[]; meta?: { last_page?: number } };
 type EmployeeListResponse = { data: OrderEmployeeOption[]; meta?: { last_page?: number } };
 type ProductListResponse = { data: OrderProductOption[]; meta?: { last_page?: number } };
 
@@ -49,7 +49,14 @@ export async function confirmOrder(id: string): Promise<Order> { const response 
 export async function completeOrder(id: string): Promise<Order> { const response = await apiClient.post<Order>(`/orders/${id}/complete`); return response.data; }
 export async function cancelOrder(id: string): Promise<Order> { const response = await apiClient.post<Order>(`/orders/${id}/cancel`); return response.data; }
 export async function performOrderStatusAction(id: string, action: OrderStatusAction): Promise<Order> { switch (action) { case "submit": return submitOrder(id); case "confirm": return confirmOrder(id); case "complete": return completeOrder(id); case "cancel": return cancelOrder(id); } }
-export async function getOrderCustomers(): Promise<OrderCustomerOption[]> { const response = await apiClient.get<CustomerListResponse>("/customers", { params: { per_page: 100 } }); return response.data.data; }
+export async function getOrderCustomers(): Promise<OrderCustomerOption[]> {
+  return fetchAllLookupPages(async (page) => {
+    const response = await apiClient.get<CustomerListResponse>("/customers", {
+      params: { per_page: 100, page },
+    });
+    return response.data;
+  });
+}
 export async function getOrderEmployees(): Promise<OrderEmployeeOption[]> {
   return fetchAllLookupPages(async (page) => {
     const response = await apiClient.get<EmployeeListResponse>("/employees", {
