@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from "react";
 import { Pagination } from "../../../components/Pagination";
+import { SearchableOptionSelect } from "../../../components/SearchableOptionSelect";
 import { ApiError } from "../../../api/client";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
 import { JalaliDateInput } from "../../../components/JalaliDateInput";
@@ -385,25 +386,22 @@ export function ExpensesPage() {
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 پرداخت‌کننده / مسئول هزینه
               </label>
-              <select
+              <SearchableOptionSelect
                 value={form.employee_id}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    employee_id: event.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 disabled={saving}
-              >
-                <option value="">بدون ثبت شخص</option>
-                {employees.map((employee) => (
-                  <option
-                    key={employee.id}
-                    value={employee.id}
-                  >{`${employee.first_name} ${employee.last_name}`}</option>
-                ))}
-              </select>
+                placeholder="جستجوی کارمند..."
+                options={[
+                  { value: "", label: "بدون ثبت شخص" },
+                  ...employees.map((employee) => ({
+                    value: employee.id,
+                    label: `${employee.first_name} ${employee.last_name}`,
+                    description: employee.code,
+                  })),
+                ]}
+                onChange={(employee_id) =>
+                  setForm((current) => ({ ...current, employee_id }))
+                }
+              />
             </div>
 
             <div className="md:col-span-2">
@@ -461,10 +459,19 @@ export function ExpensesPage() {
           </label>
           <label className="ui-filter-field">
             <span className="ui-filter-label">مسئول هزینه</span>
-            <select value={employeeId} onChange={(event) => { setEmployeeId(event.target.value); setPage(1); }}>
-              <option value="">همه مسئولان</option>
-              {employees.map((employee) => <option key={employee.id} value={employee.id}>{`${employee.first_name} ${employee.last_name}`}</option>)}
-            </select>
+            <SearchableOptionSelect
+              value={employeeId}
+              placeholder="جستجوی مسئول هزینه..."
+              options={[
+                { value: "", label: "همه مسئولان" },
+                ...employees.map((employee) => ({
+                  value: employee.id,
+                  label: `${employee.first_name} ${employee.last_name}`,
+                  description: employee.code,
+                })),
+              ]}
+              onChange={(value) => { setEmployeeId(value); setPage(1); }}
+            />
           </label>
           <label className="ui-filter-field">
             <span className="ui-filter-label">از تاریخ</span>
