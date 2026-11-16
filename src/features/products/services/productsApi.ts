@@ -28,27 +28,23 @@ export async function uploadProductImage(id: string, file: File): Promise<Produc
 export async function deleteProduct(id: string): Promise<void> { await apiClient.delete(`/products/${id}`); }
 export async function changeProductStatus(id: string, status: ProductStatus): Promise<Product> { const response = await apiClient.patch<Product>(`/products/${id}/status`, { status }); return response.data; }
 export async function getProductBrands(): Promise<ProductBrand[]> {
-  const results: ProductBrand[] = [];
-  let page = 1;
-  let lastPage = 1;
-  do {
+  const firstPage = await apiClient.get<ProductBrandListResponse>("/brands", { params: { per_page: 100, page: 1 } });
+  const results = [...firstPage.data.data];
+  const lastPage = Math.min(firstPage.data.meta.last_page, 1000);
+  for (let page = 2; page <= lastPage; page += 1) {
     const response = await apiClient.get<ProductBrandListResponse>("/brands", { params: { per_page: 100, page } });
     results.push(...response.data.data);
-    lastPage = response.data.meta.last_page;
-    page += 1;
-  } while (page <= lastPage && page <= 1000);
+  }
   return results;
 }
 export async function getProductCategories(): Promise<ProductCategory[]> {
-  const results: ProductCategory[] = [];
-  let page = 1;
-  let lastPage = 1;
-  do {
+  const firstPage = await apiClient.get<ProductCategoryListResponse>("/product-categories", { params: { per_page: 100, page: 1 } });
+  const results = [...firstPage.data.data];
+  const lastPage = Math.min(firstPage.data.meta.last_page, 1000);
+  for (let page = 2; page <= lastPage; page += 1) {
     const response = await apiClient.get<ProductCategoryListResponse>("/product-categories", { params: { per_page: 100, page } });
     results.push(...response.data.data);
-    lastPage = response.data.meta.last_page;
-    page += 1;
-  } while (page <= lastPage && page <= 1000);
+  }
   return results;
 }
 function normalizeProductPayload(payload: ProductFormData): ProductApiPayload { return { brand_id: payload.brand_id, product_category_id: payload.product_category_id, title: payload.title.trim(), barcode: payload.barcode.trim() || undefined, sort_order: Math.max(0, payload.sort_order), status: payload.status, image: payload.image.trim() || undefined, description: payload.description.trim() || undefined }; }
