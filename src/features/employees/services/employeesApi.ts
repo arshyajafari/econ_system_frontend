@@ -2,6 +2,18 @@ import { apiClient } from "../../../api/client";
 import type { Employee, EmployeeFormData, EmployeeListParams, EmployeeListResponse, EmployeeStatus } from "../types/employee";
 
 export async function getEmployees(params: EmployeeListParams = {}): Promise<EmployeeListResponse> { const response = await apiClient.get<EmployeeListResponse>("/employees", { params }); return response.data; }
+export async function getAllEmployees(params: EmployeeListParams = {}): Promise<Employee[]> {
+  const results: Employee[] = [];
+  let page = 1;
+  let lastPage = 1;
+  do {
+    const response = await getEmployees({ ...params, page, per_page: 100 });
+    results.push(...response.data);
+    lastPage = response.meta?.last_page ?? page;
+    page += 1;
+  } while (page <= lastPage && page <= 1000);
+  return results;
+}
 export async function getEmployee(id: string): Promise<Employee> { const response = await apiClient.get<Employee>(`/employees/${id}`); return response.data; }
 export async function createEmployee(data: EmployeeFormData): Promise<Employee> { const response = await apiClient.post<Employee>("/employees", normalizePayload(data, false)); return response.data; }
 export async function updateEmployee(id: string, data: EmployeeFormData): Promise<Employee> { const response = await apiClient.put<Employee>(`/employees/${id}`, normalizePayload(data, true)); return response.data; }
