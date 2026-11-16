@@ -140,6 +140,10 @@ export function DeliveriesPage() {
 
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!editing && !form.order_id) {
+            setError('ابتدا یک فاکتور را انتخاب کنید.');
+            return;
+        }
         setSaving(true);
         setError(null);
         try {
