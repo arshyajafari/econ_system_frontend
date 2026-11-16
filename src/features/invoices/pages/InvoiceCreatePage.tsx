@@ -1,56 +1,57 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '../../../design-system/components/Button';
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { BackButton } from '../../../components/BackButton';
+import { SearchableOrderSelect } from '../../../components/SearchableOrderSelect';
 import { getOrders } from '../../orders/services/ordersApi';
 import { createInvoiceFromOrder } from '../services/invoicesApi';
 import type { Order } from '../../orders/types/order';
 
 export function InvoiceCreatePage() {
     const navigate = useNavigate();
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [orderId, setOrderId] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [order, setOrder] = useState<Order | null>(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const load = useCallback(async () => {
-        setLoading(true);
-        setError(null);
+
+    const searchOrders = useCallback(async (query: string): Promise<Order[]> => {
         try {
             const response = await getOrders({
                 invoiceable: true,
-                per_page: 100,
+                search: query.trim() || undefined,
+                sort: '-created_at',
+                per_page: 20,
                 page: 1,
             });
-            setOrders(response.data);
-        } catch (e: unknown) {
+            return response.data;
+        } catch (requestError: unknown) {
             setError(
-                e instanceof ApiError && e.message
-                    ? e.message
-                    : 'خطا در دریافت سفارش‌های قابل ایجاد فاکتور.'
+                requestError instanceof ApiError && requestError.message
+                    ? requestError.message
+                    : 'خطا در جستجوی سفارش‌های قابل ایجاد فاکتور.'
             );
-        } finally {
-            setLoading(false);
+            return [];
         }
     }, []);
-    useEffect(() => {
-        const timer = window.setTimeout(() => void load(), 0);
-        return () => window.clearTimeout(timer);
-    }, [load]);
+
     async function submit() {
-        if (!orderId || busy) return;
+        if (!order || busy) return;
         setBusy(true);
         setError(null);
         try {
-            const invoice = await createInvoiceFromOrder(orderId);
+            const invoice = await createInvoiceFromOrder(order.id);
             navigate(`/invoices/${invoice.id}`);
-        } catch (e: unknown) {
-            setError(e instanceof ApiError && e.message ? e.message : 'ایجاد فاکتور انجام نشد.');
+        } catch (requestError: unknown) {
+            setError(
+                requestError instanceof ApiError && requestError.message
+                    ? requestError.message
+                    : 'ایجاد فاکتور انجام نشد.'
+            );
         } finally {
             setBusy(false);
         }
     }
+
     return (
         <section className="space-y-6 p-4 md:p-6">
             <div>
@@ -64,44 +65,31 @@ export function InvoiceCreatePage() {
                 </div>
             ) : null}
             <div className="w-full rounded-xl border border-gray-200 bg-white p-6">
-                {loading ? (
-                    <div className="text-sm text-gray-500">در حال دریافت سفارش‌ها...</div>
-                ) : (
-                    <>
-                        <label className="block text-sm font-medium text-gray-700">
-                            سفارش قابل ایجاد فاکتور
-                        </label>
-                        <select
-                            value={orderId}
-                            onChange={(e) => setOrderId(e.target.value)}
-                            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm"
-                        >
-                            <option value="">انتخاب سفارش</option>
-                            {orders.map((order) => (
-                                <option key={order.id} value={order.id}>
-                                    {order.code} — {order.customer?.customer_name ?? 'بدون مشتری'}
-                                </option>
-                            ))}
-                        </select>
-                        {orders.length === 0 ? (
-                            <p className="mt-3 text-sm text-gray-500">
-                                سفارش تأییدشده یا تکمیل‌شده‌ای برای ایجاد فاکتور پیدا نشد.
-                            </p>
-                        ) : null}
-                        <div className="mt-5 flex gap-2">
-                            <Button
-                                variant="secondary"
-                                size="md"
-                                type="button"
-                                onClick={() => void submit()}
-                                disabled={!orderId || busy}
-                                className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {busy ? 'در حال ایجاد...' : 'ایجاد فاکتور'}
-                            </Button>
-                        </div>
-                    </>
-                )}
+                <label className="block text-sm font-medium text-gray-700">
+                    سفارش قابل ایجاد فاکتور
+                </label>
+                <div className="mt-2">
+                    <SearchableOrderSelect
+                        value={order?.id ?? ''}
+                        selectedOrder={order}
+                        disabled={busy}
+                        searchOrders={searchOrders}
+                        onChange={setOrder}
+                        placeholder="جستجو بر اساس کد سفارش یا نام مشتری..."
+                    />
+                </div>
+                <div className="mt-5 flex gap-2">
+                    <Button
+                        variant="secondary"
+                        size="md"
+                        type="button"
+                        onClick={() => void submit()}
+                        disabled={!order || busy}
+                        className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {busy ? 'در حال ایجاد...' : 'ایجاد فاکتور'}
+                    </Button>
+                </div>
             </div>
         </section>
     );
