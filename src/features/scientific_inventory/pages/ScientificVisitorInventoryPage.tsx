@@ -26,11 +26,11 @@ import type { ScientificInventoryItem } from '../types/scientificInventory';
 const numberFormat = new Intl.NumberFormat('fa-IR');
 
 async function fetchAllPages<T>(
-    fetchPage: (page: number) => Promise<{ data: T[]; meta: { last_page: number } }>
+    fetchPage: (page: number) => Promise<{ data: T[]; meta?: { last_page: number } }>
 ): Promise<T[]> {
     const firstPage = await fetchPage(1);
     const results = [...firstPage.data];
-    const lastPage = Math.min(firstPage.meta.last_page, 1000);
+    const lastPage = Math.min(firstPage.meta?.last_page ?? 1, 1000);
     for (let page = 2; page <= lastPage; page += 1) {
         const response = await fetchPage(page);
         results.push(...response.data);
