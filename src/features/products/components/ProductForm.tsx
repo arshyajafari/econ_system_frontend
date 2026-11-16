@@ -2,6 +2,7 @@ import { cloneElement, isValidElement, useId, useState } from "react";
 import { Button } from "../../../design-system/components/Button";
 import { FormField } from "../../../design-system/components/FormField";
 import { FormattedNumberInput } from "../../../components/FormattedNumberInput";
+import { SearchableOptionSelect } from "../../../components/SearchableOptionSelect";
 import { ImageUploadField } from "../../../components/ImageUploadField";
 import type {
   Product,
@@ -115,36 +116,24 @@ export function ProductForm({
             />
           </Field>
           <Field label="برند" required>
-            <select
+            <SearchableOptionSelect
               value={form.brand_id}
-              onChange={(event) => update("brand_id", event.target.value)}
               disabled={isSubmitting}
-              className={inputClass}
-            >
-              <option value="">انتخاب برند</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.title}
-                </option>
-              ))}
-            </select>
+              required
+              placeholder="جستجوی برند..."
+              options={brands.map((brand) => ({ value: brand.id, label: brand.title }))}
+              onChange={(value) => update("brand_id", value)}
+            />
           </Field>
           <Field label="دسته‌بندی" required>
-            <select
+            <SearchableOptionSelect
               value={form.product_category_id}
-              onChange={(event) =>
-                update("product_category_id", event.target.value)
-              }
               disabled={isSubmitting}
-              className={inputClass}
-            >
-              <option value="">انتخاب دسته‌بندی</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
+              required
+              placeholder="جستجوی دسته‌بندی..."
+              options={categories.map((category) => ({ value: category.id, label: category.title }))}
+              onChange={(value) => update("product_category_id", value)}
+            />
           </Field>
           <Field label="قیمت فروش" required>
             <FormattedNumberInput
