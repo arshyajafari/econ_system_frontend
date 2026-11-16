@@ -42,10 +42,15 @@ export async function createVisitSample(data: VisitSampleFormData): Promise<Visi
 
 export async function getVisitSampleProducts(isScientificVisitor = false): Promise<VisitSampleProduct[]> {
   if (isScientificVisitor) {
-    const allItems = [];
-    let page = 1;
-    let lastPage = 1;
-    do {
+    const firstPage = await getScientificInventory({
+      available_only: true,
+      per_page: 100,
+      page: 1,
+      sort: "-last_received_at",
+    });
+    const allItems = [...firstPage.data];
+    const lastPage = Math.min(firstPage.meta.last_page, 1000);
+    for (let page = 2; page <= lastPage; page += 1) {
       const response = await getScientificInventory({
         available_only: true,
         per_page: 100,
@@ -53,9 +58,7 @@ export async function getVisitSampleProducts(isScientificVisitor = false): Promi
         sort: "-last_received_at",
       });
       allItems.push(...response.data);
-      lastPage = response.meta.last_page;
-      page += 1;
-    } while (page <= lastPage && page <= 1000);
+    }
 
     return allItems
       .filter((item) => Boolean(item.product?.id) && item.available_quantity > 0)
@@ -67,17 +70,17 @@ export async function getVisitSampleProducts(isScientificVisitor = false): Promi
       }));
   }
 
-  const allProducts = [];
-  let page = 1;
-  let lastPage = 1;
-  do {
+  const firstPage = await apiClient.get<ProductListResponse>("/products", {
+    params: { status: "active", per_page: 100, page: 1 },
+  });
+  const allProducts = [...firstPage.data.data];
+  const lastPage = Math.min(firstPage.data.meta.last_page, 1000);
+  for (let page = 2; page <= lastPage; page += 1) {
     const response = await apiClient.get<ProductListResponse>("/products", {
       params: { status: "active", per_page: 100, page },
     });
     allProducts.push(...response.data.data);
-    lastPage = response.data.meta.last_page;
-    page += 1;
-  } while (page <= lastPage && page <= 1000);
+  }
 
   return allProducts.map(({ id, code, title, available_quantity }) => ({
     id,
