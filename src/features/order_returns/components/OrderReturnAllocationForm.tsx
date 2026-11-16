@@ -133,9 +133,19 @@ export function OrderReturnAllocationForm({
       return;
     }
 
+    const otherAllocatedQuantity = Object.entries(quantities).reduce(
+      (sum, [batchId, quantity]) =>
+        batchId === batch.id ? sum : sum + Number(quantity || 0),
+      0,
+    );
+    const remainingForBatch = Math.max(
+      0,
+      requiredQuantity - otherAllocatedQuantity,
+    );
     const normalized = Math.min(
       Math.trunc(parsed),
       Number(batch.available_quantity || 0),
+      remainingForBatch,
     );
 
     setQuantities((current) => ({
@@ -252,6 +262,14 @@ export function OrderReturnAllocationForm({
             <tbody className="divide-y divide-gray-100">
               {batches.map((batch) => {
                 const currentQuantity = quantities[batch.id] ?? 0;
+                const otherAllocatedQuantity = allocatedQuantity - currentQuantity;
+                const maxAllowedQuantity = Math.max(
+                  0,
+                  Math.min(
+                    Number(batch.available_quantity || 0),
+                    requiredQuantity - otherAllocatedQuantity,
+                  ),
+                );
 
                 return (
                   <tr key={batch.id}>
@@ -271,7 +289,7 @@ export function OrderReturnAllocationForm({
                       <input
                         type="number"
                         min={0}
-                        max={Number(batch.available_quantity || 0)}
+                        max={maxAllowedQuantity}
                         step={1}
                         value={currentQuantity === 0 ? "" : currentQuantity}
                         disabled={disabled || isSaving}
