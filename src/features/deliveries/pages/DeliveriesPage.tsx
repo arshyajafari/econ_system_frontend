@@ -5,6 +5,7 @@ import { Pagination } from '../../../components/Pagination';
 import { ApiError } from '../../../api/client';
 import { useAuth } from '../../auth';
 import { IranAddressFields } from '../../../components/IranAddressFields';
+import { SearchableOptionSelect } from '../../../components/SearchableOptionSelect';
 import { ConfirmModal } from '../../../components/ConfirmModal';
 import { formatJalaliDateTime } from '../../../utils/date';
 import {
@@ -271,28 +272,28 @@ export function DeliveriesPage() {
                             <label className="mb-1.5 block text-sm font-medium text-gray-700">
                                 مشتری
                             </label>
-                            <select
-                                required
-                                disabled={Boolean(editing) || saving}
+                            <SearchableOptionSelect
                                 value={form.order_id}
-                                onChange={(e) => setForm({ ...form, order_id: e.target.value })}
-                                className="rounded-lg border px-3 py-2"
-                            >
-                                <option value="">انتخاب فاکتور صادرشده</option>
-                                {editing?.order &&
-                                !availableOrders.some((order) => order.id === editing.order?.id) ? (
-                                    <option value={editing.order.id}>
-                                        {editing.order.code} —{' '}
-                                        {editing.customer?.name ?? 'بدون مشتری'} (فاکتور فعلی)
-                                    </option>
-                                ) : null}
-                                {availableOrders.map((order) => (
-                                    <option key={order.id} value={order.id}>
-                                        {order.invoice_code ?? order.code} —{' '}
-                                        {order.customer?.name ?? 'بدون مشتری'}
-                                    </option>
-                                ))}
-                            </select>
+                                disabled={Boolean(editing) || saving}
+                                required
+                                placeholder="جستجو بر اساس شماره فاکتور یا نام مشتری..."
+                                options={[
+                                    ...(editing?.order &&
+                                    !availableOrders.some((order) => order.id === editing.order?.id)
+                                        ? [{
+                                            value: editing.order.id,
+                                            label: editing.order.code,
+                                            description: editing.customer?.name ?? 'بدون مشتری',
+                                        }]
+                                        : []),
+                                    ...availableOrders.map((order) => ({
+                                        value: order.id,
+                                        label: order.invoice_code ?? order.code,
+                                        description: order.customer?.name ?? 'بدون مشتری',
+                                    })),
+                                ]}
+                                onChange={(value) => setForm((current) => ({ ...current, order_id: value }))}
+                            />
                         </div>
                         <IranAddressFields
                             province={form.province ?? ''}
