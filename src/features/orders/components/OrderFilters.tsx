@@ -1,4 +1,5 @@
 import { SearchableCustomerSelect } from '../../../components/SearchableCustomerSelect';
+import { SearchableOptionSelect } from '../../../components/SearchableOptionSelect';
 import { Button } from "../../../design-system/components/Button";
 import { searchCustomers } from '../../customers/services/customersApi';
 import type { OrderEmployeeOption, OrderStatus } from '../types/order';
@@ -95,20 +96,19 @@ export function OrderFilters({
                         کارشناس فروش
                     </label>
 
-                    <select
-                        id="order-sales-employee"
+                    <SearchableOptionSelect
                         value={salesEmployeeId}
-                        onChange={(event) => onSalesEmployeeChange(event.target.value)}
-                        className={inputClass}
-                    >
-                        <option value="">همه کارشناسان</option>
-
-                        {employees.map((employee) => (
-                            <option key={employee.id} value={employee.id}>
-                                {employee.first_name} {employee.last_name}
-                            </option>
-                        ))}
-                    </select>
+                        onChange={onSalesEmployeeChange}
+                        placeholder="جستجوی کارشناس فروش..."
+                        options={[
+                            { value: "", label: "همه کارشناسان" },
+                            ...employees.map((employee) => ({
+                                value: employee.id,
+                                label: `${employee.first_name} ${employee.last_name}`,
+                                description: employee.code,
+                            })),
+                        ]}
+                    />
                 </div>
             </div>
 
