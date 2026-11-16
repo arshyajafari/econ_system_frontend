@@ -201,7 +201,7 @@ export function OrderReturnDetailsPage() {
                         {getOrderReturnStatusLabel(orderReturn.status)}
                     </span>
                 </div>
-                <div>
+                <div className="w-full">
                     <div className="w-full">
                         <p className="break-words text-sm leading-6 text-gray-500">
                             ثبت شده در {formatDate(orderReturn.created_at)}
