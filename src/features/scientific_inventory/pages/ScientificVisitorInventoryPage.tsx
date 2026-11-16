@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ApiError } from '../../../api/client';
 import { Pagination } from '../../../components/Pagination';
+import { SearchableOptionSelect } from '../../../components/SearchableOptionSelect';
 import { useAuth } from '../../auth';
 import { getEmployees } from '../../employees/services/employeesApi';
 import type { Employee } from '../../employees/types/employee';
@@ -23,6 +24,22 @@ import {
 import type { ScientificInventoryItem } from '../types/scientificInventory';
 
 const numberFormat = new Intl.NumberFormat('fa-IR');
+
+async function fetchAllPages<T>(
+    fetchPage: (page: number) => Promise<{ data: T[]; meta: { last_page: number } }>
+): Promise<T[]> {
+    const results: T[] = [];
+    let page = 1;
+    let lastPage = 1;
+    do {
+        const response = await fetchPage(page);
+        results.push(...response.data);
+        lastPage = response.meta.last_page;
+        page += 1;
+    } while (page <= lastPage && page <= 1000);
+    return results;
+}
+
 
 export function ScientificVisitorInventoryPage() {
     const { user } = useAuth();
@@ -98,11 +115,15 @@ export function ScientificVisitorInventoryPage() {
         if (!isManager) {
             // Employees must not query the main warehouse inventory: they only
             // have access to their own scientific-visitor inventory.
-            getScientificInventory({ sort: '-last_received_at', per_page: 100 })
+            fetchAllPages((page) => getScientificInventory({
+                sort: '-last_received_at',
+                per_page: 100,
+                page,
+            }))
                 .then((response) => {
                     if (cancelled) return;
                     const products = new Map<string, { id: string; code: string; title: string }>();
-                    response.data.forEach((item) => {
+                    response.forEach((item) => {
                         if (item.product && !products.has(item.product.id)) {
                             products.set(item.product.id, {
                                 id: item.product.id,
@@ -119,18 +140,19 @@ export function ScientificVisitorInventoryPage() {
             return () => { cancelled = true; };
         }
         Promise.all([
-            getEmployees({
+            fetchAllPages((page) => getEmployees({
                 activity_type: 'scientific_visitor',
                 status: 'active',
                 per_page: 100,
-            }),
-            getInventory({ sort: '-created_at', per_page: 100 }),
+                page,
+            })),
+            fetchAllPages((page) => getInventory({ sort: '-created_at', per_page: 100, page })),
         ])
-            .then(([employeeResponse, inventoryResponse]) => {
+            .then(([employeeResults, inventoryResults]) => {
                 if (cancelled) return;
-                setEmployees(employeeResponse.data);
+                setEmployees(employeeResults);
                 const products = new Map<string, { id: string; code: string; title: string }>();
-                inventoryResponse.data.forEach((batch) => {
+                inventoryResults.forEach((batch) => {
                     if (batch.product && !products.has(batch.product.id)) {
                         products.set(batch.product.id, {
                             id: batch.product.id,
@@ -141,7 +163,7 @@ export function ScientificVisitorInventoryPage() {
                 });
                 setFilterProducts(Array.from(products.values()));
                 setBatches(
-                    inventoryResponse.data.filter(
+                    inventoryResults.filter(
                         (batch) => batch.available_quantity > 0 && !batch.is_expired
                     )
                 );
@@ -308,40 +330,33 @@ export function ScientificVisitorInventoryPage() {
             {isManager && isFormOpen ? (
                 <form onSubmit={submit} className="space-y-3 rounded-xl border bg-white p-4">
                     <div className="grid gap-3 md:grid-cols-2">
-                        <select
-                            required
-                            disabled={saving}
+                        <SearchableOptionSelect
                             value={employeeId}
-                            onChange={(event) => setEmployeeId(event.target.value)}
-                            className="rounded-lg border px-3 py-2"
-                        >
-                            <option value="">انتخاب ویزیتور علمی</option>
-                            {employees.map((employee) => (
-                                <option key={employee.id} value={employee.id}>
-                                    {employee.code} — {employee.first_name} {employee.last_name}
-                                </option>
-                            ))}
-                        </select>
-
-                        <select
-                            required
                             disabled={saving}
+                            required
+                            placeholder="جستجوی ویزیتور علمی..."
+                            options={employees.map((employee) => ({
+                                value: employee.id,
+                                label: `${employee.code} — ${employee.first_name} ${employee.last_name}`,
+                            }))}
+                            onChange={setEmployeeId}
+                        />
+
+                        <SearchableOptionSelect
                             value={batchId}
-                            onChange={(event) => setBatchId(event.target.value)}
-                            className="rounded-lg border px-3 py-2"
-                        >
-                            <option value="">انتخاب محصول</option>
-                            {batches.map((batch) => (
-                                <option
-                                    key={batch.id}
-                                    value={batch.id}
-                                    disabled={batch.available_quantity <= 0}
-                                >
-                                    {batch.product?.title ?? 'محصول'}
-                                    {batch.batch_number ? ' — بچ ' + batch.batch_number : ''}
-                                </option>
-                            ))}
-                        </select>
+                            disabled={saving}
+                            required
+                            placeholder="جستجوی محصول یا شماره بچ..."
+                            options={batches.map((batch) => ({
+                                value: batch.id,
+                                label: batch.product?.title ?? 'محصول',
+                                description: [
+                                    batch.batch_number ? `بچ ${batch.batch_number}` : '',
+                                    `موجودی: ${numberFormat.format(batch.available_quantity)}`,
+                                ].filter(Boolean).join(' — '),
+                            }))}
+                            onChange={setBatchId}
+                        />
 
                         <input
                             required
@@ -410,38 +425,41 @@ export function ScientificVisitorInventoryPage() {
                     {isManager ? (
                         <label className="ui-filter-field">
                             <span className="ui-filter-label">ویزیتور علمی</span>
-                            <select
+                            <SearchableOptionSelect
                                 value={filterEmployeeId}
-                                onChange={(event) => {
-                                    setFilterEmployeeId(event.target.value);
+                                placeholder="جستجوی ویزیتور..."
+                                options={[
+                                    { value: '', label: 'همه ویزیتورها' },
+                                    ...employees.map((employee) => ({
+                                        value: employee.id,
+                                        label: `${employee.code} — ${employee.first_name} ${employee.last_name}`,
+                                    })),
+                                ]}
+                                onChange={(value) => {
+                                    setFilterEmployeeId(value);
                                     setPage(1);
                                 }}
-                            >
-                                <option value="">همه ویزیتورها</option>
-                                {employees.map((employee) => (
-                                    <option key={employee.id} value={employee.id}>
-                                        {employee.code} — {employee.first_name} {employee.last_name}
-                                    </option>
-                                ))}
-                            </select>
+                            />
                         </label>
                     ) : null}
                     <label className="ui-filter-field">
                         <span className="ui-filter-label">نام محصول</span>
-                        <select
+                        <SearchableOptionSelect
                             value={filterProductId}
-                            onChange={(event) => {
-                                setFilterProductId(event.target.value);
+                            placeholder="جستجوی محصول..."
+                            options={[
+                                { value: '', label: 'همه محصولات' },
+                                ...filterProducts.map((product) => ({
+                                    value: product.id,
+                                    label: product.title,
+                                    description: product.code,
+                                })),
+                            ]}
+                            onChange={(value) => {
+                                setFilterProductId(value);
                                 setPage(1);
                             }}
-                        >
-                            <option value="">همه محصولات</option>
-                            {filterProducts.map((product) => (
-                                <option key={product.id} value={product.id}>
-                                    {product.title} — {product.code}
-                                </option>
-                            ))}
-                        </select>
+                        />
                     </label>
                 </div>
                 <div className="ui-filter-actions justify-between">
