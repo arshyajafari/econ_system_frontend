@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../../../api/client';
 import { formatJalaliDate } from '../../../utils/date';
 import { searchCustomers } from '../../customers/services/customersApi';
-import { SearchableCustomerSelect } from '../../../components/SearchableCustomerSelect';
+import { SearchableCustomerSelect, type SearchableCustomer } from '../../../components/SearchableCustomerSelect';
 import { getInvoices } from '../services/invoicesApi';
 import { useAuth } from '../../auth';
 import type { Invoice, InvoiceListParams, InvoiceStatus } from '../types/invoice';
@@ -35,6 +35,7 @@ export function InvoicesPage() {
     const [status, setStatus] = useState<InvoiceStatus | ''>('');
     const [settled, setSettled] = useState<'' | 'true' | 'false'>('');
     const [customerId, setCustomerId] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState<SearchableCustomer | null>(null);
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [total, setTotal] = useState(0);
@@ -46,6 +47,7 @@ export function InvoicesPage() {
         setStatus('');
         setSettled('');
         setCustomerId('');
+        setSelectedCustomer(null);
         setPage(1);
     };
 
@@ -111,8 +113,9 @@ export function InvoicesPage() {
                         <span className="ui-filter-label">مشتری</span>
                         <SearchableCustomerSelect
                             value={customerId}
+                            selectedCustomer={selectedCustomer}
                             searchCustomers={searchCustomers}
-                            onChange={(customer) => { setCustomerId(customer?.id ?? ''); setPage(1); }}
+                            onChange={(customer) => { setSelectedCustomer(customer); setCustomerId(customer?.id ?? ''); setPage(1); }}
                             placeholder="همه مشتریان؛ برای جستجو تایپ کنید..."
                         />
                     </label>
