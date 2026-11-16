@@ -398,47 +398,27 @@ export function UnifiedVisitForm({ isScientificVisitor, onSaved, onCancel }: Pro
                                                     {sample.product_title || 'محصول ثبت‌شده'}
                                                 </div>
                                             ) : isScientificVisitor ? (
-                                                <select
-                                                    required
+                                                <SearchableProductSelect
                                                     value={sample.product_id}
+                                                    products={products.filter(
+                                                        (product) =>
+                                                            product.available_quantity === undefined ||
+                                                            product.available_quantity > 0
+                                                    )}
+                                                    usedProductIds={samples
+                                                        .filter((item) => item.key !== sample.key && item.product_id)
+                                                        .map((item) => item.product_id)}
                                                     disabled={saving || products.length === 0}
-                                                    onChange={(event) => {
-                                                        const product_id = event.target.value;
+                                                    onChange={(product_id) => {
+                                                        const selectedProduct = products.find((product) => product.id === product_id);
                                                         updateSample(sample.key, {
                                                             product_id,
-                                                            product_title:
-                                                                products.find(
-                                                                    (product) =>
-                                                                        product.id === product_id
-                                                                )?.title ?? '',
+                                                            product_title: selectedProduct?.title ?? '',
                                                             quantity: '1',
                                                         });
                                                     }}
-                                                    className={inputClass}
-                                                >
-                                                    <option value="">
-                                                        انتخاب محصول از موجودی شما
-                                                    </option>
-                                                    {products
-                                                        .filter(
-                                                            (product) =>
-                                                                product.available_quantity ===
-                                                                    undefined ||
-                                                                product.available_quantity > 0
-                                                        )
-                                                        .map((product) => (
-                                                            <option
-                                                                key={product.id}
-                                                                value={product.id}
-                                                            >
-                                                                {product.title}{' '}
-                                                                {product.available_quantity !==
-                                                                undefined
-                                                                    ? `(موجودی: ${product.available_quantity})`
-                                                                    : ''}
-                                                            </option>
-                                                        ))}
-                                                </select>
+                                                    placeholder="جستجو در موجودی محصولات شما..."
+                                                />
                                             ) : (
                                                 <SearchableProductSelect
                                                     value={sample.product_id}
