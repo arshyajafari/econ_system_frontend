@@ -52,6 +52,10 @@ export function SearchableOptionSelect({ value, options, onChange, placeholder =
         disabled={disabled}
         value={open ? query : selected ? `${selected.label}${selected.description ? ` — ${selected.description}` : ""}` : ""}
         onFocus={() => setOpen(true)}
+        onBlur={() => {
+          if (!value) setQuery("");
+          setOpen(false);
+        }}
         onChange={(event) => { setQuery(event.target.value); setOpen(true); }}
         onKeyDown={(event) => {
           if (event.key === "Escape") { setOpen(false); setQuery(""); }
